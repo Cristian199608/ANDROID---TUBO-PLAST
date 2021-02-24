@@ -99,7 +99,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
 
 		_context = context;
-
+ssd
 	}
 
 	/*
