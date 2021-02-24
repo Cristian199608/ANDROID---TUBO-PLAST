@@ -186,7 +186,7 @@ public class VARIABLES {
     }
 
     public static String GetFechaStringFrom_dd_mm_yyyy_TO_yyyy_mm_dd(String fecha) {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String cc= ""+fecha;
         try {
             cc = new SimpleDateFormat("yyyy-MM-dd").format(formatter.parse(""+fecha));

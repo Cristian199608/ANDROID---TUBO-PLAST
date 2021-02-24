@@ -68,6 +68,7 @@ import com.example.fuerzaventaschema.genesys.util.GlobalVar;
 import com.example.fuerzaventaschema.genesys.util.UtilView;
 import com.example.fuerzaventaschema.genesys.util.VARIABLES;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -136,6 +137,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     String codcli, codSucursal, estadoLocalizacion;
     int arti = 0, item_direccion = 0;
 
+    FloatingActionButton myFAB;
+
 
 
     private EditText alert_edt;
@@ -178,6 +181,22 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         _pass = prefs.getString("pass", "0");
 
 
+
+        myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
+        myFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                starWebCreateCliente(false);
+
+            }
+        });
+        myFAB.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                starWebCreateCliente(true);
+                return false;
+            }
+        });
 
 
         // El espinner "(xvisita,todos)" esta invisible, asi que
@@ -277,6 +296,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         //mQuickAction.addActionItem(infoWebItem);
         mQuickAction.addActionItem(addItem);
         mQuickAction.addActionItem(acceptItem);
+        mQuickAction.addActionItem(uploadItem);
         mQuickAction.addActionItem(gestionVisita);
         mQuickAction.addActionItem(observacion);
         mQuickAction.addActionItem(devolucionItem);
@@ -453,6 +473,20 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     }
 
+    private void starWebCreateCliente(boolean forzar) {
+        if ((lat!=0.0 && lng!=0.0) || forzar){
+            Log.i(TAG, "Valor de COD_VEN ES " + codven+" coordenadas "+lat+", "+lng);
+            Intent intReportes = new Intent(getApplicationContext(), CreacionNuevoCliente2Activity.class);
+            intReportes.putExtra("COD_VEND", codven);
+            intReportes.putExtra("LATITUD", String.valueOf(lat));
+            intReportes.putExtra("LONGITUD", String.valueOf(lng));
+            startActivity(intReportes);
+        }else {
+            UtilView.MENSAJE_simple(this, "Sin coordenadas",  "No se ha obtenido las coordenadas. \nVerifique que tengas activado el GPS, ó mantén presionado para registrar sin geolocalizar. " +
+                    "Vuelva intentar.");
+        }
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
@@ -481,7 +515,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         private class ViewHolder {
 
-            TextView txt_flag_pedido,name, ruc, observacion, fecha, monto, direccion;
+            TextView txt_flag_pedido,name, ruc, observacion, fecha, monto, direccion,item_fecha_visitado, item_fecha_programada;
             ImageView foto;
 
         }
@@ -510,8 +544,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         .findViewById(R.id.list_item_cliente_fecha);
                 viewHolder.monto = (TextView) convertView
                         .findViewById(R.id.list_item_cliente_monto);
-                viewHolder.direccion = (TextView) convertView
-                        .findViewById(R.id.list_item_direccion);
+                viewHolder.direccion = (TextView) convertView.findViewById(R.id.list_item_direccion);
+                viewHolder.item_fecha_visitado = (TextView) convertView.findViewById(R.id.item_fecha_visitado);
+                viewHolder.item_fecha_programada = (TextView) convertView.findViewById(R.id.item_fecha_programada);
                 // link the cached views to the convertview
                 convertView.setTag(viewHolder);
 
@@ -524,7 +559,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         searchResults.get(position).get("item_direccion").toString());
 
 
-                San_Visitas visitas = DAO_San_Visitas.getSan_VisitasByFecha(obj_dbclasses.getReadableDatabase(), fecha_yyyy_mm_dd);
+
+
                 Log.w("SITIO_ENFA", i + "obtenerPedidosXCODCLI");
                 if (i == 1) {
                     // convertView.setBackgroundColor(getResources().getColor(R.color.color_pedidos_realizados));
@@ -592,6 +628,33 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                                  searchResults.get(position).get("fecha").toString());
                 viewHolder.direccion.setText(searchResults.get(position)
                         .get("item_direccion").toString());
+
+
+                San_Visitas visitas = DAO_San_Visitas.getSan_VisitasByFecha(
+                        obj_dbclasses.getReadableDatabase(),
+                        searchResults.get(position).get("codigo").toString(),
+                        searchResults.get(position).get("item_direccion").toString()
+                );
+
+                if (visitas!=null){
+                    String fecha_visitado=visitas.getFecha_Ejecutada();
+                    String fecha_next_visita=visitas.getFecha_proxima_visita();
+                    viewHolder.item_fecha_visitado.setTextColor(getResources().getColor(
+                            (fecha_visitado.contains(fecha_yyyy_mm_dd)?R.color.teal_700:R.color.grey_700)
+                            )
+                    );
+                    viewHolder.item_fecha_programada.setTextColor(getResources().getColor(
+                            (fecha_next_visita.contains(fecha_yyyy_mm_dd)?R.color.blue_500:R.color.grey_700)
+                            )
+                    );
+
+                    viewHolder.item_fecha_visitado.setText(fecha_visitado.length()>0?"Visitado: "+fecha_visitado:"");
+                    viewHolder.item_fecha_programada.setText(fecha_next_visita.length()>0?"P.Visitar: "+fecha_next_visita:"");
+
+                }else{
+                    viewHolder.item_fecha_visitado.setText("");
+                    viewHolder.item_fecha_programada.setText("");
+                }
 
             } catch (Exception e) {
                 Log.w("LOG CLIENTES ACTIVITY", e);
@@ -795,10 +858,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 Intent intent=new Intent(this, MapsClientesActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.clientes_menu_registrados:
-                Intent intentr = new Intent(ClientesActivity.this, CH_RegistroClientesNuevos.class);
-                startActivity(intentr);
-                return true;
+//            case R.id.clientes_menu_registrados:
+//                Intent intentr = new Intent(ClientesActivity.this, CH_RegistroClientesNuevos.class);
+//                startActivity(intentr);
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -145,16 +145,35 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/edtObservacion_pedido"
+        <LinearLayout
             android:layout_below="@+id/rpt_pedido_tv_oc_numero"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:text="Alguna obervación acerca del pedido"
-            android:textColor="@color/orange_500"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/edtFechavisita"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="Alguna obervación acerca del pedido"
+                android:textColor="@color/orange_500"
+                android:textSize="14sp"
+                android:paddingEnd="2dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/edtObservacion_pedido"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingStart="2dp"
+                android:text="Alguna obervación acerca del pedido"
+                android:textColor="@color/orange_500"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
 
     </RelativeLayout>

@@ -386,6 +386,9 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         et_comentario_visita.setEnabled(false);
         et_comentario_proxima_visita.setEnabled(false);
         autoCompleteTextView_san_contactos.setEnabled(false);
+        SpinnerDirecciones.setEnabled(false);
+        FAB_enviar_visita.setVisibility(View.GONE);
+        sw_isProximaVisita.setEnabled(false);
         //FAB_enviar_visita.setEnabled(false);
         HabilitarCambioCantacto(false);
         UtilView.Efectos(this,et_fecha_proximavisita, R.color.red_200);

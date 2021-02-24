@@ -99,7 +99,6 @@ public class DBclasses extends SQLiteAssetHelper {
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
 
 		_context = context;
-ssd
 	}
 
 	/*
@@ -6677,7 +6676,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		String rawQuery = "Select estado, flag, cod_noventa from pedido_cabecera  where cod_cli='"
 				+ codcli + "' and sitio_enfa=" + sitio_enfa;
 		rawQuery = "Select estado, flag, cod_noventa from pedido_cabecera  where cod_cli='"
-				+ codcli + "' ";
+				+ codcli + "' and sitio_enfa= "+sitio_enfa+" and cod_noventa != '"+GlobalVar.CODIGO_VISITA_CLIENTE+"'";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
 
@@ -6686,8 +6685,6 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			do {
 				if (cur.getString(0).equals("G")) {
 					i = 1;
-				} else if (cur.getInt(2)==GlobalVar.CODIGO_VISITA_CLIENTE) {
-					i = 3;
 				}
 				else if (cur.getString(0).equals("A")) {
 					i = 2;
@@ -12867,6 +12864,28 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return lista_direcciones;
+	}
+
+	public String getServicioCreacionCliente() {
+		// TODO Auto-generated method stub
+		String rawQuery;
+
+		rawQuery = "select valor from configuracion where nombre='crear_cliente'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		String respuesta = "";
+		cur.moveToFirst();
+
+		while (!cur.isAfterLast()) {
+			respuesta = (cur.getString(0));
+			cur.moveToNext();
+		}
+
+		cur.close();
+		db.close();
+
+		return respuesta;
 	}
 }
 

@@ -67,6 +67,7 @@ public class DAO_San_Visitas {
         return DBSan_Visitas(dBclasses, where1, "");
     }
 
+
     public  static BEAN_AgendaCalendario getCant_San_VisitasByFecha(DBclasses dBclasses, String CODVEN, String codigo_crm, String fecha){
 
 
@@ -453,24 +454,41 @@ public class DAO_San_Visitas {
         return cantidad>0;
     }
 
-    public  static San_Visitas getSan_VisitasByFecha(SQLiteDatabase db, String fecha_yyy_mm_dd){
+    public  static San_Visitas getSan_VisitasByFecha(SQLiteDatabase db, String codcli, String sitio_enfa){
 
-        String sql="SELECT (select v.Fecha_Ejecutada from "+DBtables.San_Visitas.TAG+" v "+
-                " ORDER BY datetime(v.Fecha_Ejecutada) DESC LIMIT 1) as fecha_ultima_visita," +
-                " (select v.Fecha_proxima_visita from "+DBtables.San_Visitas.TAG+" v "+
-                " ORDER BY datetime(v.Fecha_proxima_visita) ASC LIMIT 1) as fecha_proxima_viista";
+        String sql="SELECT ifnull((" +
+                "select v.Fecha_Ejecutada   " +
+                "from "+DBtables.San_Visitas.TAG+" v inner join pedido_cabecera pc on v.oc_numero_visitado=pc.oc_numero " +
+                "where pc.cod_cli='"+codcli+"' and pc.sitio_enfa ='"+sitio_enfa+"' " +
+                "ORDER BY datetime(v.Fecha_Ejecutada) DESC LIMIT 1" +
+                "), '') as fecha_ultima_visitada," +
+
+                "ifnull((" +
+                "select v.fecha_proxima_visita   " +
+                "from "+DBtables.San_Visitas.TAG+" v inner join pedido_cabecera pc on v.oc_numero_visitado=pc.oc_numero " +
+                "where pc.cod_cli='"+codcli+"' and pc.sitio_enfa ='"+sitio_enfa+"' " +
+                "ORDER BY datetime(v.Fecha_proxima_visita) asc LIMIT 1" +
+                "), '') as fecha_proxima_visita";
 
         Cursor cursor=db.rawQuery(sql, null, null);
 
         San_Visitas san_visitas=null;
         if (cursor.moveToNext()){
             san_visitas=new San_Visitas();
-            san_visitas.setFecha_Ejecutada(cursor.getString(cursor.getColumnIndex("fecha_ultima_visita")));
-            san_visitas.setFecha_proxima_visita(cursor.getString(cursor.getColumnIndex("fecha_proxima_viista")));
+            san_visitas.setFecha_Ejecutada(cursor.getString(cursor.getColumnIndex("fecha_ultima_visitada")));
+            san_visitas.setFecha_proxima_visita(cursor.getString(cursor.getColumnIndex("fecha_proxima_visita")));
         }
         cursor.close();
         db.close();
         return san_visitas;
+    }
+
+    public  static  San_Visitas getSan_VisitaByOc_numero(DBclasses dBclasses,String Oc_numero){
+        String where1 = "where  "+DBtables.San_Visitas.oc_numero_visitado+" = '"+Oc_numero+"' ";
+
+        ArrayList<San_Visitas> lll= DBSan_Visitas(dBclasses, where1, "");
+        San_Visitas visita= lll.size()>0?lll.get(0):null;
+        return visita;
     }
 
 }

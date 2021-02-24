@@ -42,8 +42,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.fuerzaventaschema.genesys.BEAN.San_Visitas;
 import com.example.fuerzaventaschema.genesys.DAO.DAO_Pedido;
 import com.example.fuerzaventaschema.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.fuerzaventaschema.genesys.DAO.DAO_San_Visitas;
 import com.example.fuerzaventaschema.genesys.datatypes.DBCta_Ingresos;
 import com.example.fuerzaventaschema.genesys.datatypes.DBMotivo_noventa;
 import com.example.fuerzaventaschema.genesys.datatypes.DBPedido_Cabecera;
@@ -58,6 +60,7 @@ import com.example.fuerzaventaschema.genesys.fuerza_ventas.ClientesActivity.Clie
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.ClientesActivity.no_ventaAdapter;
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.ClientesActivity.no_ventaAdapter.ViewHolder;
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.Dialog.DialogFragment_enviarCotizacion;
+import com.example.fuerzaventaschema.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.PedidosActivity;
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.PedidosActivityVentana2;
 import com.example.fuerzaventaschema.genesys.service.ConnectionDetector;
@@ -127,6 +130,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     public static final String KEY_MENSAJE = "mensaje";
     public static final String KEY_TOTAL_PERCEPCION = "totalPercepcion";
     public static final String KEY_MONEDA = "moneda";
+    public static final String KEY_NOVENTA = "KEY_NOVENTA";
 
     public String numfactura;
     public String saldo = "0";
@@ -284,21 +288,40 @@ public class ReportesPedidosActivity extends FragmentActivity {
                         }
 
                         else if (actionId == ID_DETALLE) {
-                            if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
-                                SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-                                String codven = prefs.getString("codven", "");
-
-                                final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
-                                ipedido.putExtra("codigoVendedor", codven);
-                                ipedido.putExtra("nombreCliente", nomcli);
-                                ipedido.putExtra("origen", "REPORTES-PEDIDO");
-                                ipedido.putExtra("OC_NUMERO", oc_numero);
-                                startActivity(ipedido);
-
-                            } else {
-                                async_getFlagPedido con = new async_getFlagPedido();
-                                con.execute(oc_numero, "PEDIDO-DETALLE");
+                            int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
+                            if (cod_noventa>0 || GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
+                                if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, true).size()>0) {
+                                    Intent intent=new Intent(ReportesPedidosActivity.this, GestionVisita3Activity.class);
+                                    intent.putExtra("ID_RRHH", "-1");
+                                    intent.putExtra("CODIGO_CRM", "");
+                                    intent.putExtra("NOMBRE_INSTI", "");
+                                    intent.putExtra("OC_NUMERO", ""+oc_numero);
+                                    intent.putExtra("COD_VEND", codven);
+                                    intent.putExtra("isPLANIFICADA", false);//FALSE PARA NO MODIFICAR
+                                    intent.putExtra("ORIGEN", TAG);
+                                    startActivity(intent);
+                                }else{
+                                    Toast.makeText(ReportesPedidosActivity.this, "Ninguna acción", Toast.LENGTH_SHORT).show();
+                                }
+                            }else{
+                                if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
+                                    SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+                                    String codven = prefs.getString("codven", "");
+    
+                                    final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
+                                    ipedido.putExtra("codigoVendedor", codven);
+                                    ipedido.putExtra("nombreCliente", nomcli);
+                                    ipedido.putExtra("origen", "REPORTES-PEDIDO");
+                                    ipedido.putExtra("OC_NUMERO", oc_numero);
+                                    startActivity(ipedido);
+    
+                                } else {
+                                    async_getFlagPedido con = new async_getFlagPedido();
+                                    con.execute(oc_numero, "PEDIDO-DETALLE");
+                                }
                             }
+
+
 
 
                         } else if(actionId == ID_ENVIAR_CORREO){
@@ -563,6 +586,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             map.put("tipoRegistro", cta.getTipoRegistro());
             map.put("pedidoAnterior", cta.getPedidoAnterior());
             map.put("latitud", cta.getLatitud());
+            map.put(KEY_NOVENTA, ""+cta.getCod_noventa());
 
             if (cta.getFlag().equals("P")) {
                 pedidos.add(map);
@@ -760,7 +784,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         }
 
         private class ViewHolder {
-            TextView nomcliente, tipopago, total, numoc, estado, moneda, tv_pedidoAnterior, labell, edtObservacion_pedido;
+            TextView nomcliente, tipopago, total, numoc, estado, moneda, tv_pedidoAnterior, labell, edtFechavisita, edtObservacion_pedido;
             ImageView foto;
             TextView tv_tipoRegistro, imgCampanaYellow;
         }
@@ -786,6 +810,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 viewHolder.labell = (TextView) convertView.findViewById(R.id.labell);
                 viewHolder.imgCampanaYellow = (TextView) convertView.findViewById(R.id.imgCampanaYellow);
                 viewHolder.edtObservacion_pedido = (TextView) convertView.findViewById(R.id.edtObservacion_pedido);
+                viewHolder.edtFechavisita = (TextView) convertView.findViewById(R.id.edtFechavisita);
                 convertView.setTag(viewHolder);
 
             } else
@@ -811,8 +836,19 @@ public class ReportesPedidosActivity extends FragmentActivity {
             }
 
             String estado = pedidos.get(position).get("estado").toString();
+            int codnoventa = Integer.parseInt(pedidos.get(position).get(KEY_NOVENTA).toString());
 
-            if (estado.equals("A")) {
+            viewHolder.edtFechavisita.setText("");
+            if (codnoventa==GlobalVar.CODIGO_VISITA_CLIENTE){
+                San_Visitas san=DAO_San_Visitas.getSan_VisitaByOc_numero(obj_dbclasses,  pedidos.get(position).get(KEY_NUMOC).toString());
+
+                if (san!=null) {
+                    viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
+                    viewHolder.edtFechavisita.setTextColor(getResources().getColor(R.color.teal_600));
+                    viewHolder.edtFechavisita.setText("Visitado: "+san.getFecha_Ejecutada());
+                }
+            }
+            else if (estado.equals("A")) {
                 viewHolder.nomcliente.setTextColor(Color.parseColor("#FF0000"));
                 viewHolder.moneda.setText("");
             } else {

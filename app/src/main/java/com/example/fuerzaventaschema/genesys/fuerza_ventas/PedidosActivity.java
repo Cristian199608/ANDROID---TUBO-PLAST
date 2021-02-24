@@ -3368,7 +3368,72 @@ private void EnvalularMoneda(){
 
     }
 
-    public static String calcularSecuencia(String oc,String fecha_configuracionx) {
+    public static String calcularSecuencia(String oc, String fecha_configuracionx) {
+        String cero = "0";
+        String orden = "";
+
+        // obtengo la fecha de la tabla configuracion
+        // String fecha_configuracion = dbclass.getCambio("Fecha");
+
+        // String mes_actual=(calendar.get(Calendar.MONTH)+1)+"";
+        // String dia_actual=calendar.get(Calendar.DAY_OF_MONTH)+"";
+        String anio_actual = fecha_configuracionx.substring(8, 10);
+        String mes_actual = fecha_configuracionx.substring(3, 5);
+        String dia_actual = fecha_configuracionx.substring(0, 2);
+
+        int secactual = 0;
+
+        if (oc.length() < 6) {
+            secactual = 1;
+            if (mes_actual.length() < 2) {
+                mes_actual = cero + mes_actual;
+            }
+            if (dia_actual.length() < 2) {
+                dia_actual = cero + dia_actual;
+            }
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
+            return orden;
+        } else {
+            //String cadenaFecha = oc.substring(oc.length()-6,oc.length());
+            Log.i(TAG, "VER oc numero es "+oc+", tamaño "+oc.length());
+            String cadenaFecha = oc.substring(oc.length() - 8, oc.length());
+
+            int aniot = Integer.parseInt(cadenaFecha.substring(0, 2));
+            int mest = Integer.parseInt(cadenaFecha.substring(2, 4));
+            int diat = Integer.parseInt(cadenaFecha.substring(4, 6));
+            int sectem = Integer.parseInt(cadenaFecha.substring(6, 8));
+
+            //Verificar por año
+            if (Integer.parseInt(mes_actual) <= mest) {
+                if (Integer.parseInt(dia_actual) > diat) {
+                    secactual = 1;
+                } else
+                    secactual = sectem + 1;
+
+            } else {
+                secactual = 1;
+            }
+        }
+
+        if (mes_actual.length() < 2) {
+            mes_actual = cero + mes_actual;
+        }
+        if (dia_actual.length() < 2) {
+            dia_actual = cero + dia_actual;
+        }
+        if (secactual < 10) {
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
+        } else {
+            //orden = mes_actual + dia_actual + secactual;
+            orden = anio_actual + mes_actual + dia_actual + secactual;
+        }
+
+        return orden;
+    }
+
+    public static String calcularSecuenciaX(String oc,String fecha_configuracionx) {
         String cero = "0";
         String orden = "";
 
