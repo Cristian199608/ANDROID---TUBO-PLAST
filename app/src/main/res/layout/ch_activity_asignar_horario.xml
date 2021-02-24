@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Datos de la Entrega:" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".6" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="N° Horario:" />
+
+                <EditText
+                    android:id="@+id/edt_nroHorario"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".4"
+                android:gravity="center" >
+
+                <CheckBox
+                    android:id="@+id/check_activo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Activo" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descripción:" />
+
+            <EditText
+                android:id="@+id/descripcion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dias - Horario:" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <CheckBox
+                android:id="@+id/check_lunes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lunes" />
+
+            <CheckBox
+                android:id="@+id/check_martes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Martes" />
+
+            <CheckBox
+                android:id="@+id/check_miercoles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Miércoles" />
+
+            <CheckBox
+                android:id="@+id/check_jueves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jueves" />
+
+            <CheckBox
+                android:id="@+id/check_viernes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Viernes" />
+
+            <CheckBox
+                android:id="@+id/check_sabado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sabado" />
+
+            <CheckBox
+                android:id="@+id/check_domingo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Domingo" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5" >
+
+                <EditText
+                    android:id="@+id/edt_horaInicio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Desde las" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:gravity="center" >
+
+                <EditText
+                    android:id="@+id/edt_horaFin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Hasta las" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Formato 24 horas desde las 00.00 horas hasta 23:59 horas" />
+    </LinearLayout>
+
+</ScrollView>

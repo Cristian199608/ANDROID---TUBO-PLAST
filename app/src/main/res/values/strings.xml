@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="APP_VERSION">v7.2.9 pruebas</string>
+    <string name="APP_VERSION_CODE">v7.2.9(2020-11-20)</string>
+    <string name="arrow_lefy">&lt;</string>
+    <string name="fa_icon_ruc">&#xf1fe;</string>
+    <string name="fa_icon_piechart">&#xf200;</string>
+    <string name="fa_icon_linechart">&#xf201;</string>
+    <!-- APPLICATION -->
+
+    <string name="description_refresh">Refresh</string>
+    <string name="description_share">Share</string>
+    <string name="button_repeat">Repeat</string>
+    <string name="lb_unavailable">Unavailable</string>
+    <string name="general_error">Oops!\n Something went wrong&#8230; :(</string>
+    <string name="error_credential_title">Wrong Credentials</string>
+    <string name="error_credential">Please login at FEUP Mobile.</string>
+    <string name="error_title">Error</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- Downloader -->
+    <string name="msg_downloading">Downloading %1$s</string>
+    <string name="msg_download_finished">Finished downloading:\n %1$s</string>
+    <string name="toast_download_no_memory">Error: Out of memory!</string>
+    <string name="toast_download_no_memory_card">Error: No memory card available.</string>
+    <string name="toast_download_error_file">Error while writing the file</string>
+    <string name="toast_download_error">Error while downloading file</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- ACCOUNT CHOOSER -->
+    <string name="lb_choose_account">Select an account</string>
+    <string name="bt_add_account">Add an account</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- PREFERENCES -->
+    <string name="title_preferences">Settings</string>
+    <string name="lb_sync_preferences">Configure synchronization</string>
+    <string name="lb_sync_preferences_sum">Configure period</string>
+    <string name="lb_sync_notifications_interval_title">Notifications Refresh Interval</string>
+    <string name="lb_sync_interval_title">Refresh Interval</string>
+    <string name="key_sync_interval">sync_interval</string>
+    <string name="key_notifications_sync_interval">notifications_sync_interval</string>
+    <string name="lb_clean_history_title">Clean History</string>
+    <string name="lb_clean_history_desc">Clean search history</string>
+    <string name="key_clean_history">clean_search_history</string>
+    <string name="title_cache_prefs">Cache</string>
+    <string name="lb_clear_cache_title">Clear Cache</string>
+    <string name="lb_clear_cache_desc">Clear local cache</string>
+    <string name="key_clear_cache">clear_cache</string>
+    <string name="annotation_clicked">Annotation \'%1$s\' clicked</string>
+
+    <string name="lb_login_username">Username</string>
+    <string name="lb_login_password">Password</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- LOGIN -->
+
+    <string name="bt_cancel">Cancel</string>
+    <string name="lb_login_authenticating">Authenticating\u2026</string>
+    <string name="bt_login">Login</string>
+    <string name="lb_show_password">Show Password</string>
+    <string name="toast_login_error_empty_username">Username cannot be empty.</string>
+    <string name="toast_login_error_empty_password">Password cannot be empty.</string>
+    <string name="toast_login_error_wrong_password">Your username or password are wrong.</string>
+    <string name="toast_login_error_password_too_short">Password must be at least 8 characters in length.</string>
+    <string name="toast_server_error">The Web Service seems to be down. Try again.</string>
+    <string name="toast_auth_error">Your password is invalid. Please login again.</string>
+    <string name="login_activity_newaccount_text">Sign in to your SiGARRA account.</string>
+    <string name="description_logout">Log Out</string>
+    <string name="description_search">Search</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- LOGOUT -->
+    <string name="search_label">FEUP Mobile</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- SEARCH -->
+    <string name="search_hint">Search in SiGARRA</string>
+    <string name="title_search">Search</string>
+    <string name="title_search_query">Search for \'%1$s\'</string>
+    <string name="toast_search_error">There were no results for your search.</string>
+    <string name="label_room_desc">%1$s <strong>Floor:</strong>%2$s</string>
+    <string name="title_search_students">Students</string>
+    <string name="title_search_employees">Employees</string>
+    <string name="title_search_rooms">Room</string>
+    <string name="title_search_subjects">Subjects</string>
+    <string name="bt_about">About</string>
+    <string name="bt_about_title">About FEUP Mobile</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- ABOUT -->
+    <string name="bt_about_message">This application gives FEUP students a mobile platform
+                                 where they can track their academic life with ease.
+                                 \n\n<a href="http://code.google.com/p/sifeup-mobile">Project\'s Website</a>                                 \n\n<b>Version: </b>1.1.5
+                                 \n
+                                 17/01/2013
+                                 \n\n<b>Credits:</b>\n<ul><li>Faculty of Engineering of University of Porto</li> \n<li>CICA</li> \n<li>Master in Informatics and Computing Engineering</li> \n<li>Distributed Systems course</li> \n</ul></string>
+    <string name="title_student_area">Personal Area</string>
+    <string name="btn_student_area">Personal Area</string>
+
+    <!-- MAIN  MENU -->
+
+
+    <!-- *************************************************************************************** -->
+    <!-- STUDENT AREA -->
+    <string name="title_schedule">Schedule</string>
+    <string name="title_schedule_arg">Schedule of %1$s</string>
+
+    <!-- Schedule -->
+    <string name="btn_schedule">Schedule</string>
+    <string name="description_export_schedule">Export schedule</string>
+    <string name="toast_export_calendar_finished">Calendar Exported.</string>
+    <string name="toast_export_calendar_error">Failed to find Google Calendar on your device.</string>
+    <string name="toast_now_not_visible">Press this button during the workdays to show the current time.</string>
+    <string name="description_now">Go to Now</string>
+    <string name="description_schedule">See the Schedule</string>
+    <string name="label_no_classes">There are no scheduled classes</string>
+    <string name="class_subject">&lt;b>Subject:&lt;/b>%1$s</string>
+    <string name="class_teacher"><b>Teachers</b></string>
+
+    <!-- Class Description -->
+    <string name="class_room"><b>Rooms</b></string>
+    <string name="class_classes"><b>Classes</b></string>
+    <string name="class_team">&lt;b>Class:&lt;/b>%1$s</string>
+    <string name="class_start_time">&lt;b>Start time:&lt;/b>%1$s</string>
+    <string name="class_end_time">&lt;b>End time:&lt;/b>%1$s</string>
+    <string name="title_exams">Exams</string>
+    <string name="btn_exams">Exams</string>
+
+    <!-- Exams -->
+    <string name="title_surveillances">Surveillances</string>
+    <string name="label_no_exams">You have no scheduled exams</string>
+    <string name="label_no_exam_room">No scheduled rooms</string>
+    <string name="date_exam">&lt;b>Date:&lt;/b>%1$s</string>
+    <string name="btn_subjects">Subjects</string>
+    <string name="title_subjects">Subjects</string>
+
+    <!-- Subjects -->
+    <string name="subjects_year">Year %1$s - %2$s</string>
+    <string name="lb_no_subjects">You have no subjects inscriptions</string>
+    <string name="lb_no_courses">You have no courses inscriptions</string>
+    <string name="objectives">Objectives</string>
+    <string name="content">Content</string>
+
+    <!-- Subject Description -->
+    <string name="teachers">Teachers</string>
+    <string name="bibliography">Bibliography</string>
+    <string name="software">Software</string>
+    <string name="metodology">Metodology</string>
+    <string name="evaluation">Evaluation</string>
+    <string name="admission_exams">Admission to Exams</string>
+    <string name="final_grade">Final grade</string>
+    <string name="special_evaluation">Special evaluation (TE, DA, &#8230;)</string>
+    <string name="improvement_classification">Improvement of Final/Distributed Classification</string>
+    <string name="comments">Comments</string>
+    <string name="subject_content">Subject Content</string>
+    <string name="no_data">No data</string>
+    <string name="title_other_occurrences">Other Occurrences</string>
+    <string name="lb_no_other_occurrences">There are no other occurrences.</string>
+
+    <!-- Other Occurrences -->
+    <string name="title_enrolled_students">Enrolled Students</string>
+    <string name="lb_no_enrolled_students">There are no enrolled students.</string>
+
+    <!-- Enrolled Students -->
+    <string name="title_teaching_service">Teaching Service</string>
+    <string name="lb_no_teaching_service">You have no teaching service.</string>
+
+    <!-- Teaching Service -->
+    <string name="title_academic_path">Academic Path</string>
+    <string name="btn_academic_path">Academic Path</string>
+
+    <!-- Academic Path -->
+    <string name="path_year">&lt;b>Year:&lt;/b>%1$s</string>
+    <string name="path_semestre">Semester:%1$s</string>
+    <string name="path_average">&lt;b>Average:&lt;/b>%1$s</string>
+    <string name="path_grade">Grade: %1$s</string>
+    <string name="btn_profile">Profile</string>
+    <string name="title_profile">Profile</string>
+
+    <!-- People Profile -->
+    <string name="profile_title_email">Email</string>
+    <string name="profile_title_email_alt">Alternative Email</string>
+    <string name="profile_title_mobile">Mobile Phone</string>
+    <string name="profile_title_telephone">Telephone</string>
+    <string name="profile_title_ext_mobile">Mobile Phone Extension</string>
+    <string name="profile_title_ext_voip">VOIP Extension</string>
+    <string name="profile_title_ext_telephone">Telephone Extension</string>
+    <string name="profile_title_programme">Programme</string>
+    <string name="profile_title_code">Code</string>
+    <string name="profile_title_status">Status</string>
+    <string name="profile_title_website">Website</string>
+    <string name="profile_title_year">Year</string>
+    <string name="profile_title_faculty">Faculty</string>
+    <string name="profile_title_course">Programme</string>
+    <string name="profile_title_room">Room</string>
+    <string name="profile_title_interests">Interests</string>
+    <string name="profile_choose_email_app">Choose the email application:</string>
+    <string name="room_name">&lt;b>Room:&lt;/b> %1$s</string>
+    <string name="room_building">&lt;b>Building:&lt;/b> %1$s</string>
+
+    <!-- Room Profile -->
+    <string name="room_area"> &lt;b>Area:&lt;/b> %1$s m&lt;sup>&lt;small>2&lt;/small>&lt;/sup></string>
+    <string name="room_usage">&lt;b>Usage:&lt;/b> %1$s</string>
+    <string name="room_responsible"><b>Responsible:</b></string>
+    <string name="room_occupiers"><b>Occupiers:</b></string>
+    <string name="title_lunch_menu">Lunch Menus</string>
+    <string name="btn_lunch_menu">Lunch Menus</string>
+
+    <!-- Lunch Menu -->
+    <string name="lb_no_menu">There are no menus</string>
+    <string name="lb_closed_canteen">Closed</string>
+    <string name="canteen_schedule">&lt;b>Schedule:&lt;/b> %1$s</string>
+    <string name="title_park_occupation">Park Occupation</string>
+    <string name="btn_park_occupation">Park Occupation</string>
+
+    <!-- Park Occupation -->
+    <string name="label_personnel_per_park">P1 - Permanent Personnel</string>
+    <string name="label_student_park">P3 - Students</string>
+    <string name="label_personnel_not_per_park">P4 - Temporary Personnel</string>
+    <string name="label_free_spots">Free spots: %1$s</string>
+    <string name="title_student_services">Services</string>
+    <string name="btn_student_services">Services</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- SERVICES -->
+    <string name="title_tuition">Payments</string>
+    <string name="btn_current_account">Current Account</string>
+
+    <!-- Tuition -->
+    <string name="title_tuition_history">Tuition History</string>
+    <string name="lbl_year">Year </string>
+    <string name="lbl_paid">Paid</string>
+    <string name="lbl_still_to_pay">Still to pay</string>
+    <string name="btn_tuition_history">History</string>
+    <string name="btn_tuition_refs">MB References</string>
+    <string name="title_tuition_menu">Tuition Menu</string>
+    <string name="title_tuition_refs_list">MB References</string>
+    <string name="interval_separator">to</string>
+    <string name="title_tuition_ref_detail">MB Reference</string>
+    <string name="lbl_tuition_ref_detail_entity">Entity</string>
+    <string name="lbl_tuition_ref_detail_reference">Reference</string>
+    <string name="lbl_tuition_ref_detail_amount">Amount</string>
+    <string name="lbl_tuition_ref_detail_date_start">Start Date</string>
+    <string name="lbl_tuition_ref_detail_date_end">End Date</string>
+    <string name="lbl_date">%1$s to %2$s</string>
+    <string name="label_no_tuition_ref">There are no available references.</string>
+    <string name="title_change_password">Change Password</string>
+    <string name="btn_change_password">Change Password</string>
+
+    <!-- Change Password -->
+    <string name="bt_set_password_confirm">OK</string>
+    <string name="bt_set_password_cancel">Cancel</string>
+    <string name="lb_new_password">New password:</string>
+    <string name="hint_new_password">New password</string>
+    <string name="lb_confirm_new_password">Confirm new password:</string>
+    <string name="hint_confirm_new_password">Confirm new password</string>
+    <string name="lb_current_password">Current password:</string>
+    <string name="hint_current_password">Current password</string>
+    <string name="set_password_message">Para alterar a sua palavra-passe siga as seguintes normas e
+    preencha os campos a seguir:<ul><il>Conter obrigatoriamente entre 8 e 32 caracteres.</il><il>Não ser igual às 5 palavras-passe anteriores.</il><il>Conter um misto de letras e números.</il><il>Por questões de compatibilidade de sistemas não pode conter símbolos tais como: &amp;, %, $, (, ), /... .</il></ul></string>
+    <string name="lb_username">Username:</string>
+    <string name="hint_username">Username</string>
+    <string name="new_password_security">Password Strength: \n%1$s</string>
+    <string name="new_password_too_short">Too short</string>
+    <string name="new_password_too_weak">Password too weak.</string>
+    <string name="new_password_common_word">Common word</string>
+    <string name="new_password_very_weak">Very Weak</string>
+    <string name="new_password_weak">Weak</string>
+    <string name="new_password_medium">Medium</string>
+    <string name="new_password_strong">Strong</string>
+    <string name="new_password_very_strong">Very Strong</string>
+    <string name="confirm_new_password_empty">Confirmation of new password can not be empty.</string>
+    <string name="new_password_empty">New password can not be empty.</string>
+    <string name="old_password_empty">Current password can not be empty.</string>
+    <string name="username_empty">Username can not be empty.</string>
+    <string name="password_successfully_changed">Password successfully changed.</string>
+    <string name="confirmation_password_different">The confirmation is different from the password.</string>
+    <string name="title_printing">Printing Quota</string>
+    <string name="btn_printing">Printing Quota</string>
+
+    <!-- Printing -->
+    <string name="lb_data_fetching">Fetching data&#8230;</string>
+    <string name="print_balance">Printing Quota: %1$s €</string>
+    <string name="print_can_print_a4_black">You can print up to %1$s black A4 pages.</string>
+    <string name="print_reference_title">Increase Quota</string>
+    <string name="lb_print_increase">Value (>1€):</string>
+    <string name="btn_print_reference">Generate Reference</string>
+    <string name="lb_print_ref_title">Generated Reference</string>
+    <string name="print_ref_share_err">An error occurred when trying to share the reference.</string>
+    <string name="print_ref_share_title">Share Reference</string>
+    <string name="toast_invalid_value">The inserted value is not supported.</string>
+    <string name="print_ref_default_value">5</string>
+    <string name="title_dynamic_mail_files">Dynamic Email Files</string>
+    <string name="btn_dynamic_mail_files">Dynamic Email Files</string>
+
+    <!-- Dynamic mail -->
+    <string name="label_no_files">You have no available files.</string>
+    <string name="title_friends">Friends</string>
+    <string name="btn_friends">Friends</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- FRIENDS -->
+    <string name="friends_context_delete">Remove Friend</string>
+    <string name="friends_context_timetable">See Timetable</string>
+    <string name="label_no_friends">You have no friends.\n\nWhile seeing a profile, check the star to mark as friend.</string>
+    <string name="title_news">News</string>
+    <string name="btn_news">News</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- NEWS -->
+    <string name="news_more_info">More information:</string>
+    <string name="news_error">There was a error fetching the News. Please check your connection.</string>
+    <string name="lb_no_news">There are no news</string>
+    <string name="description_map">Facilities</string>
+    <string name="title_map">Facilities</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- MAP -->
+    <string name="btn_map">Facilities</string>
+    <string name="floor_spinner">Floor %1$s</string>
+    <string name="toast_first_map_view">Tap to see the building name.\n\nDouble tap to see the detailed view.</string>
+    <string name="toast_no_detailed_view">This building has no detailed view available</string>
+    <string name="title_settings">Settings</string>
+    <string name="pref_almacenes"><u>Almacenes...</u></string>
+
+    <!-- *************************************************************************************** -->
+    <!-- SETTINGS -->
+    <string name="pref_vista"><u>Visualización Producto-Pedido...</u></string>
+    <string name="pref_stock">Actualizar Stock Automáticamente</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="btn_notifications">Notifications</string>
+    <!-- modificar ambos opciones y estados(la misma cantidad de items) -->
+    <string name="lb_date">Date: </string>
+    <string name="lb_priority">Priority: </string>
+    <!-- *************************************************************************************** -->
+    <!-- NOTIFICATIONS -->
+    <string name="lb_designation">Designation: </string>
+    <string name="lb_description">Description: </string>
+    <string name="lb_subject">Subject: </string>
+    <string name="lb_message">Message: </string>
+    <string name="lb_link">Link: </string>
+    <string name="lb_reply_notification">Reply</string>
+    <string name="new_notifications">%1$s new notifications</string>
+    <string name="lb_no_notification">You have no notifications.</string>
+    <string name="title_webview">Sigarra Browser</string>
+    <string name="description_browser">See in the Browser</string>
+    <string name="msg_authenticating">A autenticar no Sigarra</string>
+    <string name="title_mobile_printing">Mobile Print</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- WEBVIEW -->
+    <string name="mobile_print_error">Error while printing \n%1$s</string>
+    <string name="mobile_print_error_too_big">%1$s\n is too big to be sent.</string>
+    <string name="mobile_print_success">%1$s sent to printer.\nSee the result in your webmail.</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- Mobile Print -->
+    <string name="mobile_print_sending">Sending %1$s\n to printer.</string>
+    <string name="title_samba_uploader">Samba FEUP</string>
+    <string name="notification_uploader_content">Uploading\n%1$s</string>
+    <string name="notification_uploader_finished">Finished uploading \n%1$s</string>
+    <string name="notification_uploader_error_host_title">Error connecting</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- SAMBA UPLOADER -->
+    <string name="notification_uploader_error_host">Please be inside FEUP\'s network or connected through VPN.</string>
+    <string name="notification_uploader_error">Error while uploading\n%1$s</string>
+    <string name="notification_unsupported">Unsupported Operation</string>
+    <string name="action_view_profile">View profile</string>
+    <string name="action_view_schedule">View schedule</string>
+    <string name="bt_search">Search</string>
+    <string name="lb_student_code">Code:</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- CONTACTS INTEGRATION -->
+    <string name="lb_student_name">Name:</string>
+    <string name="lb_student_email">Email:</string>
+
+    <!-- *************************************************************************************** -->
+    <!-- ADVANCED SEARCH -->
+
+
+    <!-- STUDENTS -->
+    <string name="lb_student_first_year">First Year:</string>
+    <string name="hint_student_code">Code</string>
+    <string name="hint_student_name">Name</string>
+    <string name="hint_student_email">Email</string>
+    <string name="hint_student_first_year">First Year</string>
+    <string name="lb_employee_acronym">Acronym:</string>
+    <string name="hint_employee_acronym">Acronym</string>
+    <string name="lb_year">Year:</string>
+    <string name="hint_year">Year</string>
+
+    <!-- Employee -->
+    <string name="lb_room_name">Name:</string>
+    <string name="hint_room_name">Name</string>
+    <string name="title_advanced_search">Search</string>
+    <string name="title_advanced_search_students">Students Search</string>
+
+    <!-- Room -->
+    <string name="title_advanced_search_employees">Employees Search</string>
+    <string name="title_advanced_search_rooms">Room Search</string>
+    <string name="title_advanced_search_subjects">Subjects Search</string>
+    <string name="app_name">Fuerza Ventas</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="lblclientes">Clientes</string>
+    <string name="lblfacturas">Facturas</string>
+    <string name="lblproductos">Liquidacion de Cobranzas</string>
+    <string name="lblsincronizar">Sincro v2.4.2h</string>
+    <string name="lbldevoluciones">Devoluciones</string>
+    <string name="lbldepositos">Depósitos</string>
+    <string name="lblpedidosdia">Pedidos del día</string>
+    <string name="lblcobranzas">Cobranzas</string>
+    <string name="close">Cerrar</string>
+    <string name="reportes">Reportes</string>
+    <string name="lblSAE"><b>SAE</b></string>
+    <string name="search_select_point">Select</string>
+    <string name="search_position_current_location_search">Searching position&#8230;</string>
+    <string name="search_position_current_location_found">Position (found)</string>
+    <string name="search_position_address">Address&#8230;</string>
+
+    <string name="search_position_favorites">Favorites&#8230;</string>
+    <string name="search_position_undefined">Undefined</string>
+    <string name="search_position_fixed">Fixed</string>
+    <string name="search_position_current_location">Current position&#8230;</string>
+    <string name="search_position_map_view">Ver posicion mapa</string>
+    <string name="title_activity_main">Push Notifications</string>
+    <string name="error_config">Please set the %1$s constant and recompile the app.</string>
+
+    <string name="already_registered">Device is already registered on server.</string>
+    <string name="gcm_registered">From GCM: device successfully registered!</string>
+    <string name="gcm_unregistered">From GCM: device successfully unregistered!</string>
+    <string name="gcm_message">From GCM: you got message!</string>
+    <string name="gcm_error">From GCM: error (%1$s).</string>
+    <string name="gcm_recoverable_error">From GCM: recoverable error (%1$s).</string>
+    <string name="gcm_deleted">From GCM: server deleted %1$d pending messages!</string>
+    <string name="server_registering">Trying (attempt %1$d/%2$d) to register device on Demo Server.</string>
+    <string name="server_registered">From Demo Server: successfully added device!</string>
+    <string name="server_unregistered">From Demo Server: successfully removed device!</string>
+    <string name="server_register_error">Could not register device on Demo Server after %1$d attempts.</string>
+    <string name="server_unregister_error">Could not unregister device on Demo Server (%1$s).</string>
+    <string name="options_register">Register</string>
+    <string name="options_unregister">Unregister</string>
+    <string name="options_clear">Clear</string>
+    <string name="options_exit">Exit</string>
+    <string name="title_activity_inventario">Inventario</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_inventario_detalles">InventarioDetallesActivity</string>
+    <string name="title_activity_inventario_datos">InventarioDatosActivity</string>
+    <string name="title_activity_inventario_lista">InventarioListaActivity</string>
+    <string name="prompt_sucursales">Sucursales</string>
+    <string name="prompt_puntoEntrega">Punto de Entrega</string>
+    <string name="title_activity_ch_informacion_cliente">Informacion Cliente</string>
+    <string name="title_activity_ch_informacion_producto">Informacion Producto</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps_clientes">Map</string>
+    <string name="title_activity_maps">Map</string>
+    <string-array name="sync_intervals">
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>One day</item>
+        <item>One week</item>
+    </string-array>
+
+    <string-array name="sync_intervals_values">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+        <item>168</item>
+    </string-array>
+
+    <string-array name="pref_opciones_visualizacion">
+        <item>vista1</item>
+        <item>vista2</item>
+    </string-array>
+    <string-array name="pref_estados_visualizacion">
+        <item>true</item>
+        <item>false</item>
+    </string-array>
+    <string-array name="datos_spinner">
+        <item>Sin Datos</item>
+    </string-array>
+    <string-array name="datos_oc">
+        <item>000007090901</item>
+        <item>000007090902</item>
+        <item>000007090903</item>
+        <item>000007090904</item>
+    </string-array>
+    <string-array name="filtro_producto">
+        <item>Descripcion</item>
+        <item>Codigo</item>
+    </string-array>
+    <string-array name="datos_formaPago">
+        <item>Contado</item>
+        <item>Credito</item>
+    </string-array>
+    <string-array name="datos_banco">
+        <item>Scotiabank</item>
+        <item>BBVA</item>
+        <item>BCP</item>
+        <item>Banco de la Nación</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string-array name="datos_formaPago2">
+        <item>Contado</item>
+        <item>Deposito</item>
+        <item>Cheque</item>
+        <item>Transferencia</item>
+    </string-array>
+    <string-array name="datos_busc_clientes">
+        <item>Por Visita</item>
+        <item>Todos</item>
+    </string-array>
+    <string-array name="locales">
+        <item>01</item>
+        <item>02</item>
+    </string-array>
+
+</resources>

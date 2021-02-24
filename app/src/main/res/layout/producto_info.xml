@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_productos"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+
+    <!--  ListRow Left sied Thumbnail image -->
+    <LinearLayout android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/image_bg"
+        android:layout_marginRight="5dip">
+
+        <ImageView
+            android:id="@+id/productos_imagen"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/productosv3" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/producto_info_descripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Nombre producto"
+        android:textColor="#040404"
+        android:typeface="sans"
+        android:textSize="13sp"
+        android:textStyle="bold"/>
+
+
+
+    <TextView
+        android:id="@+id/producto_info_codrapido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/producto_info_descripcion"
+        android:layout_below="@+id/producto_info_descripcion"
+        android:text="Name: "
+        android:visibility="gone"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/producto_text_codpro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/producto_info_descripcion"
+        android:layout_alignLeft="@+id/producto_info_descripcion"
+        android:text="Codigo:"
+        android:textSize="13sp"
+        android:textColor="#10bcc9"/>
+
+    <TextView
+        android:id="@+id/producto_info_codpro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/producto_info_descripcion"
+        android:layout_toRightOf="@+id/producto_text_codpro"
+        android:layout_marginLeft="5dp"
+        android:text="0002"
+        android:textSize="13sp"
+        android:textColor="#10bcc9"/>
+
+    <!-- Rightend Arrow -->
+    <ImageView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow"
+        android:layout_marginRight="5dip"
+        android:gravity="right"
+        android:layout_alignParentRight="true"
+        />
+
+    <TextView
+        android:id="@+id/producto_info_stock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/producto_text_stock"
+        android:layout_alignBottom="@+id/producto_text_stock"
+        android:layout_alignLeft="@+id/producto_info_codpro"
+        android:text="x.x"
+        android:textColor="#343434"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/producto_text_stock"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/producto_text_codpro"
+        android:layout_toLeftOf="@+id/producto_info_codpro"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Stock:"
+        android:textColor="#343434"
+        android:textSize="13sp" />
+
+</RelativeLayout>

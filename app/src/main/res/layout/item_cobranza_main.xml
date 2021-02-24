@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="horizontal" >
+	
+    <TextView
+        android:id="@+id/item_cobranza_tv_codigo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:maxLines="2"
+        android:paddingBottom="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="7dp"
+        android:text="CodigoCliente"
+        android:textColor="#040404"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/lbl_total_cobrar_soles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/item_cobranza_tv_cliente"
+        android:paddingBottom="2dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:text="Soles     :"
+        android:textColor="#343434"
+        android:textSize="11dp" />
+         />
+
+   <TextView
+       android:id="@+id/txt_view_total_soles"
+       android:layout_width="100dp"
+       android:layout_height="wrap_content"
+       android:layout_below="@+id/item_cobranza_tv_cliente"
+       android:layout_marginLeft="8dp"
+       android:layout_toRightOf="@+id/lbl_total_cobrar_soles"
+       android:text="S/.12,345.678.910"
+       android:textColor="#343434"
+       android:textSize="11dp"
+       android:textStyle="bold" />
+   
+   <TextView
+       android:id="@+id/lbl_total_cobrar_dolares"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_alignParentLeft="true"
+       android:layout_below="@+id/lbl_total_cobrar_soles"
+       android:layout_marginTop="3dp"
+       android:paddingBottom="2dp"
+       android:paddingLeft="4dp"
+       android:text="Dólares :"
+       android:textColor="#343434"
+       android:textSize="11dp" />
+	
+	<TextView
+        android:id="@+id/txt_view_titulo_letra1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        
+        android:layout_toRightOf="@+id/txt_view_total_soles"
+        android:layout_below="@+id/item_cobranza_tv_cliente"
+       	android:layout_marginLeft="8dp"
+        android:text="Letras por entregar "
+        android:textColor="#343434"
+        android:textSize="11dp" />
+     
+
+	<TextView
+	    android:id="@+id/txt_view_titulo_letra2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/lbl_total_cobrar_soles"
+	    android:layout_toRightOf="@+id/txt_view_total_dolares"
+	    android:text="Letras por recoger "
+	    android:layout_marginLeft="8dp"
+	    android:textColor="#343434"
+	    android:layout_marginTop="3dp"
+	    android:textSize="11dp" />
+	    
+
+	
+	 
+	<TextView
+	    android:id="@+id/txt_view_total_dolares"
+	    android:layout_width="100dp"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBaseline="@+id/txt_view_titulo_letra2"
+	    android:layout_alignBottom="@+id/txt_view_titulo_letra2"
+	    android:layout_toLeftOf="@+id/txt_view_titulo_letra1"
+	    android:text="12345678910"
+	    android:layout_marginTop="3dp"
+	    android:textColor="#343434"
+	    android:textStyle="bold"
+	    android:textSize="11dp" />
+	 
+	 <TextView
+        android:id="@+id/txt_numero_documento"
+        android:layout_width="match_parent"
+        android:layout_marginTop="4dp"
+        android:layout_height="1dp"
+        android:layout_below="@+id/lbl_total_cobrar_dolares"
+        android:background="@color/black"
+        android:text="" />
+
+	 <TextView
+	     android:id="@+id/item_cobranza_tv_cliente"
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:layout_alignParentRight="true"
+	     android:layout_alignParentTop="true"
+	     android:layout_toRightOf="@+id/item_cobranza_tv_codigo"	     
+	     android:paddingBottom="4dp"
+	     android:paddingLeft="4dp"
+	     android:paddingRight="4dp"
+	     android:paddingTop="7dp"
+	     android:text="Nombre del Cliente"
+	     android:textColor="#040404"
+	     android:textSize="13sp"
+	     android:textStyle="bold"
+	     android:typeface="sans" />
+
+	 <ImageView
+	     android:id="@+id/imageView1"
+	     android:layout_width="wrap_content"
+	     android:layout_height="wrap_content"
+	     android:layout_alignParentRight="true"
+	     android:layout_centerVertical="true"
+	     android:paddingTop="6dp"
+	     android:src="@drawable/arrow" />
+	 
+</RelativeLayout>

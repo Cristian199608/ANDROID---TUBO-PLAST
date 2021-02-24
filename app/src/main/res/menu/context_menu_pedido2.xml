@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item 
+        android:id="@+id/CntxMenu_Eliminar_item_promo"
+        android:title="Eliminar Producto"
+        />
+    
+    <item 
+        android:id="@+id/CntxMenu_Editar_item_promo"
+        android:title="Editar Producto"/>
+    
+    <item 
+        android:id="@+id/CntxMenu_Editar_color_bono"
+        android:title="Bonificación Colores"/>
+
+</menu>

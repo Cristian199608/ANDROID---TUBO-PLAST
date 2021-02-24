@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/tv_codigoBonificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCantidad"
+        android:layout_alignParentTop="true"
+        android:maxLines="2"
+        android:text="Codigo"
+        android:textColor="#040404"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/tv_factorConversion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtUnidadMedida2"
+        android:layout_alignBottom="@+id/txtUnidadMedida2"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dp"
+        android:gravity="left"
+        android:text="0"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/txtUnidadMedida2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_unidadMedida"
+        android:layout_toLeftOf="@+id/tv_factorConversion"
+        android:gravity="left"
+        android:text="pack:"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_descripcionBonificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/tv_unidadMedida"
+        android:layout_toRightOf="@+id/tv_codigoBonificacion"
+        android:maxLines="2"
+        android:layout_marginLeft="5dp"
+        android:text="BONIF. Producto X"
+        android:textColor="#040404"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/tvPrecio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCantidad"
+        android:layout_below="@+id/tv_codigoBonificacion"
+        android:gravity="left"
+        android:text="S/."
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_precioBonificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvPrecio"
+        android:layout_alignBottom="@+id/tvPrecio"
+        android:layout_toRightOf="@+id/tvPrecio"
+        android:gravity="left"
+        android:text="Precio"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvCantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvPrecio"
+        android:text="Cantidad:"
+        android:textColor="#10bcc9"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_cantidadBonificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvCantidad"
+        android:layout_alignBottom="@+id/tvCantidad"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tvCantidad"
+        android:text="TextView"
+        android:textColor="#10bcc9"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_unidadMedida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_cantidadBonificacion"
+        android:layout_alignParentRight="true"
+        android:gravity="left"
+        android:text="CAJAS"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_pendientes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCantidad"
+        android:layout_below="@+id/tv_factorConversion"
+        android:background="@color/grey_800"
+        android:text="Bonificaciones pendientes: 5"
+        android:textColor="@color/grey_50"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_cantidadMaxima"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_pendientes"
+        android:layout_below="@+id/tv_pendientes"
+        android:background="@color/grey_800"
+        android:text="Cantidad maxima para bonificar: 10"
+        android:textColor="@color/grey_50"
+        android:visibility="gone" />
+
+</RelativeLayout>

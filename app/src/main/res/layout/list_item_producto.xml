@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:background="@drawable/gradient_bg_hover"> 
+        
+       <TextView 
+            android:id="@+id/adapter_txtCodigo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:typeface="sans"
+            android:textSize="14sp"
+            android:text="Cod"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="3dp"/>   
+        
+        <TextView 
+            android:id="@+id/adapter_txtDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000"
+            android:typeface="sans"
+            android:textSize="14sp"
+            android:text="Producto"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:background="@drawable/list_selector">
+        
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical">
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="Precio: (S/.)"/>
+        
+        <TextView 
+            android:id="@+id/adapter_txtPrecio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="prd"/>
+            
+            
+        </LinearLayout>
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+        
+        <TextView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="Cant:"/>
+        
+        <TextView 
+            android:id="@+id/adapter_txtUndmedida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="(PAQUETE): "/>
+        
+        <TextView 
+            android:id="@+id/adapter_txtCantidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="cant"/>
+                   
+        </LinearLayout>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:paddingLeft="10dp"
+        android:orientation="vertical">
+        
+        <TextView 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="Subtot:"/>
+        
+        <TextView 
+            android:id="@+id/adapter_txtSubtotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="13sp"
+            android:textColor="#424246"
+            android:text="subt"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:paddingLeft="4dp"
+        android:orientation="vertical">
+        
+        <TextView 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#424246"
+            android:text="Percepc:"/>
+        
+        <TextView 
+            android:id="@+id/adapter_txtPercepcion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#424246"
+            android:text="percep"/>
+        
+    </LinearLayout>
+    
+    </LinearLayout>
+
+</LinearLayout>

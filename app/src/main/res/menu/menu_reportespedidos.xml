@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_reportespedidos"
+        android:icon="@drawable/ic_send"
+        android:title="Enviar Pendientes">
+    </item>
+    <item
+        android:id="@+id/menu_reportespedidos_verificar"
+        android:icon="@drawable/ic_alert"
+        android:title="Verificar con Servidor">
+    </item>
+    <item
+        android:id="@+id/menu_reportespedidos_buscar"
+        android:icon="@drawable/ic_search"
+        android:title="Buscar">
+    </item>
+
+</menu>

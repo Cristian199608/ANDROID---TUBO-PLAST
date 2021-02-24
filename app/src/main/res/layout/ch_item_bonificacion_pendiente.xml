@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:orientation="vertical"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/tv_codigoSalida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCantidad"
+        android:layout_alignParentTop="true"
+        android:maxLines="2"
+        android:text="Codigo"
+        android:textColor="#040404"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/tv_factorConversion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txtUnidadMedida2"
+        android:layout_alignBottom="@+id/txtUnidadMedida2"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="5dp"
+        android:gravity="left"
+        android:text="0"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/txtUnidadMedida2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_unidadMedida"
+        android:layout_toLeftOf="@+id/tv_factorConversion"
+        android:gravity="left"
+        android:text="pack:"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_descripcionSalida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/tv_unidadMedida"
+        android:layout_toRightOf="@+id/tv_codigoSalida"
+        android:maxLines="2"
+        android:layout_marginLeft="5dp"
+        android:text="BONIF. Producto X"
+        android:textColor="#040404"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/tvPromocion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCantidad"
+        android:layout_below="@+id/tv_codigoSalida"
+        android:layout_toLeftOf="@+id/txtUnidadMedida2"
+        android:gravity="left"
+        android:text="PROMOCION X 3x2"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tvCantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvPromocion"
+        android:text="Cantidad:"
+        android:textColor="#10bcc9"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_saldoPendiente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvCantidad"
+        android:layout_alignBottom="@+id/tvCantidad"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tvCantidad"
+        android:text="TextView"
+        android:textColor="#10bcc9"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_unidadMedida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_saldoPendiente"
+        android:layout_alignParentRight="true"
+        android:gravity="left"
+        android:text="CAJAS"
+        android:textColor="#343434"
+        android:textSize="14sp" />
+
+</RelativeLayout>

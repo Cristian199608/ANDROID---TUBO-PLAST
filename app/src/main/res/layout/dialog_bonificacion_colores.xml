@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llBonif"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical" >
+<!--    solo se usa cuando se requiera un titulo encabezado, por defecto es oculto-->
+    <TextView
+        android:id="@+id/txt_cantidad_colores"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="Cantidad colores disponibles"
+        android:textColor="@color/blue_500"
+        android:textSize="17sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+     />
+ 
+    <ListView
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="#ffffff"
+            android:id="@+id/lv_bonificacionColores"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            >
+        </ListView>
+
+</LinearLayout>

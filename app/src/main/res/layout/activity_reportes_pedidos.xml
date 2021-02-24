@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <ListView
+        android:id="@+id/lv_reportes_pedidos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+    <!--
+ <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="10dp"
+      android:layout_alignParentBottom="true"
+      android:orientation="horizontal">
+
+
+      <Button
+          android:id="@+id/reportes_pedido_btn_peso"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+          android:text="Peso: 1000 Kg"
+           />
+
+      <Button android:id="@+id/reportes_pedido_btn_total"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:text="Total: S/.2323"   />
+       </LinearLayout>
+       -->
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:background="@color/color_semi_transparente"
+            android:orientation="vertical" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_semi_transparente"
+                android:orientation="horizontal" >
+                <TextView
+                    android:id="@+id/rpt_pedidos_txtTotal_pedidos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="Cantidad: 9"
+                    android:textColor="#FFF" />
+                <TextView
+                    android:id="@+id/rpt_pedidos_txtTotal_peso"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="Peso:(Kg)"
+                    android:textColor="#FFF" />
+
+                <TextView
+                    android:id="@+id/rpt_pedidos_txtTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:text="Total:(S/.)"
+                    android:textColor="#FFF" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/color_semi_transparente"
+                android:orientation="horizontal" >
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".66">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="P. Datos: "
+                        android:textColor="#FFF" />
+
+                    <TextView
+                        android:id="@+id/tv_paqueteDatos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="0 bytes"
+                        android:textColor="#FFF" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33">
+
+                    <TextView
+                        android:id="@+id/rpt_pedidos_tvTotalDolares"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="Total:($/.)"
+                        android:textColor="#FFF" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <ImageView
+            android:background="@color/teal_500"
+            android:onClick="poputMenu"
+            android:src="@drawable/ic_tres_puntos_white"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+</RelativeLayout>

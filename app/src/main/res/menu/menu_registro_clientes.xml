@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+<item android:id="@+id/nuevoCliente" android:title="Nuevo Cliente"
+      android:icon="@drawable/icon_add_user_48"
+      android:showAsAction="always"></item>
+
+<item android:id="@+id/enviarPendientes" android:title="Enviar Pendientes"
+      android:icon="@drawable/ic_send"
+      android:showAsAction="never"></item>
+ 
+</menu>

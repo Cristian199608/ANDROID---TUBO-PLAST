@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal" >
+
+                <RadioGroup
+                    android:id="@+id/rgroup_busqueda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/rbtn_descripcion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="Descrip" />
+
+                    <RadioButton
+                        android:id="@+id/rbtn_proveedor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        android:text="Codigo Proveedor" />
+
+                    <RadioButton
+                        android:id="@+id/rbtn_codigoProducto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:checked="false"
+                        android:maxLines="2"
+                        android:text="Codigo producto" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/edt_busqueda"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/edittext_background"
+                    android:hint="Descripcion del producto"
+                    android:imeOptions="actionSearch"
+                    android:padding="8dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageButton
+                        android:id="@+id/btn_buscar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/buscar_boton" />
+
+                    <ImageButton
+                        android:id="@+id/productolyt_btnBonificacion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/icon_bonus_32" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="visible" >
+                <!--
+                <Switch
+                    android:id="@+id/swt_afecto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:text="Afecto a percepción:"
+                    android:textOff="NO"
+                    android:textOn="SI" />
+                 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Afecto a percepción:"
+                    android:layout_margin="10dp"
+                    />
+
+                <ToggleButton
+                    android:id="@+id/swt_afecto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:clickable="false"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:text="Afecto a percepción:"
+                    android:textOff="NO"
+                    android:textOn="SI" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                >
+
+                <TableRow
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <LinearLayout
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:background="@color/blue_grey_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".5"
+                            android:textColor="@color/white"
+                            android:text="Precio Original PVP:" />
+
+                        <TextView
+                            android:id="@+id/tv_monedaPrecio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="S/." />
+
+                        <EditText
+                            android:id="@+id/productolyt_edtPreciount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".1"
+                            android:textColor="@color/white"
+                            android:gravity="center_horizontal"
+                            android:backgroundTint="@color/blue_grey_400"
+                            android:background="@drawable/edittext_rounded_corners"
+                            android:enabled="false"
+                            android:padding="3dp"
+                            android:text="0.000"
+                            android:layout_margin="3dp"
+                            android:singleLine="true" />
+
+                        <CheckBox
+                            android:id="@+id/check_precio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:buttonTint="@color/red_200"
+                            android:button="@drawable/selector_checkbox_lock"/>
+
+                    </LinearLayout>
+                </TableRow>
+
+                <TableRow
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="Cantidad:" />
+
+                            <EditText
+                                android:id="@+id/productolyt_edtCantidad"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/edittext_background"
+                                android:inputType="number"
+                                android:padding="8dp"
+                                android:imeOptions="actionGo"
+                                android:singleLine="true" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="Unidad Medida" />
+
+                            <Spinner
+                                android:id="@+id/productolyt_spnUndmed"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:singleLine="true"
+                                android:entries="@array/datos_spinner" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </TableRow>
+
+                <TableRow
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Descuento %:" />
+
+                            <EditText
+                                android:id="@+id/edt_descuento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/edittext_background"
+                                android:enabled="false"
+                                android:inputType="numberDecimal"
+                                android:padding="7dp"
+                                android:singleLine="true"
+                                android:text="" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <Button
+                                android:id="@+id/btn_consultarProducto"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:drawableLeft="@drawable/icon_refresh_32"
+                                android:text="Precio Lista  0.000" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </TableRow>
+
+
+
+
+                <TableRow
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" >
+
+                    <LinearLayout
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:background="@color/blue_grey_100"
+                        android:orientation="horizontal" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@color/grey_800"
+                                android:text="Dscto. PVP:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_descuentoPVP"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="xxxxxx.xx"
+                                android:textColor="@color/grey_900"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@color/grey_800"
+                                android:text="Precio sin IGV:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_precioSinIGV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="xxxxxx.xx"
+                                android:textColor="@color/grey_900"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:orientation="vertical" >
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@color/grey_800"
+                                android:text="Precio inc. IGV:"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_precioIncIGV"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="xxxxxx.xx"
+                                android:textColor="@color/grey_900"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+                </TableRow>
+            </TableLayout>
+
+
+            <View
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:minHeight="2dp"
+                android:background="@color/grey_400"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/productolyt_btnAgregar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/boton_ingresar"
+                    android:text="Agregar"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/productolyt_btnCancelar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/boton_ingresar"
+                    android:text="Cancelar"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- PRECIOS -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/blue_grey_500"
+                android:orientation="horizontal"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="PV_inicial"
+                    android:textColor="@color/grey_200" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Precio_sin_igv"
+                    android:textColor="@color/grey_200" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Precio Unitario"
+                    android:textColor="@color/grey_200" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal" >
+
+                <ListView
+                    android:id="@+id/lv_consultaPrecios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:isScrollContainer="false" >
+                </ListView>
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:background="@color/grey_800" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="Fecha Ultima Venta:" />
+
+                <TextView
+                    android:id="@+id/tv_fechaUltimaVenta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="--/--/--" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="Precio Ultima Venta:" />
+
+                <TextView
+                    android:id="@+id/tv_precioUltimaVenta"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="0.00" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/blue_grey_500"
+                android:orientation="horizontal"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Almacen"
+                    android:textColor="@color/grey_200" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Stock x Confirmar"
+                    android:textColor="@color/grey_200" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Stock Disponible"
+                    android:textColor="@color/grey_200" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal" >
+
+                <ListView
+                    android:id="@+id/lv_consultaStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:isScrollContainer="false" >
+                </ListView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:textColor="@color/grey_900"
+                    android:textStyle="bold"
+                    android:text="Total:" />
+
+                <TextView
+                    android:id="@+id/tv_totalStockConfirmar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:textColor="@color/grey_900"
+                    android:textStyle="bold"
+                    android:text="00.00" />
+
+                <TextView
+                    android:id="@+id/tv_totalStockDisponible"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:textColor="@color/grey_900"
+                    android:textStyle="bold"
+                    android:text="00.00" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

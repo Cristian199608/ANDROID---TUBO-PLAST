@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/label_serie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/tv_fecha"
+        android:text="Serie:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/label_numero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tv_serie"
+        android:text="Numero:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_fecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_fecha"
+        android:layout_alignBottom="@+id/label_fecha"
+        android:layout_toRightOf="@+id/label_fecha"
+        android:text="00/00/000 00:00:00 a.m." />
+
+    <TextView
+        android:id="@+id/tv_tipo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_tipo"
+        android:layout_alignBottom="@+id/label_tipo"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/label_tipo"
+        android:text="FA" />
+
+    <TextView
+        android:id="@+id/tv_numero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/label_cantidad"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/label_numero"
+        android:text="00000000" />
+
+    <TextView
+        android:id="@+id/label_tipo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/label_cantidad"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tv_fecha"
+        android:text="Tipo:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_cantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_cantidad"
+        android:layout_alignBottom="@+id/label_cantidad"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/label_cantidad"
+        android:text="0" />
+
+    <TextView
+        android:id="@+id/label_cantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/label_serie"
+        android:layout_below="@+id/label_serie"
+        android:text="Cantidad:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_lote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_lote"
+        android:layout_alignBottom="@+id/label_lote"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/label_lote"
+        android:text="0000000000" />
+
+    <TextView
+        android:id="@+id/label_fecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/label_cantidad"
+        android:text="Fecha:"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/label_lote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_cantidad"
+        android:layout_alignBottom="@+id/tv_cantidad"
+        android:layout_alignLeft="@+id/label_numero"
+        android:text="Lote:"
+        android:textColor="@color/indigo_500"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_serie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_cantidad"
+        android:layout_alignRight="@+id/tv_cantidad"
+        android:text="F00" />
+
+</RelativeLayout>

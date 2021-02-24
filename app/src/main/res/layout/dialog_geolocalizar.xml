@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@android:style/Theme.Holo.Light" >
+
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@color/green_A700"
+        android:elevation="3dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_toStartOf="@+id/poputMenu"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_centerVertical="true"
+                android:id="@+id/imgAddGeo"
+                android:src="@drawable/mapa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_toEndOf="@+id/imgAddGeo"
+                android:id="@+id/tv_geo_cabezado"
+                android:layout_alignParentTop="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="Geolocalizar Cliente"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_cliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/imgAddGeo"
+                android:layout_below="@+id/tv_geo_cabezado"
+                android:gravity="center|left"
+                android:paddingBottom="5dp"
+                android:text="Nombre del Cliente"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:orientation="vertical" >
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Se guardarán los siguientes datos:"
+            android:layout_marginBottom="8dp" />
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" >
+
+            <TableRow
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:padding="5dp"
+                    android:text="Actual\nLocalizacion:" />
+
+                <TextView
+                    android:id="@+id/tv_localizacionActual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:padding="5dp"
+                    android:text="" />
+                <TextView
+                    android:paddingBottom="5dp"
+                    android:id="@+id/btnVerMapsGeo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edit_text_acerca_cliente"
+                    android:textColor="@color/teal_500"
+                    android:layout_marginEnd="4dp"
+                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:text="Ver"/>
+            </TableRow>
+
+            <TableRow
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/labelLocalizacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:padding="5dp"
+                    android:text="Nueva\nLocalizacion:" />
+
+                <TextView
+                    android:id="@+id/tv_localizacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:padding="5dp"
+                    android:text="" />
+                <TextView
+                    android:paddingBottom="5dp"
+                    android:id="@+id/btnVerMapsSinGeo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edit_text_acerca_cliente"
+                    android:textColor="@color/blue_500"
+                    android:layout_marginEnd="4dp"
+                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:gravity="center"
+                    android:text="Ver"/>
+            </TableRow>
+
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/labelDireccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:text="Dirección:" />
+
+                <Spinner
+                    android:id="@+id/spn_direccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="false"
+                    android:spinnerMode="dialog" />
+
+            </TableRow>
+
+
+        </TableLayout>
+    </LinearLayout>
+
+</RelativeLayout>

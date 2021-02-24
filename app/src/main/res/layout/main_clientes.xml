@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_clientes_ly"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <Spinner
+            android:id="@+id/main_clientes_spn_seleccion"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/tab_search_panel_selector"
+            android:visibility="gone"
+
+            android:singleLine="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/main_clienteslyt_btnScan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:src="@drawable/barcode_icon"
+            android:enabled="false"/>
+
+    </LinearLayout>
+
+    <!-- Editext for Search -->
+    <EditText android:id="@+id/inputSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Buscar Clientes"
+        android:inputType="textVisiblePassword"/>
+
+    <ListView
+        android:id="@+id/lv_clientes"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+
+</LinearLayout>

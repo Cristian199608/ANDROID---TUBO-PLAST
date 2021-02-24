@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:paddingEnd="5dp"
+    >
+
+    <!--  ListRow Left sied Thumbnail image -->
+    <LinearLayout android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp">
+        <TextView
+            android:id="@+id/txt_flag_pedido"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:background="@color/grey_600"
+            android:text=" " />
+
+        <ImageView
+            android:id="@+id/item_cliente_iv_foto"
+            android:layout_gravity="center"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/icon_cliente_gris"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content">
+
+
+
+                <!-- Title Of Song-->
+                <TextView
+                    android:id="@+id/tv_cliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="Rihanna Love the way lie"
+                    android:textColor="#040404"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:typeface="sans" />
+
+                <!-- Artist Name -->
+                <TextView
+                    android:id="@+id/tv_ruc"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_cliente"
+                    android:textColor="@color/grey_700"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="1dp"
+                    android:text="Just gona stand there and ..." />
+
+                <!-- Rightend Duration -->
+
+
+                <TextView
+                    android:id="@+id/list_item_cliente_fecha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_ruc"
+                    android:layout_alignLeft="@+id/tv_ruc"
+                    android:text="fecha: 12/12/12"
+                    android:textColor="@color/grey_600"
+                    android:textSize="12sp"
+                    android:textStyle="normal"/>
+
+                <TextView
+                    android:id="@+id/list_item_cliente_monto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_ruc"
+                    android:layout_toRightOf="@+id/list_item_cliente_fecha"
+                    android:layout_marginLeft="10dp"
+                    android:text="S/.1000"
+                    android:textSize="12sp"
+                    android:textColor="#343434"
+                    android:textStyle="bold"/>
+
+
+                <TextView
+                    android:id="@+id/list_item_direccion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_ruc"
+                    android:text="prueba"/>
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+
+                <TextView
+                    android:id="@+id/list_item_cliente_observacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/tv_cliente"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:gravity="right"
+                    android:maxLines="2"
+                    android:text="OBSERVACION"
+                    android:textColor="@color/color_red"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <!-- Rightend Arrow -->
+                <ImageView
+                    android:id="@+id/flecha"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/arrow"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/item_fecha_visitado"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="Visitado: 2021/02/25"
+                android:gravity="start|center"
+                android:layout_gravity="center"
+                android:textColor="@color/orange_700"
+                android:textSize="12sp"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/item_fecha_programada"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:text="Por Visitar: 2021/02/25"
+                android:gravity="end|center"
+                android:layout_gravity="center"
+                android:textColor="@color/teal_700"
+                android:textSize="12sp"
+                android:textStyle="normal"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+
+
+
+
+

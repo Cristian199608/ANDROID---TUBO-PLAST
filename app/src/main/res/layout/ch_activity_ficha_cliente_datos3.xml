@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:orientation="vertical" >
+       
+    <EditText 
+        android:id="@+id/edt_filtroTransporte"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Filtro"/>
+    
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+	    <TextView 
+	        android:id="@+id/tv_sucursal"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:text="Sucursal"
+	        android:layout_weight=".35"/>
+		<TextView 
+	        android:id="@+id/tv_tipo"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:text="Tipo"
+	        android:layout_weight=".3"/>
+		<TextView 
+	        android:id="@+id/tv_transporte"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:text="Transporte"
+	        android:layout_weight=".35"/>
+	</LinearLayout>
+	
+	<ListView 
+	    android:id="@+id/lv_transporte"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content">	    
+	</ListView>
+</LinearLayout>

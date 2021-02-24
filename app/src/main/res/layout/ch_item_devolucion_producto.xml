@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="1dp"
+    android:paddingTop="5dp" >
+    
+    <TextView
+        android:id="@+id/tv_motivo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView5"
+        android:layout_alignBottom="@+id/textView5"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textView5"
+        android:gravity="left"
+        android:text="-----------" 
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/tv_tipoDocumento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView4"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textView4"
+        android:gravity="center"
+        android:text="xxxxxx"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/tv_numero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView6"
+        android:layout_alignBottom="@+id/textView6"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textView6"
+        android:gravity="center"
+        android:text="xxxxx"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/tv_descripcionD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_toRightOf="@+id/tv_codigoProductoD"
+        android:text="Producto 1"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:textColor="@color/grey_900"
+        android:textSize="@dimen/tittle_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtEstadoCobranza"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_codigoProductoD"
+        android:text="Serie:"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_codigoProductoD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="0001"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:textColor="@color/grey_900"
+        android:textSize="@dimen/tittle_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_serie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tv_cantidadDevolucion"
+        android:layout_below="@+id/tv_descripcionD"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/txtEstadoCobranza"
+        android:gravity="right"
+        android:text="xxxxxx"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_descripcionD"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tv_serie"
+        android:text="Numero:"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_descripcionD"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/tv_numero"
+        android:text="Tipo Doc:"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/txtEstadoCobranza"
+        android:maxLines="1"
+        android:text="Cantidad:"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_cantidadDevolucion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_serie"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textView1"
+        android:gravity="right"
+        android:text="XXXX"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/tv_loteDevolucion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_numero"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textView2"
+        android:gravity="center"
+        android:text="XXXXXX"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView6"
+        android:layout_below="@+id/textView6"
+        android:text="Lote:"
+        android:textColor="@color/indigo_500"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:text="Motivo:"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_motivo"
+        android:text="Expectativa:"
+        android:textSize="@dimen/text_item_pedido_producto"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_expectativa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_motivo"
+        android:layout_marginLeft="3dp"
+        android:layout_toRightOf="@+id/textViewex"
+        android:gravity="left"
+        android:text="-----------"
+        android:textSize="@dimen/text_item_pedido_producto" />
+
+</RelativeLayout>

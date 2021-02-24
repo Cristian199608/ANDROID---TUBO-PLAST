@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:weightSum="4">
+  <LinearLayout
+    android:id="@+id/ll1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="2dip" 
+    android:weightSum="5">
+  
+
+     <!--   <Button
+            android:id="@+id/btn_fechaPedidoEntN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/fecha_32"
+            android:text="Fecha"
+            android:textSize="10sp" />--> 
+
+        <EditText
+            android:id="@+id/edt_fechaPedidoEntN"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint=""
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+	    <Spinner
+	        android:id="@+id/sp_TurnoPedidoEntN"
+	        android:layout_width="0dp"
+	        android:layout_height="50dp"
+	        android:layout_weight="1.7"
+	        android:layout_gravity="center_vertical"
+	        android:textSize="16sp"
+	        android:textStyle="bold"
+	        android:layout_marginLeft="-3dp"
+	        android:layout_marginRight="-4dp"
+	        
+	      >
+	    </Spinner>
+	    
+	    <EditText
+	        android:id="@+id/edt_CantPedidoEntN"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"   
+	        android:layout_gravity="center_vertical" 
+	        android:ems="10"
+	        android:text="0"
+	        android:textSize="16sp"
+	        android:textStyle="bold"
+	        android:layout_weight="1"
+	        android:inputType="number" />
+	    
+	    <Button
+            android:text="OK"
+            android:id="@+id/bt_EntregaOK"
+          	android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+   		>
+        </Button>
+
+
+	<!--  -->
+
+</LinearLayout>
+
+  <LinearLayout
+      	android:visibility="gone"
+      	android:layout_below="@+id/ll1"
+	    android:id="@+id/item_cant_LL4"	   
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:padding="2dip" 
+	    android:weightSum="3">
+	    <LinearLayout
+	        
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:gravity="center_vertical" >
+	       	<LinearLayout 
+	       	    android:layout_width="wrap_content"
+	       	    android:layout_height="wrap_content"
+	       	    android:orientation="vertical"
+	       	   android:gravity="center_vertical">
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Cantidad"
+	            android:textSize="10sp" />
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Total"
+	            android:textSize="10sp" />	       	    
+	       	</LinearLayout>
+	        
+	        <EditText
+	            android:editable="false"
+	            android:textColor="#000000"
+	            android:id="@+id/edt_itemCantTotal"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"	            
+	            android:textSize="14sp"/>
+		 </LinearLayout>
+	 	 <LinearLayout
+	        
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:gravity="center_vertical" >
+	        <LinearLayout 
+	       	    android:layout_width="wrap_content"
+	       	    android:layout_height="wrap_content"
+	       	    android:orientation="vertical"
+	       	    android:gravity="center_vertical">
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Cantidad"
+	            android:textSize="10sp" />
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Ingresada"
+	            android:textSize="10sp" />	       	    
+	       	</LinearLayout>
+	        <EditText
+	            android:editable="false"
+	            android:textColor="#000000"
+	            android:id="@+id/edt_itemCantIng"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="14sp"/>
+		 </LinearLayout>
+	  	<LinearLayout
+	        
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:gravity="center_vertical" >
+	        <LinearLayout 
+	       	    android:layout_width="wrap_content"
+	       	    android:layout_height="wrap_content"
+	       	    android:orientation="vertical"
+	       	    android:gravity="center_vertical">
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Cantidad"
+	            android:textSize="10sp" />
+	       	    <TextView	            
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Faltante"
+	            android:textSize="10sp" />	       	    
+	       	</LinearLayout>
+	        <EditText
+	            android:editable="false"
+	            android:textColor="#000000"
+	            android:id="@+id/edt_itemCantFalt"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="14sp"/>
+		 </LinearLayout>
+	</LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:gravity="center" >
+
+
+
+        <LinearLayout
+            android:layout_margin="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="Secuencia:"
+                    android:textSize="14sp"/>
+
+                <EditText
+                    android:id="@+id/deposito_edt_secuencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:singleLine="true"
+                    android:enabled="false"
+                    android:gravity="left"
+                    android:background="@drawable/edittext_rounded_corners"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:textSize="14sp"
+                    android:text="Banco:"/>
+
+                <Spinner
+                    android:id="@+id/deposito_spn_banco"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tab_search_panel_selector"
+                    android:layout_weight="2"
+                    android:singleLine="true"
+                    android:entries="@array/datos_banco"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp"
+                >
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="Nro cuenta:"
+                    android:textSize="14sp"/>
+                <Spinner
+                    android:id="@+id/deposito_spn_cta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:singleLine="true"
+                    android:background="@drawable/tab_search_panel_selector"
+                    android:entries="@array/datos_banco"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:layout_margin="3dp">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginTop="10dp"
+                    android:text="Fecha Pago"
+                    android:textSize="14sp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_weight="2">
+
+                    <EditText
+                        android:id="@+id/deposito_edt_fecha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusableInTouchMode="false"
+                        android:hint="Fecha"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:background="@drawable/edittext_rounded_corners"/>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="48dip"
+                        android:onClick="Mostrar_date"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:paddingRight="6dp"
+                        android:drawableRight="@drawable/fecha"
+                        android:drawablePadding="0dip"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="Nro operacion:"
+                    android:textSize="14sp"/>
+                <EditText
+                    android:id="@+id/deposito_edt_noperacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:enabled="true"
+                    android:singleLine="true"
+                    android:numeric="integer"
+                    android:background="@drawable/edittext_rounded_corners"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginTop="10dp"
+                    android:text="Moneda"
+                    android:textSize="14sp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal" >
+
+                    <RadioGroup
+                        android:id="@+id/deposito_rb_moneda"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:orientation="horizontal"
+                        >
+
+                        <RadioButton
+                            android:id="@+id/rb_soles"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:enabled="false"
+                            android:text="Soles" />
+                        <RadioButton
+                            android:id="@+id/rb_dolares"
+                            android:layout_width="wrap_content"
+                            android:enabled="false"
+                            android:layout_height="wrap_content"
+                            android:text="Dolar" />
+
+                    </RadioGroup>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="3dp">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="Monto:"
+                    android:textSize="14sp"/>
+
+                <EditText
+                    android:id="@+id/deposito_edt_monto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:singleLine="true"
+                    android:inputType="numberDecimal"
+                    android:gravity="left"
+                    android:background="@drawable/edittext_rounded_corners"/>
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/depositos_btnAgregar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Agregar"
+                    android:textColor="#FFF"
+                    android:background="@drawable/boton_ingresar"
+                    android:layout_margin="4dp"/>
+
+                <Button
+                    android:id="@+id/depositos_btnCancelar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cancelar"
+                    android:textColor="#FFF"
+                    android:background="@drawable/boton_ingresar"
+                    android:layout_margin="4dp"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>

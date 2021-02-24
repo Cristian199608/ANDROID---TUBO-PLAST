@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"    
+    android:layout_height="match_parent">
+    
+    <LinearLayout 
+        android:id="@+id/texto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <ImageView 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:src="@drawable/cancel_48"/>
+        
+        <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Motivo de no venta:"
+        android:typeface="monospace"
+        android:textSize="22sp"/>
+        
+    </LinearLayout>
+    
+      <View 
+          android:id="@+id/view_tipoProducto"
+          android:layout_width="wrap_content"
+          android:layout_height="1.0dp"
+          android:layout_marginTop="5dp"
+          android:layout_marginBottom="5dp"
+          android:layout_below="@+id/texto"
+          android:background="#000"/>
+      
+      <LinearLayout
+          android:id="@+id/lista"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:layout_below="@+id/view_tipoProducto"
+          android:layout_above="@+id/botones">
+        
+          <ListView
+          android:id="@+id/dialog_motivo_noventa_lstNo_venta"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_margin="5dp" />
+          
+      </LinearLayout>
+     
+      
+      <View 
+          android:id="@+id/view2"
+          android:layout_width="wrap_content"
+          android:layout_height="1.0dp"
+          android:layout_marginTop="5dp"
+          android:layout_marginBottom="5dp"
+          android:layout_above="@+id/botones"
+          android:background="#000"/>
+        
+      <LinearLayout 
+          android:id="@+id/botones"
+          android:layout_alignParentBottom="true"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="3dp"
+          android:orientation="horizontal">
+          
+          <Button 
+              android:id="@+id/dialog_motivo_noventa_btnAceptar"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="Aceptar"/>
+          
+          <Button 
+              android:id="@+id/dialog_motivo_noventa_btnCancelar"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="Cancelar"/>
+          
+      </LinearLayout>
+            
+</RelativeLayout>

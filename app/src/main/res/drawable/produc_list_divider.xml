@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <bitmap
+        
+            android:tileMode="repeat" />
+    </item>
+    <item>
+        <bitmap
+           />
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/middle"
+            android:gravity="bottom|fill_horizontal"/>
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/left"
+            android:gravity="left|bottom"/>
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/rigth"
+            android:gravity="right|bottom"/>
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/left"
+            android:gravity="left|bottom"/>
+    </item>
+    <item>
+        <bitmap
+            android:src="@drawable/rigth"
+            android:gravity="right|bottom"/>
+    </item>
+</layer-list>
