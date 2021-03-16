@@ -582,7 +582,7 @@
                                         android:focusable="false"
                                         android:textSize="14dp"
                                         android:padding="10dp"
-                                        android:hint="aaaa-mm-dd"
+                                        android:hint="aaaa-mm-dd hh:mm (24 horas)"
                                         android:text=""/>
 
                                 </LinearLayout>

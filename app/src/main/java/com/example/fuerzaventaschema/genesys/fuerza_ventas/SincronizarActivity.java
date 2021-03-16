@@ -1162,8 +1162,10 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     soap_manager.Sync_tabla_turno(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("20");
                                     publishProgress("33");
+                                    //SERVER 212
                                     soap_manager.Sync_tabla_clientexVendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD);
                                     publishProgress("40");
+                                    //SERVER 212
                                     soap_manager.Sync_tabla_ZnfProgramacionClientes(codven, servidorBD, nombreBD,usuarioBD, contrasenaBD);
                                     publishProgress("50");
                                     soap_manager.Sync_tabla_locales(servidorBD,nombreBD, usuarioBD, contrasenaBD);
@@ -1174,6 +1176,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("85");
                                     soap_manager.Sync_tabla_lugarEntrega(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("90");
+                                    //SERVER 212
                                     soap_manager.Sync_tabla_direccion_cliente(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD);
                                     publishProgress("100");
                                 } catch (Exception e) {
@@ -1194,6 +1197,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("35");
                                     soap_manager.Sync_tabla_Ruta(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
+                                    //SERVER 212
                                     soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("59");
                                     soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
@@ -1226,6 +1230,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                 try {
                                     publishProgress("1");
+                                    //SERVER .212
                                     soap_manager.Sync_tabla_producto(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("10");
                                     soap_manager.Sync_tabla_grupoProducto(servidorBD, nombreBD, usuarioBD,contrasenaBD);
@@ -1250,9 +1255,14 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     soap_manager.Sync_tabla_unidad_medida(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("62");
                                     soap_manager.Sync_tabla_productoNoDescuento(servidorBD, nombreBD, usuarioBD,contrasenaBD);
-                                    //soap_manager.Sync_tabla_politica_cliente(servidorBD, nombreBD, usuarioBD,contrasenaBD);
-                                    //publishProgress("68");
-                                    //soap_manager.Sync_tabla_politica_precio2(codven, servidorBD, nombreBD,usuarioBD, contrasenaBD);
+                                    publishProgress("75");
+                                    //SERVER .212
+                                    soap_manager.Sync_tabla_politica_cliente(servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    publishProgress("80");
+                                    //soap_manager.Sync_tabla_politica_precio1(servidorBD_ERP, nombreBD_ERP, usuarioBD_ERP, contrasenaBD_ERP);
+//                                    publishProgress("75");
+                                    //SERVER .212
+                                    soap_manager.Sync_tabla_politica_precio2(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("95");
                                     //soap_manager.Sync_tabla_politica_vendedor(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     soap_manager.Sync_Bonificacion_Colores(servidorBD, nombreBD, usuarioBD,contrasenaBD);

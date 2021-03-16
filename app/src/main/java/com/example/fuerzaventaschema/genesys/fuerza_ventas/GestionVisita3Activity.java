@@ -46,6 +46,7 @@ import com.example.fuerzaventaschema.genesys.datatypes.DBclasses;
 import com.example.fuerzaventaschema.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
 import com.example.fuerzaventaschema.genesys.hardware.ObtenerLocalizacion2;
 import com.example.fuerzaventaschema.genesys.service.ConnectionDetector;
+import com.example.fuerzaventaschema.genesys.util.CustomDateTimePicker;
 import com.example.fuerzaventaschema.genesys.util.CustomTimPicker;
 import com.example.fuerzaventaschema.genesys.util.GlobalFunctions;
 import com.example.fuerzaventaschema.genesys.util.GlobalVar;
@@ -474,19 +475,49 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     }
 
 
+    private void CustomDateTimePicker(){
+
+        final String CERO = "0";
+        final Calendar c = Calendar.getInstance();
+        final int hora = c.get(Calendar.HOUR_OF_DAY);
+        final int minuto = c.get(Calendar.MINUTE);
+
+        CustomDateTimePicker recogerHora=new CustomDateTimePicker(this, new CustomDateTimePicker.OnTimeSetListener() {
+            @Override
+            public String onDateTimeSet(Calendar myCalendar) {
+
+                String mensaje="";
+                try {
+
+                    String myFormat = "yyyy-MM-dd HH:mm"; //In which you need put here
+                    SimpleDateFormat sdformat = new SimpleDateFormat(myFormat, Locale.US);
+//VARIABLES
+                    et_fecha_proximavisita.setText(sdformat.format(myCalendar.getTime()));
+
+                }catch (Exception e){
+                    mensaje="No se ha podido validar lo hora de la programación. Verifique que hayas ingresado valores correctos.";
+                }
+                return mensaje;
+            }
+        },hora, minuto, true, true);
+        recogerHora.Show();
+    }
+
     private void DatePicketCustom(){
-
-        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-
-        DatePickerDialog dialog = new DatePickerDialog(this, this,
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-        dialog.show();
+        CustomDateTimePicker();
+        return;
+//
+//        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+//        calendar.set(Calendar.HOUR, 0);
+//        calendar.set(Calendar.MINUTE, 0);
+//        calendar.set(Calendar.SECOND, 0);
+//        calendar.add(Calendar.DAY_OF_YEAR, 1);
+//
+//        DatePickerDialog dialog = new DatePickerDialog(this, this,
+//                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+//                calendar.get(Calendar.DAY_OF_MONTH));
+//        dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+//        dialog.show();
     }
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {

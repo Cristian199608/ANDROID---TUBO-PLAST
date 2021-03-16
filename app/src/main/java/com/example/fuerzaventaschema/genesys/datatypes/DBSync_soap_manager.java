@@ -5548,35 +5548,35 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	
 	public void Sync_tabla_Nro_letras(String codCli, String cond_ven) throws Exception {
 		
-		String SOAP_ACTION= "http://tempuri.org/obtenerTBNroLetras_json";
-		String METHOD_NAME="obtenerTBNroLetras_json";
-		
-		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codCli", codCli);
-		Request.addProperty("cond_ven", cond_ven);
-		Request.addProperty("url", url);
-		Request.addProperty("catalog", catalog); 
-		Request.addProperty("user", user); 
-		Request.addProperty("password", contrasena); 
-	    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
-	    Soapenvelope.dotNet=true;
-	    Soapenvelope.setOutputSoapObject(Request);
-	    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
-	    
-	    long beforecall = System.currentTimeMillis();
-	    try{
-	    	transporte.call(SOAP_ACTION, Soapenvelope);
-	    	Log.i("Sync_tabla_Nro_letras","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
-	    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
-
-	    	JSONArray jsonstring = new JSONArray(result.toString());
-	    	Log.i("Sync_tabla_Nro_letras","Registros: "+jsonstring.length());
-	    	dbclass.syncNroLetras(jsonstring);
-	    	Log.i("Sync_tabla_Nro_letras","SINCRONIZADA");    	 
-	    }catch(Exception e){
-	    	e.printStackTrace();
-	    	throw new Exception(e);
-	    }
+//		String SOAP_ACTION= "http://tempuri.org/obtenerTBNroLetras_json";
+//		String METHOD_NAME="obtenerTBNroLetras_json";
+//
+//		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
+//		Request.addProperty("codCli", codCli);
+//		Request.addProperty("cond_ven", cond_ven);
+//		Request.addProperty("url", url);
+//		Request.addProperty("catalog", catalog);
+//		Request.addProperty("user", user);
+//		Request.addProperty("password", contrasena);
+//	    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+//	    Soapenvelope.dotNet=true;
+//	    Soapenvelope.setOutputSoapObject(Request);
+//	    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+//
+//	    long beforecall = System.currentTimeMillis();
+//	    try{
+//	    	transporte.call(SOAP_ACTION, Soapenvelope);
+//	    	Log.i("Sync_tabla_Nro_letras","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+//	    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+//
+//	    	JSONArray jsonstring = new JSONArray(result.toString());
+//	    	Log.i("Sync_tabla_Nro_letras","Registros: "+jsonstring.length());
+//	    	dbclass.syncNroLetras(jsonstring);
+//	    	Log.i("Sync_tabla_Nro_letras","SINCRONIZADA");
+//	    }catch(Exception e){
+//	    	e.printStackTrace();
+//	    	throw new Exception(e);
+//	    }
 	}
 	
 /*----------------------------------------------- CHEMA --------------------------------------------------------*/
@@ -6108,40 +6108,40 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	 
 	 public void Sync_tabla_cta_ingresos_resumen(String codven, String url, String catalog, String user, String contrasena) throws Exception{
 			
-			String SOAP_ACTION= "http://tempuri.org/obtenerCtasIngresosxVendedor_json";
-			String METHOD_NAME="obtenerCtasIngresosxVendedor_json";
-			
-			SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);  
-			Request.addProperty("codven", codven); 
-			Request.addProperty("url", url); 
-			Request.addProperty("catalog", catalog); 
-			Request.addProperty("user", user); 
-			Request.addProperty("password", contrasena); 
-			
-		    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
-		    Soapenvelope.dotNet=true;
-		    Soapenvelope.setOutputSoapObject(Request);
-		    
-		    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
-		    
-		    long beforecall = System.currentTimeMillis();
-		    
-		    try{
-		    	transporte.call(SOAP_ACTION, Soapenvelope);
-		    	Log.i("CTA_INGRESOS RESUMEN","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
-
-		    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
-
-		    	JSONArray jsonstring = new JSONArray(result.toString());
-		    	Log.i("CTA_INGRESOS RESUMEN","Registros: "+jsonstring.length());
-		    	
-		    	dbclass.syncCta_ingresos_resumen(jsonstring);
-		    	Log.i("CTA_INGRESOS RESUMEN","SINCRONIZADA");
-		    	 
-		    }catch(Exception e){
-		    	e.printStackTrace();
-		    	throw new Exception(e);
-		    }  
+//			String SOAP_ACTION= "http://tempuri.org/obtenerCtasIngresosxVendedor_json";
+//			String METHOD_NAME="obtenerCtasIngresosxVendedor_json";
+//
+//			SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
+//			Request.addProperty("codven", codven);
+//			Request.addProperty("url", url);
+//			Request.addProperty("catalog", catalog);
+//			Request.addProperty("user", user);
+//			Request.addProperty("password", contrasena);
+//
+//		    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+//		    Soapenvelope.dotNet=true;
+//		    Soapenvelope.setOutputSoapObject(Request);
+//
+//		    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+//
+//		    long beforecall = System.currentTimeMillis();
+//
+//		    try{
+//		    	transporte.call(SOAP_ACTION, Soapenvelope);
+//		    	Log.i("CTA_INGRESOS RESUMEN","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+//
+//		    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+//
+//		    	JSONArray jsonstring = new JSONArray(result.toString());
+//		    	Log.i("CTA_INGRESOS RESUMEN","Registros: "+jsonstring.length());
+//
+//		    	dbclass.syncCta_ingresos_resumen(jsonstring);
+//		    	Log.i("CTA_INGRESOS RESUMEN","SINCRONIZADA");
+//
+//		    }catch(Exception e){
+//		    	e.printStackTrace();
+//		    	throw new Exception(e);
+//		    }
 
 		}
 	 

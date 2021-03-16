@@ -415,7 +415,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         btn_consultarProducto.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                ConsultarProducto();//solo chema
+                //ConsultarProducto();//solo chema
                 return true;
             }
         });
