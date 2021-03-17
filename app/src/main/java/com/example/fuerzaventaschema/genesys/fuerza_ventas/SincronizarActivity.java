@@ -1257,7 +1257,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     soap_manager.Sync_tabla_productoNoDescuento(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("75");
                                     //SERVER .212
-                                    soap_manager.Sync_tabla_politica_cliente(servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    soap_manager.Sync_tabla_politica_cliente(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("80");
                                     //soap_manager.Sync_tabla_politica_precio1(servidorBD_ERP, nombreBD_ERP, usuarioBD_ERP, contrasenaBD_ERP);
 //                                    publishProgress("75");

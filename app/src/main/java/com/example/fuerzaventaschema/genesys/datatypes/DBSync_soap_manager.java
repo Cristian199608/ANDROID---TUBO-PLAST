@@ -1049,7 +1049,7 @@ public void Sync_tabla_pedido_detalle(){
 	}
  
  
- public void Sync_tabla_politica_cliente( String url, String catalog, String user, String contrasena) throws Exception{
+ public void Sync_tabla_politica_cliente( String codven, String url, String catalog, String user, String contrasena) throws Exception{
 		
 		String SOAP_ACTION= "http://tempuri.org/obtenerPoliticaCliente_json";
 		String METHOD_NAME="obtenerPoliticaCliente_json";
@@ -1059,6 +1059,7 @@ public void Sync_tabla_pedido_detalle(){
 		Request.addProperty("catalog", catalog); 
 		Request.addProperty("user", user); 
 		Request.addProperty("password", contrasena); 
+		Request.addProperty("codven", codven);
 	    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
 	    Soapenvelope.dotNet=true;
 	    Soapenvelope.setOutputSoapObject(Request);
