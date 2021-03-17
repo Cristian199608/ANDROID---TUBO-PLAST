@@ -613,7 +613,7 @@ public class DBtables {
 		public static final String PERCEPCION = "percepcion";
 		
 		public static final String TIPO_PRODUCTO = "tipoProducto";
-		public static final String precio_base = "precio_base";
+		public static final String _PRECIO_BASE = "_precio_base";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO

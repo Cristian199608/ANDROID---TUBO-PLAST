@@ -333,13 +333,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                edtPrecioUnt.setText("");
+                //edtPrecioUnt.setText("");
 
-                tv_precioSinIGV.setText("");
-                tv_precioIncIGV.setText("");
-                tv_descuentoPVP.setText("");
-                totalStockConfirmar = 0.0;
-                totalStockDisponible = 0.0;
+                //tv_precioSinIGV.setText("");
+                //tv_precioIncIGV.setText("");
+                //tv_descuentoPVP.setText("");
+                //totalStockConfirmar = 0.0;
+                //totalStockDisponible = 0.0;
             }
 
             @Override
@@ -350,8 +350,18 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (edtBusqueda.getText().toString().length()>0) {
-                    btn_consultarProducto.performClick();
+                edt_descuento.setError(null);
+                if (edt_descuento.getText().toString().length()>0) {
+                    double porcentaje=Integer.parseInt(edt_descuento.getText().toString());
+
+                    if (porcentaje>=0 && porcentaje<=100){
+                        ConsultarProductoDemo();
+                    }else{
+                        edt_descuento.setText("0");
+                        edt_descuento.setError("Ingrese un número de 1 a 100");
+                    }
+                }else{
+                    ConsultarProductoDemo();
                 }
             }
         });
@@ -426,46 +436,6 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             }
 
 
-            private void ConsultarProductoDemo() {
-
-                DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,###.0000");
-
-                edtPrecioUnt.setText("0.0");
-                tv_precioIncIGV.setText("0.0");
-                edt_descuento.setEnabled(false);
-
-                double valor_cambio=1;
-                if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
-                    String tipo_de_cambio  = obj_dbclasses.getCambio("Tipo_cambio");
-                    valor_cambio  = Double.parseDouble(tipo_de_cambio);
-                }
-
-
-                DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio);
-                if(politica_precio2!=null){
-                    edt_descuento.setEnabled(true);
-                    double porcentajeDescuento=edt_descuento.getText().toString().trim().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
-
-                    double precioOriginal=(politica_precio2.getPrecio_base());
-                    double precioListaConIgv=(politica_precio2.getPrepo_unidad()*1.18);
-                    double precioListaSinIgv=(politica_precio2.getPrepo_unidad());
-                    double descuentoConIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuento/100);
-                    double descuentoSinIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuento/100);
-
-                    descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv);
-                    PRECIO_LISTA=VARIABLES.ParseDecimalFour(precioListaSinIgv);
-
-                    double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(((precioOriginal-precioListaSinIgv)*100/precioOriginal)));
-
-                    btn_consultarProducto.setText("Precio Lista con \n"+porcenajeDescuento+"% dsc "+formaterPrecioourDecimal.format(precioListaSinIgv));//precio original
-                    edtPrecioUnt.setText(""+formaterPrecioourDecimal.format(precioOriginal));//precio original
-                    tv_precioSinIGV.setText(""+formaterPrecioourDecimal.format(precioListaSinIgv-descuentoSinIgv)); //precio sin IGV con descuento
-                    tv_precioIncIGV.setText(""+formaterPrecioourDecimal.format(precioListaConIgv-descuentoConIgv));//precio con IGV con descuento
-                    tv_descuentoPVP.setText(""+formaterPrecioourDecimal.format(descuentoConIgv));//Descuento aplicacido en soles
-                }else{
-                    Toast.makeText(ProductoActivity.this, "No se ha obtenido los precios para el producto", Toast.LENGTH_SHORT).show();
-                }
-            }
         });
 
 
@@ -737,6 +707,55 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }
     }
 
+
+    private void ConsultarProductoDemo() {
+
+        DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,###.0000");
+
+        edtPrecioUnt.setText("0.0");
+        tv_precioIncIGV.setText("0.0");
+        edt_descuento.setEnabled(true);
+
+        double valor_cambio=1;
+        if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
+            String tipo_de_cambio  = obj_dbclasses.getCambio("Tipo_cambio");
+            valor_cambio  = Double.parseDouble(tipo_de_cambio);
+        }
+
+
+        DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio);
+        if(politica_precio2!=null){
+            edt_descuento.setEnabled(true);
+            double porcentajeDescuentoManual=edt_descuento.getText().toString().trim().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
+
+            double precioOriginal=(politica_precio2.getPrecio_base());
+            double precioListaConIgv=(politica_precio2.getPrepo_unidad()*1.18);
+            double precioListaSinIgv=(politica_precio2.getPrepo_unidad());
+            double descuentoConIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuentoManual/100);
+            double descuentoSinIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuentoManual/100);
+
+            descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv);
+            PRECIO_LISTA=VARIABLES.ParseDecimalFour(precioListaSinIgv);
+
+            double porcentajeDescuentoSitema= Double.parseDouble(VARIABLES.ParseDecimalTwo(((precioOriginal-precioListaSinIgv)*100/precioOriginal)));
+
+            String sms="Precio Lista a "+formaterPrecioourDecimal.format(precioListaSinIgv);
+            if (porcentajeDescuentoSitema>0.0){
+                sms="Precio Lista con \n"+(porcentajeDescuentoSitema+porcentajeDescuentoManual)+"% dsc a "+formaterPrecioourDecimal.format(precioListaSinIgv);
+            }
+
+
+
+            btn_consultarProducto.setText(sms);
+            edtPrecioUnt.setText(""+formaterPrecioourDecimal.format(precioOriginal));//precio original
+            tv_precioSinIGV.setText(""+formaterPrecioourDecimal.format(precioListaSinIgv-descuentoSinIgv)); //precio sin IGV con descuento
+            tv_precioIncIGV.setText(""+formaterPrecioourDecimal.format(precioListaConIgv-descuentoConIgv));//precio con IGV con descuento
+            tv_descuentoPVP.setText((porcentajeDescuentoManual>0.0?"("+porcentajeDescuentoManual+"%)":"")+" "+formaterPrecioourDecimal.format(descuentoConIgv));//Descuento aplicacido en soles
+        }else{
+
+            Toast.makeText(ProductoActivity.this, "No se ha obtenido los precios para el producto", Toast.LENGTH_SHORT).show();
+        }
+    }
     private void ResetearConsultaStock(){
         totalStockConfirmar =0;
         totalStockDisponible=0;

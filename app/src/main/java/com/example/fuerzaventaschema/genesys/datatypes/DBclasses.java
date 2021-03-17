@@ -4329,9 +4329,14 @@ public class DBclasses extends SQLiteAssetHelper {
 				} else {
 					cv.put(DBtables.Producto.PERCEPCION, "0");
 				}
-				
-				cv.put(DBtables.Producto.TIPO_PRODUCTO,jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim());
-				
+
+				String[] parts = jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim().split("@");
+				String part1 = parts[0]; // 123
+				String part2 = parts[1]; // 654321
+
+				cv.put(DBtables.Producto.TIPO_PRODUCTO,part1);
+				cv.put(DBtables.Producto._PRECIO_BASE,part2);
+
 				db.insert(DBtables.Producto.TAG, null, cv);
 				Log.i("PRODUCTO",
 						"i= " + i + " CODPRO: "
@@ -12590,6 +12595,9 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		return politica_precio2;
 
 	}
+
+
+
 
 	public boolean RequiereValidacionPorDescuento(String oc_numero) {
 

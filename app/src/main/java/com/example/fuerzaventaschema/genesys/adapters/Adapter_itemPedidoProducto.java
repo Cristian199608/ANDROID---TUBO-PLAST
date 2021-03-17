@@ -78,11 +78,9 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		String flagTipo		= datos.get(posicion).getFlagTipo();
 		double precio_base	= datos.get(posicion).getPrecio_base();
 		double porcenajeDescuentoMatriz= Double.parseDouble(VARIABLES.ParseDecimalTwo((((precio_base*valor_cambio) -precioLista)*100/(precio_base*valor_cambio))));
-		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo((descuento*100/precioLista)));
+		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(((precioLista-precioUnidad)*100/precioLista)));
 
-		//--(precio_base*valor_cambio -precioLista)*100/precio_base*valor_cambio)));
-//		select ((14.87*3.59)-13.8797)*100/14.87*3.59
-		holder.descripcion.setText(codigoProduc+" "+descripcion + ("\nDesc "+porcenajeDescuentoMatriz+"%")+(porcenajeDescuento>0.00?" + Desc "+porcenajeDescuento+"% sobre lista":""));
+		holder.descripcion.setText(codigoProduc+" "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc "+porcenajeDescuentoMatriz+"%":"") +(porcenajeDescuento>0.00?" + Desc "+porcenajeDescuento+"% sobre lista":""));
 		holder.precioUnidad.setText(String.valueOf(precioUnidad));
 		holder.precioLista.setText(String.valueOf(precioLista));
 		holder.cantidad.setText(String.valueOf(cantidad));

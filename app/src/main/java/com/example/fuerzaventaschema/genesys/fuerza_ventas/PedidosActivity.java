@@ -3562,7 +3562,7 @@ private void EnvalularMoneda(){
                     int fact_conv 			= data.getIntExtra("fact_conv", 0);
                     final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
                     final String precioLista= data.getStringExtra("precioLista");
-                    final String descuento 	= data.getStringExtra("descuento");
+                    final String descuento 	= ""+(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
 
                     //String sec_politica = data.getStringExtra("sec_politica");
 
