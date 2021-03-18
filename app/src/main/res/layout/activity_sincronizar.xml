@@ -64,6 +64,7 @@
 
                 <Spinner
                     android:id="@+id/settings_spn_servicio"
+                    style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -218,12 +219,14 @@
         </TableRow>
 
         <TableRow
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:orientation="horizontal" >
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -240,6 +243,7 @@
 
                 <Spinner
                     android:id="@+id/settings_spn_servicio_local"
+                    style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"

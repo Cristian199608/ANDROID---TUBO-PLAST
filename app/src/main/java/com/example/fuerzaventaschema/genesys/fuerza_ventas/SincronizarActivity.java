@@ -609,7 +609,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                       int arg2, long arg3) {
+                                       int pos, long arg3) {
 
                 int codigo = 0;
                 spn_Texto = spn_servicio.getSelectedItem().toString();
@@ -618,10 +618,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         codigo = i;
                     }
                 }
-                if (codigo >= 0) {
-                    cargarCampos(codServicio[codigo]);
-                }
-                // cargarCampos(codServicio[codigo]);
+
+                cargarCampos(codServicio[codigo]);
+                spn_servicio_local.setSelection(pos);
 
             }
 
