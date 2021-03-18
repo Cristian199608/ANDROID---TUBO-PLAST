@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -22,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,7 +38,9 @@ import com.example.fuerzaventaschema.genesys.datatypes.DBclasses;
 import com.example.fuerzaventaschema.genesys.service.ConnectionDetector;
 import com.example.fuerzaventaschema.genesys.service.SampleAlarmReceiver;
 import com.example.fuerzaventaschema.genesys.session.SessionManager;
+import com.example.fuerzaventaschema.genesys.util.FontManager;
 import com.example.fuerzaventaschema.genesys.util.VARIABLES;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -45,8 +49,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private ToggleButton tb_user;
     private Button boton;
-    private EditText txtUsuario, txtPassword, txtPlaca, txtRuc;
-    private LinearLayout lyt_form_login;
+    private EditText txtUsuario, txtPassword, txtPlaca;
+    TextView txtRuc;
+    private RelativeLayout lyt_form_login, Lyout_saemovil2018, RlayoutContactos;
     private ImageView logo;
     LinearLayout ly_placa;
     DBclasses dbusuarios;
@@ -60,9 +65,11 @@ public class LoginActivity extends AppCompatActivity {
     Spinner spn_placas;
     int auxi = 0;
     String rucString;
-    TextView tv_titulo;
+    TextView tv_titulo, txt_imei_celular, tv_app_version;
     int login = -1;
     SampleAlarmReceiver sar;
+
+    FloatingActionButton myFABlogin_configuraciones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +80,10 @@ public class LoginActivity extends AppCompatActivity {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        Typeface iconFont = FontManager.getTypeface(getApplicationContext(), FontManager.FONTAWESOME);
+        FontManager.markAsIconContainer(findViewById(R.id.lyt_form_login), iconFont);
+        FontManager.markAsIconContainer(findViewById(R.id.RlayoutContactos), iconFont);
+
         //
         // dbfuerza_ventasbk = new DBclasses2(LoginActivity.this);
         //
@@ -81,16 +92,21 @@ public class LoginActivity extends AppCompatActivity {
         // txtPlaca=(EditText)findViewById(R.id.txtPlaca);
         txtUsuario = (EditText) findViewById(R.id.txtUsuario);
         txtPassword = (EditText) findViewById(R.id.txtPassword);
-        txtRuc = (EditText) findViewById(R.id.txtRUC);
+        txtRuc = (TextView) findViewById(R.id.txtRUC);
         tv_titulo = (TextView) findViewById(R.id.login_tvtitulo);
 
         boton = (Button) findViewById(R.id.btningresar);
         tb_user = (ToggleButton) findViewById(R.id.ToggleButton01);
         spn_placas = (Spinner) findViewById(R.id.main_spn_placa);
         // empieza animacion
-        lyt_form_login = (LinearLayout) findViewById(R.id.lyt_form_login);
+        lyt_form_login = (RelativeLayout) findViewById(R.id.lyt_form_login);
         logo = (ImageView) findViewById(R.id.login_LogoPrincipal);
+        tv_app_version = (TextView) findViewById(R.id.tv_app_version);
         ly_placa = (LinearLayout) findViewById(R.id.inicio_ly_placa);
+        Lyout_saemovil2018 =  findViewById(R.id.Lyout_saemovil2018);
+        myFABlogin_configuraciones =  findViewById(R.id.myFABlogin_configuraciones);
+        RlayoutContactos =  findViewById(R.id.RlayoutContactos);
+        txt_imei_celular =  findViewById(R.id.txt_imei_celular);
         Animation animacion = AnimationUtils.loadAnimation(this,
                 R.anim.animacion);
         logo.startAnimation(animacion);
@@ -102,7 +118,17 @@ public class LoginActivity extends AppCompatActivity {
         // termina animacion
         rucString = dbusuarios.getRuc();
 
-        //
+
+        myFABlogin_configuraciones.startAnimation(animacion2);
+        Lyout_saemovil2018.startAnimation(animacion2);
+        RlayoutContactos.startAnimation(animacion2);
+        txt_imei_celular.startAnimation(animacion2);
+
+
+        Animation animacionforAppversion = AnimationUtils.loadAnimation(this, R.anim.anim_ocultar_aparecer);
+        tv_titulo.startAnimation(animacionforAppversion);
+        tv_app_version.startAnimation(animacionforAppversion);
+
         // dbfuerza_ventasbk.getClientexCodigo("");
         //
 
@@ -172,21 +198,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        final TextView tv_configuraciones = (TextView) findViewById(R.id.login_configuraciones);
-        tv_configuraciones.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                Intent iconfig = new Intent(getApplicationContext(),
-                        SincronizarActivity.class);
-                // Guardo el origen de la SincronizacionActivity, para luego
-                // poder saber a que activity regresar 06-07-2013
-                iconfig.putExtra("ORIGEN", "LOGIN");
-                //
-                startActivity(iconfig);
-            }
-
-        });
 
         DB_Empresa entityEmpresa = new DB_Empresa();
         entityEmpresa = dbusuarios.getEmpresa();
@@ -205,7 +217,15 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
-
+    public void GoSincronizarInicial(View view){
+        Intent iconfig = new Intent(getApplicationContext(),
+                SincronizarActivity.class);
+        // Guardo el origen de la SincronizacionActivity, para luego
+        // poder saber a que activity regresar 06-07-2013
+        iconfig.putExtra("ORIGEN", "LOGIN");
+        //
+        startActivity(iconfig);
+    }
     private void DisplayToast(String msg) {
         Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT).show();
     }

@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/grey_900"
+        android:background="@color/black"
         android:clickable="true"
         android:gravity="top"
         android:orientation="vertical"
@@ -20,7 +20,7 @@
 
         <ImageView
             android:id="@+id/iv_inicio"
-            android:src="@drawable/logo_v5"
+            android:src="@drawable/new_logo_saemovil2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
