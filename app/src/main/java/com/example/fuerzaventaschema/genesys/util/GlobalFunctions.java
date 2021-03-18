@@ -326,12 +326,18 @@ public class GlobalFunctions {
         big = big.setScale(2, RoundingMode.HALF_UP);
         return String.valueOf(big);
 	}
-	
-	public static double redondear_toDouble(double decimal){				
+
+	public static double redondear_toDouble(double decimal){
 		String r = String.valueOf(decimal);
-        BigDecimal big = new BigDecimal(r);
-        big = big.setScale(2, RoundingMode.HALF_UP);                
-        return Double.parseDouble(String.valueOf(big));
+		BigDecimal big = new BigDecimal(r);
+		big = big.setScale(2, RoundingMode.HALF_UP);
+		return Double.parseDouble(String.valueOf(big));
+	}
+	public static double redondear_toDoubleFourDecimal(double decimal){
+		String r = String.valueOf(decimal);
+		BigDecimal big = new BigDecimal(r);
+		big = big.setScale(4, RoundingMode.HALF_UP);
+		return Double.parseDouble(String.valueOf(big));
 	}
 	
 	public static String redondear_toString(double decimal){				

@@ -73,259 +73,102 @@
             android:textSize="12sp" />
 
     </androidx.cardview.widget.CardView>
+
     <RelativeLayout
-        android:visibility="visible"
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="5dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
 
-        <LinearLayout
-            android:id="@+id/lLayout1"
-            android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="@drawable/custom_loginwhite"
-            android:layout_above="@+id/Lyout_saemovil2018"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/login_LogoPrincipal"
-                android:layout_width="wrap_content"
-                android:layout_marginEnd="50dp"
-                android:layout_height="110dp"
-                android:src="@drawable/new_logo_saemovil2"/>
-
-            <TextView
-                android:id="@+id/login_tvtitulo"
-                android:layout_width="wrap_content"
-                android:textSize="15sp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/blue_grey_800"
-                android:text="NOMBRE DE LA EMPRESA"
-                android:visibility="visible"/>
-
-
-
-            <TextView
-                android:id="@+id/tv_app_version"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-
-                android:text="@string/APP_VERSION"/>
-
-            <LinearLayout
-                android:visibility="visible"
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:padding="10dp"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:layout_height="wrap_content">
-                <RelativeLayout
-                    android:id="@+id/lyt_form_login"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:id="@+id/linear1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_rounded_corners6"
-                        >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="&#xf015;"
-                            android:textColor="@color/blue_500"
-                            android:textSize="20sp" />
-                        <TextView
-                            android:id="@+id/txtRUC"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/white"
-                            android:ems="10"
-                            android:editable="false"
-                            android:hint="Ruc"
-                            android:padding="8dp"
-                            android:singleLine="true"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linear2"
-                        android:layout_marginTop="5dp"
-                        android:layout_below="@+id/linear1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_rounded_corners6"
-                        >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="&#xf007;"
-                            android:textColor="@color/blue_500"
-                            android:textSize="20sp" />
-                        <EditText
-                            android:id="@+id/txtUsuario"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@null"
-                            android:ems="10"
-                            android:hint="Usuario"
-                            android:text="vende61"
-                            android:padding="8dp"
-                            android:inputType="textEmailAddress"
-                            android:singleLine="true"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/linear3"
-                        android:layout_marginTop="5dp"
-                        android:layout_below="@+id/linear2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_rounded_corners6"
-                        >
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="&#xf084;"
-                            android:textColor="@color/blue_500"
-                            android:textSize="20sp" />
-                        <EditText
-                            android:id="@+id/txtPassword"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@null"
-                            android:ems="10"
-                            android:hint="Password"
-                            android:text="44102842"
-                            android:inputType="textPassword"
-                            android:padding="8dp"
-                            android:singleLine="true"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/btningresar"
-                        android:layout_marginTop="10dp"
-                        android:layout_below="@+id/linear3"
-                        android:layout_width="wrap_content"
-                        android:text="Ingresar"
-                        android:layout_marginBottom="5dp"
-                        android:layout_centerInParent="true"
-                        android:textColor="@color/white"
-                        android:background="@drawable/hover_btn_blue"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="10dp"
-                        android:layout_height="30dp" />
-
-                </RelativeLayout>
-                <TextView
-                    android:id="@+id/txt_imei_celular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="start"
-                    android:textSize="15sp"
-                    android:text="IMEI: 986854854854815"
-                    android:textColor="@color/blue_grey_800"
-                    android:textStyle="italic"/>
-            </LinearLayout>
-        </LinearLayout>
         <RelativeLayout
             android:id="@+id/RlayoutContactos"
             android:layout_width="wrap_content"
-            android:layout_marginStart="40dp"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/Lyout_saemovil2018"
+            android:layout_marginStart="40dp"
             android:layout_marginEnd="40dp"
-            android:layout_marginBottom="30dp"
-            android:layout_height="wrap_content">
+            android:layout_marginBottom="30dp">
+
             <TextView
                 android:id="@+id/contacto"
-                android:layout_centerHorizontal="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:gravity="start"
-                android:textSize="15sp"
                 android:text="Contacto:"
                 android:textColor="@color/blue_grey_800"
-                android:textStyle="italic"/>
+                android:textSize="15sp"
+                android:textStyle="italic" />
 
             <ImageView
                 android:id="@+id/imgSAE"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_centerInParent="true"
-                android:layout_alignParentEnd="true"
                 android:layout_below="@+id/contacto"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
                 android:layout_toEndOf="@+id/textView"
                 android:src="@drawable/new_logo_saemovil" />
 
             <TextView
                 android:id="@+id/tv_contacto"
-                android:layout_below="@+id/contacto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/contacto"
                 android:gravity="start"
-                android:visibility="gone"
-                android:textSize="12sp"
                 android:text="Contacto 942 982 811"
-                android:textColor="@color/blue_grey_800"
-                android:textStyle="normal"/>
-            <TextView
-                android:layout_below="@+id/contacto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="By ACGenesys \n&#xf095; Tel. 928 741 680"
-                android:gravity="start"
-                android:paddingRight="10dp"
                 android:textColor="@color/blue_grey_800"
                 android:textSize="12sp"
                 android:textStyle="normal"
-                android:id="@+id/textView" />
-        </RelativeLayout>
+                android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contacto"
+                android:gravity="start"
+                android:paddingRight="10dp"
+                android:text="By ACGenesys \n&#xf095; Tel. 928 741 680"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="12sp"
+                android:textStyle="normal" />
+        </RelativeLayout>
 
 
         <RelativeLayout
             android:id="@+id/Lyout_saemovil2018"
-            android:background="@color/blue_700"
             android:layout_width="match_parent"
-            android:padding="1dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_height="wrap_content">
+            android:background="@color/blue_700"
+            android:padding="1dp">
 
             <TextView
                 android:id="@+id/tv_derechos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Todos los derechos reservado"
                 android:gravity="left"
-                android:paddingRight="10dp"
                 android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:text="Todos los derechos reservado"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
+
             <TextView
-                android:layout_toEndOf="@+id/tv_derechos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SAEMovil 2018"
+                android:layout_toEndOf="@+id/tv_derechos"
                 android:gravity="right"
                 android:paddingRight="10dp"
+                android:text="SAEMovil 2018"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
         </RelativeLayout>
     </RelativeLayout>
 
@@ -337,7 +180,173 @@
         android:layout_margin="20dp"
         android:elevation="10dp"
         android:tint="@color/white"
+        android:onClick="GoSincronizarInicial"
         android:src="@drawable/ic_setting_grey"/>
+
+    <LinearLayout
+        android:id="@+id/lLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_loginwhite"
+        android:gravity="center"
+        android:orientation="vertical"
+        card_view:layout_anchor="@+id/relativeLayout"
+        card_view:layout_anchorGravity="center">
+
+        <ImageView
+            android:id="@+id/login_LogoPrincipal"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_marginEnd="50dp"
+            android:src="@drawable/icono_tubo_plast" />
+
+        <TextView
+            android:id="@+id/login_tvtitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="NOMBRE DE LA EMPRESA"
+            android:textColor="@color/blue_grey_800"
+            android:textSize="15sp"
+            android:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/tv_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/APP_VERSION"
+
+            android:textColor="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/lyt_form_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/linear1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf015;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/txtRUC"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:editable="false"
+                        android:ems="10"
+                        android:hint="Ruc"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear1"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf007;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/txtUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="Usuario"
+                        android:inputType="textEmailAddress"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:text="vende61"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear2"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf084;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/txtPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:text="44102842"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btningresar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_below="@+id/linear3"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/hover_btn_blue"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Ingresar"
+                    android:textColor="@color/white" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_imei_celular"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="start"
+                android:text="IMEI: 986854854854815"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </LinearLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

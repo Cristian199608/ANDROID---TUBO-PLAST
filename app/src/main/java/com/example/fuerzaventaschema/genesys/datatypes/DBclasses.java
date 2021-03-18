@@ -542,7 +542,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "' and n_dia='"
 				+ dia
 				+ "' and znf_programacion_clientes.codcli in(select codcli from cliente) "
-				+ "order by orden_r, orden_z, orden_c";
+				+ "order by nomcli asc";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -628,9 +628,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "cliente inner join znf_programacion_clientes on znf_programacion_clientes.codcli=cliente.codcli "
 				+ "where znf_programacion_clientes.codven='"
 				+ codven
-				+ "' and cliente.codcli "
-				+ "not in (select codcli from znf_programacion_clientes where codven='"
-				+ codven + "' and n_dia='" + dia + "')";
+				+ "' and cliente.codcli "+
+				"order by nomcli asc";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -5242,6 +5241,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		EliminarRegistro_bonificaciones_enviados(codven);
 		EliminarPedido_detalle_enviados(codven);
+		EliminarSanVisitas(codven);
 		EliminarPedido_cabecera_enviados(codven);
 
 		SQLiteDatabase db = getWritableDatabase();
@@ -5252,6 +5252,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			for (int i = 0; i < jArray.length(); i++) {
 				jsonData = jArray.getJSONObject(i);
 
+				cv = new ContentValues();
 				if(!verificarPedidoTieneCabecera(db, jsonData.getString("oc_numero").trim())){
 					Log.d("DBclasses ::syncObjPedido::","**************************************************************");
 					cv.put(DBtables.Pedido_cabecera.PK_OC_NUMERO, jsonData.getString("oc_numero").trim());
@@ -10434,6 +10435,28 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			SQLiteDatabase db = getWritableDatabase();
 
 			int pr = db.delete("pedido_detalle", where, args);
+			db.close();
+
+			Log.i("eliminar pedido_detalle_al_sincronizar",
+					"eliminados los detalles de las cabeceras con estado <> 'P'");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void EliminarSanVisitas(String codven) {
+		// TODO Auto-generated method stub
+
+		String where = "oc_numero_visitado in (select oc_numero from pedido_cabecera where flag <> ? or cod_emp <> ?) " +
+				"or oc_numero_visitar in (select oc_numero from pedido_cabecera where flag <> ? or cod_emp <> ?)";
+		String[] args = { "P", codven };
+
+		try {
+			SQLiteDatabase db = getWritableDatabase();
+
+			int pr = db.delete(""+DBtables.San_Visitas.TAG, where, args);
 			db.close();
 
 			Log.i("eliminar pedido_detalle_al_sincronizar",

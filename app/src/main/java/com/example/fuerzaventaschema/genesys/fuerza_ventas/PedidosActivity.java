@@ -263,7 +263,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private Spinner spn_despacho;
     private TextView tv_moneda,tv_peso,tv_cantidadItems;
     private TextView tv_subTotal,tv_total,tv_totalCompleto,tv_IGV,tv_percepcion;
-    private TextView tv_descuento,tv_descuentoPorcentaje,tv_descuentoPesoFamilia;
+    private TextView tv_descuento,tv_descuentoPorcentaje,tvPrecioPorKilo;
     //Cotizacion
     private EditText edt_diasVigencia;
     private LinearLayout linear_diasVigencia;
@@ -449,7 +449,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         tv_descuento	= (TextView) findViewById(R.id.tv_descuento);
         tv_descuentoPorcentaje = (TextView) findViewById(R.id.tv_descuentoPorcentaje);
-        tv_descuentoPesoFamilia= (TextView) findViewById(R.id.tv_descuentoPesoFamilia);
+        tvPrecioPorKilo= (TextView) findViewById(R.id.tvPrecioPorKilo);
         tv_observacionDescuento = (TextView)findViewById(R.id.tv_observacionDescuento);
         tv_observacionTipoProducto = (TextView)findViewById(R.id.tv_observacionTipoProducto);
         /*---------------------------------------------------------------------------------------*/
@@ -3562,7 +3562,9 @@ private void EnvalularMoneda(){
                     int fact_conv 			= data.getIntExtra("fact_conv", 0);
                     final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
                     final String precioLista= data.getStringExtra("precioLista");
-                    final String descuento 	= ""+(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
+
+
+                    final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento")));
 
                     //String sec_politica = data.getStringExtra("sec_politica");
 
@@ -5699,7 +5701,6 @@ private void EnvalularMoneda(){
         double totalSujetoPercepcion = 0.0d;
         double descuento = 0.0d;
         double descuentoPercent = 0.0d;
-        double descuentoPesoFamilia = 0.0d;
 
         productos.clear();
         producto = dbclass.obtenerListadoProductos_pedido(Oc_numero);
@@ -5781,7 +5782,8 @@ private void EnvalularMoneda(){
         tv_percepcion.setText(formaterMoneda.format(percepcion));
         tv_descuento.setText(formaterMoneda.format(descuento));
         tv_descuentoPorcentaje.setText(""+formaterMoneda.format(descuentoPercent)+"");
-        tv_descuentoPesoFamilia.setText(formaterMoneda.format(descuentoPesoFamilia));
+
+        tvPrecioPorKilo.setText(formaterMoneda.format((subtotal/valor_cambio) /peso_total>0.0?peso_total:1));
 
         //dbclass.GuardarMontoPesoPercepcion_Pedido(total, percepcion,peso_total, totalSujetoPercepcion, Oc_numero);
         dbclass.guardarPedidoTotales(peso_total, subtotal, IGV, total, percepcion, totalSujetoPercepcion, Oc_numero);

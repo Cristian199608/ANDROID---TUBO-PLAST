@@ -330,7 +330,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.e("onPostExecute=", "" + result);
 
             String fecha_hoy= VARIABLES.GET_FECHA_ACTUAL_STRING();
-            String fecha_limite= "2021-03-21";
+            String fecha_limite= "2021-04-21";
             long fehcaHoy=VARIABLES.convertirFecha_to_long(fecha_hoy);
             long fehcaLimite=VARIABLES.convertirFecha_to_long(fecha_limite);
             if (fehcaHoy>fehcaLimite){

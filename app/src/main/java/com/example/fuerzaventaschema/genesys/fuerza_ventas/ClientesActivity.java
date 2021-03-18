@@ -858,6 +858,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 Intent intent=new Intent(this, MapsClientesActivity.class);
                 startActivity(intent);
                 return true;
+            case android.R.id.home:
+                finish();
+            return true;
 //            case R.id.clientes_menu_registrados:
 //                Intent intentr = new Intent(ClientesActivity.this, CH_RegistroClientesNuevos.class);
 //                startActivity(intentr);
@@ -957,7 +960,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
             try {
 
-                originalValues = obj_dbclasses.getProgramacionxDia2();
+                //originalValues = obj_dbclasses.getProgramacionxDia2();
                 originalValues.addAll(obj_dbclasses.getDemasClientes2());
 
             } catch (Exception e) {

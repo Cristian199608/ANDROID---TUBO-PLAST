@@ -69,26 +69,28 @@
                             android:layout_weight="3"
                             android:layout_height="match_parent"
                             android:textSize="@dimen/dimen_secondary_text"
-                            android:background="@drawable/edittext_rounded_corners5"
+                            android:background="@drawable/edittext_rounded_corners6"
                             android:textColor="@color/blue_grey_500"
+                            android:enabled="false"
+                            android:backgroundTint="@color/teal_200"
                             android:textColorHint="@color/secondary_text"
                             android:text="-----------">
                         </AutoCompleteTextView>
+
                         <EditText
                             android:id="@+id/tv_nombres"
-                            android:layout_margin="2dp"
                             android:layout_width="0dp"
+                            android:layout_height="20dp"
+                            android:layout_margin="2dp"
                             android:layout_weight="3"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
                             android:background="@null"
-                            android:textSize="12dp"
-                            android:singleLine="true"
                             android:backgroundTint="@color/white"
-                            android:paddingStart="10dp"
                             android:enabled="false"
                             android:inputType="textCapCharacters"
-                            />
+                            android:paddingStart="10dp"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:textSize="12dp" />
                     </LinearLayout>
 
                 </LinearLayout>

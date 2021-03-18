@@ -491,7 +491,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         totalStockDisponible = 0.0;
 
                         edtBusqueda.setHint("Codigo");
-                        edtBusqueda.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        edtBusqueda.setInputType(InputType.TYPE_CLASS_TEXT);
                         btn_consultarProducto.setEnabled(true);
                         flag = 1;
 
@@ -731,7 +731,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             double precioOriginal=(politica_precio2.getPrecio_base());
             double precioListaConIgv=(politica_precio2.getPrepo_unidad()*1.18);
             double precioListaSinIgv=(politica_precio2.getPrepo_unidad());
-            double descuentoConIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuentoManual/100);
+            double descuentoConIgv=precioListaConIgv*(porcentajeDescuentoManual/100);
             double descuentoSinIgv=(politica_precio2.getPrepo_unidad())*(porcentajeDescuentoManual/100);
 
             descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv);
@@ -750,7 +750,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             edtPrecioUnt.setText(""+formaterPrecioourDecimal.format(precioOriginal));//precio original
             tv_precioSinIGV.setText(""+formaterPrecioourDecimal.format(precioListaSinIgv-descuentoSinIgv)); //precio sin IGV con descuento
             tv_precioIncIGV.setText(""+formaterPrecioourDecimal.format(precioListaConIgv-descuentoConIgv));//precio con IGV con descuento
-            tv_descuentoPVP.setText((porcentajeDescuentoManual>0.0?"("+porcentajeDescuentoManual+"%)":"")+" "+formaterPrecioourDecimal.format(descuentoConIgv));//Descuento aplicacido en soles
+            tv_descuentoPVP.setText((porcentajeDescuentoManual>0.0?"("+porcentajeDescuentoManual+"%)":"")+" "+formaterPrecioourDecimal.format(descuentoSinIgv));//Descuento aplicacido en soles
         }else{
 
             Toast.makeText(ProductoActivity.this, "No se ha obtenido los precios para el producto", Toast.LENGTH_SHORT).show();
@@ -838,9 +838,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 }
             }
             else {
-                if (Integer.parseInt(edtBusqueda.getText().toString()) / 1 > 0) {
+                //if (Integer.parseInt(edtBusqueda.getText().toString()) / 1 > 0) {
                     new async_busqueda().execute();
-                }
+                //}
             }
         }
         catch (Exception e) {

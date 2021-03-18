@@ -137,7 +137,7 @@ public class AdapterAgendaActividades extends RecyclerView.Adapter<AdapterAgenda
         MenuItem menuItem=menus.findItem(R.id.menu_editar_visita);
         if (finalIsPlanificada){//planificado y hecho para la proxima_visita
             menuItem.setTitle("Visitar");
-            if (visita.getFecha_planificada().equals(VARIABLES.GET_FECHA_ACTUAL_STRING())){
+            if (visita.getFecha_planificada().contains(VARIABLES.GET_FECHA_ACTUAL_STRING())){
                 if(visita.getOc_numero_visitado().length()>0){
                     menuItem.setTitle("Ya esta visitado");
                     menuItem.setEnabled(false);

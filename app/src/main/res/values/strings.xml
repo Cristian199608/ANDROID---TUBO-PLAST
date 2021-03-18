@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="APP_VERSION">v7.2.9 pruebas</string>
-    <string name="APP_VERSION_CODE">v7.2.9(2020-11-20)</string>
+    <string name="APP_VERSION">v7.2.9 pruebas 2</string>
+    <string name="APP_VERSION_CODE">v7.2.9(2021-03-18)</string>
     <string name="arrow_lefy">&lt;</string>
     <string name="fa_icon_ruc">&#xf1fe;</string>
     <string name="fa_icon_piechart">&#xf200;</string>

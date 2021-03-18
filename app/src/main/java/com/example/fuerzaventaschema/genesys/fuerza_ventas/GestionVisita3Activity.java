@@ -55,6 +55,7 @@ import com.example.fuerzaventaschema.genesys.util.VARIABLES;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sun.mail.imap.protocol.ID;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -86,7 +87,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     ObtenerLocalizacion2 UBICACION;
     Location LOCATION;
-    int DISTACIA_to_Colegio=0;
+    int DISTACIA_to_Colegio=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -326,15 +327,14 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, "");
                 DISTACIA_to_Colegio=item.getDistancia();
                 txt_ubicacion.setText(""+ VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(this, LOCATION.getLatitude(),LOCATION.getLongitude())
-                        +"\\nDistancia apróximada al colegio es "+calcularKM_and_Metros(DISTACIA_to_Colegio)+" metros");
-                sw_isProximaVisita.setChecked(false);
+                        +"\\nDistancia apróximada al cliente es "+calcularKM_and_Metros(DISTACIA_to_Colegio)+" metros");
+                sw_isProximaVisita.setChecked(isPLANIFICADA);
                 if (LISTA_VISITAS.size()==1) {
                     PoblarSpinnersTIPO_VISITA_NEXT( "", "");
                 }
 
             }else {
                 PoblarSpinnersTIPO_VISITA_NEXT( ""+item.getTipo_visita(), ""+ item.getActividad());
-                et_fecha_proximavisita.setText(item.getFecha_planificada().replace(NO_HAY_PROXIMA_VISITA, ""));
                 et_fecha_proximavisita.setText(item.getFecha_planificada().replace(NO_HAY_PROXIMA_VISITA, ""));
 //                PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, ""+item.getActividad());
                 et_comentario_proxima_visita.setText(item.getComentario_actividad());
@@ -655,14 +655,37 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             index++;
             SpinnerTipoActividad.setBackgroundResource(R.drawable.img_for_spinner_pink);
         }
-        if (et_hora_inicio.getText().toString().length()<=0){
+
+         if (et_hora_inicio.getText().toString().length()==0){
             index++;
             et_hora_inicio.setHintTextColor(getResources().getColor(R.color.pink_600));
+        }else{
+            try {
+                VARIABLES.GetSegundosFrom_hh_mm_to_int(et_hora_inicio.getText().toString());
+            } catch (ParseException e) {
+                index++;
+                et_hora_inicio.setTextColor(getResources().getColor(R.color.pink_600));
+                et_hora_inicio.setHintTextColor(getResources().getColor(R.color.pink_600));
+                e.printStackTrace();
+            }
         }
-        if (et_hora_fin.getText().toString().length()<=0){
+
+
+
+        if (et_hora_fin.getText().toString().length()==0){
             index++;
             et_hora_fin.setHintTextColor(getResources().getColor(R.color.pink_600));
+        }else{
+            try {
+                VARIABLES.GetSegundosFrom_hh_mm_to_int(et_hora_fin.getText().toString());
+            } catch (ParseException e) {
+                index++;
+                et_hora_fin.setTextColor(getResources().getColor(R.color.pink_600));
+                et_hora_fin.setHintTextColor(getResources().getColor(R.color.pink_600));
+                e.printStackTrace();
+            }
         }
+
         if (sw_isProximaVisita.isChecked()){
 
             if (et_fecha_proximavisita.getText().toString().length()<=0){
@@ -689,22 +712,17 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         String cero = "0";
         String orden = "";
 
-        // obtengo la fecha de la tabla configuracion
-        // String fecha_configuracion = dbclass.getCambio("Fecha");
 
-        // String mes_actual=(calendar.get(Calendar.MONTH)+1)+"";
-        // String dia_actual=calendar.get(Calendar.DAY_OF_MONTH)+"";
         String fecha_configuracionx = dBclasses.getCambio("Fecha");
 
+
+        String anio_actual = fecha_configuracionx.substring(8, 10);
         String mes_actual = fecha_configuracionx.substring(3, 5);
         String dia_actual = fecha_configuracionx.substring(0, 2);
 
         int secactual = 0;
 
-        Log.d("calculando secuencia...", oc+"");
-
         if (oc.length() < 6) {
-            Log.d("calculando secuencia...", oc+" < 6");
             secactual = 1;
             if (mes_actual.length() < 2) {
                 mes_actual = cero + mes_actual;
@@ -712,56 +730,46 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             if (dia_actual.length() < 2) {
                 dia_actual = cero + dia_actual;
             }
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ cero +"+"+ secactual);
-
-            orden = mes_actual + dia_actual + cero + secactual;
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
             return orden;
         } else {
-            Log.d("calculando secuencia...", oc+" > 6");
-            String cadenaFecha = oc.substring(oc.length()-6,oc.length());
+            //String cadenaFecha = oc.substring(oc.length()-6,oc.length());
+            Log.i(TAG, "VER oc numero es "+oc+", tamaño "+oc.length());
+            String cadenaFecha = oc.substring(oc.length() - 8, oc.length());
 
-            int mest = Integer.parseInt(cadenaFecha.substring(0, 2));
-            int diat = Integer.parseInt(cadenaFecha.substring(2, 4));
-            int sectem = Integer.parseInt(cadenaFecha.substring(4, 6));
+            int aniot = Integer.parseInt(cadenaFecha.substring(0, 2));
+            int mest = Integer.parseInt(cadenaFecha.substring(2, 4));
+            int diat = Integer.parseInt(cadenaFecha.substring(4, 6));
+            int sectem = Integer.parseInt(cadenaFecha.substring(6, 8));
 
-            Log.d("calculando secuencia...","diat:"+diat);
-            Log.d("calculando secuencia...","mest:"+mest);
-            Log.d("calculando secuencia...","sectem:"+sectem);
-
+            //Verificar por año
             if (Integer.parseInt(mes_actual) <= mest) {
-                Log.d("calculando secuencia...","mes_actual < mest");
                 if (Integer.parseInt(dia_actual) > diat) {
                     secactual = 1;
-                    Log.d("calculando secuencia...","secactual = 1;  ->"+secactual);
                 } else
                     secactual = sectem + 1;
-                Log.d("calculando secuencia...","secactual = sectem + 1; ->"+secactual);
 
             } else {
                 secactual = 1;
-                Log.d("calculando secuencia...","secactual = 1;");
             }
         }
 
         if (mes_actual.length() < 2) {
             mes_actual = cero + mes_actual;
         }
-        if (dia_actual.length() < 2) {
+        if (dia_actual.length() < 2)
             dia_actual = cero + dia_actual;
-        }
         if (secactual < 10) {
-            Log.d("calculando secuencia...","secactual < 10");
-            orden = mes_actual + dia_actual + cero + secactual;
-            Log.d("calculando secuencia...","orden = mes_actual + dia_actual + cero + secactual;");
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ cero +"+"+ secactual);
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
         } else {
-            Log.d("calculando secuencia...","secactual > 10");
-            Log.d("calculando secuencia...","orden = mes_actual + dia_actual + secactual");
-            orden = mes_actual + dia_actual + secactual;
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ secactual);
+            //orden = mes_actual + dia_actual + secactual;
+            orden = anio_actual + mes_actual + dia_actual + secactual;
         }
 
         return orden;
+
     }
 
 
@@ -803,7 +811,10 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         visita.setCargo_Descripción("Sin cargo");
         visita.setFecha_Ejecutada(fecha_ejecutada);
         visita.setFecha_planificada(fecha_planificada);
-        visita.setFecha_proxima_visita(et_fecha_proximavisita.getText().toString());
+
+        if (sw_isProximaVisita.isChecked())visita.setFecha_proxima_visita(et_fecha_proximavisita.getText().toString());
+        else visita.setFecha_proxima_visita(NO_HAY_PROXIMA_VISITA);
+
         visita.setHora_inicio_ejecución(et_hora_inicio.getText().toString());
         visita.setHora_Fin_Ejecución(et_hora_fin.getText().toString());
         visita.setFecha_de_modificación(VARIABLES.GET_FECHA_ACTUAL_STRING());
@@ -850,7 +861,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             visitaNEXT.setActividad_Proxima("");
             visitaNEXT.setLatitud("0");
             visitaNEXT.setLongitud("0");
-            visitaNEXT.setDistancia(0);
+            visitaNEXT.setDistancia(-1);
             list.add(visitaNEXT);
         }
 
@@ -943,7 +954,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                     isInsert=DAO_San_Visitas.UpdateListaVisitaEjecucion( __DB, itemCabecera.getSan_visitas());
                 }else{//isPLANIFICADA= actualización y creacion de proxima visita
                     isInsert=DAO_San_Visitas.UpdateVisitaEjecucion( __DB,  itemCabecera.getSan_visitas().get(0));
-                    if(isInsert){
+                    if(isInsert && itemCabecera.getSan_visitas().size()>1){
                         isInsert=DAO_San_Visitas.LlenarTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas().get(1));
                     }
                 }

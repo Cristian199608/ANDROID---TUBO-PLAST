@@ -289,7 +289,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                         else if (actionId == ID_DETALLE) {
                             int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
-                            if (cod_noventa>0 || GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
+                            if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
                                 if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, true).size()>0) {
                                     Intent intent=new Intent(ReportesPedidosActivity.this, GestionVisita3Activity.class);
                                     intent.putExtra("ID_RRHH", "-1");
