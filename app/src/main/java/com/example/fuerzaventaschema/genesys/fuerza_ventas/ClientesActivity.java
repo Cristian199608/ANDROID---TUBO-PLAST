@@ -480,6 +480,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             intReportes.putExtra("COD_VEND", codven);
             intReportes.putExtra("LATITUD", String.valueOf(lat));
             intReportes.putExtra("LONGITUD", String.valueOf(lng));
+            intReportes.putExtra("CODVEN", codven);
             startActivity(intReportes);
         }else {
             UtilView.MENSAJE_simple(this, "Sin coordenadas",  "No se ha obtenido las coordenadas. \nVerifique que tengas activado el GPS, ó mantén presionado para registrar sin geolocalizar. " +

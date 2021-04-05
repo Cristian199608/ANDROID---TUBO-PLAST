@@ -15,7 +15,8 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 
-public class CreacionNuevoCliente2Activity extends AppCompatActivity {
+public class
+CreacionNuevoCliente2Activity extends AppCompatActivity {
 
     WebView myWebVew;
     FloatingActionButton myFAB;
@@ -32,6 +33,7 @@ public class CreacionNuevoCliente2Activity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         String LATITUD = bundle.getString("LATITUD");
         String LONGITUD = bundle.getString("LONGITUD");
+        String CODVEN = bundle.getString("CODVEN");
 
         DBclasses dBclasses=new DBclasses(this);
         String rucEmpresa=dBclasses.getRuc();
@@ -45,6 +47,7 @@ public class CreacionNuevoCliente2Activity extends AppCompatActivity {
             servicioWeb=servicioWeb.replace("RUC_EMPRESA",rucEmpresa );
             servicioWeb=servicioWeb.replace("LATITUD",LATITUD );
             servicioWeb=servicioWeb.replace("LONGITUD",LONGITUD );
+            servicioWeb=servicioWeb.replace("CODVEN",CODVEN );
             myWebVew.loadUrl(servicioWeb);
             WebSettings webSettings=myWebVew.getSettings();
             webSettings.setJavaScriptEnabled(true);

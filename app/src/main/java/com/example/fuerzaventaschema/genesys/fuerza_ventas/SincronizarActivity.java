@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.fuerzaventaschema.R;
@@ -102,7 +103,8 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
     edt_servidor_local, edt_nombrebd, edt_nombrebd_local, edt_usuario,
     edt_usuario_local, edt_servicio;
     Spinner spn_servicio, spn_servicio_local;
-    CheckBox chk_principal, chk_secundario;
+    CheckBox chk_secundario;
+    Switch settings_spn_servicio;
     ArrayList<DB_Servidor> al_servidor;
     String spn_Texto;
     String spn_Texto_local;
@@ -137,7 +139,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         edt_usuario = (EditText) findViewById(R.id.settings_edt_usuario);
         //edt_servicio = (EditText) findViewById(R.id.settings_edt_servicio);
         edt_contrasenia = (EditText) findViewById(R.id.settings_edtContrasena);
-        chk_principal = (CheckBox) findViewById(R.id.settings_chk_principal);
+        settings_spn_servicio = (Switch) findViewById(R.id.settings_chk_principal);
 
         spn_servicio_local = (Spinner) findViewById(R.id.settings_spn_servicio_local);
         edt_servidor_local = (EditText) findViewById(R.id.settings_edt_servidor_local);
@@ -182,7 +184,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         chk_secundario_estado = prefs.getBoolean("servicio_secundario_activo",
                 true);
 
-        chk_principal.setChecked(chk_principal_estado);
+        settings_spn_servicio.setChecked(chk_principal_estado);
         chk_secundario.setChecked(chk_secundario_estado);
 
         // < Configuraciones de Preferencia
@@ -205,7 +207,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         Bundle bundle = getIntent().getExtras();
         origen = bundle.getString("ORIGEN");
 
-        chk_principal
+        settings_spn_servicio
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 
@@ -297,7 +299,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                             GlobalVar.servicio_secundario_activo = true;
                             editor.commit();
 
-                            if (!chk_principal.isChecked()) {
+                            if (!settings_spn_servicio.isChecked()) {
 
                                 GlobalVar.urlService = GlobalVar.direccion_servicio_local;
                                 GlobalVar.id_servicio = GlobalVar.LOCAL;
@@ -415,7 +417,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 // DBSync_soap_manager soap_manager1 = new
                 // DBSync_soap_manager(getApplicationContext());
 
-                if (!chk_principal.isChecked() && !chk_secundario.isChecked()) {
+                if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
 
                     AlertDialog.Builder dialogo = new AlertDialog.Builder(SincronizarActivity.this);
                     dialogo.setMessage("Debe seleccionar almenos un servicio");
@@ -490,7 +492,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
 
-                if (!chk_principal.isChecked() && !chk_secundario.isChecked()) {
+                if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
 
                     AlertDialog.Builder dialogo = new AlertDialog.Builder(
                             SincronizarActivity.this);
@@ -562,7 +564,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                 contrasenaid_local = edt_contrasenia_local.getText().toString();
                                 url_local = edt_servidor_local.getText().toString();
 
-                                if (chk_principal.isChecked()) {
+                                if (settings_spn_servicio.isChecked()) {
                                     editor.putBoolean("check_web", true);
                                     editor.putBoolean("check_local", false);
                                     GlobalVar.urlService = GlobalVar.direccion_servicio;
@@ -884,7 +886,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                 .toString();
                         url_local = edt_servidor_local.getText().toString();
 
-                        if (chk_principal.isChecked()) {
+                        if (settings_spn_servicio.isChecked()) {
                             GlobalVar.urlService = GlobalVar.direccion_servicio;
                             GlobalVar.id_servicio = GlobalVar.INTERNET;
                             servidorBD = url;
@@ -1530,7 +1532,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
     }
     void ConfirmarServicios(){
-        if (!chk_principal.isChecked() && !chk_secundario.isChecked()) {
+        if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
 
             AlertDialog.Builder dialogo = new AlertDialog.Builder(
                     SincronizarActivity.this);

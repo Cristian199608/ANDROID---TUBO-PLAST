@@ -11,34 +11,7 @@
         android:layout_height="wrap_content"
         android:stretchColumns="*" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_marginLeft="15dp"
-                    android:text="SERVICIO WEB"
-                    android:textSize="14sp" />
-
-                <CheckBox
-                    android:id="@+id/settings_chk_principal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-            </LinearLayout>
-        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
@@ -54,13 +27,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical" >
 
-                <TextView
-                    android:id="@+id/textView1"
+                <Switch
+                    android:id="@+id/settings_chk_principal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Servc http://"
-                    android:textSize="14sp" />
+                    android:layout_gravity="center_vertical"
+                    android:buttonTint="#616161"
+                    android:checked="true"
+                    android:text="Servicio web" />
 
                 <Spinner
                     android:id="@+id/settings_spn_servicio"
@@ -70,7 +44,7 @@
                     android:layout_marginTop="2dp"
                     android:entries="@array/datos_formaPago2"
                     android:singleLine="true"
-                    android:spinnerMode="dialog" />
+                    android:spinnerMode="dropdown" />
 
             </LinearLayout>
         </TableRow>
@@ -192,6 +166,7 @@
             android:background="#FFFFFF" />
 
         <TableRow
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 

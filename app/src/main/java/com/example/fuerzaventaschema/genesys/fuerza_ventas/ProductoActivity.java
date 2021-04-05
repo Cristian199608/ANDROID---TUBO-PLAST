@@ -710,7 +710,8 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
     private void ConsultarProductoDemo() {
 
-        DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,###.0000");
+        DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.0000");
+
 
         edtPrecioUnt.setText("0.0");
         tv_precioIncIGV.setText("0.0");
@@ -990,11 +991,11 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
                     try{
                         //if (estado.equals(DISCONTINUO)) {
-                            if (Double.parseDouble(tv_totalStockDisponible.getText().toString())< Integer.parseInt(edtCantidad.getText().toString())) {
-                                edtCantidad.setError(Html.fromHtml("<font color='#424242'>No hay stock suficiente</font>"));
-                                GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo o producto sin stock", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_BOTTOM);
-                                break;
-                            }
+//                            if (Double.parseDouble(tv_totalStockDisponible.getText().toString())< Integer.parseInt(edtCantidad.getText().toString())) {
+//                                edtCantidad.setError(Html.fromHtml("<font color='#424242'>No hay stock suficiente</font>"));
+//                                GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo o producto sin stock", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_BOTTOM);
+//                                break;
+//                            }
                       //  }
                     }catch (Exception e) {
                         e.printStackTrace();

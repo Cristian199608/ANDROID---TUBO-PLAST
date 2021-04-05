@@ -346,7 +346,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     int positionLisView=0;
     //Fin
 
-    DecimalFormat formaterMoneda = new DecimalFormat("#,###.00");
+    DecimalFormat formaterMoneda = new DecimalFormat("#,##0.00");
 
 
     SharedPreferences preferencias_configuracion;
@@ -461,6 +461,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         //txtTotal = (TextView) findViewById(R.id.pedidolyt_txtTotal);
         //txtTotal_peso = (TextView) findViewById(R.id.pedidolyt_txtTotal_peso);
         btn_agregar = (Button) findViewById(R.id.pedido_lyt_btnAgregar);
+
+
         //txtPercepcionTotal = (TextView) findViewById(R.id.pedidolyt_txtPercepcionTotal);
         //txtTotalPedido = (TextView) findViewById(R.id.pedidolyt_txtTotal_pedido);
 
@@ -5759,7 +5761,7 @@ private void EnvalularMoneda(){
         if (codigoMoneda==null){
             EnvalularMoneda();
         }
-        if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
+        if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             String tipo_de_cambio  = dbclass.getCambio("Tipo_cambio");
             valor_cambio  = Double.parseDouble(tipo_de_cambio);
         }
@@ -5783,7 +5785,9 @@ private void EnvalularMoneda(){
         tv_descuento.setText(formaterMoneda.format(descuento));
         tv_descuentoPorcentaje.setText(""+formaterMoneda.format(descuentoPercent)+"");
 
-        tvPrecioPorKilo.setText(formaterMoneda.format((subtotal/valor_cambio) /peso_total>0.0?peso_total:1));
+        double stotalReal=subtotal/valor_cambio;
+        double precioXkilo=stotalReal /(peso_total>0.0?peso_total:stotalReal);
+        tvPrecioPorKilo.setText(formaterMoneda.format(precioXkilo));
 
         //dbclass.GuardarMontoPesoPercepcion_Pedido(total, percepcion,peso_total, totalSujetoPercepcion, Oc_numero);
         dbclass.guardarPedidoTotales(peso_total, subtotal, IGV, total, percepcion, totalSujetoPercepcion, Oc_numero);
