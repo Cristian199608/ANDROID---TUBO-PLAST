@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="@color/color_black"
+    android:gravity="end"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/pedidolyt_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="horizontal"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="3"
+            android:text="Cliente: "
+            android:textSize="14sp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autocomplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:hint="Nombre"
+            android:singleLine="true"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:typeface="sans" />
+
+        <Button
+            android:id="@+id/pedido_lyt_btnFamilia"
+            android:layout_width="30dp"
+            android:layout_height="50dp"
+            android:drawableTop="@drawable/abs__ic_go" />
+    </LinearLayout>
+
+    <TabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/pedidolyt_head" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center" >
+            </TabWidget>
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <LinearLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="5dp" >
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="3dp"
+                        android:fillViewport="true" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical" >
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="N° de Pedido:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edtNroPedido"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:enabled="false"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linear_tipoDocumento"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Tipo documento:"
+                                    android:layout_weight="2.5"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_tipoDocumento"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_boleta"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Boleta" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_factura"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Factura" />
+
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="N° Orden Compra:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_nOrdenCompra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Dirección fiscal:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_direccionFiscal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Prioridad:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_prioridad"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Sucursal:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_sucursal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Punto de entrega:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_puntoEntrega"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Tipo de Despacho"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_tipoDespacho"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Obra:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_obra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Despacho:"
+                                    android:layout_weight="2.5"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_despacho"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_interno"
+                                        android:layout_width="wrap_content"
+                                        android:text="Interno"
+                                        android:layout_height="wrap_content" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_externo"
+                                        android:text="Externo"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <CheckBox
+                                    android:id="@+id/chk_embalaje"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Embalaje"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp" />
+                                <CheckBox
+                                    android:id="@+id/chk_pedidoAnticipo"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Pedido por anticipo"
+                                    android:layout_weight="2"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Transportista:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_transportista"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Almacen Despacho"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_almacenDespacho"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Moneda:"
+                                    android:layout_weight="2.5"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_moneda"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_dolares"
+                                        android:text="Interno"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_soles"
+                                        android:text="Externo"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Condicion de Venta:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_condicionVenta"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"/>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Aplica Descuento:"
+                                    android:layout_weight="2.5"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_aplicaDescuento"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_descuentoSi"
+                                        android:text="Interno"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_descuentoNo"
+                                        android:text="Externo"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Fecha Entrega:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+                                <ImageButton
+                                    android:id="@+id/btn_fecha"
+                                    android:src="@drawable/fecha_48"
+                                    android:layout_width="30dp"
+                                    android:layout_height="wrap_content"/>
+
+                                <ImageButton
+                                    android:id="@+id/btn_hora"
+                                    android:layout_width="48dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="fill"
+                                    android:src="@drawable/hora_48" />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Observación 1:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Observación 2:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Observación 3:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+
+
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:text="Direccion:"
+                                    android:textSize="16sp"
+                                    android:typeface="sans" />
+
+                                <Spinner
+                                    android:id="@+id/spnDireccion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/datos_spinner"
+                                    android:singleLine="true" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:text="Entrega:"
+                                    android:textSize="16sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="horizontal" >
+
+                                    <EditText
+                                        android:id="@+id/edtFechaEntrega"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:focusableInTouchMode="false"
+                                        android:hint="Fecha"
+                                        android:singleLine="true" />
+
+                                    <Button
+                                        android:layout_width="match_parent"
+                                        android:layout_height="48dip"
+                                        android:layout_weight="2"
+                                        android:drawablePadding="0dp"
+                                        android:drawableRight="@drawable/fecha"
+                                        android:gravity="center"
+                                        android:onClick="Mostrar_date"
+                                        android:paddingRight="8dp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:text="Forma Pago:"
+                                    android:textSize="16sp"
+                                    android:typeface="sans" />
+
+                                <Spinner
+                                    android:id="@+id/spnFormaPago"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:entries="@array/datos_formaPago"
+                                    android:singleLine="true" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:text="Observacion:"
+                                    android:textSize="16sp"
+                                    android:typeface="sans" />
+
+                                <EditText
+                                    android:id="@+id/edtObservacion"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:lines="2"
+                                    android:maxLength="150" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/linear_limiteCredito"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_below="@+id/linear_tipoDocumento"
+                                >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2"
+                                    android:text="Limite Credito:"
+                                    android:textColor="@color/color_white"
+                                    android:textSize="16sp" />
+
+                                <EditText
+                                    android:id="@+id/edtLimiteCredito"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </ScrollView>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ListView
+                        android:id="@+id/lstProductos"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+                    </ListView>
+
+                    <LinearLayout
+                        android:id="@+id/pedidolyt_lny2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/pedidolyt_lny"
+                        android:background="@color/color_semi_transparente"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/pedidolyt_txtTotal_pedido"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:padding="3dp"
+                            android:text="Peso:(Kg)"
+                            android:textColor="#FFF" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/pedidolyt_lny"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/color_semi_transparente"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/pedidolyt_txtTotal_peso"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:padding="3dp"
+                            android:text="Peso:(Kg)"
+                            android:textColor="#FFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/pedidolyt_txtTotal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:padding="3dp"
+                            android:text="Total:(S/.)"
+                            android:textColor="#FFF"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/pedidolyt_txtPercepcionTotal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="left"
+                            android:padding="3dp"
+                            android:text="Percep:(S/.)"
+                            android:textColor="#FFF"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+    <RelativeLayout
+        android:id="@+id/pedidolyt_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:background="@color/color_transparent"
+        android:gravity="right"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/pedido_lyt_btnAgregar"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right"
+            android:drawableRight="@drawable/agregarv3"
+            android:src="@drawable/agregarv3"
+            android:text="Agregar"
+            android:textSize="14dp"
+            android:visibility="gone" />
+
+        <!--
+                          <ImageButton
+					          android:id="@+id/pedido_lyt_btnGuardar"
+					          android:layout_width="200dp"
+
+					          android:layout_height="30dp"
+					          android:layout_alignParentRight="true"
+
+					          android:drawableRight="@drawable/guardarv3"
+					          android:src="@drawable/guardarv3"
+					          android:text="Guardar"
+					          android:textSize="25dp"
+					          android:background="@color/color_transparent"
+					          android:visibility="gone"/>
+
+					      <ImageButton
+					          android:id="@+id/pedido_lyt_btnEliminar"
+					          android:layout_width="200dp"
+
+					          android:layout_height="30dp"
+
+					          android:drawableRight="@drawable/eliminarv3"
+					          android:src="@drawable/eliminarv3"
+					          android:text="Guardar"
+					          android:textSize="25dp"
+					          android:background="@color/color_transparent"
+					          android:visibility="gone"/>
+        -->
+
+    </RelativeLayout>
+
+</RelativeLayout>

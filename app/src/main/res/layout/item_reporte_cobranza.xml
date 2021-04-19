@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="8dp" >
+
+    <TextView
+        android:id="@+id/cobranza_saldo2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#343434"
+        android:visibility="gone"
+        android:textSize="12sp"
+        android:layout_marginTop="1dp"
+        android:text="Saldo: 50 soles" />
+
+    <TextView
+        android:id="@+id/cobranza_tv_nrodoc"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        android:text="Boleta"
+
+        android:gravity="center_vertical"/>
+
+
+    <!-- Title Of Song-->
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_cliente"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:text="Paul Morales Gonzales"
+        android:textColor="#040404"
+        android:maxLines="2"
+        android:typeface="sans"
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+
+    <!-- Artist Name -->
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_cantidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rpt_cobranza_tv_cliente"
+        android:layout_below="@id/rpt_cobranza_tv_cliente"
+        android:layout_marginTop="1dp"
+        android:text="M3"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_secuencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:visibility="gone" />
+
+
+    <!-- Rightend Duration -->
+
+
+
+    <!-- Rightend Arrow -->
+    <ImageView
+        android:id="@+id/rpt_cobranza_tv_flecha"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+
+        android:layout_alignParentRight="true"
+        android:background="@color/color_white" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_total2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/rpt_cobranza_tv_flecha"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/rpt_cobranza_tv_flecha"
+        android:gravity="right"
+        android:text="S/.1600.0"
+        android:textColor="#10bcc9"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_estado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/rpt_cobranza_tv_total2"
+        android:layout_below="@+id/rpt_cobranza_tv_flecha"
+        android:gravity="right"
+        android:text="No enviado"
+        android:textColor="@color/color_red"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_serie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/rpt_cobranza_tv_cantidad"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/rpt_cobranza_tv_cantidad"
+        android:text="Serie: 009"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_factura"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/rpt_cobranza_tv_serie"
+        android:layout_toRightOf="@+id/rpt_cobranza_tv_serie"
+        android:layout_marginLeft="8dp"
+        android:text="0000067"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/rpt_cobranza_tv_tipo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/rpt_cobranza_tv_factura"
+        android:layout_marginLeft="12dp"
+        android:layout_toRightOf="@+id/rpt_cobranza_tv_factura"
+        android:text="Documento"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+</RelativeLayout>

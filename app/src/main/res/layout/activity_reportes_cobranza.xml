@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    <ListView
+
+        android:id="@+id/lv_reportes_cobranza"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignBottom="@id/lv_reportes_cobranza"
+        android:background="@color/color_semi_transparente"
+        android:layout_marginBottom="5dp">
+
+
+
+        <TextView
+            android:id="@+id/rpt_cobranza_txtTotal_dolares"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="3dp"
+            android:gravity="left"
+            android:textColor="#FFF"
+            android:text="Total $."/>
+
+        <TextView
+            android:id="@+id/rpt_cobranza_txtTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="3dp"
+            android:gravity="left"
+            android:textColor="#FFF"
+            android:text="Total:(S/.)"/>
+
+        <ImageView
+            android:background="@color/grey_600"
+            android:onClick="poputMenu"
+            android:id="@+id/poputMenu"
+            android:src="@drawable/ic_tres_puntos_white"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</RelativeLayout>

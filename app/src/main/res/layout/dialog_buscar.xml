@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content" 
+    android:layout_gravity="center"
+    android:background="@drawable/bgdialog"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Seleccione un filtro"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <RadioGroup
+        android:padding="5dp"
+                         android:id="@+id/reportes_rg_tipoFiltro"
+                         android:layout_below="@+id/reportes_view"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_margin="10dip"
+                         android:layout_centerHorizontal="true"
+                         android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/reportes_rb_Cliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:checked="true"
+            android:layout_gravity="left"
+            android:text="cliente" />
+
+        <RadioButton
+            android:id="@+id/reportes_rb_Documento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="N° doc"
+            android:textSize="22sp" />
+      
+                            </RadioGroup>
+    
+    
+    <EditText
+        android:id="@+id/reportes_edt_search"
+        android:layout_below="@+id/reportes_rg_tipoFiltro"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
+
+    <View
+        android:id="@+id/reportes_view"
+        android:layout_width="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_height="2dp"
+        android:layout_below="@+id/tv"
+        android:background="@android:color/white" />
+
+    <Button
+        android:id="@+id/reportes_btn_buscar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/reportes_btn_cancelar"
+        android:layout_alignBottom="@+id/reportes_btn_cancelar"
+        android:layout_alignRight="@+id/reportes_edt_search"
+        android:text="Buscar" />
+
+    <Button
+        android:id="@+id/reportes_btn_cancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/reportes_edt_search"
+        android:layout_below="@+id/reportes_edt_search"
+        android:text="Cancelar" />
+
+</RelativeLayout>

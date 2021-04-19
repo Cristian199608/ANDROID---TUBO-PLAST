@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/fondo02">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:stretchColumns="*"
+        android:layout_marginTop="25dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp">
+
+        <!--  <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/cuota_vendedor_titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Titulo"
+                android:gravity="center_horizontal"/>
+
+        </TableRow>  -->
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CUOTA"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="VENTAS"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="DEVOLUCIONES"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="VENTAS EFECTIVAS"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="PARTICIPACION"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_campo5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="AVANCE"
+                android:gravity="center_horizontal"
+                android:textSize="20sp"
+                android:textColor="#FFF"
+                android:background="@drawable/cuota_vendedor_celda_titulo"
+                android:padding="8dp"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo0"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo1"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo2"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo0"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo1"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+            <TextView
+                android:id="@+id/cuota_vendedor_dato5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="campo2"
+                android:gravity="center_horizontal"
+                android:textSize="22sp"
+                android:background="@drawable/cuota_vendedor_celda_dato"
+                android:padding="8dp"
+                android:textColor="#696969"/>
+
+        </TableRow>
+
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:id="@+id/cuota_vendedor_graf1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cuota_vendedor_graf2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

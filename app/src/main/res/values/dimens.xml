@@ -1,0 +1,39 @@
+<resources>
+
+    <!-- UI elements -->
+    <dimen name="colorstrip_height">4dp</dimen>
+    <dimen name="schedule_header_padding">10dp</dimen>
+    <dimen name="schedule_hour_height">60dp</dimen>
+    <dimen name="schedule_label_header_width">46dp</dimen>
+    <dimen name="schedule_label_padding">5dp</dimen>
+    <dimen name="star_button_padding">3dp</dimen>
+    <dimen name="tab_height">38dp</dimen>
+    <dimen name="tab_side_padding">2dp</dimen>
+    <dimen name="track_icon_width">40dp</dimen>
+    <dimen name="track_icon_padding">4dp</dimen>
+    <dimen name="actionbar_home_width">60dp</dimen>
+    <dimen name="list_padding">10dp</dimen>
+    <dimen name="shadow_width">15dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- body content -->
+    <dimen name="body_padding_medium">10dp</dimen>
+    <dimen name="body_padding_large">10dp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_xlarge">22sp</dimen>
+
+    <dimen name="text_item_pedido_producto">13sp</dimen>
+    <dimen name="tittle_item_pedido_producto">14sp</dimen>
+
+    <dimen name="text_resumen_pedido">12sp</dimen>
+    <dimen name="text_toast">16sp</dimen>
+
+    <dimen name="text_size_mini">11sp</dimen>
+    <dimen name="cardviewElevation">3dp</dimen>
+    <dimen name="dimen_secondary_text">13sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+</resources>

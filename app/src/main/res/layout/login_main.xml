@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".genesys.fuerza_ventas.LoginActivity">
+
+    <ToggleButton
+        android:background="@drawable/btn_toggle_bg"
+        android:checked="true"
+        android:id="@+id/ToggleButton01"
+        android:layout_width="wrap_content"
+        android:layout_height="40dip"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:visibility="invisible">
+    </ToggleButton>
+    <LinearLayout
+        android:id="@+id/inicio_ly_placa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:visibility="gone" >
+
+        <Spinner
+            android:id="@+id/main_spn_placa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="12"
+            android:background="@drawable/tab_search_panel_selector" />
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card1"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="41dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:cardElevation="6dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardPreventCornerOverlap="false" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/new_logo_saemovil"
+            />
+        android:scaleType="centerCrop"
+        <TextView
+            android:id="@+id/txt2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="logo saemovil"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimary"
+            android:textColor="#ffe3e3e3"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+            android:text="Placa:"
+            android:textSize="12sp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="5dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+
+        <RelativeLayout
+            android:id="@+id/RlayoutContactos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/Lyout_saemovil2018"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginBottom="30dp">
+
+            <TextView
+                android:id="@+id/contacto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="start"
+                android:text="Contacto:"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <ImageView
+                android:id="@+id/imgSAE"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_below="@+id/contacto"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_toEndOf="@+id/textView"
+                android:src="@drawable/new_logo_saemovil" />
+
+            <TextView
+                android:id="@+id/tv_contacto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contacto"
+                android:gravity="start"
+                android:text="Contacto 942 982 811"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="12sp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contacto"
+                android:gravity="start"
+                android:paddingRight="10dp"
+                android:text="By ACGenesys \n&#xf095; Tel. 928 741 680"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="12sp"
+                android:textStyle="normal" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/Lyout_saemovil2018"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/blue_700"
+            android:padding="1dp">
+
+            <TextView
+                android:id="@+id/tv_derechos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:paddingStart="10dp"
+                android:paddingRight="10dp"
+                android:text="Todos los derechos reservado"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/tv_derechos"
+                android:gravity="right"
+                android:paddingRight="10dp"
+                android:text="SAEMovil 2018"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/myFABlogin_configuraciones"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_margin="20dp"
+        android:elevation="10dp"
+        android:tint="@color/white"
+        android:onClick="GoSincronizarInicial"
+        android:src="@drawable/ic_setting_grey"/>
+
+    <LinearLayout
+        android:id="@+id/lLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/custom_loginwhite"
+        android:gravity="center"
+        android:orientation="vertical"
+        card_view:layout_anchor="@+id/relativeLayout"
+        card_view:layout_anchorGravity="center">
+
+        <ImageView
+            android:id="@+id/login_LogoPrincipal"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_marginEnd="50dp"
+            android:src="@drawable/icono_tubo_plast" />
+
+        <TextView
+            android:id="@+id/login_tvtitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="NOMBRE DE LA EMPRESA"
+            android:textColor="@color/blue_grey_800"
+            android:textSize="15sp"
+            android:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/tv_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/APP_VERSION"
+
+            android:textColor="@color/colorPrimary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="visible">
+
+            <RelativeLayout
+                android:id="@+id/lyt_form_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/linear1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf015;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/txtRUC"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:editable="false"
+                        android:ems="10"
+                        android:hint="Ruc"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear1"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf007;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/txtUsuario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="Usuario"
+                        android:inputType="textEmailAddress"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear2"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/edittext_rounded_corners6">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="&#xf084;"
+                        android:textColor="@color/blue_500"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/txtPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:padding="8dp"
+                        android:singleLine="true"
+                        android:text=""
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btningresar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_below="@+id/linear3"
+                    android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/hover_btn_blue"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="Ingresar"
+                    android:textColor="@color/white" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_imei_celular"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="start"
+                android:text="IMEI: 986854854854815"
+                android:textColor="@color/blue_grey_800"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

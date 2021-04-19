@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:scrollbarStyle="insideInset"
+
+android:fillViewport="true"
+android:fitsSystemWindows="true" > -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_factura_ly"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp">
+
+        <Spinner
+            android:id="@+id/productolyt_spnFiltroFamilia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.Holo.Light.Spinner"
+            android:entries="@array/filtro_producto"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp">
+
+        <Spinner
+            android:id="@+id/productolyt_spnFiltroSubfamilia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.Holo.Light.Spinner"
+            android:entries="@array/filtro_producto"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="5dp">
+
+        <EditText
+            android:id="@+id/edt_busqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:textSize="15sp"
+            android:imeOptions="actionSearch"
+            android:hint="Descripcion del producto"/>
+
+        <ImageButton
+            android:id="@+id/btn_buscar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:src="@drawable/buscar_boton"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/linearLayout1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:id="@+id/linearLayouttt"
+                android:orientation="horizontal"
+                android:padding="10dip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/productos_precios_tv111"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Descripcion"
+                    android:textColor="@color/color_light_gray"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/productos_lista_lv_productos"
+                android:layout_width="206dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayouttt"
+                android:divider="#b5b5b5"
+                android:dividerHeight="1dp"
+
+                android:listSelector="@drawable/list_selector" />
+
+
+
+        </RelativeLayout>
+
+
+        <HorizontalScrollView
+
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent">
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <LinearLayout
+                    android:id="@+id/linearLayoutt"
+                    android:orientation="horizontal"
+                    android:padding="10dip"
+                    android:layout_width="395dp"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:layout_weight="2"
+                        android:text="prec.1"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv2"
+                        android:layout_width="wrap_content"
+                        android:gravity="right"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/productos_precios_tv1"
+                        android:layout_weight="2"
+                        android:text="prec.2"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv3"
+                        android:layout_width="wrap_content"
+                        android:gravity="right"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="prec.3"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:layout_weight="2"
+                        android:text="prec.4"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv5"
+                        android:layout_width="wrap_content"
+                        android:gravity="right"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="prec.5"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/productos_precios_tv6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:layout_weight="2"
+                        android:text="prec.6"
+                        android:textColor="@color/color_light_gray"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+
+
+                <ListView
+                    android:id="@+id/productos_precios_lv_productos"
+                    android:layout_width="395dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linearLayoutt"
+                    android:divider="#b5b5b5"
+
+                    android:dividerHeight="1dp"
+                    android:listSelector="@drawable/list_selector" />
+            </RelativeLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+</LinearLayout>
+    <!-- </ScrollView> -->

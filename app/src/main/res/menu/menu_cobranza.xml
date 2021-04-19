@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_obtener_cuentas_ingreso"
+        android:icon="@drawable/torrent"
+        android:title="Actualizar cobranzas">
+    </item>
+
+    <item
+        android:id="@+id/menu_configuracion_cuentas_ingreso"
+        android:icon="@drawable/settings_c"
+        android:title="Configuración">
+    </item>
+    
+</menu>

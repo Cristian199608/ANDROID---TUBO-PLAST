@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:visibility="gone"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+        <LinearLayout
+            android:id="@+id/layout_direccionales"
+            android:background="@color/teal_700"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/TVBack"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_alignStart="@+id/layout_direccionales"
+                android:layout_alignTop="@+id/layout_direccionales"
+                android:layout_marginStart="2dp"
+                android:layout_weight="2"
+                android:drawableStart="@drawable/ic_left_blue"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:drawableTint="@color/white"
+                android:gravity="center|left"
+                android:onClick="AnteriorMes"
+                android:paddingLeft="10dp"
+                android:paddingRight="5dp"
+                android:singleLine="true"
+                android:text="Anterior"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+
+            <TextView
+                android:id="@+id/txt_mes_anio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/edittext_rounded_corners_cicle"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Enero - 2019 "
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+            <Spinner
+                android:id="@+id/spn_meses_anio"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:spinnerMode="dropdown" />
+
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:visibility="gone"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3" />
+
+            <TextView
+                android:foreground="?android:attr/selectableItemBackground"
+                android:layout_gravity="center_vertical"
+                android:drawableEnd="@drawable/ic_right_blue"
+                android:drawableTint="@color/white"
+                android:layout_marginStart="2dp"
+                android:id="@+id/TVNext"
+                android:onClick="SiguienteMes"
+                android:singleLine="true"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Siguiente"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_above="@+id/layout_direccionales"
+            android:id="@+id/contenedor_fragmentAgendado"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/AppBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <RelativeLayout
+                android:layout_below="@+id/AppBar"
+                android:id="@+id/contenedor_fragmentAgendado2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/img_marker"
+        android:src="@drawable/ic_ubicacion_clientes"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp">
+    </ImageView>
+    <TextView
+        android:id="@+id/tv_label"
+        android:layout_marginTop="-1dp"
+        android:text="Sin Nombre cliente"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:paddingStart="5dp"
+        android:textSize="8dp"
+        android:paddingEnd="5dp"
+        android:maxEms="12"
+        android:minEms="4"
+        android:ems="8"
+        android:textStyle="bold"
+        android:background="#303F9F"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

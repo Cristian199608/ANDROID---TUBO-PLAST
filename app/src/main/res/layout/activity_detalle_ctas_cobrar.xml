@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/detalle_ingresos_ly_tl"
+        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_height="60dp">
+
+        <Button
+            android:id="@+id/detalle_btn_numdoc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:maxLines="2"
+            android:clickable="false"
+            android:text="Jose Carlos fernandezdfdfddddddddddddd"
+            android:layout_margin="1dp"/>
+
+        <Button
+            android:id="@+id/detalle_btn_total"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="false"
+            android:text="Jose Carlos fernandez"
+            android:layout_margin="1dp"/>
+
+    </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/detalle_ingresos_rl_contenido"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/detalle_ingresos_ly_tl">
+
+
+        <LinearLayout
+            android:id="@+id/detalle_linear_lyt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/detalle_btn_acuenta"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Acuenta Total: S/.500"/>
+
+            <Button
+                android:id="@+id/detalle_btn_saldo"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Saldo: S/.500"/>
+
+        </LinearLayout>
+
+
+        <ListView
+            android:id="@+id/lv_detalle_ingresos"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/detalle_linear_lyt"
+
+            android:divider="#b5b5b5"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/list_selector" />
+
+
+    </RelativeLayout>
+</RelativeLayout>

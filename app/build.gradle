@@ -1,0 +1,80 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        applicationId "com.example.sm_tubo_plast"
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        useLibrary 'org.apache.http.legacy'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
+    implementation files('libs/ksoap2-android-assembly-3.0.0-RC.4-jar-with-dependencies.jar')
+    implementation files('libs/jsonrpc2-base-1.24.jar')
+    //implementation files('libs/classes.jar')
+
+    //envio de correro gmail
+    implementation files('libs/gcm.jar')
+    //Dependencia para email
+    implementation 'com.sun.mail:android-mail:1.6.0'
+    implementation 'com.sun.mail:android-activation:1.6.0'
+
+    implementation 'com.google.android.material:material:1.3.0'
+
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
+
+    implementation "androidx.cardview:cardview:1.0.0"
+
+
+    //Dependecia para leear codigo QR con Zxing
+    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+    implementation 'com.google.zxing:core:3.2.1'
+
+    //Dependecia para quick action
+    implementation 'me.piruin:quickaction:2.4.2'
+
+    //Lib o dependencia para PieChar
+    //implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation files('libs/mpandroidchartlibrary-2-1-5.jar')
+    implementation files('libs/StarIOPort3.1.jar')
+
+    //depuración base de datos //modificar via terminal adb forward tcp:8080 tcp:8080
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+
+}

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.sm_tubo_plast">
+
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the "MyLocation" functionality.
+    -->
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:ignore="LockedOrientationActivity">
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+
+
+        <activity
+            android:name=".genesys.fuerza_ventas.CreacionNuevoCliente2Activity"
+            android:theme="@style/AppThemeNewClient" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Google.MapsClientesActivity"
+            android:label="@string/title_activity_maps_clientes" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <activity
+            android:name=".genesys.fuerza_ventas.GestionVisita3Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeAgendaNoBar" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <activity
+            android:name=".genesys.fuerza_ventas.ActividadCampoAgendadoActivity"
+            android:theme="@style/AppThemeAgenda" />
+        <activity
+            android:name=".genesys.fuerza_ventas.DepositosActivity"
+            android:screenOrientation="portrait" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <activity
+            android:name=".genesys.fuerza_ventas.ClientePlanVisitaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.ClienteInformacionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.ClienteUbicacionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ClienteDetalleActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CH_ClientesDevolucion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CuotaVendedorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ListaCuotaVendedorActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ProductosPreciosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CH_InformacionProducto"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ProductosCursorAdapter"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.AmortizarCuentasXCobrarActivityLetra"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.DetalleCtasCobrarActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CobranzaActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.DepositosModificarActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.AmortizarCuentasXCobrarActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesCobranzaDetalle"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesDepositoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesPedidosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.LiquidacionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesCobranzaActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CH_BuscarProductoDevolucion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_AsignarSucursal"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_SucursalesCliente"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_FichaClienteDatos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_FichaCliente2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_FichaCliente1"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CH_DevolucionesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_InformacionCliente"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.cliente.CH_RegistroClientesNuevos"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ClientesActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme3" />
+        <activity
+            android:name=".genesys.fuerza_ventas.PedidosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.CuentasXCobrarActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Pedidos2Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ProductoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.PedidosActivityVentana2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.SincronizarActivity2"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.DevolucionesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.FacturasActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.ProductosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.MenuLiquidacionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.MenuPrincipalActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2" />
+        <activity
+            android:name=".genesys.fuerza_ventas.SincronizarActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <receiver android:name=".genesys.service.SampleAlarmReceiver" />
+    </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Add this permission to check which network access properties (e.g. active type: 3G/WiFi). -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Add this permission to access WLAN MAC address. -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+</manifest>

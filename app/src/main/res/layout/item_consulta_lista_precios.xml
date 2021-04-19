@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/white" >
+    
+    <TextView 
+        android:id="@+id/tv_fqinicial"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@drawable/box_border"
+        android:layout_weight=".33"/>
+    
+    <TextView 
+        android:id="@+id/tv_fqfinal"
+        android:layout_width="0dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:text="0.0"
+        android:background="@drawable/box_border"
+        android:layout_weight=".33"/>
+    
+    <TextView 
+        android:id="@+id/tv_precioUni"
+        android:layout_width="0dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:text="0.0"
+        android:background="@drawable/box_border"
+        android:layout_weight=".33"/>
+    
+
+</LinearLayout>

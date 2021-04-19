@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal"
+    android:padding="8dp" >
+
+
+	<!-- Title Of Song-->
+    <TextView
+        android:id="@+id/rpt_deposito_tv_nombanco"
+        android:layout_width="160dp"
+        android:maxLines="2"
+        android:layout_height="wrap_content"
+        android:text="Banco de Credito"
+        android:textColor="#040404"
+        android:typeface="sans" 
+        android:textSize="14sp"
+        android:textStyle="bold"/>
+
+	<!-- Artist Name -->
+	
+		<TextView
+        android:id="@+id/rpt_deposito_tv_secuencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rpt_deposito_tv_nombanco"
+        android:textColor="#343434"
+        android:textSize="12sp"
+        android:layout_marginTop="1dp"
+        android:text="Secuencia: 1988786" />
+	
+	
+    <TextView
+        android:id="@+id/rpt_deposito_tv_numoperacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rpt_deposito_tv_secuencia"
+        android:textColor="#343434"
+        android:textSize="12sp"
+        android:layout_marginTop="1dp"
+        android:text="N° operacion: 19887868634873" />
+
+        <TextView
+        android:id="@+id/rpt_deposito_tv_coddeposito"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+   
+        android:visibility="gone" />
+    
+    
+	<!-- Rightend Duration -->
+    
+    
+   
+      
+      <!-- Rightend Arrow -->
+     <ImageView 
+          android:id="@+id/rpt_depostio_tv_flecha"
+        android:layout_width="15dp"
+         android:layout_height="15dp"
+   
+         android:layout_alignParentRight="true"
+         android:background="@color/color_white" />
+
+     <TextView
+         android:id="@+id/rpt_deposito_tv_total"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignTop="@+id/rpt_depostio_tv_flecha"
+         android:layout_marginRight="19dp"
+         android:layout_toLeftOf="@+id/rpt_depostio_tv_flecha"
+         android:gravity="right"
+         android:text="S/.1600.0"
+         android:textColor="#10bcc9"
+         android:textSize="12sp"
+         android:textStyle="bold" />
+
+     <TextView
+         android:id="@+id/rpt_deposito_tv_estado"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignRight="@+id/rpt_deposito_tv_total"
+         android:layout_below="@+id/rpt_depostio_tv_flecha"
+         android:gravity="right"
+         android:text="No enviado"
+         android:textColor="@color/color_red"
+         android:textSize="12sp"
+         android:textStyle="bold" />
+
+</RelativeLayout>

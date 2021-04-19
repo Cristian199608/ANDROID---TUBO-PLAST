@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".genesys.fuerza_ventas.Google.MapsClientesActivity">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/myfab"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:tint="@color/white"
+        app:srcCompat="@drawable/ic_list_select"/>
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view_map_cliente"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true" >
+            <LinearLayout
+                android:layout_alignParentEnd="true"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
+                    android:background="@color/colorPrimaryDark"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txtLeyendaCabecera"
+                            android:layout_gravity="center"
+                            android:text="Cliente Localizados (100 de 150)\nFiltrado radio 500m 50 de 100"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:layout_height="wrap_content"/>
+
+                        <ImageView
+                            android:id="@+id/img_close_nav_view"
+                            android:src="@android:drawable/ic_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            map:tint="@color/white" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_gravity="center"
+                            android:text="Radios en metros"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:layout_height="wrap_content"/>
+
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:background="@color/blue_400"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:layout_height="wrap_content">
+                            <EditText
+                                android:id="@+id/edit_radios_show"
+                                android:padding="5dp"
+                                android:layout_marginBottom="2dp"
+                                android:hint="n° metros"
+                                android:background="@color/blue_400"
+                                android:backgroundTint="@color/blue_400"
+                                android:textColorHint="@color/blue_100"
+                                android:layout_width="0dp"
+                                android:layout_weight="2"
+                                android:inputType="number"
+                                android:singleLine="true"
+                                android:imeOptions="actionSearch"
+                                android:textColor="@color/white"
+                                android:layout_height="wrap_content"/>
+                            <ImageView
+                                android:id="@+id/img_buscar_by_radio"
+                                map:tint="@color/white"
+                                android:src="@android:drawable/ic_menu_search"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:background="@color/blue_400"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:id="@+id/editBuscarClientes"
+                            android:padding="5dp"
+                            android:hint="nombre, direccion o telefono"
+                            android:background="@color/blue_400"
+                            android:backgroundTint="@color/blue_400"
+                            android:textColorHint="@color/blue_100"
+                            android:imeOptions="actionSearch"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:layout_height="wrap_content"/>
+                        <ImageView
+                            android:id="@+id/img_buscar"
+                            map:tint="@color/white"
+                            android:src="@android:drawable/ic_menu_search"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:padding="5dp"
+                    android:id="@+id/recyclerClienteMap"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </com.google.android.material.navigation.NavigationView>
+        <fragment
+            android:id="@+id/my_fragment_map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+</RelativeLayout>

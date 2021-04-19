@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:orientation="vertical" >
+    
+    <TableLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Departamento"/>
+			<Spinner android:id="@+id/spn_departamento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"/>            
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Provincia"/>
+			<Spinner android:id="@+id/spn_provincia" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"/>            
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Distrito"/>
+			<Spinner android:id="@+id/spn_distrito" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"/>            
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Zona"/>
+			<Spinner android:id="@+id/spn_zona" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"/>            
+        </TableRow>
+        <TableRow 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+			<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Zona Urbana"/>
+			<EditText android:id="@+id/edt_zonaUrbana" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"/>            
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

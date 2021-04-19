@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/color_black">
+
+
+    <RelativeLayout
+        android:id="@+id/lytHead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/tab_title_headline_background" >
+
+        <Button
+            android:id="@+id/ctas_cobrar_btn_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="top"
+            android:background="@drawable/tab_back_button"
+            android:text="" />
+
+
+
+
+
+        <TextView
+            android:id="@+id/ctas_cobrar_txt_cliente"
+            style="@style/WhiteTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@+id/title_image"
+            android:layout_toRightOf="@+id/ctas_cobrar_btn_back_button"
+            android:text="MORALES GONZALES, PAUL"
+            android:textSize="14sp"/>
+
+        <ImageView
+            android:id="@+id/title_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_gravity="top"
+            android:src="@drawable/icono_mozo" />
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/lv_ctas_cobrar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
+
+</LinearLayout>

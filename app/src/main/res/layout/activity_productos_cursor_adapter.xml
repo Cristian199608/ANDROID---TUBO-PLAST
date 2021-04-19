@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/productos_cursor_btnScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/barcode_icon"
+        android:scaleType="center"/>
+
+    <EditText android:id="@+id/myFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:hint="Buscar Producto"
+        android:inputType="textVisiblePassword">
+
+        <requestFocus />
+    </EditText>
+
+    <ListView android:id="@+id/productos_cursor_lv_prod"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:divider="#b5b5b5"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector"  />
+
+</LinearLayout>

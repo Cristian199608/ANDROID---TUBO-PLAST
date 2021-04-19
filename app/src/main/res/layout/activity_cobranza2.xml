@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white" >
+
+    <EditText android:id="@+id/inputSearch_cobranzas"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Buscar Clientes"
+        android:inputType="textVisiblePassword"/>
+
+    <LinearLayout
+        android:id="@+id/lyt_lv_cobranza"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/inputSearch_cobranzas">
+
+        <ListView
+            android:id="@+id/lv_cobranza"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="#b5b5b5"
+            android:dividerHeight="1dp"
+            android:listSelector="@drawable/list_selector"/>
+
+    </LinearLayout>
+
+
+    <!-- cinta para mostrar los totales -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_semi_transparente"
+        android:layout_marginBottom="5dp">
+
+        <TextView
+            android:id="@+id/cobranza_activity_txtCantidad_cobranzas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:padding="3dp"
+            android:text="$406,008,123.00"
+            android:textColor="#FFF" />
+
+        <TextView
+            android:id="@+id/cobranza_activity_txtTotal_cobranzas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:padding="3dp"
+            android:text="S/.406,008,123.00"
+            android:textColor="#FFF" />
+
+        <TextView
+            android:id="@+id/cobranza_activity_txtTotal_acuenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:padding="3dp"
+            android:text="Entregar 10 L"
+            android:textColor="#FFF" />
+
+        <TextView
+            android:id="@+id/cobranza_activity_txtTotal_saldo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:padding="3dp"
+            android:text="Recoger 40 L"
+            android:textColor="#FFF" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

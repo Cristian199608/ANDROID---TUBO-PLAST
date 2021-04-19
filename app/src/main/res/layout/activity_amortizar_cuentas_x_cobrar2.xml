@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="Secuencia:"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <EditText
+                android:id="@+id/amortizar_et_secuencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="false"
+                android:singleLine="true"
+                android:background="@drawable/edittext_rounded_corners"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_marginTop="5dp"
+                android:text="Fecha Pago"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="2">
+
+                <EditText
+                    android:id="@+id/amortizar_edtFechaPago"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="false"
+                    android:hint="Fecha"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:background="@drawable/edittext_rounded_corners"
+                    android:layout_margin="5dp"/>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="48dip"
+                    android:onClick="Mostrar_date"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:paddingRight="6dp"
+                    android:drawableRight="@drawable/fecha"
+                    android:drawablePadding="0dip"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="Forma Pago:"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <Spinner
+                android:id="@+id/amortizar_spn_pago"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_search_panel_selector"
+                android:layout_weight="2"
+                android:singleLine="true"
+                android:layout_margin="5dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ly_operacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="Número:"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+            <EditText
+                android:id="@+id/amortizar_et_operacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="true"
+                android:singleLine="true"
+                android:hint="Op-Cheq/Doc"
+                android:background="@drawable/edittext_rounded_corners"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ly_banco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="Banco:"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <Spinner
+                android:id="@+id/amortizar_spn_banco"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:singleLine="true"
+                android:entries="@array/datos_formaPago2"
+                android:background="@drawable/tab_search_panel_selector"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ly_Cta_banco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="Cta:"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <Spinner
+                android:id="@+id/amortizar_spn_cta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:singleLine="true"
+                android:entries="@array/datos_formaPago2"
+                android:background="@drawable/tab_search_panel_selector"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_marginTop="5dp"
+                android:text="Moneda"
+                android:textSize="14sp"
+                android:layout_margin="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:orientation="horizontal" >
+
+                <RadioGroup
+                    android:id="@+id/amortizar_rb_moneda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/rb_soles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="12sp"
+                        android:checked="true"
+                        android:text="Soles" />
+                    <RadioButton
+                        android:id="@+id/rb_dolares"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="12sp"
+                        android:layout_height="wrap_content"
+                        android:text="Dolar" />
+
+                </RadioGroup>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:text="A cuenta:"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/amortizar_et_acuenta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="true"
+                android:singleLine="true"
+                android:numeric="decimal"
+                android:background="@drawable/edittext_rounded_corners"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/lblSaldo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:text="Saldo:"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/amortizar_et_saldo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="false"
+                android:singleLine="true"
+                android:numeric="decimal"
+                android:gravity="left"
+                android:background="@drawable/edittext_rounded_corners"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="3"
+                android:text="Tipo de Cambio :"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edt_igv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:enabled="false"
+                android:singleLine="true"
+                android:numeric="decimal"
+                android:gravity="left"
+                android:background="@drawable/edittext_rounded_corners"
+                android:layout_margin="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/amortizar_btn_agregar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:text="Agregar"
+                android:textColor="#FFF"
+                android:background="@drawable/boton_ingresar"
+                android:layout_marginRight="4dp"/>
+
+            <Button
+                android:id="@+id/amortizar_btn_cancelar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="14sp"
+                android:text="Cancelar"
+                android:textColor="#FFF"
+                android:background="@drawable/boton_ingresar"
+                android:layout_marginLeft="4dp"/>
+
+        </LinearLayout>
+
+        <!--     <Button
+                android:id="@+id/productolyt__btnPromociones"
+
+                android:layout_width="320dp"
+                android:layout_height="40dp"
+                android:background="#FF0000"
+                android:gravity="center"
+                android:text=" Ver Promociones"
+                android:visibility="invisible"
+                android:textSize="15sp"
+                android:drawableLeft="@drawable/promocion"/> -->
+    </LinearLayout>
+</ScrollView>

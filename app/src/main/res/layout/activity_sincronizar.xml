@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    android:keepScreenOn="true" >
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*" >
+
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <Switch
+                    android:id="@+id/settings_chk_principal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:buttonTint="#616161"
+                    android:checked="true"
+                    android:text="Servicio web" />
+
+                <Spinner
+                    android:id="@+id/settings_spn_servicio"
+                    style="@android:style/Widget.Holo.Light.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:entries="@array/datos_formaPago2"
+                    android:singleLine="true"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/txtid_usuario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Dir. Servidor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_servidor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Base Datos"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_nombreBD"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Usuario"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_usuario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Contraseña"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edtContrasena"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textPassword"
+                android:text="123456789" />
+        </TableRow>
+
+        <!-- SERVIDOR LOCAL -->
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="2px"
+            android:layout_margin="8dp"
+            android:background="#FFFFFF" />
+
+        <TableRow
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginLeft="15dp"
+                    android:text="SERVICIO LOCAL"
+                    android:textSize="14sp" />
+
+                <CheckBox
+                    android:id="@+id/settings_chk_secundario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Servc http://"
+                    android:textSize="14sp" />
+
+                <Spinner
+                    android:id="@+id/settings_spn_servicio_local"
+                    style="@android:style/Widget.Holo.Light.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:entries="@array/datos_formaPago2"
+                    android:singleLine="true"
+                    android:spinnerMode="dialog" />
+
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Dir. Servidor"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_servidor_local"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Base Datos"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_nombreBD_local"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Usuario"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edt_usuario_local"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:singleLine="true" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight=".4"
+                android:gravity="center"
+                android:text="Contraseña"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/settings_edtContrasena_local"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight=".6"
+                android:background="@drawable/edittext_rounded_corners"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textPassword"
+                android:text="123456789" />
+        </TableRow>
+
+        <!-- FIn SERVIDOR LOCAL -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" >
+
+            <Button
+                android:id="@+id/settings_btnGuardar"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/boton_ingresar"
+                android:text="Guardar"
+                android:textColor="#FFF"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/settings_btnCancelar"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/boton_ingresar"
+                android:text="Cancelar"
+                android:textColor="#FFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_tipoProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="2px"
+            android:layout_margin="10dp"
+            android:background="#FFFFFF" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/settings_btnPreferencias"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/boton_ingresar"
+                android:text="Preferencias"
+                android:textColor="#FFF"
+                android:textSize="14sp" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14sp"
+            android:layout_marginTop="14sp" >
+
+            <Button
+                android:id="@+id/settings_btnBackup"
+                android:paddingStart="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/boton_ingresar"
+                android:text="Enviar BackUps"
+                android:textColor="#FFF"
+                android:textSize="14sp" />
+        </TableRow>
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="wrap_content"
+            android:layout_height="2px"
+            android:layout_margin="5dp"
+            android:background="#FFFFFF" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone" >
+
+            <RadioGroup
+                android:id="@+id/sincronizar_rb_opciones"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone" >
+
+                <RadioButton
+                    android:id="@+id/radio0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Recibir Datos del Servidor" />
+
+                <RadioButton
+                    android:id="@+id/radio1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enviar Datos al servidor" />
+
+                <RadioButton
+                    android:id="@+id/radio2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sincronizar Config, Datos e Imágenes" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center" >
+
+            <ProgressBar
+                android:id="@+id/pBarSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/sincronizar_btn_sincronizar"
+            android:paddingStart="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/boton_ingresar"
+            android:text="Sincronizar"
+            android:textColor="@color/color_white"
+            android:textSize="14sp"
+            android:visibility="visible" />
+
+    </TableLayout>
+
+</ScrollView>

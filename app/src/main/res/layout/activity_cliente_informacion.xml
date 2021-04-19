@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cliente_info_tv_ruc"
+            android:textSize="22dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RUC"/>
+
+        <EditText
+            android:id="@+id/cliente_info_edt_ruc"
+            android:textSize="22dp"
+            android:layout_below="@+id/cliente_info_tv_ruc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cliente_info_tv_nombre"
+            android:textSize="22dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre"/>
+
+        <EditText
+            android:id="@+id/cliente_info_edt_nombre"
+            android:textSize="22dp"
+            android:layout_below="@+id/cliente_info_tv_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cliente_info_tv_precio"
+            android:layout_width="match_parent"
+            android:textSize="22dp"
+            android:layout_height="wrap_content"
+            android:text="Lista de Precio"/>
+
+        <Spinner
+            android:id="@+id/cliente_info_spn_lista"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cliente_info_tv_precio"
+            android:singleLine="true"
+            android:clickable="false"
+            android:background="@drawable/tab_search_panel_selector"
+            android:entries="@array/datos_banco"/>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:id="@+id/cliente_info_ly_credito"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/cliente_info_tv_credito"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="22dp"
+                android:text="Limite Credito"/>
+
+            <EditText
+                android:id="@+id/cliente_info_edt_credito"
+                android:layout_width="match_parent"
+                android:textSize="22dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:id="@+id/cliente_info_ly_tiempo"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/cliente_info_tv_tiempo"
+                android:layout_width="match_parent"
+                android:textSize="22dp"
+                android:layout_height="wrap_content"
+                android:text="Tiempo Credito"/>
+
+            <EditText
+                android:id="@+id/cliente_info_edt_tiempo"
+                android:layout_width="match_parent"
+                android:textSize="22dp"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+    <RelativeLayout
+
+        android:padding="5dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/cliente_info_tv_telefono"
+            android:textSize="22dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Teléfono"/>
+
+        <EditText
+            android:layout_below="@+id/cliente_info_tv_telefono"
+            android:id="@+id/cliente_info_edt_telefono"
+            android:textSize="22dp"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:enabled="false"/>
+
+
+
+        <Button
+            android:id="@+id/cliente_info_btn_telefono"
+            android:layout_toRightOf="@+id/cliente_info_edt_telefono"
+            android:layout_below="@+id/cliente_info_tv_telefono"
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:textSize="22dp"
+            android:background="#4BB74C"
+            android:textColor="@color/color_white"
+            android:text="Llamar" />
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

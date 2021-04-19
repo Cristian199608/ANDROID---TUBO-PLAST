@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"    
+    android:orientation="horizontal"
+    android:background="@drawable/list_selector"
+    >
+
+    <TextView
+        android:id="@+id/tv_tipoRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/relative"
+        android:layout_alignParentTop="true"
+        android:background="@color/cyan_500"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="P"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_tipoRegistro"
+        android:padding="10dp" >
+
+        <TextView
+            android:id="@+id/rpt_pedido_tv_cliente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/tv_monedaReporte"
+            android:maxLines="2"
+            android:text="Paul Morales Gonzales"
+            android:textColor="#040404"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:typeface="sans" />
+
+        <TextView
+            android:id="@+id/rpt_pedido_tv_estado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/rpt_pedido_tv_total"
+            android:layout_below="@+id/rpt_pedido_tv_total"
+            android:gravity="right"
+            android:text="Pendiente"
+            android:textColor="@color/color_red"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/rpt_pedido_tv_oc_numero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_below="@+id/rpt_pedido_tv_cliente"
+            android:layout_alignParentLeft="true"
+            android:text="00088988989"
+            android:textColor="#6E6E6E"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/labell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_below="@+id/rpt_pedido_tv_cliente"
+            android:layout_toRightOf="@+id/rpt_pedido_tv_oc_numero"
+            android:layout_marginLeft="3dp"
+            android:text="@string/arrow_lefy"
+            android:textColor="#6E6E6E"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+        <TextView
+            android:id="@+id/rpt_pedido_tv_pedidoAnterior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"            
+            android:layout_below="@+id/rpt_pedido_tv_cliente"
+            android:layout_toRightOf="@+id/labell"
+            android:layout_marginLeft="3dp"
+            android:text="--"
+            android:textColor="#6E6E6E"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/imgCampanaYellow"
+            android:layout_below="@+id/rpt_pedido_tv_cliente"
+            android:layout_toRightOf="@+id/rpt_pedido_tv_pedidoAnterior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textStyle="bold"
+            android:textColor="@color/orange_400"
+            android:drawableEnd="@drawable/ic_campana_yellow"
+            />
+
+        <TextView
+            android:id="@+id/rpt_pedido_tv_tipopago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rpt_pedido_tv_cliente"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/imgCampanaYellow"
+            android:text="Contado"
+            android:textColor="#343434"
+            android:textSize="12sp" />
+
+
+        <TextView
+            android:id="@+id/rpt_pedido_tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_monedaReporte"
+            android:layout_alignBottom="@+id/tv_monedaReporte"
+            android:layout_marginRight="14dp"
+            android:layout_toLeftOf="@+id/item_reporte_pedido_flecha"
+            android:gravity="right"
+            android:text="25 000.00"
+            android:textColor="#10bcc9"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/item_reporte_pedido_flecha"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_above="@+id/rpt_pedido_tv_tipopago"
+            android:layout_alignParentRight="true"
+            android:background="@color/color_white" />
+
+        <TextView
+            android:id="@+id/tv_monedaReporte"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/rpt_pedido_tv_cliente"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/rpt_pedido_tv_total"
+            android:gravity="right"
+            android:text="S/."
+            android:textColor="#10bcc9"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_below="@+id/rpt_pedido_tv_oc_numero"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/edtFechavisita"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="Alguna obervación acerca del pedido"
+                android:textColor="@color/orange_500"
+                android:textSize="14sp"
+                android:paddingEnd="2dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/edtObservacion_pedido"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingStart="2dp"
+                android:text="Alguna obervación acerca del pedido"
+                android:textColor="@color/orange_500"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

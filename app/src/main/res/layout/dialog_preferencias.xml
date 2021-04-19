@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_almacenes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Almacenes:" />
+
+        <Spinner
+            android:id="@+id/spn_almacenes"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tv_visualizacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Tipo de Visualización:" />
+
+        <Spinner
+            android:id="@+id/spn_visualizacion"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center" />
+
+        <CheckBox
+            android:id="@+id/check_stock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Actualizar Stock Automático" />
+
+        <CheckBox
+            android:id="@+id/check_precioCero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Agregar productos sin precio" />
+        
+        <TextView
+            android:id="@+id/tv_Proveedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="Proveedor sin crédito:" />
+
+        <Spinner
+            android:id="@+id/spn_proveedores"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center" />
+    </LinearLayout>
+
+</ScrollView>

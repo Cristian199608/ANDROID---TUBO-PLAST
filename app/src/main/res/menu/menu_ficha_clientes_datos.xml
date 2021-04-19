@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/menu_sucursales" android:title="Sucursales"
+      android:icon="@drawable/icon_company_50dp"
+      android:showAsAction="always"></item>
+    
+<item android:id="@+id/menu_contactos" android:title="Asignar Contactos"
+      android:icon="@drawable/icon_contactos_48dp"></item>
+
+<item android:id="@+id/menu_horarioCobranza" android:title="Horario cobranza"
+      android:icon="@drawable/icon_horario_50dp"></item>
+
+<item android:id="@+id/menu_horarioEntrega" android:title="Horario entrega"
+      android:icon="@drawable/icon_horario_50dp"></item>
+ 
+</menu>
