@@ -35,6 +35,10 @@ import java.util.List;
 public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "LocationApiGoogle";
 
+    public  static final long UPDATE_INTERVAL_3_segundos = 3000;// = 3 seconds
+    public  static final long FASTEST_INTERVAL_3_segundos = 3000; // = 3 seconds
+
+
     Activity activity;
     LocationManager mlocManager;
     public GoogleApiClient googleApiClient;
@@ -61,6 +65,7 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
         locationRequest.setPriority(TIPO_PRIORIDAD);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -129,6 +134,12 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
 
     }
 
+
+    public  void ApiLocationGoogleConectar(){
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {

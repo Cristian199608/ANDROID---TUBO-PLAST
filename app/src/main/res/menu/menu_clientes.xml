@@ -9,10 +9,35 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
 
+    <item android:id="@+id/menu_calendario_visita"
+        android:title="Fecha"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_calendar_white"/>
+
     <item android:id="@+id/clientes_menu_mapa"
         android:title="Ver Mapa"
         app:showAsAction="always"
-        android:icon="@drawable/mapa"></item>
+        android:icon="@drawable/mapa">
+
+    </item>
+
+    <item android:id="@+id/file"
+        android:title="Enviar datos Pendientes" >
+        <!-- "file" submenu -->
+        <menu>
+
+            <item android:id="@+id/clientes_enviar_localizacion_pendiente"
+                android:title="Geolocalizaciones Pendientes"
+                android:icon="@drawable/check"></item>
+
+            <item android:id="@+id/cliente_contacto_pendientes"
+                android:title="Cliente Contactos Pendientes"
+                android:icon="@drawable/check"></item>
+        </menu>
+    </item>
+
+
+
 
 <!--<item android:id="@+id/clientes_menu_registrados" android:title="Registro Clientes"-->
 <!--      android:icon="@drawable/icon_resumen_48dp"></item>-->

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="APP_VERSION">v7.2.9 pruebas 3</string>
-    <string name="APP_VERSION_CODE">v7.2.9(2021-03-25)</string>
+    <string name="APP_VERSION">v7.3.2 2021-10-29</string>
+    <string name="APP_VERSION_CODE">v7.3.2 (2021-10-29)</string>
     <string name="arrow_lefy">&lt;</string>
     <string name="fa_icon_ruc">&#xf1fe;</string>
     <string name="fa_icon_piechart">&#xf200;</string>
@@ -15,14 +15,14 @@
     <string name="lb_unavailable">Unavailable</string>
     <string name="general_error">Oops!\n Something went wrong&#8230; :(</string>
     <string name="error_credential_title">Wrong Credentials</string>
-    <string name="error_credential">Please login at FEUP Mobile.</string>
+    <string name="error_credential">Please login at gFEUP Mobile.</string>
     <string name="error_title">Error</string>
 
     <!-- *************************************************************************************** -->
     <!-- Downloader -->
     <string name="msg_downloading">Downloading %1$s</string>
     <string name="msg_download_finished">Finished downloading:\n %1$s</string>
-    <string name="toast_download_no_memory">Error: Out of memory!</string>
+    <string name="toast_download_no_memory">Errorlogi: Out of memory!</string>
     <string name="toast_download_no_memory_card">Error: No memory card available.</string>
     <string name="toast_download_error_file">Error while writing the file</string>
     <string name="toast_download_error">Error while downloading file</string>

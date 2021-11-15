@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,7 +12,9 @@ import android.widget.TimePicker;
 
 import com.example.sm_tubo_plast.R;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, DatePicker.OnDateChangedListener{
@@ -20,20 +23,27 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
     private final int mInitialHourOfDay;
     private final int mInitialMinute;
     private final boolean mIs24HourView;
-    private final boolean validar_hora;
+    private  boolean habliltar_rango_fechas=false;
+    private  boolean HabilitarMinDate=false;
     DatePicker datePicker;
 
     Dialog dialogo;
     TextView txt_hora_message;
     Button txt_aceptar, btn_continuar;
+    LinearLayout layour_cabecera;
+    CheckBox chk_habilitar_rango;
 
-    public CustomDateTimePicker(Activity activity, OnTimeSetListener listener, int mInitialHourOfDay, int mInitialMinute, boolean mIs24HourView, boolean validar_hora) {
+    String formatFecha=null;
+
+    public CustomDateTimePicker(Activity activity, OnTimeSetListener listener, int mInitialHourOfDay, int mInitialMinute, boolean mIs24HourView,
+                                boolean enabled_hora, boolean HabilitarMinDate) {
 
         mTimeSetListener = listener;
         this.mInitialHourOfDay = mInitialHourOfDay;
         this.mInitialMinute = mInitialMinute;
         this.mIs24HourView = mIs24HourView;
-        this.validar_hora = validar_hora;
+        this.HabilitarMinDate = HabilitarMinDate;
+
 
         dialogo = new Dialog(activity);
         dialogo.setContentView(R.layout.custom_datetime_picker);
@@ -47,10 +57,14 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
         Button txt_cancelar = dialogo.findViewById(R.id.txt_cancelar);
         TextView txt_fecha = dialogo.findViewById(R.id.txt_fecha);
         TextView txt_hora = dialogo.findViewById(R.id.txt_hora);
+        layour_cabecera = dialogo.findViewById(R.id.layour_cabecera);
+        chk_habilitar_rango = dialogo.findViewById(R.id.chk_habilitar_rango);
+
         mTimePicker.setIs24HourView(this.mIs24HourView);
         mTimePicker.setCurrentHour(this.mInitialHourOfDay);
         mTimePicker.setCurrentMinute(this.mInitialMinute);
         mTimePicker.setOnTimeChangedListener(this::onTimeChanged);
+        chk_habilitar_rango.setVisibility(View.GONE);
 
 
 
@@ -60,7 +74,6 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
                 datePicker.setVisibility(View.VISIBLE);
                 mTimePicker.setVisibility(View.GONE);
 
-                txt_cancelar.setVisibility(View.GONE);
                 txt_aceptar.setVisibility(View.GONE);
                 btn_continuar.setVisibility(View.VISIBLE);
 
@@ -69,13 +82,13 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
 
             }
         });
+
         txt_hora.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mTimePicker.setVisibility(View.VISIBLE);
                 datePicker.setVisibility(View.GONE);
 
-                txt_cancelar.setVisibility(View.VISIBLE);
                 txt_aceptar.setVisibility(View.VISIBLE);
                 btn_continuar.setVisibility(View.GONE);
 
@@ -101,6 +114,13 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
         int altura=LinearContenedor.getLayoutParams().height;
         LinearContenedor.getLayoutParams().height=altura;
         DatePicketCustom();
+        if (!enabled_hora) {
+            txt_fecha.setOnClickListener(null);
+            txt_hora.setOnClickListener(null);
+            layour_cabecera.setVisibility(View.GONE);
+            btn_continuar.setVisibility(View.GONE);
+            txt_aceptar.setVisibility(View.VISIBLE);
+        }
     }
     public void DatePicketCustom(){
 
@@ -108,9 +128,25 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
         calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        datePicker.setMinDate(calendar.getTimeInMillis());
+        calendar.add(Calendar.DAY_OF_YEAR, 0);
+        if (HabilitarMinDate) {
+            datePicker.setMinDate(calendar.getTimeInMillis());
+        }
     }
+
+    public String getFormatFecha() {
+        return formatFecha;
+    }
+
+    public void setFormatFecha(String formatFecha) {
+        this.formatFecha = formatFecha;
+    }
+
+    public void sethabliltar_rango_fechas(boolean habliltar_rango_fechas) {
+        chk_habilitar_rango.setVisibility(habliltar_rango_fechas?View.VISIBLE:View.GONE);
+        this.habliltar_rango_fechas = habliltar_rango_fechas;
+    }
+
     public void Show(){dialogo.show();}
 
     public void onclickPositivo(){
@@ -126,12 +162,23 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
             myCalendar.set(Calendar.MINUTE, mTimePicker.getCurrentMinute());
 
 
-            String mensaje=mTimeSetListener.onDateTimeSet( myCalendar);
-            if (mensaje.length()==0){
-                dialogo.dismiss();
+            String fecha_formateado=null;
+            if (formatFecha!=null){
+                SimpleDateFormat sdformat = new SimpleDateFormat(formatFecha, Locale.US);
+                fecha_formateado=sdformat.format(myCalendar.getTime());
+            }
+
+
+            String mensaje=mTimeSetListener.onDateTimeSet( myCalendar, fecha_formateado);
+            if (mensaje!=null){
+                if (mensaje.length()==0){
+                    dialogo.dismiss();
+                }else{
+                    txt_hora_message.setTextColor(dialogo.getContext().getResources().getColor(R.color.red_400));
+                    txt_hora_message.setText(""+mensaje);
+                }
             }else{
-                txt_hora_message.setTextColor(dialogo.getContext().getResources().getColor(R.color.red_400));
-                txt_hora_message.setText(""+mensaje);
+                dialogo.dismiss();
             }
         }
     }
@@ -151,6 +198,6 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
     }
 
     public interface OnTimeSetListener {
-        String onDateTimeSet(Calendar myCalendar);
+        String onDateTimeSet(Calendar myCalendar, String fecha_formateado);
     }
 }

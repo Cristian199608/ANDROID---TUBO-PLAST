@@ -77,6 +77,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     public static final String TAG  = "ReportesPedidosActivity";
     public static final String KEY_TOTAL = "total";
     public static final String KEY_NOMCLIENTE = "nombrecliente";
+    public static final String KEY_CODCLI = "codcli";
     public static final String KEY_TIPOPAGO = "tipopago";
     public static final String KEY_NUMOC = "numoc";
     public static final String KEY_ESTADO = "estado";
@@ -251,7 +252,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                         else if (actionId == ID_DETALLE) {
                             int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
                             if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
-                                if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, true).size()>0) {
+                                if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, GestionVisita3Activity.VISITA_PLANIFICADA).size()>0) {
                                     Intent intent=new Intent(ReportesPedidosActivity.this, GestionVisita3Activity.class);
                                     intent.putExtra("ID_RRHH", "-1");
                                     intent.putExtra("CODIGO_CRM", "");
@@ -259,6 +260,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                                     intent.putExtra("OC_NUMERO", ""+oc_numero);
                                     intent.putExtra("COD_VEND", codven);
                                     intent.putExtra("isPLANIFICADA", false);//FALSE PARA NO MODIFICAR
+                                    intent.putExtra("TIPO_GESTION", "nada");//FALSE PARA NO MODIFICAR
                                     intent.putExtra("ORIGEN", TAG);
                                     startActivity(intent);
                                 }else{
@@ -527,8 +529,12 @@ public class ReportesPedidosActivity extends FragmentActivity {
             Object objeto = it.next();
             DBPedido_Cabecera cta = (DBPedido_Cabecera) objeto;
 
+
             HashMap<String, String> map = new HashMap<String, String>();
-            map.put(KEY_NOMCLIENTE,"" + obj_dbclasses.obtenerNomcliXCodigo(cta.getCod_cli()));
+            String nombre_cliente= obj_dbclasses.obtenerNomcliXCodigo(cta.getCod_cli());
+            //nombre_cliente=nombre_cliente.replace("TPLAST-VISITA", "VISITA CREADO DESDE SIDIGE");
+            map.put(KEY_NOMCLIENTE,"" + (nombre_cliente.length()==0?"RUC: "+cta.getCod_cli():nombre_cliente));
+            map.put(KEY_CODCLI,"" + cta.getCod_cli());
             map.put(KEY_TIPOPAGO, "" + obtenerCond_Pago(cta.getCond_pago()));
 
             if (cta.getCod_noventa() > 0) {
@@ -855,7 +861,11 @@ public class ReportesPedidosActivity extends FragmentActivity {
             if (VARIABLES.IsLatitudValido(pedidos.get(position).get("latitud"))){
                 viewHolder.edtObservacion_pedido.setText("");
             }else{
-                viewHolder.edtObservacion_pedido.setText("Pedido sin posición");
+                if (pedidos.get(position).get(KEY_NOVENTA).toString().equals(""+GlobalVar.CODIGO_VISITA_CLIENTE)){
+                    viewHolder.edtObservacion_pedido.setText("");
+                }else{
+                    viewHolder.edtObservacion_pedido.setText("Pedido sin posición");
+                }
             }
 
 
@@ -925,7 +935,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     public void crearDialogo_noventa() {
 
         dialogo = new Dialog(this);
-        numOc = obj_dbclasses.obtenerNumOC(codven);
+        numOc = obj_dbclasses.obtenerMaxNumOc(codven);
         dialogo.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialogo.setContentView(R.layout.dialog_motivo_noventa);
         dialogo.setCancelable(false);
@@ -1219,7 +1229,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                 } else if (tipo.equals("PEDIDO-DETALLE")) {
 
-                    String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
+                    String codcli =pedidos.get(mSelectedRow).get(KEY_CODCLI);
 
                     int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
                             item_direccion);
@@ -1235,6 +1245,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             getApplicationContext(), PedidosActivity.class);
                     ipedido.putExtra("codigoVendedor", codven);
                     ipedido.putExtra("nombreCliente", nomcli);
+                    ipedido.putExtra("codcli", codcli);
+                    ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
                     ipedido.putExtra("origen", "REPORTES-PEDIDO");
                     ipedido.putExtra("OC_NUMERO", oc_numero);
                     ipedido.putExtra("tipoRegistro", tipoRegistro);
@@ -1267,6 +1279,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                     ipedido.putExtra("codigoVendedor", codven);
                     ipedido.putExtra("nombreCliente", nomcli);
+                    ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
                     ipedido.putExtra("origen", "REPORTES-MODIFICAR");
                     ipedido.putExtra("OC_NUMERO", oc_numero);
                     ipedido.putExtra("tipoRegistro", tipoRegistro);
@@ -1389,6 +1402,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
                     PedidosActivity.class);
             ipedido.putExtra("codigoVendedor", codven);
             ipedido.putExtra("nombreCliente", nomcli);
+            ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
+            ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
             ipedido.putExtra("origen", "REPORTES");
             ipedido.putExtra("OC_NUMERO", oc_numero);
 
@@ -1503,7 +1518,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_reportespedidos:
 
-                        GlobalFunctions.backupdDatabase();
+                        GlobalFunctions.backupdDatabase(ReportesPedidosActivity.this);
                         new asyncEnviarPendientes().execute("");
                         return true;
                     case R.id.menu_reportespedidos_verificar:

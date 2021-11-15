@@ -62,20 +62,7 @@
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <AutoCompleteTextView
-                            android:id="@+id/autoCompleteTextView_san_contactos"
-                            android:layout_marginEnd="5dp"
-                            android:layout_width="0dp"
-                            android:layout_weight="3"
-                            android:layout_height="match_parent"
-                            android:textSize="@dimen/dimen_secondary_text"
-                            android:background="@drawable/edittext_rounded_corners6"
-                            android:textColor="@color/blue_grey_500"
-                            android:enabled="false"
-                            android:backgroundTint="@color/teal_200"
-                            android:textColorHint="@color/secondary_text"
-                            android:text="-----------">
-                        </AutoCompleteTextView>
+
 
                         <EditText
                             android:id="@+id/tv_nombres"
@@ -137,7 +124,7 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cidncidic"
+                        android:id="@+id/cardViewVisita"
                         android:layout_marginTop="0.5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -155,6 +142,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
+                                android:id="@+id/txt_titulo_visita"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textStyle="bold"
@@ -413,6 +401,86 @@
                             </LinearLayout>
 
 
+                            <TextView
+                                android:id="@+id/label_reprogramacion"
+                                android:layout_width="match_parent"
+                                android:textStyle="bold"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/secondary_text"
+                                android:layout_gravity="center"
+                                android:gravity="center|left"
+                                android:textSize="14dp"
+                                android:padding="10dp"
+                                android:text="Reprogramación"/>
+
+
+                            <EditText
+                                android:id="@+id/et_motivo_reporgramacion"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/primary_text"
+                                android:background="@drawable/edittext_rounded_corners_cicle_purple"
+                                android:layout_margin="3dp"
+                                android:layout_gravity="center"
+                                android:gravity="center|left"
+                                android:textSize="14dp"
+                                android:padding="10dp"
+                                android:drawableEnd="@drawable/icon_ch_edit2_32"
+                                android:hint="Motivo de reprogramación"
+                                android:textColorHint="@color/green_500"
+                                android:text=""/>
+
+                            <LinearLayout
+                                android:background="@color/white"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_weight="2"
+                                    android:textStyle="bold"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/secondary_text"
+                                    android:layout_gravity="center"
+                                    android:gravity="center|left"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:text="Fecha"/>
+
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/secondary_text"
+                                    android:layout_gravity="center"
+                                    android:gravity="center|left"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:text=":"/>
+
+                                <TextView
+                                    android:id="@+id/et_fecha_visita_manual"
+                                    android:layout_width="0dp"
+                                    android:layout_weight="3"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/secondary_text"
+                                    android:background="@drawable/edittext_rounded_corners6"
+                                    android:layout_margin="3dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center|left"
+                                    android:focusable="false"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:hint="aaaa-mm-dd"
+                                    android:text=""/>
+
+
+                            </LinearLayout>
+
+
+
                             <LinearLayout
                                 android:background="@color/grey_100"
                                 android:layout_width="match_parent"
@@ -456,6 +524,15 @@
                                     android:focusable="false"
                                     android:padding="10dp"/>
                             </LinearLayout>
+
+                            <CheckBox
+                                android:layout_gravity="end"
+                                android:visibility="gone"
+                                android:id="@+id/check_validar_fehca_visita"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Validar visita"/>
+
                             <LinearLayout
                                 android:background="@color/white"
                                 android:layout_width="match_parent"
@@ -498,6 +575,65 @@
                                     android:padding="10dp"
                                     android:focusable="false"
                                     android:hint="hh:mm"/>
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/sw_contacto"
+                                android:background="@color/grey_100"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/blue_500"
+                                android:layout_gravity="center"
+                                android:gravity="center|left"
+                                android:textSize="@dimen/text_size_medium"
+                                android:padding="10dp"
+                                android:text="Contacto"/>
+
+                            <LinearLayout
+                                android:background="@color/grey_100"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_weight="2"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/secondary_text"
+                                    android:layout_gravity="center"
+                                    android:gravity="center|left"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:text="Contacto"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/secondary_text"
+                                    android:layout_gravity="center"
+                                    android:gravity="center|left"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:text=":"/>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_weight="3"
+                                    android:layout_height="wrap_content">
+                                    <Spinner
+                                        android:id="@+id/SpinnerContacto"
+                                        android:layout_marginBottom="5dp"
+                                        android:layout_marginRight="5dp"
+                                        android:layout_marginLeft="5dp"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="2.2"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/grey_700"
+                                        android:background="@drawable/img_for_spinner"
+                                        android:padding="12dp"
+                                        android:text="Datos"/>
+                                </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
@@ -542,7 +678,7 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical">
                                 <LinearLayout
-                                    android:background="@color/white"
+                                    android:background="@color/grey_100"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal">
@@ -558,6 +694,7 @@
                                         android:textSize="14dp"
                                         android:padding="10dp"
                                         android:text="Fecha de la Cita"/>
+
 
 
                                     <TextView
@@ -584,9 +721,52 @@
                                         android:focusable="false"
                                         android:textSize="14dp"
                                         android:padding="10dp"
-                                        android:hint="aaaa-mm-dd hh:mm (24 horas)"
+                                        android:hint="aaaa-mm-dd"
                                         android:text=""/>
 
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:background="@color/white"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="0dp"
+                                        android:layout_weight="2"
+                                        android:layout_height="wrap_content"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/secondary_text"
+                                        android:layout_gravity="center"
+                                        android:gravity="center|left"
+                                        android:textSize="14dp"
+                                        android:padding="10dp"
+                                        android:text="Hora Inicio(24hr)"/>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textStyle="bold"
+                                        android:textColor="@color/secondary_text"
+                                        android:layout_gravity="center"
+                                        android:gravity="center|left"
+                                        android:textSize="14dp"
+                                        android:padding="10dp"
+                                        android:text=":"/>
+
+                                    <TextView
+                                        android:id="@+id/et_hora_inicio_next"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="3"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/secondary_text"
+                                        android:background="@drawable/edittext_rounded_corners6"
+                                        android:layout_margin="3dp"
+                                        android:layout_gravity="center"
+                                        android:gravity="center|left"
+                                        android:textSize="14dp"
+                                        android:hint="hh:mm"
+                                        android:focusable="false"
+                                        android:padding="10dp"/>
                                 </LinearLayout>
                                 <LinearLayout
                                     android:background="@color/grey_100"

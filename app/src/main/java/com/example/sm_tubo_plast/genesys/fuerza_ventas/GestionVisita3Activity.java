@@ -2,10 +2,8 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
 
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,7 +14,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,30 +23,43 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_opciones;
+import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
+import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
+import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
+import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
+import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
+import com.example.sm_tubo_plast.genesys.service.WS_San_Visitas;
 import com.example.sm_tubo_plast.genesys.datatypes.DBClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
-import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.CustomView.CrearCliente_Contacto;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
 import com.example.sm_tubo_plast.genesys.hardware.ObtenerLocalizacion2;
-import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.CustomTimPicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.UtilMensaje;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.dynamic.IFragmentWrapper;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.ParseException;
@@ -57,30 +68,48 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class GestionVisita3Activity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, ObtenerLocalizacion2.InterfaceUbicacion {
+public class GestionVisita3Activity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private static final String TAG="GestionVisita3Activity";
+    private static final String SIN_FECHA="SIN FECHA";
     private static final String SIN_HORA="SIN HORA";
     private static final String NO_HAY_PROXIMA_VISITA="NO HAY PROXIMA VISITA";
+
+    public static final String PROGRAMACION_VISITA="PROGRAMACION_VISITA";
+    public static final String RE_PROGRAMACION_VISITA="RE_PROGRAMACION_VISITA";
+    public static final String VISITA_PLANIFICADA="VISITA_PLANIFICADA";
+    public static final String MODIFICAR_PROGRAMACION="MODIFICAR_PROGRAMACION";
+    public static final String MODIFICAR_VISITA="MODIFICAR_VISITA";
+    public static final String GESTIONAR_VISITA="GESTIONAR_VISITA";
+
+    public static final String ESTADO_VISITA_COMPLETADA="Completada";
+    public static final String ESTADO_VISITA_Libre="Libre";
+    public static final String OC_NUMERO_REPROGRAMADO="RE-";
+
 
 
     DBclasses dBclasses=null;
     String ORIGEN="";
+    String TIPO_GESTION="";
     String ID_RRHH="";
     ArrayList<San_Visitas> LISTA_VISITAS=new ArrayList<>();
-    String OC_NUMERO="";
-    boolean isPLANIFICADA=false;
+    String FINAL_OC_NUMERO=null;
     String CODIGO_CRM="";
     String COD_VEND="";
     String NOMBRE_CRM="";
-    EditText tv_nombres, et_Obervacion, et_comentario_visita, et_comentario_proxima_visita;
-    TextView txt_oc_numero, et_fecha_proximavisita,et_hora_inicio, et_hora_fin, txt_ubicacion;
-    Spinner SpinnerTipoVisita, SpinnerTipoActividad, SpinnerProximaTipoVisita, SpinnerProximaActividad,SpinnerDirecciones;
+    EditText et_motivo_reporgramacion, tv_nombres, et_Obervacion, et_comentario_visita, et_comentario_proxima_visita;
+    TextView  txt_oc_numero, et_fecha_visita_manual, et_fecha_proximavisita,et_hora_inicio, et_hora_fin, txt_ubicacion, et_hora_inicio_next;
+    Spinner SpinnerTipoVisita, SpinnerTipoActividad, SpinnerProximaTipoVisita, SpinnerProximaActividad,SpinnerDirecciones, SpinnerContacto;
     FloatingActionButton FAB_enviar_visita;
-    AutoCompleteTextView autoCompleteTextView_san_contactos;
-    Switch sw_isProximaVisita;
+
+    Switch  sw_isProximaVisita;
+    CheckBox check_validar_fehca_visita;
     LinearLayout layout_container_prroima_visita;
 
-    ObtenerLocalizacion2 UBICACION;
+
+
+    LocationApiGoogle locationApiGoogle;
+    TaskCheckUbicacion taskCheckUbicacion;
+
     Location LOCATION;
     int DISTACIA_to_Colegio=-1;
 
@@ -93,14 +122,15 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         Bundle bundle = getIntent().getExtras();
         if (bundle!=null){
+            
             ID_RRHH=bundle.getString("ID_RRHH",  "");
-            OC_NUMERO=bundle.getString("OC_NUMERO",  null);
+            FINAL_OC_NUMERO=bundle.getString("OC_NUMERO",  null);
             CODIGO_CRM=bundle.getString("CODIGO_CRM",  null);
             NOMBRE_CRM=bundle.getString("NOMBRE_INSTI",  "Sin Nombre");
             COD_VEND=bundle.getString("COD_VEND",  null);
-            isPLANIFICADA=bundle.getBoolean("isPLANIFICADA",  false);
             ORIGEN=bundle.getString("ORIGEN",  null);
-            if (ID_RRHH.length()!=0 && OC_NUMERO!=null && CODIGO_CRM!=null && COD_VEND!=null && ORIGEN!=null){
+            TIPO_GESTION=bundle.getString("TIPO_GESTION",  null);
+            if (ID_RRHH.length()!=0 && FINAL_OC_NUMERO!=null && CODIGO_CRM!=null && COD_VEND!=null && ORIGEN!=null && TIPO_GESTION!=null){
                 StartActivity();
             }else{
                 UtilView.MENSAJE_simple_finish(this, "Sin dato", "No se ha recivido uno o mas datos", true);
@@ -139,57 +169,166 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         BackPressed();
     }
 
-    @Override
     protected void onPause() {
         super.onPause();
-        if (UBICACION!=null){
-            UBICACION.activarGPS(false);
+        if (taskCheckUbicacion!=null){
+            taskCheckUbicacion.RemoveLocation();
         }
     }
 
-    @Override
     protected void onResume() {
         super.onResume();
-        if (UBICACION!=null){
-            UBICACION.activarGPS(true);
+        if (!LocationApiGoogle.checkPlayServices(this, Permiso_Adroid.PLAY_SERVICES_RESOLUTION_REQUEST)) {
+            UtilViewMensaje.MENSAJE_simple(this, "Google Play", "Necesitas instalar Google Play Services para usar las ubicaciones de los clientes ");
+        }else {
+            if (taskCheckUbicacion!=null){
+                taskCheckUbicacion.RequestLocationUpdates();
+            }
         }
+
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (locationApiGoogle!=null){
+            if (locationApiGoogle.fusedLocationClient!=null && locationApiGoogle.locationCallback!=null){
+                locationApiGoogle.fusedLocationClient.removeLocationUpdates(locationApiGoogle.locationCallback);
+            }
+        }
+        if (taskCheckUbicacion!=null){
+            taskCheckUbicacion.RemoveLocation();
+        }
+
+    }
+    private void Star_Check_Permiso_Ubicacion(){
+        new RequestPermisoUbicacion(this, Permiso_Adroid.PERMISO_PARA_ACCEDER_A_LOCALIZACION, new RequestPermisoUbicacion.MyListener() {
+            @Override
+            public void Result(int isConcedido) {
+                if (Permiso_Adroid.IS_PERMISO_DENEGADO==isConcedido){
+                    UtilViewMensaje.MENSAJE_simple(GestionVisita3Activity.this, "Permiso denegado", "No podras acceder a la ubicación");
+                }
+                else if (Permiso_Adroid.IS_PERMISO_CONCEDIDO==isConcedido){
+                    StartUbicacionApiGoogle();
+                }
+            }
+        });
+    }
+    private void StartUbicacionApiGoogle(){
+        locationApiGoogle=new LocationApiGoogle(this, new LocationApiGoogle.Listener() {
+            @Override
+            public void onConnected(Bundle bundle) {
+
+                taskCheckUbicacion= new TaskCheckUbicacion(GestionVisita3Activity.this, new TaskCheckUbicacion.MyListener() {
+                    @Override
+                    public void result(boolean isOk) {
+                        if (isOk) {
+                            locationApiGoogle.ForzarUltimaUbicacion();
+                            locationApiGoogle.StartLocationCallback(LocationApiGoogle.UPDATE_INTERVAL_3_segundos, LocationApiGoogle.FASTEST_INTERVAL_3_segundos, LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+                        }else{
+                            locationApiGoogle.checkGPSActivate();
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+                Location_cambiado_2(null, "Conexión a google maps esta supendida", false);
+            }
+
+            @Override
+            public void onConnectionFailed(ConnectionResult location) {
+                Location_cambiado_2(null, "No se pudo conectarse a google maps", false);
+            }
+
+            @Override
+            public void LastLocation(Location location) {
+                LOCATION=location;
+                if (location!=null){
+                    Log.i(TAG, "StartUbicacionApiGoogle:: LastLocation:: Latitude : " + location.getLatitude() + "Longitude : " + location.getLongitude());
+                }else{
+                    Toast.makeText(GestionVisita3Activity.this, "Error, no se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                }
+                String direccion_name=VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(GestionVisita3Activity.this, LOCATION.getAltitude(), LOCATION.getLongitude());
+                Location_cambiado_2(LOCATION, direccion_name, true);
+            }
+        });
+        locationApiGoogle.ApiLocationGoogleConectar();
+    }
+
+
     private void StartActivity() {
         Toolbar toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("GESTION VISITA");
-        //getSupportActionBar().setSubtitle("COLEGIO: "+NOMBRE_CRM);
-
 
         tv_nombres=findViewById(R.id.tv_nombres);
-        autoCompleteTextView_san_contactos=findViewById(R.id.autoCompleteTextView_san_contactos);
+
         txt_oc_numero=findViewById(R.id.txt_oc_numero);
         SpinnerTipoVisita=findViewById(R.id.SpinnerTipoVisita);
         SpinnerTipoActividad=findViewById(R.id.SpinnerTipoActividad);
         et_comentario_visita=findViewById(R.id.et_comentario_visita);
         txt_ubicacion=findViewById(R.id.txt_ubicacion);
+        et_fecha_visita_manual=findViewById(R.id.et_fecha_visita_manual);
         et_hora_inicio=findViewById(R.id.et_hora_inicio);
         et_hora_fin=findViewById(R.id.et_hora_fin);
         et_fecha_proximavisita=findViewById(R.id.et_fecha_proximavisita);
+        et_motivo_reporgramacion=findViewById(R.id.et_motivo_reporgramacion);
         SpinnerProximaTipoVisita=findViewById(R.id.SpinnerProximaTipoVisita);
         SpinnerProximaActividad=findViewById(R.id.SpinnerProximaActividad);
         SpinnerDirecciones=findViewById(R.id.SpinnerDirecciones);
         et_comentario_proxima_visita=findViewById(R.id.et_comentario_proxima_visita);
+        check_validar_fehca_visita=findViewById(R.id.check_validar_fehca_visita);
         sw_isProximaVisita=findViewById(R.id.sw_isProximaVisita);
+        et_hora_inicio_next=findViewById(R.id.et_hora_inicio_next);
         layout_container_prroima_visita=findViewById(R.id.layout_container_prroima_visita);
         FAB_enviar_visita=findViewById(R.id.FAB_enviar_visita);
-        VARIABLES VAR =new VARIABLES();
+        SpinnerContacto=findViewById(R.id.SpinnerContacto);
+        TextView label_reprogramacion=findViewById(R.id.label_reprogramacion);
+
+        label_reprogramacion.setVisibility(View.GONE);
+        et_motivo_reporgramacion.setVisibility(View.GONE);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (TIPO_GESTION.equals(VISITA_PLANIFICADA) || TIPO_GESTION.equals(GESTIONAR_VISITA) ) {
+            getSupportActionBar().setTitle("GESTION DE VISITA");
+        }
+        else if (TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)) {
+            getSupportActionBar().setTitle("MODIFICACION DE LA PROX. VISITA");
+        }
+        else if (TIPO_GESTION.equals(MODIFICAR_VISITA)) {
+            getSupportActionBar().setTitle("MODIFICACION DE LA VISITA");
+        }
+
+        else if (TIPO_GESTION.equals(PROGRAMACION_VISITA)) {
+            getSupportActionBar().setTitle("PROGRAMACION DE LA VISITA");
+        }
+        else if (TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)) {
+
+                getSupportActionBar().setTitle("REPROGRAMACION DE LA VISITA");
+                label_reprogramacion.setVisibility(View.VISIBLE);
+                et_motivo_reporgramacion.setVisibility(View.VISIBLE);
+                Motivo_reprogramacion();
+                //label_reprogramacion
+
+        }else{
+            getSupportActionBar().setTitle("GESTION VISITA");
+        }
+
+
         txt_ubicacion.setText("Obteniendo ubicación...");
         dBclasses = new DBclasses(this);
 
         HabilitarCambioCantacto(false);
         if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosActivity.TAG)){
-            LISTA_VISITAS= DAO_San_Visitas.GetVisitasByOc_numero(dBclasses, OC_NUMERO, isPLANIFICADA);
+
+            LISTA_VISITAS= DAO_San_Visitas.GetVisitasByOc_numero(dBclasses, FINAL_OC_NUMERO, TIPO_GESTION);
+
             if (ID_RRHH.equals("-1")){
                 ID_RRHH=LISTA_VISITAS.get(0).getId_rrhh();
-                InHabilitarEjecucionVisita();
+                InHabilitarAllEjecucionVisita();
                 InHabilitarProximoVisita();
             }
         }
@@ -199,56 +338,158 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         if (cliente!=null){
 
-            autoCompleteTextView_san_contactos.setText(cliente.getNomcli());
             tv_nombres.setText(cliente.getNomcli());
         }
         et_hora_inicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
-                GestionVisita3Activity.this.obtenerHora(et_hora_inicio);
+                int limit_min_minuto=-1;
+                if (TIPO_GESTION.equals(VISITA_PLANIFICADA)) {
+                    String valor=dBclasses.getConfiguracionByName("visita_minutos_retraso", "-1");
+                    limit_min_minuto =Integer.parseInt(valor);//convertimos en segundos con (* 60)
+                }
+                obtenerHora(et_hora_inicio, limit_min_minuto);
             }
         });
+
         et_hora_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
-                GestionVisita3Activity.this.obtenerHora(et_hora_fin);
+                GestionVisita3Activity.this.obtenerHora(et_hora_fin, -1);
             }
         });
+        et_fecha_visita_manual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View V) {
+                GestionVisita3Activity.this.CustomDateTimePicker(et_fecha_visita_manual,false);
+            }
+        });
+
         et_fecha_proximavisita.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View V) {
-                GestionVisita3Activity.this.DatePicketCustom();
+                if (TIPO_GESTION.equals(GESTIONAR_VISITA) || TIPO_GESTION.equals(VISITA_PLANIFICADA)|| TIPO_GESTION.equals(RE_PROGRAMACION_VISITA) || et_fecha_proximavisita.getText().toString().length()==0){
+                    GestionVisita3Activity.this.CustomDateTimePicker(et_fecha_proximavisita,false);
+                }else{
+                    UtilViewMensaje.MENSAJE_simple(GestionVisita3Activity.this, "Modificar fecha?", "Para cambiar la fecha debe elegir la opión reprogramar.");
+                }
+
+            }
+        });
+
+        et_hora_inicio_next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View V) {
+                GestionVisita3Activity.this.obtenerHora(et_hora_inicio_next,-1);
+            }
+        });
+        check_validar_fehca_visita.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked){
+                    et_hora_inicio.setEnabled(true);
+                    return;
+                }
+                int index=0;
+                if (TextUtils.isEmpty(et_fecha_visita_manual.getText().toString())){
+                    index++;
+                    et_fecha_visita_manual.setHintTextColor(getResources().getColor(R.color.pink_600));
+                }
+
+                if (TextUtils.isEmpty(et_hora_inicio.getText().toString())){
+                    index++;
+                    et_hora_inicio.setHintTextColor(getResources().getColor(R.color.pink_600));
+                }
+                if (index>0){
+                    check_validar_fehca_visita.setChecked(false);
+                    return;
+                }
+
+                WS_San_Visitas ws_san_visitas=new WS_San_Visitas(GestionVisita3Activity.this, dBclasses);
+                ws_san_visitas.getFecha_servidor(new WS_San_Visitas.MyListener() {
+                    @Override
+                    public void fecha_servidor(String fecha_server) {
+                        if (fecha_server==null){
+                            check_validar_fehca_visita.setChecked(false);
+                            return;
+                        }
+                        long minutos_retraso=60000*2;
+
+                        long fecha_server_long=VARIABLES.convertirFechaHora_dd_mm_yyyy__HH_mm_to_long(fecha_server);
+                        long fecha_celular=VARIABLES.getFechaHora_actual_long();
+                        long diferencia=fecha_server_long-fecha_celular;
+                        if (diferencia>minutos_retraso || diferencia<-minutos_retraso){
+                            UtilViewMensaje.MENSAJE_simple(GestionVisita3Activity.this,
+                                    "Fecha inválida",
+                                    "La fecha y hora del celular no son correctas. " +
+                                            "\n\nHora Celular : "+VARIABLES.convertirFecha_from_long(fecha_celular)+
+                                            "\nHora Servidor : "+VARIABLES.convertirFecha_from_long(fecha_server_long));
+                            et_hora_inicio.setText("");
+                            check_validar_fehca_visita.setChecked(false);
+                        }else{
+                            et_hora_inicio.setEnabled(false);
+                        }
+                    }
+                });
+
             }
         });
 
         GetionSwitchProximaVisita();
-        String numOc=dBclasses.obtenerNumOC(COD_VEND);
+        String numOc=dBclasses.obtenerMaxNumOc(COD_VEND);
         if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosActivity.TAG)){
 
             RecuperarDatos();
-            if(isPLANIFICADA) {//es visita
+            if(TIPO_GESTION.equals(VISITA_PLANIFICADA)) {//es visita
+                et_fecha_visita_manual.setEnabled(false);
                 txt_oc_numero.setText(COD_VEND + calcularSecuencia(numOc));
-                UBICACION=new ObtenerLocalizacion2(this);
+                Star_Check_Permiso_Ubicacion();
                 PoblarSpinnersTIPO_VISITA_NEXT( "", "");
                 HabilitarCambioCantacto(true);
                 GestionSanContactos();
             }else{//ejecutada= solo actualización
-                txt_oc_numero.setText(OC_NUMERO);
-                InHabilitarEjecucionVisita();
+
+                if (TIPO_GESTION.equals(RE_PROGRAMACION_VISITA) || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+                    txt_ubicacion.setVisibility(View.GONE);
+                    HabilitarCamposParaProgrmarNextVisita();
+                    if (TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+                        et_fecha_visita_manual.setEnabled(false);
+                        txt_oc_numero.setText(FINAL_OC_NUMERO);
+                    }else{
+
+                        txt_oc_numero.setText(COD_VEND + calcularSecuencia(numOc));
+                    }
+                }else{
+                    txt_ubicacion.setVisibility(View.VISIBLE);
+                    txt_oc_numero.setText(FINAL_OC_NUMERO);
+                    InHabilitarAllEjecucionVisita();
+                    HabilitarEdicionEstaVisita(true);
+                }
             }
-            DBPedido_Cabecera dbPedido_cabecera=dBclasses.getPedido_cabecera(OC_NUMERO);
+            DBPedido_Cabecera dbPedido_cabecera=dBclasses.getPedido_cabecera(FINAL_OC_NUMERO);
+            int sitio_enfa=0;
             if (dbPedido_cabecera!=null){
-                PoblarSpinnersDireccion(SpinnerDirecciones, Integer.parseInt(dbPedido_cabecera.getSitio_enfa()));
+                sitio_enfa=Integer.parseInt(dbPedido_cabecera.getSitio_enfa());
             }
+            PoblarSpinnersDireccion(SpinnerDirecciones, sitio_enfa);
 
         }else{
-            UBICACION=new ObtenerLocalizacion2(this);
             txt_oc_numero.setText(COD_VEND + calcularSecuencia(numOc));
-            PoblarSpinnersTIPO_VISITA( "", "");
-            PoblarSpinnersTIPO_VISITA_NEXT( "", "");
-            PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, "");
             PoblarSpinnersDireccion(SpinnerDirecciones, 0);
+            PoblarSpinnersTIPO_VISITA( "", "");
+            PoblarSpinnersCliente_Contacto( 0);
 
+            if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+                HabilitarCamposParaProgrmarNextVisita();
+                txt_ubicacion.setVisibility(View.GONE);
+
+            }else{
+                et_fecha_visita_manual.setText(VARIABLES.GET_FECHA_ACTUAL_STRING());
+                et_fecha_visita_manual.setEnabled(false);
+                Star_Check_Permiso_Ubicacion();
+                PoblarSpinnersTIPO_VISITA_NEXT( "", "");
+                PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, "");
+            }
         }
 
 
@@ -257,7 +498,35 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         GestionSpinner(SpinnerTipoActividad);
         GestionSpinner(SpinnerProximaActividad);
         FAB_enviar_visita.setOnClickListener(V->GuardarGestionVisita());
+    }
+    private void Motivo_reprogramacion(){
+        UtilView.AlertViewSimpleConEdittext dd=new UtilView.AlertViewSimpleConEdittext(this);
+        dd.titulo="Reprogramación";
+        dd.mensaje="Ingrese la descripción del motivo";
+        dd.min_caracteres=10;
+        dd.hint="Ingrese al menos "+dd.min_caracteres+" caracteres";
+        dd.texto_cargado="";
+        dd.cancelable=false;
+        dd.start(new UtilView.AlertViewSimpleConEdittext.Listener() {
+            @Override
+            public String resultOK(String descripcion) {
+                if (descripcion==null){
+                    dd.FinalizarActivity();
+                    return null;
+                }
+                et_motivo_reporgramacion.setText(descripcion);
+                return null;
+            }
 
+            @Override
+            public String resultBucle(String s) {
+                Motivo_reprogramacion();
+                return null;
+            }
+        });
+    }
+    private void FINISH(){
+        finish();
     }
     private  void GetionSwitchProximaVisita(){
         sw_isProximaVisita.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -274,36 +543,6 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     }
     private void GestionSanContactos(){
 
-//        //autoCompleteTextView_san_contactos.setEnabled(false);
-//        ArrayList<RecursosHumanos> listaSan_contacto=SQ_LITE.getReccursosHumanosContactoByInti(CODIGO_CRM);
-//        ArrayList<String> strings=new ArrayList<>();
-//        int index=0;
-//        for (RecursosHumanos item:listaSan_contacto){
-//            index++;
-//            strings.add(index+"- "+item.getNombres()+" "+item.getApe_paterno()+" "+item.getApe_materno());
-//        }
-//
-//        autoCompleteTextView_san_contactos.setDropDownBackgroundResource(UtilView.getBackgroundWhiteInteger()[0]);
-//        autoCompleteTextView_san_contactos.setThreshold(1);
-//        autoCompleteTextView_san_contactos.setOnFocusChangeListener((v, hasFocus) -> {
-//            //if (hasFocus)autoCompleteTextView_san_contactos.showDropDown();
-//        });
-//        autoCompleteTextView_san_contactos.setOnClickListener((v) -> {
-//            autoCompleteTextView_san_contactos.showDropDown();
-//        });
-//        autoCompleteTextView_san_contactos.setOnItemClickListener((parent, view, position, id) -> {
-//
-//            String string = ""+autoCompleteTextView_san_contactos.getText().toString();
-//            String[] parts = string.split("-");
-//            String part1 = parts[0];
-//
-//            RecursosHumanos itemSelect=listaSan_contacto.get(Integer.parseInt(part1)-1);
-//            autoCompleteTextView_san_contactos.setText(itemSelect.getNombres());
-//            ID_RRHH=itemSelect.getId_rrhh();
-//            StartActivity();
-//        });
-//        autoCompleteTextView_san_contactos.setAdapter(UtilView.LLENAR_SPINNER_SIMPLE( this,  strings));
-//        //autoCompleteTextView_san_contactos.setEnabled(true);
     }
 
     private void RecuperarDatos(){
@@ -316,24 +555,39 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 //PoblarSpinners(SpinnerTipoVisita, GlobalVar.SAN_OPCIONES.TIPO_VISITA, ""+item.getTipo_visita());
                 PoblarSpinnersTIPO_VISITA( ""+item.getTipo_visita(), item.getActividad());
                 //PoblarSpinners(SpinnerTipoActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, ""+item.getActividad());
+                et_fecha_visita_manual.setText(item.getFecha_planificada().substring(0,10));
                 et_comentario_visita.setText(item.getComentario_actividad());
-                et_hora_inicio.setText(item.getHora_inicio_ejecución());
-                et_hora_fin.setText(item.getHora_Fin_Ejecución());
+                if (TIPO_GESTION.equals(VISITA_PLANIFICADA)) {
+                    getSupportActionBar().setSubtitle("Inicio "+item.getHora_inicio_ejecución()+" hrs, fin "+item.getHora_Fin_Ejecución()+" hrs");
+                }else{
+                    et_hora_inicio.setText(item.getHora_inicio_ejecución());
+                    et_hora_fin.setText(item.getHora_Fin_Ejecución());
+                }
+
                 PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, "");
                 DISTACIA_to_Colegio=item.getDistancia();
                 txt_ubicacion.setText(""+ VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(this, LOCATION.getLatitude(),LOCATION.getLongitude())
-                        +"\\nDistancia apróximada al cliente es "+calcularKM_and_Metros(DISTACIA_to_Colegio)+" metros");
-                sw_isProximaVisita.setChecked(isPLANIFICADA);
+                        +"\nDistancia apróximada al cliente es "+calcularKM_and_Metros(DISTACIA_to_Colegio)
+                        +" \nALTITUD: "+VARIABLES.formater_thow_decimal.format(item.getAltitud())+" m.s.n.m");
+
+                sw_isProximaVisita.setChecked(TIPO_GESTION.equals(VISITA_PLANIFICADA));
                 if (LISTA_VISITAS.size()==1) {
                     PoblarSpinnersTIPO_VISITA_NEXT( "", "");
                 }
+                PoblarSpinnersCliente_Contacto( item.getId_contacto());
 
             }else {
                 PoblarSpinnersTIPO_VISITA_NEXT( ""+item.getTipo_visita(), ""+ item.getActividad());
-                et_fecha_proximavisita.setText(item.getFecha_planificada().replace(NO_HAY_PROXIMA_VISITA, ""));
+                if (item.getFecha_planificada().contains(NO_HAY_PROXIMA_VISITA)){
+                    et_fecha_proximavisita.setText(item.getFecha_planificada().replace(NO_HAY_PROXIMA_VISITA, ""));
+                }else{
+                    et_fecha_proximavisita.setText(item.getFecha_planificada().substring(0,10));
+                }
+                et_hora_inicio_next.setText(item.getHora_inicio_ejecución().replace(SIN_HORA, ""));
 //                PoblarSpinners(SpinnerProximaActividad, GlobalVar.SAN_OPCIONES.TIPO_ACTIVIDD, ""+item.getActividad());
                 et_comentario_proxima_visita.setText(item.getComentario_actividad());
                 sw_isProximaVisita.setChecked(true);
+                sw_isProximaVisita.setEnabled(false);
             }
             index++;
         }
@@ -345,34 +599,39 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         return km+" km, "+metro+" metros";
     }
 
-    private void InHabilitarEjecucionVisita(){
+    private void InHabilitarAllEjecucionVisita(){
         txt_ubicacion.setEnabled(false);
         et_hora_inicio.setEnabled(false);
         et_hora_fin.setEnabled(false);
         SpinnerTipoVisita.setEnabled(false);
         SpinnerTipoActividad.setEnabled(false);
         et_comentario_visita.setEnabled(false);
+        SpinnerDirecciones.setEnabled(false);
+        SpinnerContacto.setEnabled(false);
+        et_fecha_visita_manual.setEnabled(false);
 
         tv_nombres.setVisibility(View.VISIBLE);
-        autoCompleteTextView_san_contactos.setVisibility(View.GONE);
-        autoCompleteTextView_san_contactos.setEnabled(false);
+
 
         UtilView.Efectos(this,et_hora_inicio, R.color.red_200);
         UtilView.Efectos(this,et_hora_fin, R.color.red_200);
-        UtilView.Efectos(this,et_comentario_visita, R.color.red_200);
+        //UtilView.Efectos(this,et_comentario_visita, R.color.red_200);
+    }
+    private void HabilitarEdicionEstaVisita(boolean enabled){
+
+        et_hora_fin.setEnabled(enabled);
+        SpinnerContacto.setEnabled(true);
+        et_comentario_visita.setEnabled(enabled);
+
+    }
+    private void  HabilitarCamposParaProgrmarNextVisita(){
+        sw_isProximaVisita.setChecked(false);
+        sw_isProximaVisita.setEnabled(false);
+        sw_isProximaVisita.setVisibility(View.GONE);
+        layout_container_prroima_visita.setVisibility(View.GONE);
     }
     private void HabilitarCambioCantacto(boolean enabled){
-
-        if (enabled){
-            tv_nombres.setVisibility(View.GONE);
-            autoCompleteTextView_san_contactos.setVisibility(View.VISIBLE);
-            autoCompleteTextView_san_contactos.setEnabled(true);
-        }else{
-            tv_nombres.setVisibility(View.VISIBLE);
-            autoCompleteTextView_san_contactos.setVisibility(View.GONE);
-            autoCompleteTextView_san_contactos.setEnabled(false);
-        }
-
+        tv_nombres.setVisibility(View.VISIBLE);
     }
 
     private void InHabilitarProximoVisita(){
@@ -381,7 +640,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         SpinnerProximaActividad.setEnabled(false);
         et_comentario_visita.setEnabled(false);
         et_comentario_proxima_visita.setEnabled(false);
-        autoCompleteTextView_san_contactos.setEnabled(false);
+
         SpinnerDirecciones.setEnabled(false);
         FAB_enviar_visita.setVisibility(View.GONE);
         sw_isProximaVisita.setEnabled(false);
@@ -444,6 +703,55 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     }
 
+
+    private void PoblarSpinnersCliente_Contacto(int id_contacto){
+        DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
+
+        ArrayList<Cliente_Contacto> lista=dao_cliente_contacto.getClienteContactoByID(dBclasses, ID_RRHH, 0);
+        ArrayList<String> listaString=new ArrayList<>();
+        listaString.add("0-Sin Contacto");
+        listaString.add("0-Agregar +");
+        int posSelected=0;
+        for (int i=0; i<lista.size(); i++){
+            if (id_contacto == lista.get(i).getId_contacto()){
+                Log.i(TAG, "id_contacto buscado es "+id_contacto+" y contacto encontrado en pos i = "+i);
+                posSelected+=(listaString.size());
+            }
+            listaString.add(lista.get(i).getId_contacto()+"-"+lista.get(i).getNombre_contacto());
+        }
+
+
+        SpinnerContacto.setAdapter(UtilView.LLENAR_SPINNER_SIMPLE(this, listaString));
+        SpinnerContacto.setSelection(posSelected);
+
+        SpinnerContacto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                SpinnerContacto.setBackgroundResource(R.drawable.img_for_spinner);
+                if (position==1){
+
+                    CrearCliente_Contacto cc=new CrearCliente_Contacto(GestionVisita3Activity.this, dBclasses);
+                    cc.VistaCreate(ID_RRHH, contacto -> {
+                        if (contacto==null){
+                            SpinnerContacto.setSelection(0);
+                        }else{
+                            PoblarSpinnersCliente_Contacto(contacto.getId_contacto());
+                            WS_Cliente_Contacto ws_cliente_contacto=new WS_Cliente_Contacto(GestionVisita3Activity.this, dBclasses);
+                            ws_cliente_contacto.EnviarClienteContactoPendienteByCliente(ID_RRHH);
+                        }
+
+                    });
+                }
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+    }
+
     private void PoblarSpinnersTIPO_VISITA_NEXT(String valorSelected, final String tipo_actividad_colegio){
         final Spinner spinnerLocal=SpinnerProximaTipoVisita;
         final ArrayList<String> listaValosInstancia= DAO_San_opciones.getListaOpcionesByInstanciaByCodigo(dBclasses,GlobalVar.SAN_OPCIONES.TIPO_VISITA) ;
@@ -470,7 +778,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     }
 
 
-    private void CustomDateTimePicker(){
+    private void CustomDateTimePicker(TextView vista_setear,final boolean habilitar_hora){
 
         final String CERO = "0";
         final Calendar c = Calendar.getInstance();
@@ -479,41 +787,28 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         CustomDateTimePicker recogerHora=new CustomDateTimePicker(this, new CustomDateTimePicker.OnTimeSetListener() {
             @Override
-            public String onDateTimeSet(Calendar myCalendar) {
+            public String onDateTimeSet(Calendar myCalendar,String fecha_formateado) {
 
                 String mensaje="";
                 try {
 
-                    String myFormat = "yyyy-MM-dd HH:mm"; //In which you need put here
+                    String myFormat = "yyyy-MM-dd";
+                    if (habilitar_hora){
+                        myFormat = "yyyy-MM-dd HH:mm"; //In which you need put here
+                    }
                     SimpleDateFormat sdformat = new SimpleDateFormat(myFormat, Locale.US);
 //VARIABLES
-                    et_fecha_proximavisita.setText(sdformat.format(myCalendar.getTime()));
+                    vista_setear.setText(sdformat.format(myCalendar.getTime()));
 
                 }catch (Exception e){
-                    mensaje="No se ha podido validar lo hora de la programación. Verifique que hayas ingresado valores correctos.";
+                    mensaje="No se ha podido validar la fecha de la programación. Verifique que hayas ingresado valores correctos.";
                 }
                 return mensaje;
             }
-        },hora, minuto, true, true);
+        },hora, minuto, true, habilitar_hora, true);
         recogerHora.Show();
     }
 
-    private void DatePicketCustom(){
-        CustomDateTimePicker();
-        return;
-//
-//        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-//        calendar.set(Calendar.HOUR, 0);
-//        calendar.set(Calendar.MINUTE, 0);
-//        calendar.set(Calendar.SECOND, 0);
-//        calendar.add(Calendar.DAY_OF_YEAR, 1);
-//
-//        DatePickerDialog dialog = new DatePickerDialog(this, this,
-//                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-//                calendar.get(Calendar.DAY_OF_MONTH));
-//        dialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-//        dialog.show();
-    }
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
@@ -540,7 +835,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
 
 
-    private void obtenerHora(TextView editText){
+    private void obtenerHora(TextView editText, final int limit_min_minuto){
         final String CERO = "0";
         final Calendar c = Calendar.getInstance();
         final int hora = c.get(Calendar.HOUR_OF_DAY);
@@ -582,12 +877,15 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
 
         },hora, minuto, true, true);
-
+        recogerHora.setLimit_min_minuto(limit_min_minuto);
+        if (editText.getId()==et_hora_inicio.getId() && TIPO_GESTION.equals(VISITA_PLANIFICADA)){
+            //recogerHora.setLong_fecha_referencia_validar(VARIABLES.GetFechaLongFrom_yyyy_mm_dd(LISTA_VISITAS.get(0).getFecha_planificada()));
+        }
         recogerHora.Show();
     }
 
-    @Override
-    public void Location_cambiado(Location location, String textoDireccion, boolean isDireccion) {
+
+    public void Location_cambiado_2(Location location, String textoDireccion, boolean isDireccion) {
         this.LOCATION=location;
         boolean isDistanciaMedido=false;
         try {
@@ -604,9 +902,12 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 Location loca=new Location("");
                 loca.setLatitude(Double.parseDouble(dircli.getLongitud()));
                 loca.setLongitude(Double.parseDouble(dircli.getLongitud()));
+                double metros_s_cliente=location.getAltitude()-dircli.getAltitud();
+
                 if (loca.getLatitude()!=0 && loca.getLongitude()!=0){
                     DISTACIA_to_Colegio =(int)LOCATION.distanceTo(loca);
                     textoDireccion+="\nDistancia apróximada al cliente es "+calcularKM_and_Metros(DISTACIA_to_Colegio);
+                    textoDireccion+="\nAltitud aproximada: "+VARIABLES.formater_thow_decimal.format(metros_s_cliente)+" metros sobre el cliente";
                     isDistanciaMedido=true;
                 }else {
                     isDistanciaMedido=false;
@@ -634,7 +935,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             txt_ubicacion.setTextColor(getResources().getColor(R.color.red_400));
         }
         txt_ubicacion.setOnClickListener(v -> {
-            UBICACION=new ObtenerLocalizacion2(this);
+            Star_Check_Permiso_Ubicacion();
         });
 
     }
@@ -642,6 +943,14 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     public  void GuardarGestionVisita(){
 
         int index=0;
+
+        if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
+            if (TextUtils.isEmpty(et_fecha_visita_manual.getText().toString())){
+                index++;
+                et_fecha_visita_manual.setHintTextColor(getResources().getColor(R.color.pink_600));
+            }
+        }
+
         if (SpinnerTipoVisita.getSelectedItemPosition()<=0){
             index++;
             SpinnerTipoVisita.setBackgroundResource(R.drawable.img_for_spinner_pink);
@@ -651,7 +960,20 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             SpinnerTipoActividad.setBackgroundResource(R.drawable.img_for_spinner_pink);
         }
 
-         if (et_hora_inicio.getText().toString().length()==0){
+        if (SpinnerDirecciones.getSelectedItemPosition()<0){
+            index++;
+            SpinnerDirecciones.setBackgroundResource(R.drawable.img_for_spinner_pink);
+        }
+
+        if (TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
+            if (et_motivo_reporgramacion.getText().toString().length()==0) {
+                index++;
+                et_motivo_reporgramacion.setHintTextColor(getResources().getColor(R.color.pink_600));
+            }
+        }
+
+
+        if (et_hora_inicio.getText().toString().length()==0){
             index++;
             et_hora_inicio.setHintTextColor(getResources().getColor(R.color.pink_600));
         }else{
@@ -686,6 +1008,10 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             if (et_fecha_proximavisita.getText().toString().length()<=0){
                 index++;
                 et_fecha_proximavisita.setHintTextColor(getResources().getColor(R.color.pink_600));
+            }
+            if (et_hora_inicio_next.getText().toString().length()<=0){
+                index++;
+                et_hora_inicio_next.setHintTextColor(getResources().getColor(R.color.pink_600));
             }
             if (SpinnerProximaTipoVisita.getSelectedItemPosition()<=0){
                 index++;
@@ -773,27 +1099,59 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         ArrayList<San_Visitas> list=new ArrayList<>();
         //acerca de la visita
-        String numOc=dBclasses.obtenerNumOC(COD_VEND);
-        String fecha_ejecutada=""+VARIABLES.GET_FECHA_ACTUAL_STRING();
+
+
+        String fecha_ejecutada="";
+        String fecha_planificada="";
+        int item_visita=1;
+
+        if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA) || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+            fecha_ejecutada=SIN_FECHA;
+            fecha_planificada=et_fecha_visita_manual.getText().toString()+" "+et_hora_inicio.getText().toString();
+            if (TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
+                item_visita=DAO_San_Visitas.getMaxItemByOc_numero(dBclasses.getReadableDatabase(), FINAL_OC_NUMERO);
+                item_visita++;
+            }
+
+        }else{
+            fecha_ejecutada=""+VARIABLES.GET_FECHA_ACTUAL_STRING();
+            fecha_planificada=VARIABLES.GET_FECHA_ACTUAL_STRING()+" "+VARIABLES.GET_HORA_ACTUAL_STRING();
+        }
+
+
         String oc_numero_visitado="";
         String oc_numero_visitar="";
-        String fecha_planificada=VARIABLES.GET_FECHA_ACTUAL_STRING();
-        San_Visitas visita=new San_Visitas();
+
+        int id_san_visitas=0;
+
         if (ORIGEN.equals(ActividadCampoAgendadoActivity.TAG)){
-            visita.setId(LISTA_VISITAS.get(0).getId());
-            fecha_planificada=(LISTA_VISITAS.get(0).getFecha_planificada());
-            if(!isPLANIFICADA){//ejecutada= solo actualización
+            id_san_visitas=LISTA_VISITAS.get(0).getId();
+            fecha_planificada=TIPO_GESTION.equals(PROGRAMACION_VISITA)  
+                    || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)
+                    || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)?fecha_planificada:LISTA_VISITAS.get(0).getFecha_planificada();
+
+
+            if(!TIPO_GESTION.equals(VISITA_PLANIFICADA)){//ejecutada= solo actualización
                 fecha_ejecutada=(LISTA_VISITAS.get(0).getFecha_Ejecutada());
-                oc_numero_visitado=OC_NUMERO;
+                oc_numero_visitado=LISTA_VISITAS.get(0).getOc_numero_visitado();
+                oc_numero_visitar=LISTA_VISITAS.get(0).getOc_numero_visitar();
             }else{//isPLANIFICADA= actualización y creacion de proxima visita
-                oc_numero_visitado=COD_VEND + calcularSecuencia(numOc);
-                oc_numero_visitar=OC_NUMERO;
+                oc_numero_visitado=txt_oc_numero.getText().toString();
+                oc_numero_visitar=FINAL_OC_NUMERO;
+
             }
         }else{
-            oc_numero_visitado=COD_VEND + calcularSecuencia(numOc);
-            visita.setOc_numero_visitado(oc_numero_visitado);
-            oc_numero_visitar="";
+            if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+                oc_numero_visitado="";
+                oc_numero_visitar=txt_oc_numero.getText().toString();
+            }else{
+                oc_numero_visitado=txt_oc_numero.getText().toString();
+                oc_numero_visitar="";
+            }
         }
+
+        San_Visitas visita=new San_Visitas();
+        visita.setId(id_san_visitas);
         visita.setOc_numero_visitado(oc_numero_visitado);
         visita.setOc_numero_visitar(oc_numero_visitar);
         visita.setGrupo_Campaña("Visitas");
@@ -807,20 +1165,35 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         visita.setFecha_Ejecutada(fecha_ejecutada);
         visita.setFecha_planificada(fecha_planificada);
 
-        if (sw_isProximaVisita.isChecked())visita.setFecha_proxima_visita(et_fecha_proximavisita.getText().toString());
+        if (sw_isProximaVisita.isChecked()){
+            visita.setFecha_proxima_visita(et_fecha_proximavisita.getText().toString()+" "+et_hora_inicio_next.getText().toString());
+        }
         else visita.setFecha_proxima_visita(NO_HAY_PROXIMA_VISITA);
 
         visita.setHora_inicio_ejecución(et_hora_inicio.getText().toString());
         visita.setHora_Fin_Ejecución(et_hora_fin.getText().toString());
         visita.setFecha_de_modificación(VARIABLES.GET_FECHA_ACTUAL_STRING());
-        visita.setEstado("Completada");
+
+        if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(MODIFICAR_PROGRAMACION) || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
+            visita.setEstado(ESTADO_VISITA_Libre);
+        }else{
+            visita.setEstado(ESTADO_VISITA_COMPLETADA);
+        }
         visita.setTipo_visita(getValorBySpinner(SpinnerTipoVisita));
         visita.setActividad(getValorBySpinner(SpinnerTipoActividad));
         visita.setComentario_actividad(et_comentario_visita.getText().toString());
         visita.setActividad_Proxima(getValorBySpinner(SpinnerProximaActividad));
         visita.setLatitud((LOCATION!=null?LOCATION.getLatitude():0)+ "0");
         visita.setLongitud((LOCATION!=null?LOCATION.getLongitude():0)+ "0");
+        visita.setAltitud((LOCATION!=null?LOCATION.getAltitude():0));
         visita.setDistancia(DISTACIA_to_Colegio);
+        visita.setItem(item_visita);
+
+        String string = SpinnerContacto.getSelectedItem().toString();
+        String[] parts = string.split("-");
+        String part1 = parts[0]; // 123
+
+        visita.setId_contacto(Integer.parseInt(part1));
         list.add(visita);
         visita=null;
         //fin------------------------
@@ -843,24 +1216,27 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             visitaNEXT.setEjecutivo_Descripcion(tv_nombres.getText().toString());
             visitaNEXT.setCargo_Descripción("Sin cargo");
 //        visitaNEXT.setFecha_Ejecutada(VARIABLES.GET_DATE_AAA_MM_DD_from_DD_MM_AAAA(GlobalFunctions.getFecha_configuracion(getApplicationContext())));
-            visitaNEXT.setFecha_Ejecutada("SIN FECHA");
-            visitaNEXT.setFecha_planificada(et_fecha_proximavisita.getText().toString());
+            visitaNEXT.setFecha_Ejecutada(SIN_FECHA);
+            visitaNEXT.setFecha_planificada(et_fecha_proximavisita.getText().toString()+" "+et_hora_inicio_next.getText().toString());
             visitaNEXT.setFecha_proxima_visita(NO_HAY_PROXIMA_VISITA);
-            visitaNEXT.setHora_inicio_ejecución(SIN_HORA);
+            visitaNEXT.setHora_inicio_ejecución(et_hora_inicio_next.getText().toString());
             visitaNEXT.setHora_Fin_Ejecución(SIN_HORA);
             visitaNEXT.setFecha_de_modificación(VARIABLES.GET_FECHA_ACTUAL_STRING());
-            visitaNEXT.setEstado("Libre");
+            visitaNEXT.setEstado(San_Visitas.ESTADO_VISITA_LIBRE);
             visitaNEXT.setTipo_visita(""+getValorBySpinner(SpinnerProximaTipoVisita));
             visitaNEXT.setActividad(getValorBySpinner(SpinnerProximaActividad));
             visitaNEXT.setComentario_actividad(et_comentario_proxima_visita.getText().toString());
             visitaNEXT.setActividad_Proxima("");
             visitaNEXT.setLatitud("0");
             visitaNEXT.setLongitud("0");
+            visitaNEXT.setAltitud(0);
             visitaNEXT.setDistancia(-1);
+            visitaNEXT.setItem(item_visita+1);
             list.add(visitaNEXT);
         }
 
-        guardarCabeceraPedido(oc_numero_visitado, list);
+        
+        guardarCabeceraPedido((oc_numero_visitado.length()>0?oc_numero_visitado:oc_numero_visitar), list, fecha_planificada);
 
     }
 
@@ -876,9 +1252,11 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         }
     }
 
-    public String guardarCabeceraPedido(String oc_numero, ArrayList<San_Visitas> list_visitas) {
+    public String guardarCabeceraPedido(String oc_numero, ArrayList<San_Visitas> list_visitas, String fecha_planificada) {
 
-        int item_direccion = Integer.parseInt("0");
+        String direccion=SpinnerDirecciones.getSelectedItem().toString();
+        String [] dir=direccion.split("-");
+        int item_direccion=Integer.parseInt(dir[0]);
 
         DB_ObjPedido itemCabecera=new DB_ObjPedido();
         itemCabecera.setOc_numero(oc_numero);
@@ -926,39 +1304,64 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         itemCabecera.setSan_visitas(list_visitas);
 
-        GuardarVisitaLocal(itemCabecera);
+        GuardarVisitaLocal(itemCabecera, fecha_planificada);
 
         return itemCabecera.getOc_numero();
     }
-    private void  GuardarVisitaLocal(DB_ObjPedido itemCabecera){
+    private void  GuardarVisitaLocal(DB_ObjPedido itemCabecera, String fecha_hora_planificada){
         SQLiteDatabase __DB=dBclasses.getWritableDatabase();
         __DB.beginTransaction();
         boolean isInsert=false;
-        if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG)){
-            if(isPLANIFICADA){//isPLANIFICADA= actualización y creacion de proxima visita
-                isInsert=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB);
-            }else
-                isInsert=true;
+        boolean isInsertPregramacion=false;
+        String mensaje_error="";
+
+        if(TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
+            mensaje_error=DAO_San_Visitas.setComentarioReprogramacionVisita(__DB, FINAL_OC_NUMERO , et_motivo_reporgramacion.getText().toString(),
+                    fecha_hora_planificada
+                    )?"":"No se ha podido actualizar la reprogramación. Vuelva intentarlo";
         }else{
-            isInsert=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB);
+            if (TIPO_GESTION.equals(MODIFICAR_PROGRAMACION)){
+                //Actualizamos
+                mensaje_error=DAO_San_Visitas.updateFechaProximaVisitaAlVisitado(__DB, FINAL_OC_NUMERO, fecha_hora_planificada)?"":"No se ha podido actualizar la fecha de la visita";
+            }
+
         }
 
-        if (isInsert){
+        if (mensaje_error.length()==0){
             if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG)){
-                if(!isPLANIFICADA){//ejecutada= solo actualización
-                    isInsert=DAO_San_Visitas.UpdateListaVisitaEjecucion( __DB, itemCabecera.getSan_visitas());
-                }else{//isPLANIFICADA= actualización y creacion de proxima visita
-                    isInsert=DAO_San_Visitas.UpdateVisitaEjecucion( __DB,  itemCabecera.getSan_visitas().get(0));
-                    if(isInsert && itemCabecera.getSan_visitas().size()>1){
-                        isInsert=DAO_San_Visitas.LlenarTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas().get(1));
+                if(TIPO_GESTION.equals(VISITA_PLANIFICADA) ){//isPLANIFICADA= actualización y creacion de proxima visita
+                    mensaje_error=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB)?"":"No se ha podido registrar la cabecera de la visita";
+                }else{
+                    mensaje_error=dBclasses.deletePedidoCabeceraxOc(itemCabecera.getOc_numero(),__DB)?"":"No se ha podido restaurar la cabecera de la visita";//Eliminamos}
+                    if(mensaje_error.length()==0){
+                        mensaje_error=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB)?"":"No se ha podido actualizar la cabecera de la visita";///Insertamos nuevo
                     }
                 }
             }else{
-                isInsert=DAO_San_Visitas.LlenarlistaTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas());
+                mensaje_error=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB)?"":"No se ha podido registrar la cabecera de la visita";
+            }
+        }
+
+        if (mensaje_error.length()==0){
+            if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG)){
+                if(TIPO_GESTION.equals(VISITA_PLANIFICADA) || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){//ejecutada= solo actualización
+                    if (TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)) {
+                        mensaje_error=DAO_San_Visitas.LlenarTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas().get(0))?"":"No se ha podido registrar el detalle de la visita";
+                    }else{
+                        mensaje_error=DAO_San_Visitas.UpdateVisitaEjecucion( __DB,  itemCabecera.getSan_visitas().get(0))?"":"No se ha podido actualizar el detalle de la visita";
+                        if(mensaje_error.length()==0 && itemCabecera.getSan_visitas().size()>1){
+                            mensaje_error=DAO_San_Visitas.LlenarTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas().get(1))?"":"No se ha podido agregar el detalle de la visita";
+                        }
+                    }
+                }else{//isPLANIFICADA= actualización y creacion de proxima visita
+                    mensaje_error=DAO_San_Visitas.UpdateListaVisitaEjecucion( __DB, itemCabecera.getSan_visitas())?"":"No se ha podido actualizar el detalle de la visita";
+                }
+            }else{
+                mensaje_error=DAO_San_Visitas.LlenarlistaTabla_San_Visitas( __DB,  itemCabecera.getSan_visitas())?"":"No se ha podido registrar el detalle de la visita";;
             }
             String titulo="";
             String mensaje="";
-            if (isInsert){
+            if (mensaje_error.length()==0){
                 titulo="Datos guardados";
                 mensaje="Se registró la visita correctamente";
                 __DB.setTransactionSuccessful();
@@ -967,16 +1370,14 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             }
             else{
                 titulo="Error";
-                mensaje="No se ha registrado la visita.\nVuelva a intentar";
+
                 UtilView.MENSAJE_simple(GestionVisita3Activity.this,
-                    ""+titulo, ""+mensaje);
+                        ""+titulo, ""+mensaje_error);
 
             }
-//            UtilView.MENSAJE_simple_finish_return_intent(GestionVisita3Activity.this,
-//                    ""+titulo, ""+mensaje, isInsert);
 
         }else{
-            UtilView.MENSAJE_simple(GestionVisita3Activity.this, "Error", "No se pudo registrar los datos en la cabecera. \nVuelva a intentar");
+            UtilView.MENSAJE_simple(GestionVisita3Activity.this, "Error", mensaje_error);
         }
         __DB.endTransaction();
         __DB.close();
@@ -984,50 +1385,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
 
     private void EnviarSanVisitas(final String oc_numero){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Enviando datos al sistema....");
-        pDialog.setIndeterminate(false);
-
-        pDialog.show();
-        DBSync_soap_manager soap_manager = new DBSync_soap_manager(GestionVisita3Activity.this);
-        new AsyncTask<Void, Void, String>(){
-            @Override
-            protected String doInBackground(Void... voids) {
-
-                try {
-                    ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
-
-                    if (cd.hasActiveInternetConnection(getApplicationContext())) {
-                        return soap_manager.actualizarObjPedido_directo(oc_numero);
-                    }else{
-                        return "error_1";
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return "error@"+e.getMessage();
-                }
-
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                super.onPostExecute(result);
-                pDialog.dismiss();
-                String titulo="";
-                String mensaje="";
-                if (result.equalsIgnoreCase("E")){
-                        titulo="Datos guardados";
-                        mensaje="Se registró la visita correctamente";
-                }else{
-                    titulo="Error";
-                    mensaje="No se ha enviado la visita al servidor. Se guardó los datos como pendiente.";
-                }
-                            UtilView.MENSAJE_simple_finish_return_intent(GestionVisita3Activity.this,
-                    ""+titulo, ""+mensaje, true);
-
-            }
-
-
-        }.execute();
+        WS_San_Visitas ws_san_visitas=new WS_San_Visitas(GestionVisita3Activity.this, dBclasses);
+        ws_san_visitas.EnviarVisitasByOc_numero(oc_numero);
     }
 }

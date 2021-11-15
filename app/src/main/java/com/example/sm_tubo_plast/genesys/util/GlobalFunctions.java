@@ -357,41 +357,156 @@ public class GlobalFunctions {
 
 
 
-	 //Prueba backup
-	  public static void backupdDatabase(){
-		    try {
-			    File sd = Environment.getExternalStorageDirectory();
-		    	
-			    File data = Environment.getDataDirectory();
-			    String packageName  = "com.genesys.fuerza_ventas";
-			    String sourceDBName = "fuerzaventas";
-			    String targetDBName = "saemovilesbkp";
-			    if (sd.canWrite()) {
-			    Date now = new Date();
+
+	 public static void backupdDatabase(Activity activity){
+		 boolean showMensaje=true;
+		 try {
+			 if (!backupdDatabaseNormal(activity, showMensaje)){
+
+				 File sd = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DCIM), "");
+				 ObtenerArchivosPasadosBackups(activity, sd, "");
+
+
+				 File data = Environment.getDataDirectory();
+				 String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
+				 String sourceDBName = GlobalVar.DATABASE_NAME;
+				 String targetDBName = "saemovilesbkp";
+				 if (sd.canWrite()) {
+					 if (!sd.exists()){
+						 sd.mkdirs();
+					 }
+					 Date now = new Date();
+					 String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
+					 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+					 String backupDBPath = "" + targetDBName + dateFormat.format(now) + ".db";
+
+					 File currentDB = new File(data, currentDBPath);
+					 File backupDB = new File(sd, backupDBPath);
+
+					 if (showMensaje){
+						 Toast.makeText(activity, "generando backup", Toast.LENGTH_SHORT).show();
+					 }
+					 Log.i("buckaup", "GENERANDO BACKUP");
+					 Log.i("backup","backupDB=" + backupDB.getAbsolutePath());
+					 Log.i("backup","sourceDB=" + currentDB.getAbsolutePath());
+
+					 FileChannel src = new FileInputStream(currentDB).getChannel();
+					 FileChannel dst = new FileOutputStream(backupDB).getChannel();
+
+					 dst.transferFrom(src, 0, src.size());
+
+					 src.close();
+					 dst.close();
+
+					 if (showMensaje){
+						 showCustomToast(activity, "BackUp generado", TOAST_DONE);
+					 }
+
+				 }
+			 }
+
+
+		 } catch (Exception e) {
+			 Log.i("Backup", e.toString());
+			 if (showMensaje){
+				 showCustomToast(activity, "BackUp NO generado", TOAST_ERROR);
+			 }
+		 }
+	 }
+
+	public static boolean backupdDatabaseNormal(Activity activity,boolean showMensaje){
+		try {
+
+
+
+
+			File sd = Environment.getExternalStorageDirectory();
+			String subCarpeta="DCIM";
+
+			ObtenerArchivosPasadosBackups(activity, sd, subCarpeta);
+
+			File data = Environment.getDataDirectory();
+			String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
+			String sourceDBName = GlobalVar.DATABASE_NAME;
+			String targetDBName = "saemovilesbkp";
+			if (sd.canWrite()) {
+				if (!sd.exists()){
+					sd.mkdirs();
+				}
+				Date now = new Date();
 				String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm"); 
-				String backupDBPath = "DCIM/" + targetDBName + dateFormat.format(now) + ".db";
-		 
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+				String backupDBPath = subCarpeta+"/" + targetDBName + dateFormat.format(now) + ".db";
+
 				File currentDB = new File(data, currentDBPath);
 				File backupDB = new File(sd, backupDBPath);
-		 
+
+				if (showMensaje){
+					Toast.makeText(activity, "generando backup", Toast.LENGTH_SHORT).show();
+				}
+				Log.i("backup", "GENERANDO BACKUP");
 				Log.i("backup","backupDB=" + backupDB.getAbsolutePath());
 				Log.i("backup","sourceDB=" + currentDB.getAbsolutePath());
-		 
+
 				FileChannel src = new FileInputStream(currentDB).getChannel();
 				FileChannel dst = new FileOutputStream(backupDB).getChannel();
-				
+
 				dst.transferFrom(src, 0, src.size());
-				
+
 				src.close();
 				dst.close();
-				
-			    }
-			} catch (Exception e) {
-				Log.i("Backup", e.toString());
-			}
+
+				if (showMensaje){
+					showCustomToast(activity, "BackUp generado", TOAST_DONE);
+				}
+				return true;
+			}return false;
+		} catch (Exception e) {
+			Log.i("Backup", e.toString());
+			return false;
 		}
+	}
+
 	  //
+
+	private  static void ObtenerArchivosPasadosBackups(Activity activity, File _dir, String child){
+		try {
+
+			File dir=new File(_dir, child);
+			if (dir.isDirectory()) {
+				String[] hijos = dir.list();
+
+				for (String hijo : hijos) {
+					if (!(new File(hijo, "").isDirectory())) {
+						ELiminarArchivosPasadosBackups(activity, new File(dir, hijo));
+					}
+				}
+			}else {
+				ELiminarArchivosPasadosBackups(activity, dir);
+			}
+		}catch (Exception e){
+			Toast.makeText(activity, "No se ha podido leer archivos de backups", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private  static void ELiminarArchivosPasadosBackups(Activity activity, File dir){
+		try {
+
+
+			long createdDate =new File(dir.getPath()).lastModified();
+			String name =new File(dir.getPath()).getName();
+			if (name.contains("saemovilesbkp")){
+				String fecha_actual=VARIABLES.GetFechaActual();//dd/MM/yyyy //uot
+				long fecha_actual_long=VARIABLES.convertirFecha_to_long(fecha_actual);// in dd/MM/yyyy HH:mm:ss
+				long fcreatedDate_more5=VARIABLES.sumarDiasFromFechaLong(createdDate, 30);
+				if (fcreatedDate_more5<=fecha_actual_long){
+					dir.delete();
+				}
+			}
+		}catch (Exception e){
+			Toast.makeText(activity, "No se ha podido eliminar archivos de backups", Toast.LENGTH_SHORT).show();
+		}
+	}
 	
 	  public static String str_pad_zero(int numero,String number_pad){
 		  
@@ -545,43 +660,7 @@ public class GlobalFunctions {
   		toast.show();
   	}
 	
-      
-      public static void backupdDatabase(Activity activity){
-		    try {
-			    File sd = Environment.getExternalStorageDirectory();
-		    	
-			    File data = Environment.getDataDirectory();
-			    String packageName  = "com.genesys.fuerza_ventas";
-			    String sourceDBName = "fuerzaventas";
-			    String targetDBName = "saemovilesbkp";
-			    if (sd.canWrite()) {
-			    Date now = new Date();
-				String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm"); 
-				String backupDBPath = "DCIM/" + targetDBName + dateFormat.format(now) + ".db";
-		 
-				File currentDB = new File(data, currentDBPath);
-				File backupDB = new File(sd, backupDBPath);
-		 
-				Log.i("backup","backupDB=" + backupDB.getAbsolutePath());
-				Log.i("backup","sourceDB=" + currentDB.getAbsolutePath());
-		 
-				FileChannel src = new FileInputStream(currentDB).getChannel();
-				FileChannel dst = new FileOutputStream(backupDB).getChannel();
-				
-				dst.transferFrom(src, 0, src.size());
-				
-				src.close();
-				dst.close();
-				
-				showCustomToast(activity, "BackUp generado", TOAST_DONE);
-				
-			    }
-			} catch (Exception e) {
-				Log.i("Backup", e.toString());
-				showCustomToast(activity, "BackUp generado", TOAST_ERROR);
-			}
-		}
+
       
       
       public static void showCustomToast(Activity activity, String mensaje,int tipo){

@@ -8,15 +8,22 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
+import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.Retrofit.GetDataControlAcceso;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.DataRetrofit;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClient;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.PropertyInfo;
@@ -25,16 +32,21 @@ import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 @SuppressLint("LongLogTag")
 public class DBSync_soap_manager {
 	final static String TAG = "SOAP_MANGER";
 	//String SOAP_ACTION= "http://tempuri.org/obtenerUsuarios";
 	//String METHOD_NAME="obtenerUsuarios";
-	public String NAMESPACE="http://tempuri.org/";
-	public String URL="http://";
+	public static String NAMESPACE="http://tempuri.org/";
+	public static  String URL="http://";
 	//public String URL="http://192.168.0.254/WS_SAE2/Service.asmx";
 
 	public  String SOAP_ACTION="";
@@ -479,6 +491,55 @@ public class DBSync_soap_manager {
 	    	 Log.e("CLIENTES", "NO SINCRONIZADA");
 	    	 throw new Exception(e);
 	    }
+
+	}
+
+
+
+
+	public int Sync_tabla_cliente_contacto_vendedor(String codven, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
+
+		String SOAP_ACTION= "http://tempuri.org/obtenerCLienteContacto_json";
+		String METHOD_NAME="obtenerCLienteContacto_json";
+		long beforecall;
+
+		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
+		Request.addProperty("codven", codven);
+		Request.addProperty("url", url);
+		Request.addProperty("catalog", catalog);
+		Request.addProperty("user", user);
+		Request.addProperty("password", contrasena);
+		Request.addProperty("start", start);
+		Request.addProperty("paginacion", paginacion);
+		SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet=true;
+		Soapenvelope.setOutputSoapObject(Request);
+
+		HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService,30000);
+
+		beforecall = System.currentTimeMillis();
+
+		try{
+			transporte.call(SOAP_ACTION, Soapenvelope);
+
+			Log.i("CLIENTES CONTACTO","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+
+			SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+
+			JSONArray jsonstring = new JSONArray(result.toString());
+			Log.i("CLIENTES","Registros: "+jsonstring.length());
+			Log.d("CLIENTES", "**************************************************************");
+			Log.d("DBSync_soap_manager ::Sync_tabla_clientecontactoxVendedor::",jsonstring.toString());
+
+			int tamanio_lista=dbclass.syncClienteContactoxVendedor(jsonstring,  start);
+
+			Log.i("CLIENTES", "SINCRONIZADA");
+			return tamanio_lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.e("CLIENTES", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
 
 	}
 /*
@@ -3920,11 +3981,74 @@ public void  actualizarPedido_devolucion() {
 	} 
 	catch (Exception e) 
 	{
-		Log.i("PEDIDO_DEVOLUCION", "Error al ENVIAR DATOS AL SERVIDOR"); 
-	} 
-	
-}
+		Log.i("PEDIDO_DEVOLUCION", "Error al ENVIAR DATOS AL SERVIDOR");
+	}
 
+}
+public BEAN_ControlAccesso Verificar_control_acceso(String clave_forzar_digitado) {
+
+
+	String estado="";
+	BEAN_ControlAccesso controlAccesso=null;
+	DB_Empresa emp = dbclass.getEmpresa();
+	SQLiteDatabase db=dbclass.getReadableDatabase();
+	db.beginTransaction();
+	try{
+
+		GetDataControlAcceso taskService = RetrofilClient.getRetrofitInstanceSERVIDOR().create(GetDataControlAcceso.class);
+		Call<DataRetrofit> call = taskService.getControlAcceso("validar_control_accesos",""+emp.getRuc());
+		Response<DataRetrofit> response=call.execute();
+
+		if (response.isSuccessful()) {
+			DataRetrofit dataRetrofit = (response.body());
+			String vv = dataRetrofit.getCadena_json();
+			JSONArray jArray = new JSONArray(vv);
+
+
+
+			for (int i = 0; i < jArray.length(); i++) {
+				JSONObject item = jArray.getJSONObject(i);
+
+				estado=item.getString("estado2");
+				String mensaje=item.getString("mensaje");
+				String clave_forzar=item.getString("clave_forzar");
+
+				String where = "nombre=?";
+				String[] args = new String[]{ "clave_forzar" };
+				db.delete(DBtables.Configuracion.TAG, where,args);
+
+				ContentValues cv=new ContentValues();
+				cv.put(DBtables.Configuracion.NOMBRE, "clave_forzar" );
+				cv.put(DBtables.Configuracion.VALOR, ""+clave_forzar );
+				long x=db.insert(DBtables.Configuracion.TAG, null, cv);
+
+				where = "nombre=?";
+				args = new String[]{"mensaje_licencia_uso"};
+				db.delete(DBtables.Configuracion.TAG, where,args);
+
+				cv=new ContentValues();
+				cv.put(DBtables.Configuracion.NOMBRE, "mensaje_licencia_uso" );
+				cv.put(DBtables.Configuracion.VALOR, ""+(estado.equals("S")?"":mensaje) );
+				long xx=db.insert(DBtables.Configuracion.TAG, null, cv);
+
+				controlAccesso=new BEAN_ControlAccesso();
+
+				controlAccesso.setEstado(estado);
+				controlAccesso.setMensjae(mensaje);
+
+
+			}
+			db.setTransactionSuccessful();
+		}
+	}catch (IOException | JSONException e ){
+		e.printStackTrace();
+		controlAccesso=null;
+	}
+	db.endTransaction();
+	db.close();
+	return controlAccesso;
+
+}
 
 public void Sync_tabla_Servidor(String url, String catalog, String user, String contrasena) throws Exception{
 	
@@ -4531,7 +4655,7 @@ public int actualizarObjPedido() throws Exception{
 		}
     	
     	lista_obj_pedido.get(i).setRegistroBonificaciones(registroBonificaciones);
-		ArrayList<San_Visitas> listaVisitas= new ArrayList<>();//DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, lista_obj_pedido.get(i).getOc_numero());
+		ArrayList<San_Visitas> listaVisitas= DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, lista_obj_pedido.get(i).getOc_numero());
 		lista_obj_pedido.get(i).setSan_visitas(listaVisitas);
     }
     
@@ -4885,7 +5009,48 @@ public String actualizarDetallePromocion(String oc_numero) throws Exception {
 	return "1";
 }
 
-public void Sync_tabla_ObjPedido(String codven, String url, String catalog, String user, String contrasena) throws Exception{
+
+	public void SyncTablaSanOpciones(String url, String catalog, String user,
+									 String contrasena) throws Exception {
+		String S_TAG="SyncTablaSanOpciones:: ";
+
+		String SOAP_ACTION = "http://tempuri.org/getTB_san_opciones_json";
+		String METHOD_NAME = "getTB_san_opciones_json";
+		long beforecall;
+		SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+		Request.addProperty("url", ""+url);
+		Request.addProperty("catalog", ""+catalog);
+		Request.addProperty("user", ""+user);
+		Request.addProperty("password", ""+contrasena);
+		SoapSerializationEnvelope Soapenvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet = true;
+		Soapenvelope.setOutputSoapObject(Request);
+
+		HttpTransportSE transporte = new HttpTransportSE(URL+GlobalVar.urlService, 30000);
+
+		beforecall = System.currentTimeMillis();
+
+		try {
+			transporte.call(SOAP_ACTION, Soapenvelope);
+			Log.i(S_TAG, "RESPUESTA EN: "+ (System.currentTimeMillis() - beforecall) + "miliseg");
+			SoapPrimitive result = (SoapPrimitive) Soapenvelope.getResponse();
+
+
+			final Type malla = new TypeToken<ArrayList<San_Opciones>>() {}.getType();
+			final ArrayList<San_Opciones> lista = gson.fromJson(result.toString(), malla);
+
+			dbclass.LlenarTablaSanOpciones(lista);
+			Log.i(TAG, S_TAG+"SINCRONIZADA");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.e(TAG, S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+
+	}
+
+public int Sync_tabla_ObjPedido(String codven, String url, String catalog, String user, String contrasena, int start, int paginacion) throws Exception{
 	
 	String SOAP_ACTION= "http://tempuri.org/obtenerObjpedido_json";
 	String METHOD_NAME="obtenerObjpedido_json";
@@ -4896,12 +5061,15 @@ public void Sync_tabla_ObjPedido(String codven, String url, String catalog, Stri
 	Request.addProperty("url", url); 
 	Request.addProperty("catalog", catalog); 
 	Request.addProperty("user", user); 
-	Request.addProperty("password", contrasena); 
+	Request.addProperty("password", contrasena);
+	Request.addProperty("start", start);
+	Request.addProperty("paginacion", paginacion);
+
     SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
     Soapenvelope.dotNet=true;
     Soapenvelope.setOutputSoapObject(Request);
     
-    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService, 60000);
     
     beforecall = System.currentTimeMillis();
     
@@ -4911,21 +5079,22 @@ public void Sync_tabla_ObjPedido(String codven, String url, String catalog, Stri
     	Log.d("OBJ_PEDIDO","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
     	
     	  SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
-    	  Log.d("SYNC_OBJ_PEDIDO",""+result.toString());
+    	  Log.d("OBJ_PEDIDO",""+result.toString());
     	  JSONArray jsonstring = new JSONArray(result.toString());
-    	  Log.d("OBJ_PEDIDO","Registros: "+jsonstring.length());
-    	  Log.d("OBJ_PEDIDO","Registros: "+result.toString());
-    	  dbclass.syncObjPedido(jsonstring,codven);
+    	  //Log.d("OBJ_PEDIDO","Registros: "+jsonstring.length());
+
+    	 int tamanio=dbclass.syncObjPedido(jsonstring,codven, start);
 
     	 Log.d("OBJ_PEDIDO", "SINCRONIZADA");
-    	
+    	return tamanio;
     }catch(Exception e){
     	 e.printStackTrace();
     	 Log.e("OBJ_PEDIDO", "NO SINCRONIZADA");
     	 throw new Exception(e);
     }
 
-}
+
+ }
 
 
 public void actualizarLogSincro(String codven, String fec_ini, String fec_device, String descp) throws Exception{   	
@@ -5012,6 +5181,7 @@ public String obtenerHoraServBD(String url, String catalog, String user, String 
     	
     	  SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
     	  datetime = result.toString();
+    	  Log.i(TAG, "FECHA SERVIDOR "+datetime);
     	  return datetime;
     	
     }catch(Exception e){

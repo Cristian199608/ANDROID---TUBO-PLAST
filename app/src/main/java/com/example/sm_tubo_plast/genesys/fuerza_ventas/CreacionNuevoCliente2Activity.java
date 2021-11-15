@@ -37,6 +37,7 @@ CreacionNuevoCliente2Activity extends AppCompatActivity {
         String LATITUD = bundle.getString("LATITUD");
         String LONGITUD = bundle.getString("LONGITUD");
         String CODVEN = bundle.getString("CODVEN");
+        double ALTITUD = bundle.getDouble("ALTITUD");
 
         DBclasses dBclasses=new DBclasses(this);
         String rucEmpresa=dBclasses.getRuc();
@@ -51,6 +52,7 @@ CreacionNuevoCliente2Activity extends AppCompatActivity {
             servicioWeb=servicioWeb.replace("LATITUD",LATITUD );
             servicioWeb=servicioWeb.replace("LONGITUD",LONGITUD );
             servicioWeb=servicioWeb.replace("CODVEN",CODVEN );
+            servicioWeb=servicioWeb.replace("ALTITUD",String.valueOf(ALTITUD));
             myWebVew.loadUrl(servicioWeb);
             WebSettings webSettings=myWebVew.getSettings();
             webSettings.setJavaScriptEnabled(true);

@@ -4,13 +4,29 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
+import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
+import com.example.sm_tubo_plast.genesys.util.IntentTerceros;
+import com.example.sm_tubo_plast.genesys.util.UtilTextView;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
 
 public class San_Visitas {
 
@@ -46,6 +62,10 @@ public class San_Visitas {
     int distancia;
     String oc_numero_visitado;
     String oc_numero_visitar;
+    int id_contacto;
+    private double altitud;;
+    private String descripcion_anulacion;;
+    private int item;;
 
 
     public String getGrupo_Campaña() {
@@ -126,6 +146,14 @@ public class San_Visitas {
 
     public void setFecha_proxima_visita(String Fecha_proxima_visita) {
         this.Fecha_proxima_visita = Fecha_proxima_visita;
+    }
+
+    public int getItem() {
+        return item;
+    }
+
+    public void setItem(int item) {
+        this.item = item;
     }
 
     public String getHora_inicio_ejecución() {
@@ -279,6 +307,30 @@ public class San_Visitas {
         this.oc_numero_visitar = oc_numero_visitar;
     }
 
+    public int getId_contacto() {
+        return id_contacto;
+    }
+
+    public void setId_contacto(int id_contacto) {
+        this.id_contacto = id_contacto;
+    }
+
+    public double getAltitud() {
+        return altitud;
+    }
+
+    public String getDescripcion_anulacion() {
+        return descripcion_anulacion;
+    }
+
+    public void setDescripcion_anulacion(String descripcion_anulacion) {
+        this.descripcion_anulacion = descripcion_anulacion;
+    }
+
+    public void setAltitud(double altitud) {
+        this.altitud = altitud;
+    }
+
     public void showDialog_mas(Activity activity, San_Visitas sa, boolean isPlanificada){
 
         LinearLayout.LayoutParams paramT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -390,6 +442,192 @@ public class San_Visitas {
         relativeLayout.addView(linearLayout);
 
         new AlertDialog.Builder(activity)
+                .setCancelable(false)
+
+                .setView(relativeLayout)
+                .setPositiveButton("Cerrar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                    }
+                })
+                .show();
+    }
+
+    private TextView SetTitulo(Activity activity, LinearLayout.LayoutParams  param,  String valor){
+        UtilTextView presentacion_producto= new UtilTextView(activity);
+        presentacion_producto.setLayoutParams(param);
+        presentacion_producto.setTextoSize(15);
+        presentacion_producto.setTextoColor(R.color.primary_text);
+        presentacion_producto.setPadding(10,2,5,5);
+        return presentacion_producto.Generate(""+valor);
+    }
+
+    private TextView SetTitulo_valor(Activity activity, LinearLayout.LayoutParams  param,  String valor){
+        UtilTextView presentacion_producto= new UtilTextView(activity);
+        presentacion_producto.setLayoutParams(param);
+        presentacion_producto.setTextoSize(13);
+        presentacion_producto.setTextoColor(R.color.grey_700);
+        presentacion_producto.setPadding(50,2,5,5);
+        return presentacion_producto.Generate(valor);
+
+
+
+    }
+    public void showDialog_ver_tplast(Activity activity, San_Visitas sa, boolean isPlanificada){
+
+        LinearLayout.LayoutParams paramT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams paramT2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 10);
+        LinearLayout.LayoutParams paramT3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+
+
+        LinearLayout linearLayout=new LinearLayout(activity);
+        linearLayout.setLayoutParams(paramT3);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        TextView textViewCab=new TextView(activity);
+        textViewCab.setLayoutParams(paramT3);
+        textViewCab.setText("DETALLE");
+        textViewCab.setBackgroundColor(activity.getResources().getColor(R.color.teal_500));
+        textViewCab.setTextColor(activity.getResources().getColor(R.color.white));
+        textViewCab.setTextSize(20);
+        textViewCab.setPadding(5,5,5,2);
+        textViewCab.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        linearLayout.addView(textViewCab);
+
+        TextView textView=new TextView(activity);
+        textView.setLayoutParams(paramT3);
+        textView.setText("CLiente: "+sa.getEjecutivo_Descripcion());
+        textView.setBackgroundColor(activity.getResources().getColor(R.color.teal_500));
+        textView.setTextColor(activity.getResources().getColor(R.color.white));
+        textView.setTextSize(15);
+        textView.setPadding(10,2,5,5);
+        textView.setGravity(Gravity.START);
+
+        linearLayout.addView(textView);
+
+        TextView textViewHORA=new TextView(activity);
+        textViewHORA.setLayoutParams(paramT3);
+        int StyleAlerta=AlertDialog.THEME_HOLO_LIGHT;
+
+        if (isPlanificada){
+            if (sa.getOc_numero_visitar().contains(GestionVisita3Activity.OC_NUMERO_REPROGRAMADO)){
+                StyleAlerta=R.style.MyDialogThemePurple;
+            }else if (sa.getDescripcion_anulacion()!=null){
+                if (sa.getDescripcion_anulacion().length()>0) {
+                    StyleAlerta=R.style.MyDialogThemeRed;
+                }
+
+            }
+        }
+        else {
+            StyleAlerta=R.style.MyDialogThemeOrange;
+            textViewHORA.setText("Planificada: "+ VARIABLES.returnFechaDescripcion(sa.getFecha_planificada()));
+        }
+
+
+        textViewHORA.setBackgroundColor(activity.getResources().getColor(R.color.teal_500));
+        textViewHORA.setTextColor(activity.getResources().getColor(R.color.white));
+        textViewHORA.setTextSize(13);
+        textViewHORA.setPadding(10,2,5,5);
+        textViewHORA.setGravity(Gravity.START);
+
+        linearLayout.addView(textViewHORA);
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Dirección"));
+
+        DBclasses dBclasses=new DBclasses(activity);
+
+        String direccion="Sin Dirección";
+        DBPedido_Cabecera dbPedido_cabecera=dBclasses.getPedido_cabecera(isPlanificada?sa.getOc_numero_visitar():sa.getOc_numero_visitado());
+        if (dbPedido_cabecera!=null){
+            String item_direccion = dbPedido_cabecera.getSitio_enfa();
+            direccion=dBclasses.obtenerDireccionxCliente2(sa.getId_rrhh(), item_direccion);
+
+        }
+
+        linearLayout.addView(SetTitulo_valor(activity, paramT, ""+direccion));
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Referencia"));
+        linearLayout.addView(SetTitulo_valor(activity, paramT, ""+sa.getTipo_visita()+" - "+sa.getActividad()));
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Fecha"));
+        linearLayout.addView(SetTitulo_valor(activity, paramT, "Programada: "+VARIABLES.convertirFecha_from_String(sa.getFecha_planificada())));
+
+
+        if (!isPlanificada){
+            linearLayout.addView(SetTitulo_valor(activity, paramT,
+                    "Visitada: "+sa.getFecha_Ejecutada()+" "+ VARIABLES.FromTime_parseTIME_Exacto12hs(sa.getHora_inicio_ejecución())+" - "+ VARIABLES.FromTime_parseTIME_Exacto12hs(sa.getHora_Fin_Ejecución())));
+        }
+
+        DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
+
+        ArrayList<Cliente_Contacto> cliente_contactos=dao_cliente_contacto.getClienteContactoByID(dBclasses, sa.getId_rrhh(), sa.getId_contacto());
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Contacto"));
+        if (cliente_contactos.size()>0) {
+            Cliente_Contacto contacto=cliente_contactos.get(0);
+            linearLayout.addView(SetTitulo_valor(activity, paramT, ""+contacto.getDni()+" - "+contacto.getNombre_contacto()));
+        }else{
+            linearLayout.addView(SetTitulo_valor(activity, paramT, "Sin contacto"));
+        }
+
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Comentario"));
+        linearLayout.addView(SetTitulo_valor(activity, paramT, ""+sa.getComentario_actividad()));
+
+        linearLayout.addView(SetTitulo(activity, paramT, "Próxima Visita"));
+        linearLayout.addView(SetTitulo_valor(activity, paramT, "Planificada: "+sa.getFecha_proxima_visita()));
+
+        String fecha_reporgramada=DAO_San_Visitas.tieneReporgramadoVisita(dBclasses.getReadableDatabase(), sa.getId(), !isPlanificada?sa.getOc_numero_visitado():sa.getOc_numero_visitar());
+        if (fecha_reporgramada!=null){
+            if (fecha_reporgramada.length()>0) {
+                linearLayout.addView(SetTitulo_valor(activity, paramT, "Reprogramada "+fecha_reporgramada));
+            }
+        }else{
+            fecha_reporgramada="Error, al leer la data";
+            linearLayout.addView(SetTitulo_valor(activity, paramT, "Reprogramada "+fecha_reporgramada));
+        }
+
+        if (sa.getDescripcion_anulacion()!=null){
+            if (sa.getDescripcion_anulacion().length()>0) {
+                linearLayout.addView(SetTitulo(activity, paramT, "Comentario Anulacion/Reprogramación"));
+                linearLayout.addView(SetTitulo_valor(activity, paramT, ""+sa.getDescripcion_anulacion()));
+
+            }
+
+        }
+
+
+
+
+        if (!isPlanificada){
+            ImageView imageView=new ImageView(activity);
+//        imageView.setBackgroundResource(R.drawable.mapa);
+            imageView.setImageDrawable(activity.getResources().getDrawable(R.drawable.logo_google_maps));
+            imageView.setLayoutParams(paramT3);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    LatLng latLng=new LatLng(Double.parseDouble(sa.getLatitud()),Double.parseDouble( sa.getLongitud()));
+                    IntentTerceros.lanzarGooleMaps(activity, latLng);
+                }
+            });
+
+            UtilView.Efectos(activity, imageView, R.color.white);
+            linearLayout.addView(imageView);
+
+        }
+
+        RelativeLayout relativeLayout=new RelativeLayout(activity);
+        relativeLayout.setLayoutParams(paramT3);
+
+        relativeLayout.addView(linearLayout);
+
+        new AlertDialog.Builder(activity, StyleAlerta)
                 .setCancelable(false)
 
                 .setView(relativeLayout)

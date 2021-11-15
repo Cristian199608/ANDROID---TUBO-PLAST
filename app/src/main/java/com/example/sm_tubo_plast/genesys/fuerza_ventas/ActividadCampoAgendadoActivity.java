@@ -60,7 +60,7 @@ public class ActividadCampoAgendadoActivity
     RecyclerView recyclerView;
     RelativeLayout contenedor_fragmentAgendado;
     AdapterMesesCalendario ADAPTER_meses;
-    AdapterAgendaActividades ADAPTER_agenda;
+
     LinearLayout layout_direccionales;
 
     ProgressBar progressBar;
@@ -388,20 +388,18 @@ public class ActividadCampoAgendadoActivity
         }
     }
 
+
+
+
     @Override
     public  void onClickAdapterAgenda(San_Visitas san_visitas, boolean isPlanificada){
-        new San_Visitas().showDialog_mas(ActividadCampoAgendadoActivity.this, san_visitas, isPlanificada);
+        new San_Visitas().showDialog_ver_tplast(ActividadCampoAgendadoActivity.this, san_visitas, isPlanificada);
     }
 
     @Override
-    public  void onClickAdapterAgenda_editar(San_Visitas san_visitas, boolean isPlanificada){
+    public  void onClickAdapterAgenda_visita(San_Visitas san_visitas, boolean isPlanificada){
 
-        String oc_numero="";
-        if (isPlanificada) {
-            oc_numero=san_visitas.getOc_numero_visitar();
-        }else{
-            oc_numero=san_visitas.getOc_numero_visitado();
-        }
+        String oc_numero=  san_visitas.getOc_numero_visitar();
 
         if (oc_numero.length()>0) {
             Intent intent=new Intent(this, GestionVisita3Activity.class);
@@ -410,7 +408,55 @@ public class ActividadCampoAgendadoActivity
             intent.putExtra("CODIGO_CRM",san_visitas.getCod_Colegio());
             intent.putExtra("NOMBRE_INSTI",san_visitas.getDescripcion_Colegio());
             intent.putExtra("COD_VEND", CODVEN);
-            intent.putExtra("isPLANIFICADA", isPlanificada);
+            intent.putExtra("TIPO_GESTION", GestionVisita3Activity.VISITA_PLANIFICADA);
+            intent.putExtra("ORIGEN", TAG);
+
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    public  void onClickAdapterAgenda_editar(San_Visitas san_visitas){
+
+        String oc_numero="";
+        String tipo_gestion="";
+        if (san_visitas.getEstado().equals(GestionVisita3Activity.ESTADO_VISITA_COMPLETADA)){
+            oc_numero = san_visitas.getOc_numero_visitado();
+            tipo_gestion =GestionVisita3Activity.MODIFICAR_VISITA;
+        }else{
+            oc_numero = san_visitas.getOc_numero_visitar();
+            tipo_gestion =GestionVisita3Activity.MODIFICAR_PROGRAMACION;
+        }
+
+
+        if (oc_numero.length()>0) {
+            Intent intent=new Intent(this, GestionVisita3Activity.class);
+            intent.putExtra("ID_RRHH", san_visitas.getId_rrhh());
+            intent.putExtra("OC_NUMERO", oc_numero);
+            intent.putExtra("CODIGO_CRM",san_visitas.getCod_Colegio());
+            intent.putExtra("NOMBRE_INSTI",san_visitas.getDescripcion_Colegio());
+            intent.putExtra("COD_VEND", CODVEN);
+            intent.putExtra("TIPO_GESTION", tipo_gestion);
+            intent.putExtra("ORIGEN", TAG);
+
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    public  void onClickAdapterAgenda_reprogramar(San_Visitas san_visitas, boolean isPlanificada){
+
+        String oc_numero=san_visitas.getOc_numero_visitar();
+
+
+        if (oc_numero.length()>0) {
+            Intent intent=new Intent(this, GestionVisita3Activity.class);
+            intent.putExtra("ID_RRHH", san_visitas.getId_rrhh());
+            intent.putExtra("OC_NUMERO", oc_numero);
+            intent.putExtra("CODIGO_CRM",san_visitas.getCod_Colegio());
+            intent.putExtra("NOMBRE_INSTI",san_visitas.getDescripcion_Colegio());
+            intent.putExtra("COD_VEND", CODVEN);
+            intent.putExtra("TIPO_GESTION", GestionVisita3Activity.RE_PROGRAMACION_VISITA);
             intent.putExtra("ORIGEN", TAG);
 
             startActivityForResult(intent, 1);

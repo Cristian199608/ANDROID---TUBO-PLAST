@@ -2,12 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.sm_tubo_plast">
-
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the "MyLocation" functionality.
-    -->
+    <!-- Add this permission to check which network access properties (e.g. active type: 3G/WiFi). -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +12,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
+        <activity android:name=".genesys.util.SeleccionarRangoFechas_Activity" android:theme="@style/AppTheme_MD"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -25,8 +21,6 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-
-
         <activity
             android:name=".genesys.fuerza_ventas.CreacionNuevoCliente2Activity"
             android:theme="@style/AppThemeNewClient" />
@@ -208,20 +202,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <receiver android:name=".genesys.service.SampleAlarmReceiver" />
-    </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Add this permission to check which network access properties (e.g. active type: 3G/WiFi). -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- Add this permission to access WLAN MAC address. -->
+    </application> <!-- Add this permission to access WLAN MAC address. -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

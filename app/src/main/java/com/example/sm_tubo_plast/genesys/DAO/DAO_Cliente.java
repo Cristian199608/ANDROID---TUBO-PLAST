@@ -319,7 +319,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 
 	public DB_DireccionClientes getDireccionClienteByItem(String codigoCliente, String item) {
 		String rawQuery;
-		rawQuery = "select codcli,item,direccion,telefono,coddep,codprv,ubigeo,des_corta,latitud,longitud " +
+		rawQuery = "select codcli,item,direccion,telefono,coddep,codprv,ubigeo,des_corta,latitud,longitud, ifnull(altitud, 0) as altitud " +
 				"from "+ DBtables.Direccion_cliente.TAG
 				+ " where direccion_cliente.codcli='" +codigoCliente + "' and direccion_cliente.item='"+item+"'";
 
@@ -340,6 +340,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 			dbdireccion.setDes_corta(cur.getString(cur.getColumnIndex("des_corta")));
 			dbdireccion.setLatitud(cur.getString(cur.getColumnIndex("latitud")));
 			dbdireccion.setLongitud(cur.getString(cur.getColumnIndex("longitud")));
+			dbdireccion.setAltitud(cur.getDouble(cur.getColumnIndex("altitud")));
 
 		}
 		cur.close();
@@ -353,7 +354,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				"SELECT c.codcli,ruccli,nomcli, " +
 						"ifnull(d.direccion,'*No tiene direccion') as direccion ,d.telefono, " +
 						"latitud, "+
-						"longitud "+
+						"longitud, " +
+						"d.estado "+
 						"FROM cliente c "+
 						"inner JOIN "+ DBtables.Direccion_cliente.TAG +" d ON c.codcli = d.codcli "+
 						"WHERE d.latitud!=0 and (c.nomcli like '"+texto_buscar+"' "+
@@ -368,15 +370,17 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 	}
 
 	public  int getClienteDirrectionAll(){
-		String rawQuery =
-				"SELECT count(*) from cliente ";
-		Log.i(TAG, rawQuery);
+		String rawQuery = "select  distinct(ruccli), count(*)  "+
+				" from "
+				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
+				+"inner join "+ DBtables.Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
+				+"   ";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);
 		int cantidad=0;
 		if (cursor.moveToNext()){
-			cantidad=cursor.getInt(0);
+			cantidad=cursor.getInt(1);
 		}
 		cursor.close();
 		db.close();

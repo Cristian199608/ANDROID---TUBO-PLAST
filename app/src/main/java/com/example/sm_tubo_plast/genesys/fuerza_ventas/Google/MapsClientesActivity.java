@@ -57,14 +57,14 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
 
     private static final String TAG = "MapsClientesActivity";
 
-    public static final int PERMISO_PARA_ACCEDER_A_LOCALIZACION = 1000;
+    public static final int PERMISO_PARA_ACCEDER_A_LOCALIZACION = Permiso_Adroid.PERMISO_PARA_ACCEDER_A_LOCALIZACION;
     private GoogleMap mMap;
     ClusterManager<MyItem> mClusterManager;
     Location myUbicacionActual;
     LocationApiGoogle locationApiGoogle;
     TaskCheckUbicacion taskCheckUbicacion;
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final long UPDATE_INTERVAL = 3000, FASTEST_INTERVAL = 3000; // = 3 seconds
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = Permiso_Adroid.PLAY_SERVICES_RESOLUTION_REQUEST;
+    private static final long UPDATE_INTERVAL = LocationApiGoogle.UPDATE_INTERVAL_3_segundos, FASTEST_INTERVAL = LocationApiGoogle.FASTEST_INTERVAL_3_segundos; // = 3 seconds
 
 
     boolean isShowedMyUbicacion=false;
@@ -90,7 +90,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps_clientes);
-        Pre_StartUbicacionApiGoogle();
+        Star_Check_Permiso_Ubicacion();
 
 //         Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.my_fragment_map);
@@ -178,11 +178,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
             }
         }.execute();
     }
-    private void ApiLocationGoogleConectar(){
-        if (locationApiGoogle.googleApiClient != null) {
-            locationApiGoogle.googleApiClient.connect();
-        }
-    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -259,7 +255,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
 
     }
 
-    private void Pre_StartUbicacionApiGoogle(){
+    private void Star_Check_Permiso_Ubicacion(){
         new RequestPermisoUbicacion(this, PERMISO_PARA_ACCEDER_A_LOCALIZACION, new RequestPermisoUbicacion.MyListener() {
             @Override
             public void Result(int isConcedido) {
@@ -268,7 +264,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
                 }
                 else if (Permiso_Adroid.IS_PERMISO_CONCEDIDO==isConcedido){
                     StartUbicacionApiGoogle();
-                    ApiLocationGoogleConectar();
+
                 }
             }
         });
@@ -321,6 +317,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
             }
         });
 
+        locationApiGoogle.ApiLocationGoogleConectar();
     }
 
     private void BuscarClientes(){
@@ -541,7 +538,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
 
 
     public ArrayList<MyItem> getMarcadorClienteDireccionAll(){
-        String texto_buscar="%"+(editBuscarClientes.getText().toString().replace(" ", ""))+"%";
+        String texto_buscar="%"+(editBuscarClientes.getText().toString().replace(" ", "%"))+"%";
 
         DAO_Cliente dao_Cliente = new DAO_Cliente(getApplicationContext());
         Cursor cursor=dao_Cliente.getClienteDirrectionAll(texto_buscar);
@@ -558,6 +555,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
             dicli.setLatitud(cursor.getString(cursor.getColumnIndex("latitud")));
             dicli.setLongitud(cursor.getString(cursor.getColumnIndex("longitud")));
             dicli.setDireccion(cursor.getString(cursor.getColumnIndex("direccion")));
+            dicli.setEstado(cursor.getString(cursor.getColumnIndex("estado")));
 
             cliente.setDb_direccionClientes(dicli);
             MyItem offsetItem = new MyItem(Double.parseDouble(dicli.getLatitud()), Double.parseDouble(dicli.getLongitud()), cliente.getNombre(), dicli.getDireccion(),  cliente);
@@ -598,7 +596,7 @@ public class MapsClientesActivity extends FragmentActivity implements OnMapReady
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.i("Permiso","Permiso concedido");
                 Toast.makeText(this, "Permiso aceptado", Toast.LENGTH_SHORT).show();
-                Pre_StartUbicacionApiGoogle();
+                Star_Check_Permiso_Ubicacion();
             } else {
 
             }

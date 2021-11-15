@@ -1,6 +1,5 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,17 +11,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,12 +26,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -50,12 +45,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMotivo_noventa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
@@ -64,11 +60,19 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Google.MapsClientesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.cliente.CH_InformacionCliente;
+import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
+import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
+import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
+import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -79,6 +83,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,18 +99,26 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     static final String KEY_CLIENTE = "cliente";
     static final String KEY_RUC = "ruc";
     String ruc;String flagTipoEnvio = "P";
-    double lat, lng;
+
     String numOc;
     LayoutInflater inflater;
     ArrayList<HashMap<String, String>> lista_clientes = new ArrayList<HashMap<String, String>>();
     // PedidosActivity ob= new PedidosActivity();
     ListView list;
-    Clientes_LazyAdapter cli_adapter;
+
     DBclasses obj_dbclasses;
     DBClientes db_clientes;
     String nomcli, codven;
-    private LocationManager locationManager;
-    private String provider = null;
+    /*
+
+     */
+    LocationApiGoogle locationApiGoogle;
+    TaskCheckUbicacion taskCheckUbicacion;
+    Location Location_Actual;
+
+
+
+
     int selectedPosition1 = 0;
     int dia;
     String Fecha;
@@ -118,9 +131,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private static final int ID_DEVOLUCION = 7;
     private static final int ID_COTIZACION = 8;
     private static final int ID_VISITA_CLIENTE = 9;
-    private static final int ID_LOCALIZACION = 10;
+    private static final int ID_PROGRAMACION_VISITA_CLIENTE = 10;
+    private static final int ID_LOCALIZACION = 11;
 
-    private LocationListener Loclistener;
+
     Boolean isInternetPresent = false;
     private int mSelectedRow = 0;
     ConnectionDetector cd;
@@ -149,6 +163,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     private EditText alert_edt;
     private boolean isAlert = false;
+
+    TextView tv_cantidadGeneral, tv_cantidad_filtrado, tv_fecha_filtrado_de;
+    CheckBox check_programada,check_visitado;
 
     SharedPreferences prefs;
     String _usuario;
@@ -187,9 +204,21 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         _pass = prefs.getString("pass", "0");
 
 
+        tv_cantidadGeneral = (TextView) findViewById(R.id.tv_cantidadClientesGeneral);
+        tv_cantidad_filtrado = (TextView) findViewById(R.id.tv_cantidad_filtrado);
+        tv_fecha_filtrado_de = (TextView) findViewById(R.id.tv_fecha_filtrado_de);
+        check_programada =  findViewById(R.id.check_programada);
+        check_visitado =  findViewById(R.id.check_visitado);
+
+        check_programada.setVisibility(View.GONE);
+        check_visitado.setVisibility(View.GONE);
 
         myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setColorSchemeResources(UtilView.getColorsSwipe());
+        swipeRefreshLayout.setEnabled(false);
+        tv_fecha_filtrado_de.setVisibility(View.GONE);
+
         myFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -205,6 +234,28 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             }
         });
 
+        tv_fecha_filtrado_de.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tv_fecha_filtrado_de.setVisibility(View.GONE);
+                tv_fecha_filtrado_de.setText("");
+                tv_fecha_filtrado_de.setHint("");
+                GestionCargarCliente(0, "");
+            }
+        });
+        check_programada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                GestionCargarCliente(0, tv_fecha_filtrado_de.getHint().toString());
+            }
+        });
+
+        check_visitado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                GestionCargarCliente(0, tv_fecha_filtrado_de.getHint().toString());
+            }
+        });
 
         // El espinner "(xvisita,todos)" esta invisible, asi que
         // itemSelectedListener no funciona
@@ -227,62 +278,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         }
         /****************************************************************/
 
-        // Get the location manager
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        // Define the criteria how to select the location provider -> use
-        // default
-        Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
-        Location location = null;
-
-        if (provider != null) {
-            Log.w("Provider Pedido Activity", "Provider: " + provider
-                    + " has been selected.");
-
-            if (locationManager.isProviderEnabled(provider)) {
-                Log.w("Provider Pedido Activity", "provider: " + provider
-                        + " Habilitado");
-                // location = locationManager.getLastKnownLocation(provider);
-            } else {
-                Log.w("Provider Pedido Activity", "provider: " + provider
-                        + " deshabilitado");
-                // Intent myIntent = new
-                // Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                // startActivity(myIntent);
-            }
-        } else {
-            Log.w("Provider Pedido Activity", "Provider: " + provider
-                    + " has been selected.");
-        }
-
-        //
-        Loclistener = new LocationListener() {
-
-            public void onLocationChanged(Location location) {
-                Log.w("Localizacion cambio", "");
-                obtenerLocalizacion(location);
-                // Toast.makeText(getApplicationContext(),"localizacion cambio Lat:"+lat+", Lng:"+lng+"",
-                // Toast.LENGTH_LONG).show();
-            }
-
-            public void onStatusChanged(String provider, int status,
-                                        Bundle extras) {
-                // TODO Auto-generated method stub
-
-            }
-
-            public void onProviderEnabled(String provider) {
-                Log.w("Provider", "Provider Habilitado");
-            }
-
-            public void onProviderDisabled(String provider) {
-                Log.w("Provider", "Provider Deshabilitado");
-            }
-
-        };
         //
 
-        obtenerLocalizacion(location);
+
 
 
         ActionItem infoItem = new ActionItem(ID_INFO, "Informacion", R.drawable.icon_man_24dp);
@@ -291,6 +289,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem acceptItem = new ActionItem(ID_COBRANZA, "Cobranza", R.drawable.icon_coins_24dp);
         ActionItem uploadItem = new ActionItem(ID_NO_VENTA, "Motivo no venta", R.drawable.icon_stop_24dp);
         ActionItem gestionVisita = new ActionItem(ID_VISITA_CLIENTE, "Gestión visita", R.drawable.icon_man_24dp);
+        ActionItem programar_visita = new ActionItem(ID_PROGRAMACION_VISITA_CLIENTE, "Programar Visita", R.drawable.icon_man_24dp);
         ActionItem observacion = new ActionItem(ID_OBSERVACION, "Observacion", R.drawable.alert);
         ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
@@ -305,6 +304,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         mQuickAction.addActionItem(addItem);
         mQuickAction.addActionItem(acceptItem);
         mQuickAction.addActionItem(uploadItem);
+        mQuickAction.addActionItem(programar_visita);
         mQuickAction.addActionItem(gestionVisita);
         mQuickAction.addActionItem(observacion);
         mQuickAction.addActionItem(devolucionItem);
@@ -316,6 +316,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         mQuickAction2.addActionItem(addItem);
         mQuickAction2.addActionItem(acceptItem);
         mQuickAction2.addActionItem(uploadItem);
+        mQuickAction2.addActionItem(programar_visita);
         mQuickAction2.addActionItem(gestionVisita);
         mQuickAction2.addActionItem(observacion);
         mQuickAction2.addActionItem(devolucionItem);
@@ -372,8 +373,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 nomcli = nomcli2;
 
                 item_direccion = Integer.parseInt(dir);
-
-                codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
+                codcli = ""+searchResults.get(position).get("codcli");
                 codSucursal = obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
                 estadoLocalizacion = obj_dbclasses.obtenerEstadoSucursalCliente(codcli, codSucursal);
 
@@ -443,12 +443,21 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     }
 
     private void starWebCreateCliente(boolean forzar) {
+
+        double lat=0.0,lng=0.0, altitud=0.0;
+        if (Location_Actual!=null){
+            lat=Location_Actual.getLatitude();
+            lng=Location_Actual.getLongitude();
+            altitud=Location_Actual.getAltitude();
+        }
+
         if ((lat!=0.0 && lng!=0.0) || forzar){
             Log.i(TAG, "Valor de COD_VEN ES " + codven+" coordenadas "+lat+", "+lng);
             Intent intReportes = new Intent(getApplicationContext(), CreacionNuevoCliente2Activity.class);
             intReportes.putExtra("COD_VEND", codven);
             intReportes.putExtra("LATITUD", String.valueOf(lat));
             intReportes.putExtra("LONGITUD", String.valueOf(lng));
+            intReportes.putExtra("ALTITUD",altitud);
             intReportes.putExtra("CODVEN", codven);
             startActivity(intReportes);
         }else {
@@ -459,7 +468,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        Toast.makeText(this, "Buscando..", Toast.LENGTH_SHORT).show();
 
         //searchView.setEnabled(false);
         inputSearch.setText(query);
@@ -530,9 +538,11 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 viewHolder = (ViewHolder) convertView.getTag();
             try {
 
-                int i = obj_dbclasses.obtenerPedidosXCodcli(
+                int i=Integer.parseInt(searchResults.get(position).get("estado_pedido").toString());
+                /*int i = "" obj_dbclasses.obtenerPedidosXCodcli(
                         searchResults.get(position).get("codigo").toString(),
                         searchResults.get(position).get("item_direccion").toString());
+                 */
 
 
 
@@ -576,7 +586,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
                 try {
 
-                    String estado = obj_dbclasses.getEstadoDireccionCliente(searchResults.get(position).get("codigo").toString(), searchResults.get(position).get("item_direccion").toString());
+                    String estado = searchResults.get(position).get("estado_localizacion").toString();
+                    //String estado = obj_dbclasses.getEstadoDireccionCliente(searchResults.get(position).get("codigo").toString(), searchResults.get(position).get("item_direccion").toString());
 
                     //String estado = searchResults.get(position).get("estado").toString();
                     if (estado.equals("L")) {//Localizado
@@ -584,7 +595,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     } else if (estado.equals("V")) {//Localizado y Validado
                         viewHolder.txt_flag_pedido.setBackgroundColor(getResources().getColor(R.color.green_500));
                     } else if (estado.equals("P")) {//Pendiente de localizar
-                        viewHolder.txt_flag_pedido.setBackgroundColor(getResources().getColor(R.color.grey_400));
+                        viewHolder.txt_flag_pedido.setBackgroundColor(getResources().getColor(R.color.yellow_600));
                     } else {
                         viewHolder.txt_flag_pedido.setBackgroundColor(getResources().getColor(R.color.grey_400));
                     }
@@ -644,7 +655,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     public void crearDialogo_noventa() {
 
         dialogo = new Dialog(this);
-        numOc = obj_dbclasses.obtenerNumOC(codven);
+        numOc = obj_dbclasses.obtenerMaxNumOc(codven);
         dialogo.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialogo.setContentView(R.layout.dialog_motivo_noventa);
         dialogo.setCancelable(false);
@@ -696,14 +707,14 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogo1, int id) {
                                 // Se guarda el motivo de no_venta, y recupero el oc_numero que
-                                // se haya generado
+                                // se haya generados
                                 final String orden_compra = guardarCabeceraPedido(item.getCod_noventa(), "");
 
                                 if (checkBox.isChecked()){
                                     new asyncGuardarMotivo().execute(orden_compra);
 
                                 }else{
-                                    ((Clientes_LazyAdapter) list.getAdapter()).notifyDataSetChanged();
+                                    adapter.notifyDataSetChanged();
                                     dialogo.dismiss();
                                 }
                             }
@@ -777,10 +788,16 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     public String guardarCabeceraPedido(int cod_noventa, String observcion) {
 
+        double lat=0.0,lng=0.0;
+        if (Location_Actual!=null){
+            lat=Location_Actual.getLatitude();
+            lng=Location_Actual.getLongitude();
+        }
+
+
         itemCabecera = new DBPedido_Cabecera();
 
-        String fecha_configuracion = obj_dbclasses.getCambio("Fecha");
-        itemCabecera.setOc_numero(codven + calcularSecuencia(numOc, fecha_configuracion));
+        itemCabecera.setOc_numero(codven + calcularSecuencia(numOc));
         // SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         // Date date = new Date();
         // String codcli= obj_dbclasses.obtenerCodigoCliente(nomcli);
@@ -815,14 +832,24 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        locationManager.removeUpdates(Loclistener);
-        locationManager=null;
+
+
         asynCliente3.interrupt();
         asynCliente3=null;
+
+        if (locationApiGoogle!=null){
+            if (locationApiGoogle.fusedLocationClient!=null && locationApiGoogle.locationCallback!=null){
+                locationApiGoogle.fusedLocationClient.removeLocationUpdates(locationApiGoogle.locationCallback);
+            }
+        }
+        if (taskCheckUbicacion!=null){
+            taskCheckUbicacion.RemoveLocation();
+        }
+        
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+        public boolean onCreateOptionsMenu(Menu menu) {
         // Alternativa 1
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_clientes, menu);
@@ -831,6 +858,23 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         searchView =  (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(this);
 
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                if (searchView.getQuery().toString().length()==0 && inputSearch.getText().toString().length()>0) {
+                    inputSearch.setText("");
+                    StartCargaCliente();
+                }
+                return false;
+            }
+        });
+
+
+        MenuItem menu_calendario_visita=menu.findItem(R.id.menu_calendario_visita);
+       /* DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
+        ArrayList<Cliente_Contacto> lista =dao_cliente_contacto.getClientesPendientesAll(obj_dbclasses);
+        menuitem2.setTitle(""+menuitem2.getTitle()+"("+lista.size()+")");
+*/
 
 
 
@@ -844,8 +888,42 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 Intent intent=new Intent(this, MapsClientesActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.clientes_enviar_localizacion_pendiente:
+                flagTipoEnvio = "P";
+                new asyncEnviarGeolocalizacionCliente().execute();
+                return true;
+
             case android.R.id.home:
                 finish();
+            return true;
+            case R.id.cliente_contacto_pendientes:
+                WS_Cliente_Contacto ws_cliente_contacto=new WS_Cliente_Contacto(ClientesActivity.this, obj_dbclasses);
+                ws_cliente_contacto.EnviarCliente_Contacto();
+
+            return true;
+            case R.id.menu_calendario_visita:
+                final String CERO = "0";
+                final Calendar c = Calendar.getInstance();
+                final int hora = c.get(Calendar.HOUR_OF_DAY);
+                final int minuto = c.get(Calendar.MINUTE);
+
+                CustomDateTimePicker recogerHora=new CustomDateTimePicker(this, new CustomDateTimePicker.OnTimeSetListener() {
+                    @Override
+                    public String onDateTimeSet(Calendar myCalendar, String fecha_formateado) {
+                        if (fecha_formateado!=null){
+                            tv_fecha_filtrado_de.setText(""+fecha_formateado);
+                            tv_fecha_filtrado_de.setVisibility(View.VISIBLE);
+                            tv_fecha_filtrado_de.setHint(fecha_formateado);
+                            tv_fecha_filtrado_de.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_top_in));
+                            GestionCargarCliente(0, "");
+                        }
+                        return null;
+                    }
+                },hora, minuto, true, false, false);
+                recogerHora.setFormatFecha("yyyy-MM-dd");
+                //recogerHora.sethabliltar_rango_fechas(true);
+                recogerHora.Show();
+
             return true;
 //            case R.id.clientes_menu_registrados:
 //                Intent intentr = new Intent(ClientesActivity.this, CH_RegistroClientesNuevos.class);
@@ -921,7 +999,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             }
 
             Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG).show();
-            ((Clientes_LazyAdapter) list.getAdapter()).notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
         }
 
@@ -930,13 +1008,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private void StartCargaCliente(){
 //        if (searchView.isEnabled()) {
 
-            GestionCargarCliente(0, inputSearch.getText().toString());
+            GestionCargarCliente(0,  "");
 //        }else{
 //            Toast.makeText(this, "Espere un momento...", Toast.LENGTH_SHORT).show();
 //        }
     }
 
-    private void GestionCargarCliente(int startt, final String busqueda) {
+    private void GestionCargarCliente(int startt,  String fecha_formateado) {
 
 
         ProgressBar pbar =new ProgressBar(ClientesActivity.this);
@@ -989,7 +1067,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         "2do proceso carga en EN: "  + (System.currentTimeMillis() - beforecall) + "miliseg");
                 if ((i+cant_visible==b && b>=indexStart+searchResults.size() && searchResults.size()==b) ) {
                     list.addFooterView(pbar);
-                    AsynTask2(pbar, indexStart+searchResults.size(), nro_paginacion, busqueda);
+                    AsynTask2(pbar, indexStart+searchResults.size(), nro_paginacion);
                 }
 
 //                if (i+cant_visible==b) {
@@ -999,11 +1077,11 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             }
         });
 
-
+        Star_Check_Permiso_Ubicacion();
     }
 
 
-    private void AsynTask2(ProgressBar p, int start, int nro_paginacion, String txtBusqueda) {
+    private void AsynTask2(ProgressBar p, int start, int nro_paginacion) {
 
 
         if (asynCliente3!=null){
@@ -1024,13 +1102,27 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     Log.i(TAG, "AsynTask2:: corriendo HILO inicio");
 
 
-                    String newBusqueda=inputSearch.getText().toString();
-                    ArrayList<HashMap<String, Object>>  data = obj_dbclasses.getProgramacionxDia2( newBusqueda, start, nro_paginacion, 50);
+                    boolean checkProgramada=check_programada.isChecked();
+                    boolean checkVisitado=check_visitado.isChecked();
+
+                    String fecha_formateada="";
+                    if (tv_fecha_filtrado_de.getHint()!=null) {
+                        fecha_formateada=tv_fecha_filtrado_de.getHint().toString();
+
+                    }
+                    String newBusqueda=inputSearch.getText().toString().replace(" ", "%");
+                    ArrayList<HashMap<String, Object>>  data = obj_dbclasses.getProgramacionxDia2(
+                            newBusqueda, start, nro_paginacion, 50, fecha_formateada, checkProgramada, checkVisitado);
+
+                    DAO_Cliente dao_Cliente = new DAO_Cliente(getApplicationContext());
+                    int cantidad_total=dao_Cliente.getClienteDirrectionAll();
+
 
                     Log.i(TAG, "AsynTask2:: corriendo HILO fin");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            tv_cantidadGeneral.setText("Cantidad General: "+cantidad_total);
                             cargar_data_lista(p, data, nro_paginacion);
                         }
                     });
@@ -1043,7 +1135,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
                             if (searchView!=null)searchView.setEnabled(true);
-                            Toast.makeText(ClientesActivity.this, "Hubo un error al buscar, Intentalo nuevamente", Toast.LENGTH_SHORT).show();
+                            RemoveFoorter(p);
+                            //Toast.makeText(ClientesActivity.this, "Hubo un error al buscar, Intentalo nuevamente", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -1147,78 +1240,47 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     protected void onResume() {
         super.onResume();
-        if (provider != null && locationManager.isProviderEnabled(provider)) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
+        if (!LocationApiGoogle.checkPlayServices(this, Permiso_Adroid.PLAY_SERVICES_RESOLUTION_REQUEST)) {
+            UtilViewMensaje.MENSAJE_simple(this, "Google Play", "Necesitas instalar Google Play Services para usar las ubicaciones de los clientes ");
+        }else {
+            if (taskCheckUbicacion!=null){
+                taskCheckUbicacion.RequestLocationUpdates();
             }
-            locationManager.requestLocationUpdates(provider, 400, 1,
-                    Loclistener);
         }
+
     }
 
     /* Remove the locationlistener updates when Activity is paused */
 
     protected void onPause() {
         super.onPause();
-        locationManager.removeUpdates(Loclistener);
-    }
-
-    public void obtenerLocalizacion(Location location) {
-        if (location != null) {
-            lat = (double) (location.getLatitude());
-            lng = (double) (location.getLongitude());
-        } else {
-
-            /*
-             * String[] localizacion = new String[2];
-             *
-             * int itm_dir = spnDireccion.getSelectedItemPosition();
-             * localizacion = dbclass.Obtener_localizacion(codcli, itm_dir);
-             *
-             * lat = Double.parseDouble(localizacion[0]);// lng =
-             * Double.parseDouble(localizacion[1]);//
-             */
-
-            // if(lat == 0.0 || lng == 0.0){
-            if (provider != null) {
-                Location loc = locationManager.getLastKnownLocation(provider);
-                if (loc != null) {
-                    lat = (double) (loc.getLatitude());
-                    lng = (double) (loc.getLongitude());
-                }
+        if (locationApiGoogle!=null){
+            if (locationApiGoogle.fusedLocationClient!=null && locationApiGoogle.locationCallback!=null){
+                locationApiGoogle.fusedLocationClient.removeLocationUpdates(locationApiGoogle.locationCallback);
             }
-            // }
-
         }
-        Log.w("Obtener Localizacion", "Lat:" + lat + ", Lng:" + lng + "");
+        if (taskCheckUbicacion!=null){
+            taskCheckUbicacion.RemoveLocation();
+        }
     }
 
-    public static String calcularSecuencia(String oc,String fecha_configuracionx) {
+
+
+    public  String calcularSecuencia(String oc) {
         String cero = "0";
         String orden = "";
 
-        // obtengo la fecha de la tabla configuracion
-        // String fecha_configuracion = dbclass.getCambio("Fecha");
 
-        // String mes_actual=(calendar.get(Calendar.MONTH)+1)+"";
-        // String dia_actual=calendar.get(Calendar.DAY_OF_MONTH)+"";
+        String fecha_configuracionx = obj_dbclasses.getCambio("Fecha");
 
+
+        String anio_actual = fecha_configuracionx.substring(8, 10);
         String mes_actual = fecha_configuracionx.substring(3, 5);
         String dia_actual = fecha_configuracionx.substring(0, 2);
 
         int secactual = 0;
 
-        Log.d("calculando secuencia...", oc+"");
-
         if (oc.length() < 6) {
-            Log.d("calculando secuencia...", oc+" < 6");
             secactual = 1;
             if (mes_actual.length() < 2) {
                 mes_actual = cero + mes_actual;
@@ -1226,57 +1288,48 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             if (dia_actual.length() < 2) {
                 dia_actual = cero + dia_actual;
             }
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ cero +"+"+ secactual);
-
-            orden = mes_actual + dia_actual + cero + secactual;
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
             return orden;
         } else {
-            Log.d("calculando secuencia...", oc+" > 6");
-            String cadenaFecha = oc.substring(oc.length()-6,oc.length());
+            //String cadenaFecha = oc.substring(oc.length()-6,oc.length());
+            Log.i(TAG, "VER oc numero es "+oc+", tamaño "+oc.length());
+            String cadenaFecha = oc.substring(oc.length() - 8, oc.length());
 
-            int mest = Integer.parseInt(cadenaFecha.substring(0, 2));
-            int diat = Integer.parseInt(cadenaFecha.substring(2, 4));
-            int sectem = Integer.parseInt(cadenaFecha.substring(4, 6));
+            int aniot = Integer.parseInt(cadenaFecha.substring(0, 2));
+            int mest = Integer.parseInt(cadenaFecha.substring(2, 4));
+            int diat = Integer.parseInt(cadenaFecha.substring(4, 6));
+            int sectem = Integer.parseInt(cadenaFecha.substring(6, 8));
 
-            Log.d("calculando secuencia...","diat:"+diat);
-            Log.d("calculando secuencia...","mest:"+mest);
-            Log.d("calculando secuencia...","sectem:"+sectem);
-
+            //Verificar por año
             if (Integer.parseInt(mes_actual) <= mest) {
-                Log.d("calculando secuencia...","mes_actual < mest");
                 if (Integer.parseInt(dia_actual) > diat) {
                     secactual = 1;
-                    Log.d("calculando secuencia...","secactual = 1;  ->"+secactual);
                 } else
                     secactual = sectem + 1;
-                Log.d("calculando secuencia...","secactual = sectem + 1; ->"+secactual);
 
             } else {
                 secactual = 1;
-                Log.d("calculando secuencia...","secactual = 1;");
             }
         }
 
         if (mes_actual.length() < 2) {
             mes_actual = cero + mes_actual;
         }
-        if (dia_actual.length() < 2) {
+        if (dia_actual.length() < 2)
             dia_actual = cero + dia_actual;
-        }
         if (secactual < 10) {
-            Log.d("calculando secuencia...","secactual < 10");
-            orden = mes_actual + dia_actual + cero + secactual;
-            Log.d("calculando secuencia...","orden = mes_actual + dia_actual + cero + secactual;");
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ cero +"+"+ secactual);
+            //orden = mes_actual + dia_actual + cero + secactual;
+            orden = anio_actual + mes_actual + dia_actual + cero + secactual;
         } else {
-            Log.d("calculando secuencia...","secactual > 10");
-            Log.d("calculando secuencia...","orden = mes_actual + dia_actual + secactual");
-            orden = mes_actual + dia_actual + secactual;
-            Log.d("calculando secuencia...","orden = "+mes_actual +"+"+ dia_actual +"+"+ secactual);
+            //orden = mes_actual + dia_actual + secactual;
+            orden = anio_actual + mes_actual + dia_actual + secactual;
         }
 
         return orden;
+
     }
+
 
     private void accion_segunId(final int actionId) {
 
@@ -1317,6 +1370,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
                 i.putExtra("origen", "CLIENTES");
                 i.putExtra("nombreCliente", nomcli);
+                i.putExtra("codcli", codcli);
                 i.putExtra("codigoVendedor", codven);
                 i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
                 startActivity(i);
@@ -1375,8 +1429,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                             obj_dbclasses.guardarObservacion2(input.getText()
                                     .toString(), codcli);
 
-                            ((Clientes_LazyAdapter) list.getAdapter())
-                                    .notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
 
                             isAlert = false;
 
@@ -1406,46 +1459,24 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             intent.putExtra("NOMBRE_INSTI", "Sin nombre");
             intent.putExtra("OC_NUMERO", "");
             intent.putExtra("COD_VEND", codven);
+            intent.putExtra("TIPO_GESTION", GestionVisita3Activity.GESTIONAR_VISITA);
             intent.putExtra("ORIGEN", TAG);
             startActivity(intent);
 
-            /*AlertDialog.Builder editalert = new AlertDialog.Builder(                    ClientesActivity.this);
-            editalert.setTitle("Control Visita");
-            editalert.setMessage("Ingrese una descripción o una observción para la visita");
+        }
+        else if (actionId == ID_PROGRAMACION_VISITA_CLIENTE) {
+            Intent intent=new Intent(this, GestionVisita3Activity.class);
+            intent.putExtra("ID_RRHH", codcli);
+            intent.putExtra("CODIGO_CRM", "");
+            intent.putExtra("NOMBRE_INSTI", "Sin nombre");
+            intent.putExtra("OC_NUMERO", "");
+            intent.putExtra("COD_VEND", codven);
+            intent.putExtra("TIPO_GESTION", GestionVisita3Activity.PROGRAMACION_VISITA);
+            intent.putExtra("ORIGEN", TAG);
+            startActivity(intent);
 
-            final EditText input = new EditText(ClientesActivity.this);
-            final LinearLayout layout = new LinearLayout(ClientesActivity.this);
-            layout.setOrientation(LinearLayout.VERTICAL);
-            layout.addView(input);
-
-            final CheckBox checkBox=UtilView.GetCheckBoxEnvioSistema(ClientesActivity.this);
-            layout.addView(checkBox);
-            editalert.setView(layout);
-            editalert.setPositiveButton("guardar",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int whichButton) {
-                            numOc = obj_dbclasses.obtenerNumOC(codven);
-                            if (input.getText().toString().trim().length()>0) {
-
-                                final String orden_compra = guardarCabeceraPedido(GlobalVar.CODIGO_VISITA_CLIENTE, input.getText().toString());
-                                if (checkBox.isChecked()){
-                                    new asyncGuardarMotivo().execute(orden_compra);
-                                }else{
-                                    ((Clientes_LazyAdapter) list.getAdapter()).notifyDataSetChanged();
-                                    dialogo.dismiss();
-                                }
-                            }else{
-                                Toast.makeText(ClientesActivity.this, "Ingrese una observación", Toast.LENGTH_SHORT).show();
-                                accion_segunId(actionId);
-                            }
-                        }
-                    });
-            editalert.setNegativeButton("cancelar",null);
-
-            editalert.show();*/
-
-
-        }else if (actionId == ID_INFO) {
+        }
+        else if (actionId == ID_INFO) {
             Intent intent = new Intent(ClientesActivity.this, CH_InformacionCliente.class);
             intent.putExtra("codigoCliente", codcli);
             startActivity(intent);
@@ -1464,11 +1495,22 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
             i.putExtra("origen", "CLIENTES");
             i.putExtra("nombreCliente", nomcli);
+            i.putExtra("codcli", codcli);
             i.putExtra("codigoVendedor", codven);
             i.putExtra("tipoRegistro", PedidosActivity.TIPO_COTIZACION);
             startActivity(i);
             finish();
         }  else if (actionId == ID_LOCALIZACION) { //**Nuevo Localizacion
+
+
+            double __lat=0.0,__lng=0.0, __altitud=-1;
+            if (Location_Actual!=null){
+                __lat=Location_Actual.getLatitude();
+                __lng=Location_Actual.getLongitude();
+                __altitud=Location_Actual.getAltitude();
+            }
+            double lat=__lat,lng=__lng, altitud=__altitud;
+
 
             if(estadoLocalizacion.equals("V")){
                 Toast toast2 =  Toast.makeText(getApplicationContext(),  "La geolocalización de este cliente esta validada y no se podra modificar.", Toast.LENGTH_SHORT);
@@ -1480,7 +1522,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 View alertLayout = inflater.inflate(R.layout.dialog_geolocalizar, null);
                 final TextView tv1 = (TextView) alertLayout.findViewById(R.id.tv1);
                 final TextView tv_localizacionActual = (TextView) alertLayout.findViewById(R.id.tv_localizacionActual);
+                final TextView tv_altitud_actual = (TextView) alertLayout.findViewById(R.id.tv_altitud_actual);
                 final TextView tv_localizacion = (TextView) alertLayout.findViewById(R.id.tv_localizacion);
+                final TextView tv_altitud_nueva = (TextView) alertLayout.findViewById(R.id.tv_altitud_nueva);
                 final TextView btnVerMapsGeo = (TextView) alertLayout.findViewById(R.id.btnVerMapsGeo);
                 final TextView btnVerMapsSinGeo = (TextView) alertLayout.findViewById(R.id.btnVerMapsSinGeo);
                 final TextView tv_cliente = (TextView) alertLayout.findViewById(R.id.tv_cliente);
@@ -1488,6 +1532,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
                 tv_localizacion.setText(lat+" , "+lng);
+                tv_altitud_nueva.setText(VARIABLES.formater_thow_decimal.format(altitud)+" m.s.n.m");
                 tv_cliente.setText(nomcli);
 
                 final ArrayList<DB_DireccionClientes> direcciones = obj_dbclasses.obtenerDirecciones_cliente2(codcli);
@@ -1508,8 +1553,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 spn_direccion.setSelection(posicionDireccionHoy);
 
 
-
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(ClientesActivity.this,AlertDialog.THEME_HOLO_LIGHT);
 
                 ///builder.setTitle("Importante");
@@ -1526,10 +1569,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
 
-                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng);
+                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng, altitud);
 
                                 new asyncEnviarGeolocalizacionCliente().execute();
-                                dialog.dismiss();
+                                //dialog.dismiss();
                             }
                         })
                         .setNegativeButton("Local", new DialogInterface.OnClickListener() {
@@ -1541,11 +1584,11 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                                 }
 
 
-                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng);
+                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng, altitud);
 
 
                                 Log.d(TAG, "itemDireccion"+itemDireccion+"\nsecuenciaGiro"+secuenciaGiro+"\nSucursal:"+codSucursal);
-                                ((Clientes_LazyAdapter) list.getAdapter()) .notifyDataSetChanged();
+                                adapter.notifyDataSetChanged();
                                 dialog.dismiss();
                             }
                         }).setNeutralButton("Cancelar", null);
@@ -1565,6 +1608,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         try {
                             String estado = obj_dbclasses.getEstadoDireccionCliente(codcli, direcciones.get(i).getItem());
+                            double altitud_actual = direcciones.get(i).getAltitud();
 
                             if (estado.equals("P")) {//Pendiente de localizar
                                 estado="Atención esta dirreción está pendiente por localizar.\nSe guardarán los siguientes datos:";
@@ -1572,6 +1616,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                             tv1.setText(estado);
 
                             tv_localizacionActual.setText(Double.parseDouble(direcciones.get(i).getLatitud())+", "+Double.parseDouble(direcciones.get(i).getLongitud()));
+                            tv_altitud_actual.setText(VARIABLES.formater_thow_decimal.format(altitud_actual)+" m.s.n.m");
                         }catch (Exception e){
                             UtilView.MENSAJES(ClientesActivity.this,  "Error!",
                                     "\n\n Detalle del error:\n"+e.getMessage(), 0,false);
@@ -1787,8 +1832,78 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + mensaje);
-            ((Clientes_LazyAdapter) list.getAdapter()).notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         }
 
+    }
+
+    private void Star_Check_Permiso_Ubicacion(){
+        new RequestPermisoUbicacion(this, Permiso_Adroid.PERMISO_PARA_ACCEDER_A_LOCALIZACION, new RequestPermisoUbicacion.MyListener() {
+            @Override
+            public void Result(int isConcedido) {
+                if (Permiso_Adroid.IS_PERMISO_DENEGADO==isConcedido){
+                    UtilViewMensaje.MENSAJE_simple(ClientesActivity.this, "Permiso denegado", "No podras acceder a la ubicación");
+                }
+                else if (Permiso_Adroid.IS_PERMISO_CONCEDIDO==isConcedido){
+                    StartUbicacionApiGoogle();
+                }
+            }
+        });
+    }
+
+    private void StartUbicacionApiGoogle(){
+        locationApiGoogle=new LocationApiGoogle(this, new LocationApiGoogle.Listener() {
+            @Override
+            public void onConnected(Bundle bundle) {
+
+                taskCheckUbicacion= new TaskCheckUbicacion(ClientesActivity.this, new TaskCheckUbicacion.MyListener() {
+                    @Override
+                    public void result(boolean isOk) {
+                        if (isOk) {
+                            locationApiGoogle.ForzarUltimaUbicacion();
+                            locationApiGoogle.StartLocationCallback(LocationApiGoogle.UPDATE_INTERVAL_3_segundos, LocationApiGoogle.FASTEST_INTERVAL_3_segundos, LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+                        }else{
+                            locationApiGoogle.checkGPSActivate();
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void onConnectionSuspended(int i) {
+
+            }
+
+            @Override
+            public void onConnectionFailed(ConnectionResult location) {
+
+            }
+
+            @Override
+            public void LastLocation(Location location) {
+                Location_Actual=location;
+                if (location!=null){
+                    Log.i(TAG, "StartUbicacionApiGoogle:: LastLocation:: Latitude : " + location.getLatitude() + "Longitude : " + location.getLongitude());
+                }else{
+                    Toast.makeText(ClientesActivity.this, "Error, no se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        locationApiGoogle.ApiLocationGoogleConectar();
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode==Permiso_Adroid.PERMISO_PARA_ACCEDER_A_LOCALIZACION){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("Permiso","Permiso concedido");
+                Toast.makeText(this, "Permiso aceptado", Toast.LENGTH_SHORT).show();
+                Star_Check_Permiso_Ubicacion();
+            } else {
+
+            }
+        }
     }
 }

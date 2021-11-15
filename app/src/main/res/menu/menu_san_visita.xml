@@ -2,8 +2,25 @@
     <item
         android:id="@+id/menu_visualizar_visita"
         android:title="Ver"/>
+
+
+    <item
+        android:id="@+id/menu_visitar"
+        android:title="visitar"/>
     <item
         android:id="@+id/menu_editar_visita"
-        android:title="Editar">
-    </item>
+        android:title="Editar"/>
+
+    <item
+        android:id="@+id/menu_reprogramar"
+        android:icon="@drawable/fecha_48"
+        android:title="Reprogramar"/>
+
+    <item
+        android:icon="@drawable/check"
+        android:id="@+id/menu_anular_visita"
+        android:title="Anular"/>
+
+
+
 </menu>

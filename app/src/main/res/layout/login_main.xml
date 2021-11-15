@@ -286,7 +286,7 @@
                         android:padding="8dp"
                         android:singleLine="true"
                         android:text=""
-                        android:textSize="16sp" />
+                        android:textSize="17sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -315,7 +315,7 @@
                         android:padding="8dp"
                         android:singleLine="true"
                         android:text=""
-                        android:textSize="16sp" />
+                        android:textSize="17sp" />
                 </LinearLayout>
 
                 <Button

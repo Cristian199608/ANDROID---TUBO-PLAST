@@ -4,6 +4,9 @@ import java.util.Calendar;
 
 public class GlobalVar {
 
+	public static final String PACKAGE_NAME="com.example.sm_tubo_plast";
+	public static final String DATABASE_NAME="fuerzaventas";
+
 	public static final int INTERNET = 1;
 	public static final int LOCAL = 0;
 	

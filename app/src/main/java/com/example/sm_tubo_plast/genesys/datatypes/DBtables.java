@@ -65,6 +65,21 @@ public class DBtables {
 
 	}
 
+	public static  final class CLiente_Contacto implements BaseColumns{
+		public static final String TAG = "cliente_contacto";
+		public static final String codcli ="codcli";
+		public static final String id_contacto ="id_contacto";
+		public static final String nombre_contacto ="nombre_contacto";
+		public static final String dni ="dni";
+		public static final String telefono ="telefono";
+		public static final String celular ="celular";
+		public static final String email ="email";
+		public static final String cargo ="cargo";
+		public static final String estado ="estado";
+		public static final String flag ="flag";
+
+	}
+
 	public static final class Cta_ingresos implements BaseColumns {
 
 		private Cta_ingresos() {
@@ -856,6 +871,7 @@ public class DBtables {
 		public static final String LONGITUD = "longitud";
 		public static final String DOC_ADICIONAL = "docAdicional";
 		public static final String ESTADO = "estado";
+		public static final String altitud = "altitud";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_CODCLI + " CHAR(8)," + PK_ITEM + " INTEGER,"
@@ -1540,6 +1556,10 @@ public class DBtables {
 		public static final String  distancia ="distancia";
 		public static final String  oc_numero_visitado ="oc_numero_visitado";
 		public static final String  oc_numero_visitar ="oc_numero_visitar";
+		public static final String  item ="item";
+		public static final String  id_contacto ="id_contacto";
+		public static final String  altitud ="altitud";
+		public static final String  descripcion_anulacion ="descripcion_anulacion";
 
 		public static final String CREATE_TABLE_with_PK=
 				"CREATE TABLE \""+TAG+"\" (\n" +
@@ -1569,7 +1589,8 @@ public class DBtables {
 						"\""+longitud+"\" TEXT,\n" +
 						"\""+distancia+"\" INTEGER,\n" +
 						"\""+oc_numero_visitado+"\" TEXT,\n" +
-						"\""+oc_numero_visitar+"\" TEXT\n" +
+						"\""+oc_numero_visitar+"\" TEXT,\n" +
+						"\""+id_contacto+"\" INTEGER\n" +
 						")";
 		public static final String READ_TABLE_sin_PK=
 				" \n" +

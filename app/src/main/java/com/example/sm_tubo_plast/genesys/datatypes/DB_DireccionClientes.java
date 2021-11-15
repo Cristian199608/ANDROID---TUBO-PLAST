@@ -53,6 +53,7 @@ public class DB_DireccionClientes {
 	}
 	private String estado;
 	private int giroCliente;
+	private double altitud;
 
 	public String getLatitud() {
 		if (latitud==null)latitud="0";
@@ -83,6 +84,15 @@ public class DB_DireccionClientes {
 	public void setLongitud(String longitud) {
 		this.longitud = longitud;
 	}
+
+	public double getAltitud() {
+		return altitud;
+	}
+
+	public void setAltitud(double altitud) {
+		this.altitud = altitud;
+	}
+
 	private String item;
 	private String direccion;
 	private String telefono;

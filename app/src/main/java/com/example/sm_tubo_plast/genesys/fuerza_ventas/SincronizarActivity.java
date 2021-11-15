@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSyncManager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Almacenes;
@@ -42,6 +43,8 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_pre
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -77,7 +80,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
     CharSequence[] digitList = { "Clientes", "Vendedores", "Productos",
             "Cobranza" };
     // lista para la sincronizacion desde loginActivity
-    CharSequence[] digitList2 = { "servicios", "usuarios" };
+    CharSequence[] digitList2 = { "servicios", "usuarios / Configuracion" };
 
     CharSequence[] lista = {};
 
@@ -783,7 +786,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         }
 
                         // Generar backup antes de la sincornizacion
-                        GlobalFunctions.backupdDatabase();
+                        GlobalFunctions.backupdDatabase(SincronizarActivity.this);
 
                         new asynclogin().execute("", "");
 
@@ -1059,9 +1062,40 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             }
         }
     }
+    private void ingresar_clave_manual(String mesjae_errorr){
+        //String clave=_helper.getConfiguracionByName("clave_forzar", "4545");
+        UtilView.AlertViewSimpleConEdittext dd=new UtilView.AlertViewSimpleConEdittext(SincronizarActivity.this);
+        dd.titulo="No se pudo verificar el servicio web";
+        dd.mensaje="Comunicate con el administrador de sistemas y solicitalo la clave e ingresa para forzar la sincronización";
+        dd.hint="Ingresa la clave";
+        dd.min_caracteres=4;
+        dd.mensjae_error=mesjae_errorr;
+        dd.start(new UtilView.AlertViewSimpleConEdittext.Listener() {
+            @Override
+            public String resultOK(String s) {
+                if (s!=null){
+                    String clave=_helper.getConfiguracionByName("clave_forzar", "4545");
+                    if (clave.equals(s)) {
+                        new asynclogin().execute("", "", ""+s);
+                    }else{
+                        ingresar_clave_manual("Clave incorrecta");
+                    }
+                }
+                //btn_sincronizar.performClick();
+                return null;
+            }
+
+            @Override
+            public String resultBucle(String s) {
+                ingresar_clave_manual(null);
+                return null;
+            }
+        });
+    }
     class asynclogin extends AsyncTask<String, String, String> {
 
         // String opcion,pass;
+        BEAN_ControlAccesso controlAcceso;
         protected void onPreExecute() {
             // para el progress dialog
             pDialog = new ProgressDialog(SincronizarActivity.this);
@@ -1077,8 +1111,12 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
         protected String doInBackground(String... params) {
 
-            // opcion=params[0];
-            // pass=params[1];
+            //opcion=params[0];
+            String clave_manual=null;
+            if (params.length>=3){
+                clave_manual=params[2];
+
+            }
 
             String error = "0";
 
@@ -1112,7 +1150,14 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("50");
                                     soap_manager.Sync_tabla_vendedores(servidorBD,nombreBD, usuarioBD, contrasenaBD);
-                                    publishProgress("100");
+                                    publishProgress("75");
+                                    try {
+                                        publishProgress("100");
+                                        controlAcceso=soap_manager.Verificar_control_acceso(""+clave_manual);
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -1139,27 +1184,73 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                     }
 
                     try {
-                        soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
-                        soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String mensaje="Verificando...";
+                                pDialog.setMessage(mensaje);
+                            }
+                        });
+
+
+                        if (clave_manual!=null){
+                            if (clave_manual.length()>0) {
+                                controlAcceso=new BEAN_ControlAccesso();
+                                controlAcceso.setEstado("S");
+                                controlAcceso.setMensjae("");
+                            }
+                        }else{
+                            controlAcceso=soap_manager.Verificar_control_acceso(""+clave_manual);
+                        }
+                        if (controlAcceso==null){
+                            error = "servicio_fallido";
+                            return error;
+
+                        }
+                        else if (controlAcceso.getEstado().equals("S")){
+                            soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
+                            soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                        }else{
+                            error = "sin_servicio";
+
+                            return error;
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                         error = "configuracion";
+                        return error;
                     }
 
+                    boolean esSuperVendedor2=false;
+                    if (codven.contains("SV999")){
+                        esSuperVendedor2=true;
+
+                    }
+
+                    final boolean esSuperVendedor=esSuperVendedor2;
                     for (int i = 0; i < tablas.length; i++) {
 
+
                         int valor = Integer.parseInt(tablas[i].toString());
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                pDialog.setMessage("Sincronizando");
+                            }
+                        });
 
                         switch (valor) {
                             case 0:
                                 Log.w("GLOBAL VARIABLES", GlobalVar.urlService
                                         + "--" + GlobalVar.NombreWEB);
 
-                                try {
+                                try {//soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("10");
                                     soap_manager.Sync_tabla_turno(servidorBD, nombreBD, usuarioBD,contrasenaBD);
-                                    publishProgress("20");
-                                    publishProgress("33");
+                                    publishProgress("15");
                                     //SERVER 212
                                     boolean existeDatos=true;
                                     int start=0;
@@ -1170,18 +1261,57 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo clientes de "+ finalStart+" a "+(finalPaginacion +finalStart));
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo clientes";
+                                                }else{
+                                                    mensaje="  \nObteniendo clientes de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
                                             }
                                         });
                                         int lista_tamanio=soap_manager.Sync_tabla_clientexVendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
+                                            existeDatos=false;
+                                        }
+
+                                    }
+                                    publishProgress("33");
+
+
+                                    //SERVER 212
+                                    existeDatos=true;
+                                    start=0;
+                                    paginacion=5000;
+                                    while (existeDatos){
+                                        int finalStart = start;
+                                        int finalPaginacion = paginacion;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo clientes contactos";
+                                                }else{
+                                                    mensaje="  \nObteniendo clientes contactos de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
+
+                                            }
+                                        });
+                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        start+=paginacion;
+                                        existeDatos=lista_tamanio>0;
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
                                     }
                                     publishProgress("40");
+
 
                                     //SERVER 212
                                      existeDatos=true;
@@ -1193,14 +1323,21 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo zonificacion de "+ finalStart+" a "+(finalPaginacion +finalStart));
+
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo zonificación";
+                                                }else{
+                                                    mensaje= "  \nObteniendo zonificacion de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
                                             }
                                         });
                                         int lista_tamanio=soap_manager.Sync_tabla_ZnfProgramacionClientes(codven, servidorBD, nombreBD,usuarioBD, contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
@@ -1220,14 +1357,21 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo transporte de "+ finalStart+" a "+(finalPaginacion +finalStart));
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo transporte";
+                                                }else{
+                                                    mensaje= "  \nObteniendo transporte de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
                                             }
                                         });
                                         int lista_tamanio=soap_manager.Sync_tabla_transporte(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
@@ -1243,7 +1387,16 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo punto de entrega de "+ finalStart+" a "+(finalPaginacion +finalStart));
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo punto de entrega";
+                                                }else{
+                                                    mensaje="  \nObteniendo punto de entrega de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
+
+
                                             }
                                         });
                                         int lista_tamanio=soap_manager.Sync_tabla_lugarEntrega(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD,  start, paginacion);
@@ -1251,7 +1404,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
@@ -1268,15 +1421,22 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo ubicaciones de "+ finalStart+" a "+(finalPaginacion +finalStart));
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo ubicaciones";
+                                                }else{
+                                                    mensaje="  \nObteniendo ubicaciones de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
                                             }
-                                        });
+                                        });//15151
                                         int lista_tamanio=soap_manager.Sync_tabla_direccion_cliente(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,   start, paginacion);
 
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
@@ -1311,8 +1471,40 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     soap_manager.Sync_tabla_formasPago(codven,servidorBD, nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("79");
                                     soap_manager.Sync_tabla_moneda(servidorBD, nombreBD, usuarioBD,contrasenaBD);
-                                    publishProgress("85");
-                                    soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    publishProgress("81");
+                                    soap_manager.SyncTablaSanOpciones(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                                    publishProgress("84");
+
+                                    boolean existeDatos=true;
+                                    int start=0;
+                                    int paginacion=15;
+                                    while (existeDatos){
+                                        int finalStart = start;
+                                        int finalPaginacion = paginacion;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String mensaje="";
+                                                    mensaje="  \nObteniendo pedidos y visitas ";
+                                                pDialog.setMessage(mensaje);
+
+                                            }
+                                        });//15151
+                                        int lista_tamanio=soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
+                                        lista_tamanio=0;
+
+
+                                        start+=paginacion;
+                                        existeDatos=lista_tamanio>0;
+                                        if (!esSuperVendedor){
+                                            existeDatos=false;
+                                        }
+
+                                    }
+
+
+
+
                                     publishProgress("90");
                                     //soap_manager.Sync_tabla_CuotaVendedor(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     soap_manager.Sync_tabla_motivo(servidorBD, nombreBD, usuarioBD,contrasenaBD);
@@ -1370,7 +1562,16 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                pDialog.setMessage("  \nObteniendo precios de "+ finalStart+" a "+(finalPaginacion +finalStart));
+
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo Precios";
+                                                }else{
+                                                    mensaje="  \nObteniendo precios de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
+
                                             }
                                         });
                                         int lista_tamanio=soap_manager.Sync_tabla_politica_cliente(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
@@ -1378,7 +1579,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
-                                        if (!codven.contains("SV999")){
+                                        if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
 
@@ -1491,10 +1692,33 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute=", "" + result);
 
-            if (result.equals("0")) {
+            if (result.equals("servicio_fallido")) {
+                ingresar_clave_manual(null);
+            }
+            else if (result.equals("sin_servicio")) {
+                String sms="Sincronización no completada.";
+                if (controlAcceso!=null) {
+                    sms+="\n\n"+controlAcceso.getMensjae();
+                }
+                UtilView.MENSAJE_simple(SincronizarActivity.this, "Licencia de uso",
+                        ""+sms);
+                editor_preferencias = preferencias_configuracion.edit();
+                editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", false);
+                editor_preferencias.apply();
+            }
+            else if (result.equals("0")) {
+                String sms="Sincronizacion";
+                String sms_cuerpo="La sincronización se ha completado correctamente.";
+                if (controlAcceso!=null) {
+                    if (controlAcceso.getMensjae().length()>0){
+                        sms_cuerpo+=".\n\nAVISO:\n"+controlAcceso.getMensjae();
+                    }
+                }
+
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
-                alerta.setMessage("Sincronizacion correcta");
+                alerta.setTitle(sms);
+                alerta.setMessage(sms_cuerpo);
                 alerta.setIcon(R.drawable.check);
                 alerta.setCancelable(false);
                 alerta.setPositiveButton("OK", null);
@@ -1502,14 +1726,14 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                 editor_preferencias = preferencias_configuracion.edit();
                 editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", true);
-                editor_preferencias.commit();
+                editor_preferencias.apply();
 
             } else if (result.equals("2")) {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
-                alerta.setMessage("Sin conexion al Servidor:\n"
-                        + GlobalVar.urlService);
-                alerta.setIcon(R.drawable.check);
+                alerta.setTitle("Sin conexion al Servidor");
+                alerta.setMessage( GlobalVar.urlService);
+                alerta.setIcon(R.drawable.icon_error);
                 alerta.setCancelable(false);
                 alerta.setPositiveButton("OK", null);
                 alerta.show();

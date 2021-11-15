@@ -9,6 +9,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.BEAN_AgendaCalendario;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 
 import java.util.ArrayList;
 
@@ -58,7 +59,7 @@ public class DAO_San_Visitas {
 
     public  static  ArrayList<San_Visitas> getSan_VisitasByOc_numero(DBclasses dBclasses,String Oc_numero){
         String where1 = "where  "+DBtables.San_Visitas.oc_numero_visitado+" = '"+Oc_numero+"' "+
-                "or  "+DBtables.San_Visitas.oc_numero_visitar+" = '"+Oc_numero+"' ";
+                "or  substr("+DBtables.San_Visitas.oc_numero_visitar+", -"+Oc_numero.length()+") = '"+Oc_numero+"' ";
 
         return DBSan_Visitas(dBclasses, where1, "");
     }
@@ -144,8 +145,13 @@ public class DAO_San_Visitas {
                 "st."+ DBtables.San_Visitas.longitud+", "+
                 "st."+ DBtables.San_Visitas.oc_numero_visitado+", "+
                 "st."+ DBtables.San_Visitas.oc_numero_visitar+", "+
-                " '"+TIPO_PLANIFICADA+"' AS TIPO_VISTA, "+
-                "st."+ DBtables.San_Visitas.tipo_visita+" "+
+                "st."+ DBtables.San_Visitas.id_contacto+", "+
+                "case st."+DBtables.San_Visitas.Estado+" when '"+GestionVisita3Activity.ESTADO_VISITA_Libre+"' then  '"+TIPO_PLANIFICADA+"' else '"+TIPO_EJECUTADA+"' end AS TIPO_VISTA, "+
+                "st."+ DBtables.San_Visitas.tipo_visita+", "+
+                "st."+ DBtables.San_Visitas.altitud+", "+
+                " ifnull( st."+ DBtables.San_Visitas.descripcion_anulacion+", '') as descripcion_anulacion, "+
+                "ifnull(st.item, 1) as item, "+
+                "id "+
                 " from "+DBtables.San_Visitas.TAG+" st "+
                 ""+where1;
 
@@ -175,8 +181,13 @@ public class DAO_San_Visitas {
                     "st."+ DBtables.San_Visitas.longitud+", "+
                     "st."+ DBtables.San_Visitas.oc_numero_visitado+", "+
                     "st."+ DBtables.San_Visitas.oc_numero_visitar+", "+
+                    "st."+ DBtables.San_Visitas.id_contacto+", "+
                     " '"+TIPO_EJECUTADA+"' AS TIPO_VISTA, "+
-                    "st."+ DBtables.San_Visitas.tipo_visita+" "+
+                    "st."+ DBtables.San_Visitas.tipo_visita+", "+
+                    "st."+ DBtables.San_Visitas.altitud+", "+
+                    " ifnull( st."+ DBtables.San_Visitas.descripcion_anulacion+", '') as descripcion_anulacion, "+
+                    "ifnull(st.item, 1) as item, "+
+                    "id "+
                     " from "+DBtables.San_Visitas.TAG+" st "+
                     ""+where2;
 
@@ -193,6 +204,7 @@ public class DAO_San_Visitas {
             while (cursor.moveToNext()){
                 San_Visitas san_t=new San_Visitas();
 
+                san_t.setId(cursor.getInt(cursor.getColumnIndex("id")));
                 san_t.setGrupo_Campaña(cursor.getString(0));
                 san_t.setCod_Promotor(cursor.getString(1));
                 san_t.setPromotor(cursor.getString(2));
@@ -217,8 +229,12 @@ public class DAO_San_Visitas {
                 san_t.setLongitud(cursor.getString(21));
                 san_t.setOc_numero_visitado(cursor.getString(22));
                 san_t.setOc_numero_visitar(cursor.getString(23));
-                san_t.setTipo_vista(cursor.getString(24));
-                san_t.setTipo_visita(cursor.getString(25));
+                san_t.setId_contacto(cursor.getInt(24));
+                san_t.setTipo_vista(cursor.getString(25));
+                san_t.setTipo_visita(cursor.getString(26));
+                san_t.setAltitud(cursor.getDouble(cursor.getColumnIndex("altitud")));
+                san_t.setDescripcion_anulacion(cursor.getString(cursor.getColumnIndex("descripcion_anulacion")));
+                san_t.setItem(cursor.getInt(cursor.getColumnIndex("item")));
 
                 String comparaeFecha=san_t.getFecha_planificada();
 
@@ -239,12 +255,17 @@ public class DAO_San_Visitas {
         return LISTA;
     }
 
-    public  static  ArrayList<San_Visitas> GetVisitasByOc_numero(DBclasses dBclasses, String oc_numero, boolean isPlanificada){
+    public  static  ArrayList<San_Visitas> GetVisitasByOc_numero(DBclasses dBclasses, String oc_numero, String TIPO_GESTION){
 
         String _TAG="GetVisitasByOc_numero:: ";
         String addWhere="";
-        if (isPlanificada){//visitar
-            addWhere=""+DBtables.San_Visitas.oc_numero_visitar+"='"+oc_numero+"' and "+DBtables.San_Visitas.oc_numero_visitar+"='"+oc_numero+"'";
+        if (TIPO_GESTION.equals(GestionVisita3Activity.PROGRAMACION_VISITA)){//programar
+            addWhere=DBtables.San_Visitas.oc_numero_visitar+"='"+oc_numero+"'";
+        }
+        else if (TIPO_GESTION.equals(GestionVisita3Activity.VISITA_PLANIFICADA)
+                || TIPO_GESTION.equals(GestionVisita3Activity.MODIFICAR_PROGRAMACION)
+                || TIPO_GESTION.equals(GestionVisita3Activity.RE_PROGRAMACION_VISITA)){//visitar
+            addWhere=DBtables.San_Visitas.oc_numero_visitar+"='"+oc_numero+"'";
         }else{// visitado
             addWhere="(st."+DBtables.San_Visitas.oc_numero_visitado+"='"+oc_numero+"' or st."+DBtables.San_Visitas.oc_numero_visitar+"='"+oc_numero+"')";
         }
@@ -276,8 +297,11 @@ public class DAO_San_Visitas {
                 "st."+ DBtables.San_Visitas.longitud+", "+
                 "st."+ DBtables.San_Visitas.distancia+", "+
                 "st."+ DBtables.San_Visitas.oc_numero_visitado+", "+
+                "st."+ DBtables.San_Visitas.oc_numero_visitar+", "+
+                "st."+ DBtables.San_Visitas.id_contacto+", "+
                 "st."+ DBtables.San_Visitas.ID+", "+
-                " '"+TIPO_PLANIFICADA+"' AS TIPO_VISTA"+
+                " '"+TIPO_PLANIFICADA+"' AS TIPO_VISTA, "+
+                "st."+ DBtables.San_Visitas.altitud+" "+
                 " from "+DBtables.San_Visitas.TAG+" st "+
                 "where "+addWhere+" ORDER BY "+DBtables.San_Visitas.ID+" ASC";
 
@@ -315,8 +339,11 @@ public class DAO_San_Visitas {
                 san_t.setLongitud(cursor.getString(22));
                 san_t.setDistancia(cursor.getInt(23));
                 san_t.setOc_numero_visitado(cursor.getString(24));
-                san_t.setId(cursor.getInt(25));
-                san_t.setTipo_vista(cursor.getString(26));
+                san_t.setOc_numero_visitar(cursor.getString(25));
+                san_t.setId_contacto(cursor.getInt(26));
+                san_t.setId(cursor.getInt(27));
+                san_t.setTipo_vista(cursor.getString(28));
+                san_t.setAltitud(cursor.getDouble(cursor.getColumnIndex( DBtables.San_Visitas.altitud)));
 
                 LISTA.add(san_t);
             }
@@ -369,11 +396,14 @@ public class DAO_San_Visitas {
             cv.put(DBtables.San_Visitas.tipo_visita,  sanVisita.getTipo_visita());
             cv.put(DBtables.San_Visitas.latitud,  sanVisita.getLatitud());
             cv.put(DBtables.San_Visitas.longitud,  sanVisita.getLongitud());
+            cv.put(DBtables.San_Visitas.altitud,  sanVisita.getAltitud());
             cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia());
             cv.put(DBtables.San_Visitas.oc_numero_visitado,  sanVisita.getOc_numero_visitado());
             cv.put(DBtables.San_Visitas.oc_numero_visitar,  sanVisita.getOc_numero_visitar());
+            cv.put(DBtables.San_Visitas.item,  sanVisita.getItem());
+            cv.put(DBtables.San_Visitas.id_contacto,  sanVisita.getId_contacto());
             long insertCant =DB.insert(DBtables.San_Visitas.TAG,null, cv);
-            return true;
+            return insertCant>0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -398,7 +428,7 @@ public class DAO_San_Visitas {
             if (!isSan_VisitasByID(DB, sanVisita.getId())) {
                 return LlenarTabla_San_Visitas(DB, sanVisita);
             }else{
-                String where = " " + DBtables.San_Visitas.ID + " = ?";
+                String where = " " + DBtables.San_Visitas.ID + " = ? and  length(ifnull(descripcion_anulacion, ''))==0 ";
                 String[] args = {"" + sanVisita.getId()};
                 ContentValues cv = new ContentValues();
                 cv.put(DBtables.San_Visitas.Grupo_Campaña,  sanVisita.getGrupo_Campaña());
@@ -424,14 +454,18 @@ public class DAO_San_Visitas {
                 cv.put(DBtables.San_Visitas.tipo_visita,  sanVisita.getTipo_visita());
                 cv.put(DBtables.San_Visitas.latitud,  sanVisita.getLatitud());
                 cv.put(DBtables.San_Visitas.longitud,  sanVisita.getLongitud());
+                if (sanVisita.getAltitud()>0){
+                    cv.put(DBtables.San_Visitas.altitud,  sanVisita.getAltitud());
+                }
                 if (sanVisita.getDistancia()>0){
                     cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia()); //NO MODIFICABLE
                 }
                 cv.put(DBtables.San_Visitas.oc_numero_visitado,  sanVisita.getOc_numero_visitado());
                 cv.put(DBtables.San_Visitas.oc_numero_visitar,  sanVisita.getOc_numero_visitar());
+                cv.put(DBtables.San_Visitas.id_contacto,  sanVisita.getId_contacto());
 
                 long i = DB.update(DBtables.San_Visitas.TAG, cv, where, args);
-                return true;
+                return i>0;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -465,10 +499,11 @@ public class DAO_San_Visitas {
                 "), '') as fecha_ultima_visitada," +
 
                 "ifnull((" +
-                "select v.fecha_proxima_visita   " +
-                "from "+DBtables.San_Visitas.TAG+" v inner join pedido_cabecera pc on v.oc_numero_visitado=pc.oc_numero " +
+                "select v.Fecha_planificada   " +
+                "from "+DBtables.San_Visitas.TAG+" v inner join pedido_cabecera pc on v.oc_numero_visitar=pc.oc_numero " +
                 "where pc.cod_cli='"+codcli+"' and pc.sitio_enfa ='"+sitio_enfa+"' " +
-                "ORDER BY datetime(v.Fecha_proxima_visita) asc LIMIT 1" +
+                "and LENGTH(v.oc_numero_visitar)>0 and LENGTH(v.oc_numero_visitado)=0  and LENGTH(ifnull(v.descripcion_anulacion, ''))=0 " +
+                "ORDER BY datetime(v.Fecha_planificada) asc LIMIT 1" +
                 "), '') as fecha_proxima_visita";
 
         Cursor cursor=db.rawQuery(sql, null, null);
@@ -503,8 +538,123 @@ public class DAO_San_Visitas {
 
         cursor.close();
         return cantidad>0;
+    }
+
+    public  static  boolean isSan_VisitasByOc_visitadoAndOc_numero_visitar(SQLiteDatabase _db,String oc_visitar, String oc_visitado){
+
+        String sql="select * from "+DBtables.San_Visitas.TAG+" v "+
+                "where  v."+DBtables.San_Visitas.oc_numero_visitado+" = '"+oc_visitar+"' and v."+DBtables.San_Visitas.oc_numero_visitado+" = '"+oc_visitado+"' ";
+
+        Cursor cursor=_db.rawQuery(sql, null, null);
+
+        int cantidad= cursor.getCount();
+
+        cursor.close();
+        return cantidad>0;
 
     }
+
+    public  static  boolean setComentarioAnulacionVisita(SQLiteDatabase _db,String oc_visitar, String descripcion_anulacion){
+
+        try {
+            String where = " " + DBtables.San_Visitas.oc_numero_visitar + " = ?";
+            String[] args = {"" + oc_visitar};
+
+
+            ContentValues nre=new ContentValues();
+            nre.put(DBtables.San_Visitas.descripcion_anulacion,descripcion_anulacion );
+            _db.update(DBtables.San_Visitas.TAG, nre, where, args);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+
+    public  static  int getMaxItemByOc_numero(SQLiteDatabase _db,String oc_visitar){
+
+        try {
+            String sql="select max(v.item) from "+DBtables.San_Visitas.TAG+" v "+
+                    "where  substr(v."+DBtables.San_Visitas.oc_numero_visitar+", -"+oc_visitar.length()+") = '"+oc_visitar+"' ";
+
+            Cursor cursor=_db.rawQuery(sql, null, null);
+            int cantidad=0;
+            while (cursor.moveToNext()){
+                cantidad=cursor.getInt(0);
+            }
+            cursor.close();
+            return cantidad;
+        }catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+
+    }
+
+    public  static  String tieneReporgramadoVisita(SQLiteDatabase _db,int id, String oc_visitar){
+
+        try {
+            String  fecha_nueva="";
+            String sql="select * from "+DBtables.San_Visitas.TAG+" v "+
+                    "where  v."+DBtables.San_Visitas.oc_numero_visitar+" = '"+GestionVisita3Activity.OC_NUMERO_REPROGRAMADO+"'||'"+oc_visitar+"' ";
+
+            Cursor cursor=_db.rawQuery(sql, null, null);
+            if (cursor.getCount()>0 /*|| oc_visitar.contains(GestionVisita3Activity.OC_NUMERO_REPROGRAMADO)*/){
+                sql="select Fecha_planificada as fecha_nueva_visita from "+DBtables.San_Visitas.TAG+" v " +
+                        "where  v."+DBtables.San_Visitas.oc_numero_visitar+" = '"+oc_visitar+"' and id!= "+id;
+                Cursor cursor2=_db.rawQuery(sql, null, null);
+                if (cursor2.moveToNext()){
+                    fecha_nueva= cursor2.getString(0);
+                }
+                cursor2.close();
+            }
+            cursor.close();
+            return fecha_nueva;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public  static  boolean setComentarioReprogramacionVisita(SQLiteDatabase _db,String oc_visitar,  String descripcion_anulacion, String nueva_fech_y_nueva_hora){
+        try {
+            int maxItem=getMaxItemByOc_numero(_db, oc_visitar);
+            String where = " " + DBtables.San_Visitas.oc_numero_visitar + " = ? and  length(ifnull(descripcion_anulacion, ''))==0 and item = ?";
+            String[] args = {"" + oc_visitar, ""+maxItem};
+
+            ContentValues nre=new ContentValues();
+            nre.put(DBtables.San_Visitas.descripcion_anulacion,descripcion_anulacion );
+            nre.put(DBtables.San_Visitas.oc_numero_visitar, "RE-"+oc_visitar);
+            nre.put(DBtables.San_Visitas.Fecha_proxima_visita, nueva_fech_y_nueva_hora);
+            long dd=_db.update(DBtables.San_Visitas.TAG, nre, where, args);
+            return dd>0;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public  static  boolean updateFechaProximaVisitaAlVisitado(SQLiteDatabase _db,String oc_visitado, String nueva_fech_y_nueva_hora){
+        try {
+
+            String where = " " + DBtables.San_Visitas.oc_numero_visitado + " = ? ";
+            String[] args = {"" + oc_visitado};
+
+            ContentValues nre=new ContentValues();
+            nre.put(DBtables.San_Visitas.Fecha_proxima_visita, nueva_fech_y_nueva_hora);
+            _db.update(DBtables.San_Visitas.TAG, nre, where, args);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
 
 }
 /*

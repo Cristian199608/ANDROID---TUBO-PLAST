@@ -14,8 +14,10 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
+import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Direccion_cliente;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_cabecera;
@@ -487,41 +489,50 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public ArrayList<HashMap<String, Object>> getProgramacionxDia2( String txtBusqueda, int start, int  end, int bucle) {
+	public ArrayList<HashMap<String, Object>> getProgramacionxDia2( String txtBusqueda, int start, int  end, int bucle, String fecha_formateado, boolean checkProgramada, boolean checkVisitado) {
 		SharedPreferences prefs = _context.getSharedPreferences(
 				"MisPreferencias", Context.MODE_PRIVATE);
 		String codven = prefs.getString("codven", "por_defecto");
 		String rawQuery;
 
 		int dia = 0; //getDiaConfiguracion();
+		String addwhere="";
+		if (fecha_formateado.length()>0){
+			addwhere="and cliente.codcli in (select sv.id_rrhh from "+DBtables.San_Visitas.TAG+" sv where Fecha_planificada like '"+fecha_formateado+"%' or Fecha_Ejecutada like '"+fecha_formateado+"%' ) ";
+		}
 
-		rawQuery = "select * from (select nomcli,ruccli,fecha_compra,monto_compra,cliente.codcli,item_dircli,n_dia,ifnull(observacion,'') as observacion, " +
+		rawQuery = "select * from (select distinct(nomcli) as nomcli,ruccli,fecha_compra,monto_compra,cliente.codcli,item_dircli,n_dia,ifnull(observacion,'') as observacion, " +
 				"ifnull((" +
-				"select dc.direccion from "+ Direccion_cliente.TAG+" dc where dc.codcli=cliente.codcli and dc.item=item_dircli), 'Sin dirección') as direccion " +
+				"  dc.direccion), 'Sin dirección') as direccion," +
+				"cliente.codcli as codcli " +
 				" from "
 				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
-				+ "where codven='"
-				+ codven
-				+ "' and znf_programacion_clientes.codcli in(select codcli from cliente) "
+				+"inner join "+Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
+				+ "where codven='"  + codven+"' "
+				+"and (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
+				+""+addwhere+""
 				+ " limit "+start+", "+end+" "
-				+") result where  (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
+				+") result "
 				+ "order by nomcli asc  ";
 
 		SQLiteDatabase db = getReadableDatabase();
 
 		Cursor cur = db.rawQuery(rawQuery, null);
+		Log.i(TAG, "listart cliente: query_> "+rawQuery);
 		ArrayList<HashMap<String, Object>> dbcliente = new ArrayList<HashMap<String, Object>>();
 		if (cur.isClosed() && bucle>50){
 			bucle--;
-			return getProgramacionxDia2( txtBusqueda, start, end, bucle);
+			return getProgramacionxDia2( txtBusqueda, start, end, bucle, fecha_formateado, checkProgramada, checkVisitado);
 		}
 		int coint=cur.getCount();
+		db.close();
 
 		while (cur.moveToNext()) {
 
 			HashMap<String, Object> dbc = new HashMap<String, Object>();
 
 			dbc.put("name", cur.getString(0));
+			dbc.put("codcli", cur.getString(cur.getColumnIndex("codcli")));
 			dbc.put("ruc", cur.getString(1));
 			dbc.put("observacion", cur.getString(7));
 			dbc.put("fecha", cur.getString(2));
@@ -531,14 +542,21 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbc.put("n_dia", cur.getInt(6));
 			dbc.put("direccion", cur.getString(8));
 
+			int estado_pedido = obtenerPedidosXCodcli(dbc.get("codigo").toString(),dbc.get("item_direccion").toString());
+			String estado_localizacion = getEstadoDireccionCliente(dbc.get("codigo").toString(), dbc.get("item_direccion").toString());
+
+			dbc.put("estado_localizacion", estado_localizacion);
+			dbc.put("estado_pedido", estado_pedido);
+
 			dbcliente.add(dbc);
 		}
 		cur.close();
-		db.close();
+
 
 		return dbcliente;
 
 	}
+
 
 	public ArrayList<DB_ZnfProgramacionClientes> getDemasClientes() {
 		SharedPreferences prefs = _context.getSharedPreferences(
@@ -2236,11 +2254,12 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 	}
 
-	public String obtenerNumOC(String codven) {
+
+	public String obtenerMaxNumOc(String codven) {
 
 		String rawQuery;
 		rawQuery = "select max(pedido_cabecera.oc_numero) from pedido_cabecera where pedido_cabecera.cod_emp='"
-				+ codven + "'";
+				+ codven + "' and oc_numero !='TPLAST'";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -2262,30 +2281,6 @@ public class DBclasses extends SQLiteAssetHelper {
 		return num_oc;
 	}
 
-	public String obtenerMaxNumOc(String codven) {
-		String rawQuery;
-		rawQuery = "select max(oc_numero) from pedido_cabecera where cod_emp = '"
-				+ codven + "'";
-
-		SQLiteDatabase db = getReadableDatabase();
-		Cursor cur = db.rawQuery(rawQuery, null);
-		String num_oc = "0";
-
-		cur.moveToFirst();
-		if (cur.moveToFirst()) {
-			do {
-				num_oc = cur.getString(0);
-			} while (cur.moveToNext());
-
-		}
-		if (num_oc == null || num_oc.trim().length() == 0) {
-			num_oc = "adfad";
-		}
-		Log.i(TAG, "MAXIMO oc_numero: "+num_oc);
-		cur.close();
-		db.close();
-		return num_oc;
-	}
 
 	public String obtenerSecuenciaDetalleIngresos(String secuencia) {
 
@@ -3254,7 +3249,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					"ifnull((SELECT codigoEquivalente from moneda where codigoMoneda=pc.moneda),''),tipoRegistro, ifnull(pedidoAnterior,''), " +
 					"pc.latitud "+
 					"from pedido_cabecera pc "+
-					"where oc_numero <> 0 and flag <> 'A' and cod_emp='"+codven+"' order by oc_numero DESC";
+					"where oc_numero <> 0 and (flag <> 'A' or cod_noventa ='"+GlobalVar.CODIGO_VISITA_CLIENTE+"') and cod_cli !='TPLAST-VISITA' and cod_emp='"+codven+"' order by oc_numero DESC";
 
 		Log.d("QUERY REPORTE", " :::::> " + rawQuery);
 
@@ -3333,7 +3328,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
-		String nomcli = "";
+		String nomcli = cod_cli;
 
 		cur.moveToFirst();
 		if (cur.moveToFirst()) {
@@ -3695,7 +3690,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cliente.CODIGO_FAMILIAR,jsonData.getString("codigo_familiar").trim());
 				cv.put(DBtables.Cliente.FECHA_COMPRA,jsonData.getString("fecha_compra").trim());
 				cv.put(DBtables.Cliente.MONTO_COMPRA,jsonData.getString("monto_compra").trim());
-				
+
 				cv.put(DBtables.Cliente.DIRECCION_FISCAL, jsonData.getString(DBtables.Cliente.DIRECCION_FISCAL).trim());
 				cv.put(DBtables.Cliente.MONEDA_DOCUMENTO, jsonData.getString(DBtables.Cliente.MONEDA_DOCUMENTO).trim());
 				cv.put(DBtables.Cliente.MONEDA_LIMITE_CREDITO, jsonData.getString(DBtables.Cliente.MONEDA_LIMITE_CREDITO).trim());
@@ -3726,17 +3721,17 @@ public class DBclasses extends SQLiteAssetHelper {
 				} else {
 					cv.put(DBtables.Cliente.PERCEPCION, "0");
 				}
-				
+
 				cv.put(DBtables.Cliente.FLAGCOBRANZA,jsonData.getString("flagCobranza").trim());
-				
-				
-				
+
+
+
 				cv.put(DBtables.Cliente.SECTOR, jsonData.getString(DBtables.Cliente.SECTOR).trim());
 				cv.put(DBtables.Cliente.GIRO, 	jsonData.getString(DBtables.Cliente.GIRO).trim());
 				cv.put(DBtables.Cliente.CANAL, 	jsonData.getString(DBtables.Cliente.CANAL).trim());
 				cv.put(DBtables.Cliente.UNIDAD_NEGOCIO,	jsonData.getString(DBtables.Cliente.UNIDAD_NEGOCIO).trim());
-				
-				
+
+
 				db.insert(DBtables.Cliente.TAG, null, cv);
 				Log.i("CLIENTE",
 						"i= " + i + " CODCLI: "
@@ -3747,6 +3742,57 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		} catch (JSONException e) {
 			Log.e(DBclasses.TAG, "JSON Exception CLIENTE:" + e.getMessage());
+			throw new JSONException(e.getMessage());
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+
+		return  jArray.length();
+
+	}
+
+
+	public int syncClienteContactoxVendedor(JSONArray jArray, int start) throws JSONException {
+
+		JSONObject jsonData = null;
+		SQLiteDatabase db = getWritableDatabase();
+		db.beginTransaction();
+
+
+		if (start==0){
+			String where = "flag <> ?";
+			String[] args = { "P"};
+			db.delete(DBtables.CLiente_Contacto.TAG, where, args);
+		}
+
+
+		try {
+
+			for (int i = 0; i < jArray.length(); i++) {
+
+				jsonData = jArray.getJSONObject(i);
+				ContentValues cv = new ContentValues();
+				cv.put(DBtables.CLiente_Contacto.codcli, jsonData.getString("codcli").trim());
+				cv.put(DBtables.CLiente_Contacto.id_contacto, jsonData.getInt("id_contacto"));
+				cv.put(DBtables.CLiente_Contacto.nombre_contacto, jsonData.getString("nombre_contacto").trim());
+				cv.put(DBtables.CLiente_Contacto.dni, jsonData.getString("dni").trim());
+				cv.put(DBtables.CLiente_Contacto.telefono, jsonData.getString("telefono").trim());
+				cv.put(DBtables.CLiente_Contacto.celular, jsonData.getString("celular").trim());
+				cv.put(DBtables.CLiente_Contacto.email, jsonData.getString("email").trim());
+				cv.put(DBtables.CLiente_Contacto.cargo, jsonData.getString("cargo").trim());
+				cv.put(DBtables.CLiente_Contacto.estado, jsonData.getString("estado").trim());
+				cv.put(DBtables.CLiente_Contacto.flag, jsonData.getString("flag").trim());
+
+
+				db.insert(DBtables.CLiente_Contacto.TAG, null, cv);
+				Log.i("CLIENTE","i= " + i + " CODCLI: "+ jsonData.getString("codcli").trim());
+			}
+
+			db.setTransactionSuccessful();
+
+		} catch (JSONException e) {
+			Log.e(DBclasses.TAG, "JSON Exception CLIENTE contacto:" + e.getMessage());
 			throw new JSONException(e.getMessage());
 		} finally {
 			db.endTransaction();
@@ -3786,6 +3832,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Direccion_cliente.LONGITUD,jsonData.getString("longitud").trim());
 				cv.put(DBtables.Direccion_cliente.DOC_ADICIONAL,jsonData.getString("docAdicional").trim());
 				cv.put(DBtables.Direccion_cliente.ESTADO,jsonData.getString("estado").trim());
+				cv.put(Direccion_cliente.altitud,jsonData.getString("altitud").trim());
 
 				db.insert(DBtables.Direccion_cliente.TAG, null, cv);
 				Log.i("DIRECCION CLIENTE", "i= " + i + " CODCLI: "+ jsonData.getString("codcli").trim() + " ITEM: "+ jsonData.getString("item").trim()+" DOC:"+jsonData.getString("docAdicional").trim());
@@ -3900,7 +3947,9 @@ public class DBclasses extends SQLiteAssetHelper {
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		getReadableDatabase().delete(DBtables.Configuracion.TAG, null, null);
+		String where = "nombre not in('mensaje_licencia_uso', 'clave_forzar')";
+
+		getReadableDatabase().delete(DBtables.Configuracion.TAG, where, null);
 		SQLiteDatabase db = getWritableDatabase();
 
 		db.beginTransaction();
@@ -3908,6 +3957,8 @@ public class DBclasses extends SQLiteAssetHelper {
 		try {
 
 			for (int i = 0; i < jArray.length(); i++) {
+
+
 
 				jsonData = jArray.getJSONObject(i);
 				cv.put(DBtables.Configuracion.NOMBRE,
@@ -5211,14 +5262,44 @@ public class DBclasses extends SQLiteAssetHelper {
 		return flag;
 	}
 
-	public void syncObjPedido(JSONArray jArray, String codven)	throws JSONException, SQLiteException {
+	public void LlenarTablaSanOpciones(ArrayList<San_Opciones> lista){
+		final String STAG = "LlenarTablaSanOpciones:: ";
+
+		ContentValues cv = new ContentValues();
+		getReadableDatabase().delete(DBtables.San_Opciones.TAG, null, null);
+		SQLiteDatabase db = getWritableDatabase();
+		db.beginTransaction();
+		try {
+			for (San_Opciones opciones:lista) {
+				cv.put(DBtables.San_Opciones.id_opcion, opciones.getId_opcion());
+				cv.put(DBtables.San_Opciones.codigo_crm, opciones.getCodigo_crm());
+				cv.put(DBtables.San_Opciones.instancia, opciones.getInstancia());
+				cv.put(DBtables.San_Opciones.opciones, opciones.getOpciones());
+
+				long a=db.insert(DBtables.San_Opciones.TAG,null, cv);
+			}
+			db.setTransactionSuccessful();
+
+		} catch (Exception e) {
+
+			Log.i(TAG,STAG+"Se encontraron errores: "+e.getMessage());
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+
+	public int syncObjPedido(JSONArray jArray, String codven, int start)	throws JSONException, SQLiteException {
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		EliminarRegistro_bonificaciones_enviados(codven);
-		EliminarPedido_detalle_enviados(codven);
-		EliminarSanVisitas(codven);
-		EliminarPedido_cabecera_enviados(codven);
+		if (start==0){
+			EliminarRegistro_bonificaciones_enviados(codven);
+			EliminarPedido_detalle_enviados(codven);
+			EliminarSanVisitas(codven);
+			EliminarPedido_cabecera_enviados(codven);
+		}
 
 		SQLiteDatabase db = getWritableDatabase();
 
@@ -5229,7 +5310,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				jsonData = jArray.getJSONObject(i);
 
 				cv = new ContentValues();
-				if(!verificarPedidoTieneCabecera(db, jsonData.getString("oc_numero").trim())){
+				if(!verificarPedidoTieneCabecera(db, jsonData.getString("oc_numero").trim()) || jsonData.getString("oc_numero").contains("TPLAST") ){
 					Log.d("DBclasses ::syncObjPedido::","**************************************************************");
 					cv.put(DBtables.Pedido_cabecera.PK_OC_NUMERO, jsonData.getString("oc_numero").trim());
 					cv.put(DBtables.Pedido_cabecera.SITIO_ENFA,	jsonData.getString("sitio_enfa").trim());
@@ -5385,35 +5466,40 @@ public class DBclasses extends SQLiteAssetHelper {
 
 					for (San_Visitas sanVisita:lista){
 						cv = new ContentValues();
+						if (!DAO_San_Visitas.isSan_VisitasByOc_visitadoAndOc_numero_visitar(db, sanVisita.getOc_numero_visitado(), sanVisita.getOc_numero_visitar())) {
+							cv.put(DBtables.San_Visitas.Grupo_Campaña,  sanVisita.getGrupo_Campaña());
+							cv.put(DBtables.San_Visitas.Cod_Promotor,  sanVisita.getCod_Promotor());
+							cv.put(DBtables.San_Visitas.Promotor,  sanVisita.getPromotor());
+							cv.put(DBtables.San_Visitas.Cod_Colegio,  sanVisita.getCod_Colegio());
+							cv.put(DBtables.San_Visitas.descripcion_Colegio,  sanVisita.getDescripcion_Colegio());
+							cv.put(DBtables.San_Visitas.Ejecutivo_Descripcion,  sanVisita.getEjecutivo_Descripcion());
+							cv.put(DBtables.San_Visitas.cargo_Descripción,  sanVisita.getCargo_Descripción());
+							cv.put(DBtables.San_Visitas.Fecha_planificada,  sanVisita.getFecha_planificada());
+							cv.put(DBtables.San_Visitas.Fecha_Ejecutada,  sanVisita.getFecha_Ejecutada());
+							cv.put(DBtables.San_Visitas.Fecha_proxima_visita,   sanVisita.getFecha_proxima_visita());
+							cv.put(DBtables.San_Visitas.Hora_inicio_ejecución,  sanVisita.getHora_inicio_ejecución());
+							cv.put(DBtables.San_Visitas.Hora_Fin_Ejecución,  sanVisita.getHora_Fin_Ejecución());
+							cv.put(DBtables.San_Visitas.fecha_de_modificación,  sanVisita.getFecha_de_modificación());
+							cv.put(DBtables.San_Visitas.Estado,  sanVisita.getEstado());
+							cv.put(DBtables.San_Visitas.Actividad,  sanVisita.getActividad());
+							cv.put(DBtables.San_Visitas.Detalle,  sanVisita.getDetalle());
+							cv.put(DBtables.San_Visitas.Actividad_Proxima,  sanVisita.getActividad_Proxima());
+							cv.put(DBtables.San_Visitas.Detalle_Proximo,  sanVisita.getDetalle_Proximo());
+							cv.put(DBtables.San_Visitas.Comentario_actividad,  sanVisita.getComentario_actividad());
+							cv.put(DBtables.San_Visitas.tipo_visita,  ""+sanVisita.getTipo_visita());
+							cv.put(DBtables.San_Visitas.id_rrhh, sanVisita.getId_rrhh());
+							cv.put(DBtables.San_Visitas.latitud,  ""+sanVisita.getLatitud());
+							cv.put(DBtables.San_Visitas.longitud,  ""+sanVisita.getLongitud());
+							cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia());
+							cv.put(DBtables.San_Visitas.oc_numero_visitado,  ""+sanVisita.getOc_numero_visitado());
+							cv.put(DBtables.San_Visitas.oc_numero_visitar,  ""+sanVisita.getOc_numero_visitar());
+							cv.put(DBtables.San_Visitas.item,  ""+sanVisita.getItem());
+							cv.put(DBtables.San_Visitas.id_contacto,  ""+sanVisita.getId_contacto());
+							cv.put(DBtables.San_Visitas.altitud,  ""+sanVisita.getAltitud());
+							cv.put(DBtables.San_Visitas.descripcion_anulacion,  ""+sanVisita.getDescripcion_anulacion());
 
-						cv.put(DBtables.San_Visitas.Grupo_Campaña,  sanVisita.getGrupo_Campaña());
-						cv.put(DBtables.San_Visitas.Cod_Promotor,  sanVisita.getCod_Promotor());
-						cv.put(DBtables.San_Visitas.Promotor,  sanVisita.getPromotor());
-						cv.put(DBtables.San_Visitas.Cod_Colegio,  sanVisita.getCod_Colegio());
-						cv.put(DBtables.San_Visitas.descripcion_Colegio,  sanVisita.getDescripcion_Colegio());
-						cv.put(DBtables.San_Visitas.Ejecutivo_Descripcion,  sanVisita.getEjecutivo_Descripcion());
-						cv.put(DBtables.San_Visitas.cargo_Descripción,  sanVisita.getCargo_Descripción());
-						cv.put(DBtables.San_Visitas.Fecha_planificada,  sanVisita.getFecha_planificada());
-						cv.put(DBtables.San_Visitas.Fecha_Ejecutada,  sanVisita.getFecha_Ejecutada());
-						cv.put(DBtables.San_Visitas.Fecha_proxima_visita,   sanVisita.getFecha_proxima_visita());
-						cv.put(DBtables.San_Visitas.Hora_inicio_ejecución,  sanVisita.getHora_inicio_ejecución());
-						cv.put(DBtables.San_Visitas.Hora_Fin_Ejecución,  sanVisita.getHora_Fin_Ejecución());
-						cv.put(DBtables.San_Visitas.fecha_de_modificación,  sanVisita.getFecha_de_modificación());
-						cv.put(DBtables.San_Visitas.Estado,  sanVisita.getEstado());
-						cv.put(DBtables.San_Visitas.Actividad,  sanVisita.getActividad());
-						cv.put(DBtables.San_Visitas.Detalle,  sanVisita.getDetalle());
-						cv.put(DBtables.San_Visitas.Actividad_Proxima,  sanVisita.getActividad_Proxima());
-						cv.put(DBtables.San_Visitas.Detalle_Proximo,  sanVisita.getDetalle_Proximo());
-						cv.put(DBtables.San_Visitas.Comentario_actividad,  sanVisita.getComentario_actividad());
-						cv.put(DBtables.San_Visitas.tipo_visita,  ""+sanVisita.getTipo_visita());
-						cv.put(DBtables.San_Visitas.id_rrhh, sanVisita.getId_rrhh());
-						cv.put(DBtables.San_Visitas.latitud,  ""+sanVisita.getLatitud());
-						cv.put(DBtables.San_Visitas.longitud,  ""+sanVisita.getLongitud());
-						cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia());
-						cv.put(DBtables.San_Visitas.oc_numero_visitado,  ""+sanVisita.getOc_numero_visitado());
-						cv.put(DBtables.San_Visitas.oc_numero_visitar,  ""+sanVisita.getOc_numero_visitar());
-
-						long a =db.insert(DBtables.San_Visitas.TAG,null, cv);
+							long a =db.insert(DBtables.San_Visitas.TAG,null, cv);
+						}
 						//Log.d(TAG, STAG+" is insertado "+a);
 
 					}
@@ -5434,6 +5520,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			db.endTransaction();
 			db.close();
 		}
+		return jArray.length();
 
 	}
 
@@ -6346,7 +6433,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		rawQuery = "select *,"
 							+ "(select count(*) from pedido_detalle where oc_numero=pedido_cabecera.oc_numero),"
 							+ "(select count(*) from registro_bonificaciones where oc_numero=pedido_cabecera.oc_numero) "
-							+ " from pedido_cabecera where flag <> 'A'";
+							+ " from pedido_cabecera where flag <> 'A' or cod_noventa = "+GlobalVar.CODIGO_VISITA_CLIENTE;
 
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -6814,7 +6901,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		rawQuery = "select * from pedido_cabecera where oc_numero='"
 				+ oc_numero + "'";
 
-		DBPedido_Cabecera item = new DBPedido_Cabecera();
+		DBPedido_Cabecera item =null;
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -6823,7 +6910,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		if (cur.moveToFirst()) {
 
 			do {
-
+				item=new DBPedido_Cabecera();
 				item.setOc_numero(cur.getString(0));
 				item.setSitio_enfa(cur.getString(1));
 				item.setMonto_total(cur.getString(2));
@@ -8852,21 +8939,25 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 
-	public void deletePedidoCabeceraxOc(String oc_numero) {
+	public boolean deletePedidoCabeceraxOc(String oc_numero, SQLiteDatabase _db) {
 
 		String where = "oc_numero=?";
 		String[] args = { oc_numero };
 
 		try {
-			SQLiteDatabase db = getWritableDatabase();
-			db.delete("pedido_cabecera", where, args);
-			db.delete("pedido_detalle", where, args);
-			db.close();
 
+			SQLiteDatabase db = _db==null?getWritableDatabase():_db;
+			int dleted=db.delete("pedido_cabecera", where, args);
+			db.delete("pedido_detalle", where, args);
+			if (_db==null) {
+				db.close();
+			}
 			Log.i("eliminar pedido", "pedido eliminado");
+			return dleted>0;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -10425,9 +10516,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public void EliminarSanVisitas(String codven) {
 		// TODO Auto-generated method stub
 
-		String where = "oc_numero_visitado in (select oc_numero from pedido_cabecera where flag <> ? or cod_emp <> ?) " +
-				"or oc_numero_visitar in (select oc_numero from pedido_cabecera where flag <> ? or cod_emp <> ?)";
-		String[] args = { "P", codven };
+		String where= "(oc_numero_visitado  \n" +
+				"\t\t\t\tnot  in ( select oc_numero from pedido_cabecera where flag = ? and cod_emp = ? )  \n" +
+				"\t\t\t\tand length(oc_numero_visitado)>0) \n" +
+				"\t\t\t\tor ( oc_numero_visitar  not in (select oc_numero from pedido_cabecera where flag = ? and cod_emp = ?) ) \n" ;
+
+		String[] args = { "P", codven, "P", codven};
 
 		try {
 			SQLiteDatabase db = getWritableDatabase();
@@ -12243,7 +12337,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	}
 	
 	public void eliminarNulos(){
-		String where = "percepcion_total ISNULL or monto_total ISNULL ";
+		String where = "cod_noventa <1  and (percepcion_total ISNULL or monto_total ISNULL) ";
 		String[] args = { "E" };
 
 		try {
@@ -12750,7 +12844,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 		String rawQuery;
 
-		rawQuery = "select item,direccion, latitud, longitud from "+DBtables.Direccion_cliente.TAG+" where codcli='"
+		rawQuery = "select item,direccion, latitud, longitud, altitud from "+DBtables.Direccion_cliente.TAG+" where codcli='"
 				+ codigoCliente + "'";
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -12768,6 +12862,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					item.setDireccion(cursor.getString(1));
 					item.setLatitud(cursor.getString(2));
 					item.setLongitud(cursor.getString(3));
+					item.setAltitud(cursor.getDouble(4));
 					lista.add(item);
 				} while (cursor.moveToNext());
 			}
@@ -12804,7 +12899,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		return lista;
 	}
 
-	public void updateGeolocalizacionCliente(String codigoCliente, String codigoSucursal, double lat, double lng) {
+	public void updateGeolocalizacionCliente(String codigoCliente, String codigoSucursal, double lat, double lng, double altitud) {
 
 		try {
 
@@ -12816,7 +12911,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 			Nreg.put("latitud", lat);
 			Nreg.put("longitud", lng);
-			Nreg.put("estado", "L");
+			Nreg.put("altitud", altitud);
+			Nreg.put("estado", "P");
 
 			db.update("direccion_cliente", Nreg, where, args);
 			db.close();
@@ -12850,10 +12946,10 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		String rawQuery= "";
 
 		if(codcli.equals("ninguno")){
-			rawQuery= "select dc.codcli, ifnull(item,''), ifnull(latitud,''), ifnull(longitud,''), estado "
+			rawQuery= "select dc.codcli, ifnull(item,''), ifnull(latitud,''), ifnull(longitud,''), estado, altitud "
 					+ "from direccion_cliente dc inner join cliente c on dc.codcli = c.codcli where length(latitud) >= 4";
 		}else{
-			rawQuery= "select dc.codcli, ifnull(item,''), ifnull(latitud,''), ifnull(longitud,''), estado "
+			rawQuery= "select dc.codcli, ifnull(item,''), ifnull(latitud,''), ifnull(longitud,''), estado, altitud "
 					+ "from direccion_cliente dc inner join cliente c on dc.codcli = c.codcli where  dc.codcli ='"+codcli+"' and item ='"+item+"'";
 		}
 
@@ -12870,6 +12966,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbdireccion.setLongitud(cur.getString(3));
 			dbdireccion.setEstado(cur.getString(4));
             dbdireccion.setGiroCliente(0);//no nos importa el giro
+            dbdireccion.setAltitud(cur.getDouble(cur.getColumnIndex("altitud")));//no nos importa el giro
 			lista_direcciones.add(dbdireccion);
 			cur.moveToNext();
 		}
@@ -12898,6 +12995,26 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.close();
 
 		return respuesta;
+	}
+	public  String getConfiguracionByName(String name, String valorDef) {
+		String rawQuery;
+		rawQuery = "SELECT valor FROM configuracion WHERE nombre like '"+name+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		String valor = valorDef;
+		cur.moveToFirst();
+		Log.w(TAG+"raw query:",rawQuery);
+		while (!cur.isAfterLast()) {
+			valor = cur.getString(0);
+			cur.moveToNext();
+		}
+		Log.w(TAG,"Luego del query");
+		Log.w(TAG+":getConfiguracionByName:",""+valor);
+		cur.close();
+		db.close();
+		return valor;
 	}
 }
 

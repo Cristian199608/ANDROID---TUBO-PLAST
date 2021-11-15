@@ -38,6 +38,7 @@ import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
+import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -86,6 +87,16 @@ public class LoginActivity extends AppCompatActivity {
         //
         // dbfuerza_ventasbk = new DBclasses2(LoginActivity.this);
         //
+
+//        Intent intent=new Intent(this, ClientesActivity.class);
+//        intent.putExtra("ID_RRHH", "codcli");
+//        intent.putExtra("CODIGO_CRM", "");
+//        intent.putExtra("NOMBRE_INSTI", "Sin nombre");
+//        intent.putExtra("OC_NUMERO", "");
+//        intent.putExtra("COD_VEND", "codven");
+//        intent.putExtra("ORIGEN", ClientesActivity.TAG);
+//        startActivity(intent);
+
 
         dbusuarios = new DBclasses(LoginActivity.this);
         // txtPlaca=(EditText)findViewById(R.id.txtPlaca);
@@ -330,12 +341,10 @@ public class LoginActivity extends AppCompatActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute=", "" + result);
 
-            String fecha_hoy= VARIABLES.GET_FECHA_ACTUAL_STRING();
-            String fecha_limite= "2021-04-21";
-            long fehcaHoy=VARIABLES.convertirFecha_to_long(fecha_hoy);
-            long fehcaLimite=VARIABLES.convertirFecha_to_long(fecha_limite);
-            if (fehcaHoy>fehcaLimite){
-                Toast.makeText(LoginActivity.this, "No se pudo validar, error...", Toast.LENGTH_SHORT).show();
+            String mensajeLicenciaUso= dbusuarios.getConfiguracionByName("mensaje_licencia_uso", "");
+
+            if (mensajeLicenciaUso.length()>0){
+                UtilViewMensaje.MENSAJE_simple(LoginActivity.this, "AVISO", mensajeLicenciaUso);
                 return;
             }
 

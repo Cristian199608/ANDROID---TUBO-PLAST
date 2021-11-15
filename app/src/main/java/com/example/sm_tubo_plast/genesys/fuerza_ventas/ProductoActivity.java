@@ -326,14 +326,22 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             public void afterTextChanged(Editable s) {
                 edt_descuento.setError(null);
                 if (edt_descuento.getText().toString().length()>0) {
-                    double porcentaje=Integer.parseInt(edt_descuento.getText().toString());
-
-                    if (porcentaje>=0 && porcentaje<=100){
-                        ConsultarProductoDemo();
-                    }else{
+                    try {
+                        double porcentaje=Double.parseDouble(edt_descuento.getText().toString());
+                        if (porcentaje>=0 && porcentaje<=100){
+                            ConsultarProductoDemo();
+                        }else{
+                            edt_descuento.setText("0");
+                            edt_descuento.setError("Ingrese un número de 1 a 100");
+                        }
+                    }catch (Exception e){
                         edt_descuento.setText("0");
-                        edt_descuento.setError("Ingrese un número de 1 a 100");
+                        edt_descuento.setError("Ingrese un número válido");
+                        e.printStackTrace();
                     }
+
+
+
                 }else{
                     ConsultarProductoDemo();
                 }

@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@android:style/Theme.Holo.Light" >
-
+    >
+<!--    android:theme="@android:style/Theme.Holo.Light"-->
 
     <RelativeLayout
         android:id="@+id/layout"
@@ -118,6 +118,33 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:padding="5dp"
+                    android:text="Actitud:" />
+
+                <TextView
+                    android:id="@+id/tv_altitud_actual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:padding="5dp"
+                    android:text="S/N m.s.n.m" />
+            </TableRow>
+
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider_color"/>
+            <TableRow
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content" >
+
+                <TextView
                     android:id="@+id/labelLocalizacion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -146,9 +173,33 @@
                     android:gravity="center"
                     android:text="Ver"/>
             </TableRow>
+            <TableRow
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content" >
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:padding="5dp"
+                    android:text="Actitud:" />
 
+                <TextView
+                    android:id="@+id/tv_altitud_nueva"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:padding="5dp"
+                    android:text="S/N m.s.n.m" />
+            </TableRow>
 
+            <View android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider_color"/>
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >

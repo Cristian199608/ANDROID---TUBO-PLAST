@@ -472,7 +472,7 @@ public class CH_ClientesDevolucion extends AppCompatActivity {
 
             try {
 
-                originalValues = obj_dbclasses.getProgramacionxDia2("", 0, 50000, 50);
+                originalValues = obj_dbclasses.getProgramacionxDia2("", 0, 50000, 50, "", false, false);
                 originalValues.addAll(obj_dbclasses.getDemasClientes2());
 
             }

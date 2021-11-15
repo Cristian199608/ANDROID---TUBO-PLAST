@@ -3,6 +3,10 @@ package com.example.sm_tubo_plast.genesys.util;
 import android.app.Activity;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Patterns;
+
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
+import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -12,6 +16,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 public class VARIABLES {
 
@@ -19,6 +25,7 @@ public class VARIABLES {
             ,"Octubre","Noviembre","Diciembre"};
 
     //[sunat_exportar_reporte_ple_registro_copia]
+    public static final TimeZone zona_horaria=TimeZone.getTimeZone("GMT-5");
     public static final String getNOMBRE_MES(int Mes) {
         return MESES[Mes];
     }
@@ -78,6 +85,13 @@ public class VARIABLES {
         date.getTime();
         return fechaHora.format(date);
     }
+    public  static String GET_HORA_ACTUAL_STRING(){
+        Date date = new Date();
+        SimpleDateFormat fechaHora = new SimpleDateFormat("HH:mm");
+
+        date.getTime();
+        return fechaHora.format(date);
+    }
     public static String  ConvertirKmToString(int metrosAll){
         String uniddad_medida="";
         if (metrosAll>0){
@@ -91,6 +105,28 @@ public class VARIABLES {
 
     }
 
+    public static String convertirFecha_from_long(long date)
+    {
+        SimpleDateFormat formatFecha = new SimpleDateFormat("yyy-MM-dd hh:mm a");
+        formatFecha.setTimeZone(zona_horaria);
+        String fecha = formatFecha.format(new Date(date));
+        return fecha;
+    }
+
+    public static String convertirFecha_from_String(String date)
+    {
+        SimpleDateFormat formatterIn = new SimpleDateFormat("yyy-MM-dd HH:mm");
+        String fecha= date;
+        try {
+            fecha = new SimpleDateFormat("yyy-MM-dd hh:mm a").format(formatterIn.parse(""+date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        return fecha;
+    }
+
     public static long convertirFecha_to_long(String string_date)
     {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
@@ -102,6 +138,27 @@ public class VARIABLES {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    public static long convertirFechaHora_dd_mm_yyyy__HH_mm_to_long(String string_date)
+    {
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+        try {
+            f.setTimeZone(zona_horaria);
+            Date d = f.parse(string_date);
+
+            return d.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static long getFechaHora_actual_long()
+    {
+        Date d = new Date();
+        return d.getTime();
     }
 
     public static boolean IsDouble(String numero)
@@ -154,29 +211,43 @@ public class VARIABLES {
     public static String OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(Activity activity, double latitud, double longitud) {
         String direccion_larga="";
         //Obtener la direccion de la calle a partir de la latitud y la longitud
-        if (latitud != 0.0 && longitud != 0.0) {
+        /*if (latitud != 0.0 && longitud != 0.0) {
             try {
-                Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
-                List<Address> list = geocoder.getFromLocation(
-                        latitud, longitud, 1);
-                if (!list.isEmpty()) {
-                    Address DirCalle = list.get(0);
-                    direccion_larga=DirCalle.getAddressLine(0);
+                ConnectionDetector cd=new ConnectionDetector(activity);
+                if (cd.hasActiveInternetConnection(activity)) {
+                    Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+                    List<Address> list = geocoder.getFromLocation(
+                            latitud, longitud, 1);
+                    if (!list.isEmpty()) {
+                        Address DirCalle = list.get(0);
+                        direccion_larga=DirCalle.getAddressLine(0);
+                    }
+                    if (direccion_larga.length()==0) direccion_larga=""+latitud+", "+longitud;
+                }else{
+                    direccion_larga="No se obtuvo la direccion pues, no estas conectado a internet";
                 }
-                if (direccion_larga.length()==0) direccion_larga=""+latitud+", "+longitud;
             } catch (IOException e) {
                 direccion_larga="No se ha podido obtener la dirreción de su ubición.\nCoordenada: "+latitud+", "+longitud;
                 e.printStackTrace();
             }
-        }
+        }*/
         return direccion_larga;
     }
 
     public static int GetSegundosFrom_hh_mm_to_int(String hora) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sdf.setTimeZone(zona_horaria);
         Date date = sdf.parse(hora);
         long millis = date.getTime();
         return (int)(millis/1000);
+    }
+
+    public static int GetSegundosFrom_hh_mm_to_int2(int hora, int minutos) throws ParseException {
+
+        int h_segundos=hora*3600;
+        int m_segundos=minutos*60;
+
+        return h_segundos+m_segundos;
     }
 
     public  static String GET_FECHA_ACTUAL_STRING_dd_mm_yyy2(){
@@ -196,6 +267,38 @@ public class VARIABLES {
         return cc;
     }
 
+    public static long GetFechaLongFrom_yyyy_mm_dd(String fecha) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        try {
+            formatter.setTimeZone(zona_horaria);
+            Date d = formatter.parse(fecha);
+            return d.getTime();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static  boolean validarEmail(String email) {
+        Pattern pattern = Patterns.EMAIL_ADDRESS;
+        return pattern.matcher(email).matches();
+    }
+
+
+    public static String GetFechaActual(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+    public static long sumarDiasFromFechaLong(long fecha, int nroDia)
+    {
+        long _1DiaMilesegundos=86400000;
+        return  fecha+(nroDia*_1DiaMilesegundos);
+    }
+
+    public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
 
 
 }

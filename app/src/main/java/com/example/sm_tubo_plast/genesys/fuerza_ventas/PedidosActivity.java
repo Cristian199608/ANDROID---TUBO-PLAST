@@ -373,7 +373,9 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         Bundle bundle = getIntent().getExtras();
         origen = bundle.getString("origen");
+
         nomcli = bundle.getString("nombreCliente");
+        codcli = bundle.getString("codcli");
         codven = "" + bundle.getString("codigoVendedor");
 
         if (bundle.getString("tipoRegistro")==null) {
@@ -895,7 +897,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             }
         } else if (origen.equals("CLIENTES")) {
             autocomplete.setText(nomcli);
-            codcli = obtenerCodigoCliente(autocomplete.getText().toString());
+
             //numOc = dbclass.obtenerOcxCliente(codcli);
             //edt_nroPedido.setText(numOc);
             numOc = dbclass.obtenerMaxNumOc(codven);
@@ -933,7 +935,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             numOc = dbclass.obtenerMaxNumOc(codven);
             edt_nroPedido.setText(codven + calcularSecuencia(numOc,fecha_configuracion));
             colocarFechaActual();
-            codcli = obtenerCodigoCliente(codcli);
+
             mostrarDatosCliente(codcli);
 
             if (dbclass.VerificarCtasXCobrar(codcli).size() > 0) {
@@ -985,7 +987,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         /***********************************/
 
         nomcli = autocomplete.getText().toString();
-        codcli = dbclass.obtenerCodigoCliente(nomcli);
+
 
         // Variables necesarias para el tema de percepcion
 
@@ -1373,7 +1375,7 @@ private  void llenarSpinnerDespacho(String valor){
                 rButtonSoles.setEnabled(true);
                 rButtonDolares.setEnabled(true);
 
-                rGroup_moneda.check(R.id.rButton_soles);
+                rGroup_moneda.check(R.id.rButton_dolares);
             }else if (monedaDocumento.equals(MONEDA_NACIONAL)) {
                 rGroup_moneda.check(R.id.rButton_soles);
             }else if (monedaDocumento.equals(MONEDA_DOLARES)){
@@ -2397,7 +2399,7 @@ private void EnvalularMoneda(){
                  * final ItemProducto prod2 = (ItemProducto)
                  * lstProductos.getAdapter().getItem(info2.position); Intent intent
                  * = new Intent(PedidosActivity.this, ProductoActivity.class);
-                 * intent.putExtra("codcli", codcli); intent.putExtra("codven",
+                     * intent.putExtra("codcli", codcli); intent.putExtra("codven",
                  * codven); intent.putExtra("origen", pedido);
                  * intent.putExtra("origen", "PEDIDO_MODIFICAR");
                  * intent.putExtra("OCNUMERO", Oc_numero); intent.putExtra("CODPRO",
@@ -3737,36 +3739,36 @@ private void EnvalularMoneda(){
 
     }
 
-    public void cargarClientesXRuta() {
-        ArrayList<DBClientes> lista_clientes_ruta = new ArrayList<DBClientes>();
-        int i = 0;
-        lista_clientes_ruta = dbclass.getClientesXRuta();
-        String[] lclientes = new String[lista_clientes_ruta.size()];
-        Iterator<DBClientes> it = lista_clientes_ruta.iterator();
-
-        while (it.hasNext()) {
-            Object objeto = it.next();
-            DBClientes cta = (DBClientes) objeto;
-
-            lclientes[i] = cta.getNomcli();
-
-            i++;
-
-        }
-
-        if (lclientes.length > 0) {
-
-            autocomplete.setText(lclientes[0]);
-            codcli = obtenerCodigoCliente(lclientes[0]);
-
-            mostrarDatosCliente(lclientes[0]);
-        }
-
-        else {
-            autocomplete.setHint("Ingrese cliente");
-        }
-
-    }
+//    public void cargarClientesXRuta() {
+//        ArrayList<DBClientes> lista_clientes_ruta = new ArrayList<DBClientes>();
+//        int i = 0;
+//        lista_clientes_ruta = dbclass.getClientesXRuta();
+//        String[] lclientes = new String[lista_clientes_ruta.size()];
+//        Iterator<DBClientes> it = lista_clientes_ruta.iterator();
+//
+//        while (it.hasNext()) {
+//            Object objeto = it.next();
+//            DBClientes cta = (DBClientes) objeto;
+//
+//            lclientes[i] = cta.getNomcli();
+//
+//            i++;
+//
+//        }
+//
+//        if (lclientes.length > 0) {
+//
+//            autocomplete.setText(lclientes[0]);
+//            codcli = obtenerCodigoCliente(lclientes[0]);
+//
+//            mostrarDatosCliente(lclientes[0]);
+//        }
+//
+//        else {
+//            autocomplete.setHint("Ingrese cliente");
+//        }
+//
+//    }
 
     public void colocarFechaActual() {
 
@@ -3814,23 +3816,7 @@ private void EnvalularMoneda(){
         // StringBuilder().append(_dia_propuesto).append("/").append(_mes_actual).append("/").append(año_actual));
     }
 
-    public void mostrarCondPago() {
-        codcli = obtenerCodigoCliente(autocomplete.getText().toString());
-        String condPago = dbclass.obtener_condPagoXcliente(codcli);
 
-        Log.i("CONDPAGO", "" + condPago);
-        Log.i("CODCLI", "" + codcli);
-
-        int position = 0;
-        if (condPago.equals("01")) {
-            position = 0;
-        } else if (condPago.equals("2")) {
-            position = 1;
-        } else if (condPago.equals("07")) {
-            position = 2;
-        }
-        // <<<<<<<<spnFormaPago.setSelection(position);
-    }
 
     public String getHoraActual() {
         Calendar calendar1 = Calendar.getInstance();

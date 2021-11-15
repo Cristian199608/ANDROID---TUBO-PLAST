@@ -43,19 +43,100 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-      android:id="@+id/swipeRefreshLayout"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-      <ListView
-          android:id="@+id/lv_clientes"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:divider="#b5b5b5"
-          android:dividerHeight="1dp"
-          android:listSelector="@drawable/list_selector" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:orientation="vertical"
+               android:layout_height="wrap_content">
+            <LinearLayout
+                android:padding="5dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_fecha_filtrado_de"
+                    android:background="@drawable/edittext_rounded_corners_cicle"
+                    android:text="de 15/10/2021"
+                    android:drawableEnd="@drawable/cancel"
+                    android:drawableTint="@color/white"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <CheckBox
+                    android:id="@+id/check_visitado"
+                    android:background="@drawable/edittext_rounded_corners6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Visitatado"/>
+                <CheckBox
+                    android:id="@+id/check_programada"
+                    android:background="@drawable/edittext_rounded_corners6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Programada"/>
+
+            </LinearLayout>
+
+               <ListView
+                   android:id="@+id/lv_clientes"
+                   android:layout_width="fill_parent"
+                   android:layout_height="wrap_content"
+                   android:divider="#b5b5b5"
+                   android:dividerHeight="1dp"
+                   android:listSelector="@drawable/list_selector" />
+
+           </LinearLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <LinearLayout
+            android:id="@+id/LinearPie"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/linear_general"
+                android:layout_width="match_parent"
+                android:gravity="top"
+                android:layout_height="wrap_content"
+                android:background="@color/blue_grey_900"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_cantidadClientesGeneral"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:text="Cantidad General: 0" />
+                <TextView
+                    android:id="@+id/tv_cantidad_filtrado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    android:text="Cantidad General: 0" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -64,7 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_new_cliente"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="50dp"
         android:tint="@color/white"
         android:backgroundTint="@color/colorPrimary"
         android:layout_marginEnd="16dp"/>

@@ -50,7 +50,17 @@ public class AdapterCLientesMap extends RecyclerView.Adapter<AdapterCLientesMap.
         holder.tv_cliente.setText(item.getNombre());
         holder.tv_telefono.setText(item.getDb_direccionClientes().getTelefono());
         holder.iten_direccion.setText(item.getDb_direccionClientes().getDireccion());
-        holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.yellow_700));
+
+        String estado=item.getDb_direccionClientes().getEstado();
+        if (estado.equals("L")) {//Localizado
+            holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.yellow_600));
+        } else if (estado.equals("V")) {//Localizado y Validado
+            holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.green_500));
+        } else if (estado.equals("P")) {//Pendiente de localizar
+            holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.yellow_600));
+        } else {
+            holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.grey_400));
+        }
 
         int distancia=myListener.DistanciaEntreDosPuntos(mclientes.get(position).getPosition().latitude, mclientes.get(position).getPosition().longitude);
         holder.item_distancia.setText("Distancia apróx. "+ VARIABLES.ConvertirKmToString(distancia));
