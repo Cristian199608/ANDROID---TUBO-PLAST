@@ -49,7 +49,9 @@ public class DBtables {
 		public static final String GIRO = "Giro";
 		public static final String CANAL = "DescCanal";
 		public static final String UNIDAD_NEGOCIO = "DescUnidNeg";
-		
+		public static final String RUBRO_CLIENTE = "rubro_cliente";
+		public static final String DISPONIBLE_CREDITO = "disponible_credito";
+
 		 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_CODCLI + " VARCHAR(8) PRIMARY KEY," + NOMCLI

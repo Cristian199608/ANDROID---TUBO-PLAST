@@ -3730,6 +3730,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cliente.GIRO, 	jsonData.getString(DBtables.Cliente.GIRO).trim());
 				cv.put(DBtables.Cliente.CANAL, 	jsonData.getString(DBtables.Cliente.CANAL).trim());
 				cv.put(DBtables.Cliente.UNIDAD_NEGOCIO,	jsonData.getString(DBtables.Cliente.UNIDAD_NEGOCIO).trim());
+				cv.put(DBtables.Cliente.RUBRO_CLIENTE,	jsonData.getString(DBtables.Cliente.RUBRO_CLIENTE).trim());
+				cv.put(DBtables.Cliente.DISPONIBLE_CREDITO,	jsonData.getString(DBtables.Cliente.DISPONIBLE_CREDITO).trim());
 
 
 				db.insert(DBtables.Cliente.TAG, null, cv);
@@ -11689,7 +11691,6 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			db.endTransaction();
 			db.close();
 		}
-
 	}
 	
 	public int sincronizar_lugarEntrega(JSONArray jArray, int start) throws JSONException {
@@ -12844,7 +12845,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 		String rawQuery;
 
-		rawQuery = "select item,direccion, latitud, longitud, altitud from "+DBtables.Direccion_cliente.TAG+" where codcli='"
+		rawQuery = "select item,direccion, latitud, longitud, altitud, telefono from "+DBtables.Direccion_cliente.TAG+" where codcli='"
 				+ codigoCliente + "'";
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -12863,6 +12864,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					item.setLatitud(cursor.getString(2));
 					item.setLongitud(cursor.getString(3));
 					item.setAltitud(cursor.getDouble(4));
+					item.setTelefono(cursor.getString(cursor.getColumnIndex("telefono")));
 					lista.add(item);
 				} while (cursor.moveToNext());
 			}
@@ -13012,6 +13014,27 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 		Log.w(TAG,"Luego del query");
 		Log.w(TAG+":getConfiguracionByName:",""+valor);
+		cur.close();
+		db.close();
+		return valor;
+	}
+
+	public  String getRegistrosGeneralesMovilByCodigo(String codigo, String valorDef) {
+		String rawQuery;
+		rawQuery = "SELECT descripcion  FROM "+DBtables.RegistrosGeneralesMovil.TAG+" WHERE codigoDescripcion like '"+codigo+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		String valor = valorDef;
+		cur.moveToFirst();
+		Log.w(TAG+"raw query:",rawQuery);
+		while (!cur.isAfterLast()) {
+			valor = cur.getString(0);
+			cur.moveToNext();
+		}
+		Log.w(TAG,"Luego del query");
+		Log.w(TAG+":getRegistrosGeneralesMovilByCodigo:",""+valor);
 		cur.close();
 		db.close();
 		return valor;

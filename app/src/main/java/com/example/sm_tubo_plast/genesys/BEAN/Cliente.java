@@ -9,13 +9,17 @@ public class Cliente {
 	private String nombre;
 	private String direccionFiscal;
 	private String giro;
+	private String tipo_cliente;
 	private String telefono;
 	private String canal;
 	private String monedaCredito;
 	private String limiteCredito;
+	private String disponible_credido;
 	private String unidadNegocio;
 	private String monedaDocumento;
+	private String email;
 	private DB_DireccionClientes db_direccionClientes;
+	private String rubro_cliente;
 	
 	public String getCodigoCliente() {
 		return codigoCliente;
@@ -96,5 +100,37 @@ public class Cliente {
 
 	public void setDb_direccionClientes(DB_DireccionClientes db_direccionClientes) {
 		this.db_direccionClientes = db_direccionClientes;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDisponible_credido() {
+		return disponible_credido;
+	}
+
+	public void setDisponible_credido(String disponible_credido) {
+		this.disponible_credido = disponible_credido;
+	}
+
+	public String getRubro_cliente() {
+		return rubro_cliente;
+	}
+
+	public void setRubro_cliente(String rubro_cliente) {
+		this.rubro_cliente = rubro_cliente;
+	}
+
+	public String getTipo_cliente() {
+		return tipo_cliente;
+	}
+
+	public void setTipo_cliente(String tipo_cliente) {
+		this.tipo_cliente = tipo_cliente;
 	}
 }

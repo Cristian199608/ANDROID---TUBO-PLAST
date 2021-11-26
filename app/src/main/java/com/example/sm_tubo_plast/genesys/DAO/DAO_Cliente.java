@@ -283,10 +283,13 @@ public class DAO_Cliente extends SQLiteAssetHelper {
     
     public Cliente getInformacionCliente(String codigoCliente){
     	String rawQuery = 
-    			"SELECT codcli,DescSector,nomcli,DireccionFiscal,Giro,telefono,DescCanal, "+ 
-    			"CASE WHEN monedaLimCred='E' THEN 'Moneda Extranjera' ELSE 'Moneda Nacional' END, "+
+    			"SELECT codcli,DescSector,nomcli,DireccionFiscal,Giro, telefono,DescCanal, "+
+    			"CASE WHEN monedaLimCred='ME' THEN 'DOLAR $'  WHEN monedaLimCred='MN' THEN 'PEN S/.' ELSE monedaLimCred  END, "+
     			"limite_credito,DescUnidNeg, "+
-    			"CASE WHEN monedaDocumento='A' THEN 'Ambas Monedas' WHEN monedaDocumento='E' THEN 'Moneda Extranjera' WHEN monedaDocumento='N' THEN 'Moneda Nacional' ELSE '' END "+    			
+    			"CASE WHEN monedaDocumento='A' THEN 'Ambas Monedas' WHEN monedaDocumento='E' THEN 'Moneda Extranjera' WHEN monedaDocumento='N' THEN 'Moneda Nacional' ELSE '' END," +
+				" email, rubro_cliente, " +
+				"disponible_credito," +
+				"tipo_cliente "+
     			"FROM cliente "+
     			"WHERE codcli like '"+codigoCliente+"'";
 		Log.i(TAG, rawQuery);
@@ -303,12 +306,16 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				cliente.setNombre(cursor.getString(2));
 				cliente.setDireccionFiscal(cursor.getString(3));
 				cliente.setGiro(cursor.getString(4));
+				cliente.setTipo_cliente(cursor.getString(cursor.getColumnIndex("tipo_cliente")));
 				cliente.setTelefono(cursor.getString(5));
 				cliente.setCanal(cursor.getString(6));
 				cliente.setMonedaCredito(cursor.getString(7));
 				cliente.setLimiteCredito(cursor.getString(8));
 				cliente.setUnidadNegocio(cursor.getString(9));
 				cliente.setMonedaDocumento(cursor.getString(10));
+				cliente.setEmail(cursor.getString(cursor.getColumnIndex("email")));
+				cliente.setDisponible_credido(""+cursor.getDouble(cursor.getColumnIndex("disponible_credito")));
+				cliente.setRubro_cliente(cursor.getString(cursor.getColumnIndex("rubro_cliente")));
 			} while (cursor.moveToNext());
 
 		}		
