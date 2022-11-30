@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.datatypes.DBCta_Ingresos;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.CuentasXCobrarActivity2;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,13 +21,14 @@ import java.util.HashMap;
 public class Cobranza_LazyAdapter extends BaseAdapter {
     
     private Activity activity;
-    private ArrayList<HashMap<String, String>> data;
+    private ArrayList<DBCta_Ingresos> data;
     private static LayoutInflater inflater=null;
-   
+   private String codigoVendedor;
     
-    public Cobranza_LazyAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
+    public Cobranza_LazyAdapter(Activity a, String codigoVendedor, ArrayList<DBCta_Ingresos> d) {
         activity = a;
         data=d;
+        this.codigoVendedor=codigoVendedor;
         inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
      
     }
@@ -56,34 +60,44 @@ public class Cobranza_LazyAdapter extends BaseAdapter {
         TextView estadoObservacion = (TextView)vi.findViewById(R.id.txt_observacion);
         TextView tipoMoneda = (TextView)vi.findViewById(R.id.txt_tipo_de_moneda);
         TextView nroUnicoBanco = (TextView)vi.findViewById(R.id.tv_nroUnicoBanco); //NroUnicoBanco
-        TextView lblnroUnicoBanco = (TextView)vi.findViewById(R.id.lbl_nroUnicoBanco); 
-        
+        TextView txtEstadoVencimiento = (TextView)vi.findViewById(R.id.txtEstadoVencimiento);
+        TextView txtTipoSaldo = (TextView)vi.findViewById(R.id.txtTipoSaldo);
+
         /*	TextView secuencia = (TextView)vi.findViewById(R.id.item_ctas_cobrar_tv_secuencia);
         	TextView saldo_virtual = (TextView)vi.findViewById(R.id.tv_saldo_virtual);
          */
-         
-        HashMap<String, String> song = new HashMap<String, String>();
-        song = data.get(position);
-        String estado = song.get("Estado"); 
+
+        DBCta_Ingresos song = data.get(position);
+        String estado = song.getEstado_cobranza();
         
         // Setting all values in listview
-        tipo_documento.setText(song.get(CuentasXCobrarActivity2.KEY_TIPO_DOCUMENTO));
-        numero_documento.setText(song.get(CuentasXCobrarActivity2.KEY_NUMERO)+" ");
-        fecha_emision.setText(song.get(CuentasXCobrarActivity2.KEY_FECHA_E));
-        fecha_vencimiento.setText(song.get(CuentasXCobrarActivity2.KEY_FECHA_V));
-        total_documento.setText(song.get(CuentasXCobrarActivity2.KEY_SALDO_TOTAL));
-        usuario.setText(song.get(CuentasXCobrarActivity2.KEY_USUARIO)); 
-        estadoCobranza.setText(estado);
-        estadoObservacion.setText("**"+song.get("Observaciones")); 
-        
-        if(song.get("Moneda").equals("$.")){
-        	 tipoMoneda.setText("D�lares"); 
+        tipo_documento.setText(song.getCoddoc()+" "+song.getCodmon()+""+song.getTotal() );
+        numero_documento.setText(song.getSerie_doc()+"-"+song.getNumero_factura());
+        fecha_emision.setText("Fecha Emisión "+song.getFeccom());//fecha compra=fecha entrega
+        fecha_vencimiento.setText("Fecha Vencimiento "+song.getFecha_vencimiento());
+        total_documento.setText(song.getCodmon() + Double.parseDouble(song.getSaldo()) + "");
+        if (!codigoVendedor.equals(song.getUsername())) {
+            usuario.setBackground(activity.getResources().getDrawable(R.drawable.edittext_rounded_corners_cicle_purple));
+        }else{
+            usuario.setBackground(null);
+        }
+        usuario.setText("Usuario: "+song.getUsername());
+
+        estadoCobranza.setText("Tipo: "+estado);
+        estadoObservacion.setText("**"+song.getObservaciones());
+
+        if(song.getCodmon().equals("$.")){
+        	 tipoMoneda.setText("Dólares");
         } else {
         	 tipoMoneda.setText("Soles"); 
         }
-      
+
+
         if(estado.equals("LIBRE") ){ 
-        	vi.setBackgroundColor(activity.getResources().getColor(R.color.white));
+            vi.setBackgroundColor(activity.getResources().getColor(R.color.white));
+            if (Double.parseDouble(song.getSaldo())<0){
+                vi.setBackgroundColor(activity.getResources().getColor(R.color.red_50));
+            }
         }else if(estado.equals("ACEPTAR LT") ){
         	vi.setBackgroundColor(activity.getResources().getColor(R.color.red_200));
         	
@@ -91,15 +105,30 @@ public class Cobranza_LazyAdapter extends BaseAdapter {
         	vi.setBackgroundColor(activity.getResources().getColor(R.color.yellow_300));  
         
         }else if(estado.equals("COBRAR") ){
-        	vi.setBackgroundColor(activity.getResources().getColor(R.color.cyan_300));  
+        	vi.setBackgroundColor(activity.getResources().getColor(R.color.cyan_100));
+        }
+
+        long lonVencimiento=VARIABLES.convertirFecha_to_long(song.getFecha_vencimiento());
+        long lonActual=VARIABLES.GetFechaActua_long();
+        if (lonVencimiento>=lonActual){
+            txtTipoSaldo.setText("Obligación");
+            txtEstadoVencimiento.setText("Estado: Por vencer");
+            txtEstadoVencimiento.setTextColor(activity.getResources().getColor(R.color.primaryColor));
+        }else{
+            txtTipoSaldo.setText("Deuda");
+            txtEstadoVencimiento.setText("Estado: Vencido");
+            txtEstadoVencimiento.setTextColor(activity.getResources().getColor(R.color.red_700));
         }
         
-        if (tipo_documento.getText().toString().equals("LETRA")) {
-        	nroUnicoBanco.setText(""+song.get("NroUnicoBanco"));
-		}else{
-			lblnroUnicoBanco.setVisibility(View.GONE);
-			nroUnicoBanco.setVisibility(View.GONE);
-		}
+//        if (tipo_documento.getText().toString().equals("LETRA")) {
+        	nroUnicoBanco.setText(""+song.getNroUnicoBanco());
+//		}else{
+//			lblnroUnicoBanco.setVisibility(View.GONE);
+//			nroUnicoBanco.setVisibility(View.GONE);
+//		}
+
+
+
         return vi;
     }
 }

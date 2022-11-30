@@ -46,7 +46,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
     Producto producto;
 
     EditText edt_codigo,edt_descripcion,edt_unidadMedida;
-    TextView tv_totalStockConfirmar, tv_totalStockDisponible;
+    TextView tv_totalStockConfirmar, tv_totalStockDisponible, edt_precioLista;
     ListView lv_consultaStock;
 
     DBSync_soap_manager soap_manager;
@@ -78,6 +78,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
         lv_consultaStock = (ListView) findViewById(R.id.lv_consultaStock);
         tv_totalStockConfirmar = (TextView) findViewById(R.id.tv_totalStockConfirmar);
         tv_totalStockDisponible = (TextView) findViewById(R.id.tv_totalStockDisponible);
+        edt_precioLista = (TextView) findViewById(R.id.edt_precioLista);
         //------------------------------------------
 
         Bundle bundle = getIntent().getExtras();
@@ -88,6 +89,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
             edt_codigo.setText(""+producto.getCodigo());
             edt_descripcion.setText(""+producto.getDescripcion());
             edt_unidadMedida.setText(""+producto.getUnidadMedida());
+            edt_precioLista.setText(""+producto.getPrecio_base());
             if (!producto.getColor().equals("")) {
                 edt_codigo.setTextColor(Color.parseColor(producto.getColor()));
             }
@@ -208,6 +210,8 @@ public class CH_InformacionProducto extends AppCompatActivity {
                 holder = new ViewHolder();
 
                 holder.tv_almacen = (TextView) item.findViewById(R.id.tv_almacen);
+                holder.tv_stock_actual = (TextView) item.findViewById(R.id.tv_stock_actual);
+                holder.tv_stock_separado = (TextView) item.findViewById(R.id.tv_stock_separado);
                 holder.tv_stock_xConfirmar = (TextView) item.findViewById(R.id.tv_stock_xConfirmar);
                 holder.tv_stockDisponible = (TextView) item.findViewById(R.id.tv_stockDisponible);
 
@@ -226,8 +230,10 @@ public class CH_InformacionProducto extends AppCompatActivity {
             //holder.tv_almacen.setText(database.getAlmacenDescripcion((String)map.get("codigoAlmacen")));
 
                 JSONObject jsonData = new JSONObject(lista.get(position));
-                holder.tv_almacen.setText(database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen")));
-                //holder.tv_almacen.setText((String)map.get("codigoAlmacen"));
+                String nombre=database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
+                holder.tv_almacen.setText( (nombre.length()>0?nombre:jsonData.get("codigoAlmacen"))+"" );
+                holder.tv_stock_actual.setText((String)jsonData.get("stock_actual"));
+                holder.tv_stock_separado.setText((String)jsonData.get("stock_separado"));
                 holder.tv_stock_xConfirmar.setText((String)jsonData.get("stock_x_confirmar"));
                 holder.tv_stockDisponible.setText((String)jsonData.get("stock_disponible"));
             } catch (JSONException e) {
@@ -247,7 +253,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
         }
 
         public class ViewHolder {
-            TextView tv_almacen,tv_stock_xConfirmar, tv_stockDisponible;
+            TextView tv_almacen,tv_stock_actual, tv_stock_separado, tv_stock_xConfirmar, tv_stockDisponible;
         }
 
     }

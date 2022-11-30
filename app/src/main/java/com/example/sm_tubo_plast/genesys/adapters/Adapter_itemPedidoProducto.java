@@ -72,10 +72,11 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		double totalVenta	= datos.get(posicion).getSubtotal();
 		double percepcion	= datos.get(posicion).getPercepcionPedido();
 		double descuento	= datos.get(posicion).getDescuento();
+		double porcentaje_desc	= datos.get(posicion).getPorcentaje_desc();
 		String flagTipo		= datos.get(posicion).getFlagTipo();
 		double precio_base	= datos.get(posicion).getPrecio_base();
 		double porcenajeDescuentoMatriz= Double.parseDouble(VARIABLES.ParseDecimalTwo((((precio_base*valor_cambio) -precioLista)*100/(precio_base*valor_cambio))));
-		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(((precioLista-precioUnidad)*100/precioLista)));
+		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(porcentaje_desc));
 
 		holder.descripcion.setText(codigoProduc+" "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc "+porcenajeDescuentoMatriz+"%":"") +(porcenajeDescuento>0.00?" + Desc "+porcenajeDescuento+"% sobre lista":""));
 		holder.precioUnidad.setText(String.valueOf(precioUnidad));
@@ -83,7 +84,7 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		holder.cantidad.setText(String.valueOf(cantidad));
 		holder.totalVenta.setText(String.valueOf(totalVenta));
 		holder.percepcion.setText(String.valueOf(percepcion));
-		holder.descuento.setText(String.valueOf(descuento));
+		holder.descuento.setText(VARIABLES.formater_thow_decimal.format(descuento));
 		holder.imgCampanaYellow.setVisibility(porcenajeDescuento>3.00?View.VISIBLE:View.GONE);
 		OnClickCustom(holder.imgCampanaYellow);
 		holder.tipoProducto.setText(""+(datos.size()-posicion));

@@ -64,6 +64,22 @@
                 android:editable="false"
                 android:textColor="@color/blue_grey_500"
                 android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:text=" Precio Lista en dolar ($)"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edt_precioLista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:textColor="@color/blue_grey_500"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -90,11 +106,19 @@
                 android:textColor="@color/grey_200" />
 
             <TextView
+                android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".33"
                 android:gravity="center"
                 android:text="Stock x Confirmar"
+                android:textColor="@color/grey_200" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".33"
+                android:gravity="center"
+                android:text="Stock\nActual"
                 android:textColor="@color/grey_200" />
 
             <TextView
@@ -102,7 +126,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight=".33"
                 android:gravity="center"
-                android:text="Stock Disponible"
+                android:text="Stock\nSeparado"
+                android:textColor="@color/grey_200" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".33"
+                android:gravity="center"
+                android:text="Stock\nDisponible"
                 android:textColor="@color/grey_200" />
         </LinearLayout>
 
@@ -120,6 +152,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
@@ -133,7 +166,7 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight=".33"
+                android:layout_weight=".66"
                 android:gravity="center"
                 android:text="Total:"
                 android:textColor="@color/grey_900"

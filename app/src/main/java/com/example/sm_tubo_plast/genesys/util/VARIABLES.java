@@ -155,6 +155,12 @@ public class VARIABLES {
         }
     }
 
+    public static long GetFechaActua_long(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        Date date = new Date();
+        return date.getTime();
+    }
     public static long getFechaHora_actual_long()
     {
         Date d = new Date();
@@ -255,6 +261,19 @@ public class VARIABLES {
         SimpleDateFormat fechaHora = new SimpleDateFormat("dd/MM/yyyy");
         return fechaHora.format(date);
     }
+    public  static String GET_FECHA_ACTUAL_STRING_dd_mm_yyy(){
+
+        Date date = new Date();
+        SimpleDateFormat fechaHora = new SimpleDateFormat("dd-MM-yyyy");
+        return fechaHora.format(date);
+    }
+    public  static String GET_FECHA_ACTUAL_STRING_dd_mm_yyy(int restarDia){
+        Calendar calendar=Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -restarDia);
+        Date date =calendar.getTime();
+        SimpleDateFormat fechaHora = new SimpleDateFormat("dd-MM-yyyy");
+        return fechaHora.format(date);
+    }
 
     public static String GetFechaStringFrom_dd_mm_yyyy_TO_yyyy_mm_dd(String fecha) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -292,6 +311,12 @@ public class VARIABLES {
         Date date = new Date();
         return dateFormat.format(date);
     }
+    public static String GetFechaHoraActual(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
     public static long sumarDiasFromFechaLong(long fecha, int nroDia)
     {
         long _1DiaMilesegundos=86400000;
@@ -299,6 +324,7 @@ public class VARIABLES {
     }
 
     public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
+    public static      DecimalFormat formater_one_decimal = new DecimalFormat("#,##0.0");
 
 
 }

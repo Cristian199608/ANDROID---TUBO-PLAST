@@ -1532,7 +1532,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("20");
                                     soap_manager.Sync_tabla_tipoProducto(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("22");
-                                    //soap_manager.Sync_tabla_mta_kardex(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    soap_manager.Sync_tabla_mta_kardex(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("25");
                                     soap_manager.Sync_tabla_promocion_clientes(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("32");

@@ -1,63 +1,260 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/color_black">
+    >
 
-
-    <RelativeLayout
-        android:id="@+id/lytHead"
-        android:layout_width="match_parent"
+    <EditText android:id="@+id/inputSearch_documento"
+        android:layout_margin="5dp"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/tab_title_headline_background" >
-
-        <Button
-            android:id="@+id/ctas_cobrar_btn_back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="top"
-            android:background="@drawable/tab_back_button"
-            android:text="" />
-
-
-
-
-
-        <TextView
-            android:id="@+id/ctas_cobrar_txt_cliente"
-            style="@style/WhiteTitleText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="3dp"
-            android:layout_toLeftOf="@+id/title_image"
-            android:layout_toRightOf="@+id/ctas_cobrar_btn_back_button"
-            android:text="MORALES GONZALES, PAUL"
-            android:textSize="14sp"/>
-
-        <ImageView
-            android:id="@+id/title_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
-            android:layout_gravity="top"
-            android:src="@drawable/icono_mozo" />
-    </RelativeLayout>
-
+        android:hint="Buscar Clientes"
+        android:lines="1"
+        android:maxLines="1"
+        android:background="@drawable/edittext_rounded_corners6"
+        android:drawableEnd="@drawable/ic_search_grey"
+        android:inputType="textVisiblePassword"/>
 
     <ListView
         android:id="@+id/lv_ctas_cobrar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="#b5b5b5"
+        android:layout_below="@+id/inputSearch_documento"
+        android:layout_above="@+id/layoutFoote"
         android:dividerHeight="1dp"
         android:listSelector="@drawable/list_selector" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/layoutFoote"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="1dp"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="3dp"
+                card_view:cardBackgroundColor="@color/colorPrimary"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                card_view:cardCornerRadius="5dp">
+               <LinearLayout
+                   android:padding="5dp"
+                   android:orientation="vertical"
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   >
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:textSize="15sp"
+                       android:gravity="center"
+                       android:paddingStart="2dp"
+                       android:paddingTop="2dp"
+                       android:paddingEnd="2dp"
+                       android:text="DEUDA X VENCER (USD)"
+                       android:textColor="@color/white" />
+
+                   <TextView
+                       android:id="@+id/txtObligacionDolares"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginTop="-5dp"
+                       android:gravity="center"
+                       android:paddingStart="2dp"
+                       android:paddingTop="2dp"
+                       android:paddingEnd="2dp"
+                       android:text="00,000.00"
+                       android:textColor="@color/white"
+                       android:textSize="25sp" />
+                   <TextView
+                       android:id="@+id/txtTotalObligacionDolaresDocumento"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:textSize="15sp"
+                       android:layout_marginTop="-10dp"
+                       android:gravity="center"
+                       android:padding="3dp"
+                       android:text="de 00,000.00"
+                       android:textColor="@color/white" />
+
+               </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="3dp"
+                card_view:cardBackgroundColor="@color/colorPrimary"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                card_view:cardCornerRadius="5dp">
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="DEUDA X VENCER (PEN)"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtObligacionSoles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:layout_marginTop="-5dp"
+                        android:text="00,000.00"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtTotalObligacionSolesDocumento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginTop="-10dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="de 00,000.00"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="1dp"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/card_view"
+                android:layout_margin="3dp"
+                card_view:cardBackgroundColor="@color/pink_A700"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                card_view:cardCornerRadius="5dp">
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="DEUDA VENCIDA (USD)"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtDeudaDolares"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:layout_marginTop="-5dp"
+                        android:text="00,000.00"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtTotalDolaresDocumento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginTop="-10dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="de 00,000.00"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="3dp"
+                card_view:cardBackgroundColor="@color/pink_A700"
+                android:layout_gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="match_parent"
+                card_view:cardCornerRadius="5dp">
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:text="DEUDA VENCIDA (PEN)"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtDeudaSoles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="25sp"
+                        android:gravity="center"
+                        android:paddingStart="2dp"
+                        android:paddingTop="2dp"
+                        android:paddingEnd="2dp"
+                        android:layout_marginTop="-5dp"
+                        android:text="00,000.00"
+                        android:textColor="@color/white" />
+                    <TextView
+                        android:id="@+id/txtTotalSolesDocumento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:layout_marginTop="-10dp"
+                        android:gravity="center"
+                        android:padding="3dp"
+                        android:text="de 00,000.00"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</RelativeLayout>

@@ -998,6 +998,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         String desunimed 	= spnUndMedidas.getSelectedItem().toString();
                         String descripcion 	= edtBusqueda.getText().toString().trim();
                         String precioLista 	=PRECIO_LISTA;
+                        double porcentaje_desc 	=edt_descuento.getText().toString().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
                         //String descuento 	= edt_descuento.getText().toString().trim();
 
                         descuento = descuentoAplicado;
@@ -1028,6 +1029,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         returnIntent.putExtra("precioUnidad",precio);
                         returnIntent.putExtra("precioLista",precioLista);
                         returnIntent.putExtra("descuento",	descuento);
+                        returnIntent.putExtra("porcentaje_desc",	porcentaje_desc);
                         returnIntent.putExtra("precioPercepcion", precioPercepcion);
 
                         if (origen.equals("PEDIDO_MODIFICAR")) {
@@ -1299,8 +1301,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 holder = new ViewHolder();
 
                 holder.tv_almacen = (TextView) item.findViewById(R.id.tv_almacen);
-                holder.tv_stock_xConfirmar = (TextView) item.findViewById(R.id.tv_stock_xConfirmar);
-                holder.tv_stockDisponible = (TextView) item.findViewById(R.id.tv_stockDisponible);
+            holder.tv_stock_actual = (TextView) item.findViewById(R.id.tv_stock_actual);
+            holder.tv_stock_separado = (TextView) item.findViewById(R.id.tv_stock_separado);
+            holder.tv_stock_xConfirmar = (TextView) item.findViewById(R.id.tv_stock_xConfirmar);
+            holder.tv_stockDisponible = (TextView) item.findViewById(R.id.tv_stockDisponible);
 
                 item.setTag(holder);
             /*} else {
@@ -1311,10 +1315,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             try {
                 view_item=item;
                 jsonData = listaArray.getJSONObject(position);
-
-                //holder.tv_almacen.setText(database.getAlmacenDescripcion((String)map.get("codigoAlmacen")));
-                holder.tv_almacen.setText(""+jsonData.get("codigoAlmacen"));
-                //holder.tv_almacen.setText((String)map.get("codigoAlmacen"));
+                String nombre=database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
+                holder.tv_almacen.setText( (nombre.length()>0?nombre:jsonData.get("codigoAlmacen"))+"" );
+                holder.tv_stock_actual.setText((String)jsonData.get("stock_actual"));
+                holder.tv_stock_separado.setText((String)jsonData.get("stock_separado"));
                 holder.tv_stock_xConfirmar.setText((String)jsonData.get("stock_x_confirmar"));
                 holder.tv_stockDisponible.setText((String)jsonData.get("stock_disponible"));
 
@@ -1332,7 +1336,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }
 
         public class ViewHolder {
-            TextView tv_almacen,tv_stock_xConfirmar, tv_stockDisponible;
+            TextView tv_almacen,tv_stock_actual, tv_stock_separado, tv_stock_xConfirmar, tv_stockDisponible;
         }
 
     }

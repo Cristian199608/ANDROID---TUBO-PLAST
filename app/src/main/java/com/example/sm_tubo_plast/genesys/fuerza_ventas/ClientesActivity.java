@@ -108,7 +108,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     DBclasses obj_dbclasses;
     DBClientes db_clientes;
-    String nomcli, codven;
+    String nomcli, codven, ORIGEN;
     /*
 
      */
@@ -178,14 +178,15 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
         // para que no salga el teclado al iniciar
-        this.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         Toolbar toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Clientes");
         setSupportActionBar(toolbar);
+
+
         originalValues = new ArrayList<HashMap<String, Object>>();
 
         obj_dbclasses = new DBclasses(getApplicationContext());
@@ -194,7 +195,12 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Bundle bundle = getIntent().getExtras();
         codven = "" + bundle.getString("codven");
+        ORIGEN = "" + bundle.getString("ORIGEN");
+        myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
 
+        if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
+            myFAB.setVisibility(View.GONE);
+        }
 
         dia = obj_dbclasses.getDiaConfiguracion();
         Fecha = obj_dbclasses.getFecha2();
@@ -213,7 +219,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         check_programada.setVisibility(View.GONE);
         check_visitado.setVisibility(View.GONE);
 
-        myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setColorSchemeResources(UtilView.getColorsSwipe());
         swipeRefreshLayout.setEnabled(false);
@@ -273,7 +278,12 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             alerta.setMessage("Los datos estan incompletos, sincronice correctamente");
             alerta.setIcon(R.drawable.icon_warning);
             alerta.setCancelable(false);
-            alerta.setPositiveButton("OK", null);
+            alerta.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
             alerta.show();
         }
         /****************************************************************/
@@ -377,11 +387,20 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 codSucursal = obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
                 estadoLocalizacion = obj_dbclasses.obtenerEstadoSucursalCliente(codcli, codSucursal);
 
-                if (obj_dbclasses.existePedidoCabeceraXcodcli_item(codcli, item_direccion)) {
-                    mQuickAction.show(view);
-                } else {
-                    mQuickAction2.show(view);
+                if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
+                    Intent returnIntent=new Intent();
+                    returnIntent.putExtra("codcli", ""+codcli);
+                    returnIntent.putExtra("nomcli", ""+nomcli);
+                    setResult(RESULT_OK, returnIntent);
+                    finish();
+                }else{
+                    if (obj_dbclasses.existePedidoCabeceraXcodcli_item(codcli, item_direccion)) {
+                        mQuickAction.show(view);
+                    } else {
+                        mQuickAction2.show(view);
+                    }
                 }
+
 
                 // mMoreIv.setImageResource(R.drawable.ic_list_more_selected);
             }
@@ -538,6 +557,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 viewHolder = (ViewHolder) convertView.getTag();
             try {
 
+
                 int i=Integer.parseInt(searchResults.get(position).get("estado_pedido").toString());
                 /*int i = "" obj_dbclasses.obtenerPedidosXCodcli(
                         searchResults.get(position).get("codigo").toString(),
@@ -660,8 +680,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         dialogo.setContentView(R.layout.dialog_motivo_noventa);
         dialogo.setCancelable(false);
 
-        final ListView lstNoventa_motivo = (ListView) dialogo
-                .findViewById(R.id.dialog_motivo_noventa_lstNo_venta);
+        final ListView lstNoventa_motivo = (ListView) dialogo.findViewById(R.id.dialog_motivo_noventa_lstNo_venta);
         Button btnAceptar = (Button) dialogo
                 .findViewById(R.id.dialog_motivo_noventa_btnAceptar);
         Button btnCancelar = (Button) dialogo

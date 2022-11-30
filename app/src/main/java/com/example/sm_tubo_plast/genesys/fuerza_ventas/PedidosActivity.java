@@ -1548,14 +1548,14 @@ private  void llenarSpinnerDespacho(String valor){
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         if (origen.equals("REPORTES")) {
-            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.icon_ch_add2_32).setTitle("Agregar");
+            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.ic_carrito_white_24).setTitle("+Agregar").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             menu.add(Menu.NONE, Menu_Modificar, Menu.NONE, "Modificar").setIcon(R.drawable.icon_ch_edit2_32).setTitle("Modificar");
         }else if (origen.equals("REPORTES-MODIFICAR")) {
-            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.icon_ch_add2_32).setTitle("Agregar");
+            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.ic_carrito_white_24).setTitle("+Agregar").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             menu.add(Menu.NONE, Menu_Modificar, Menu.NONE, "Modificar").setIcon(R.drawable.icon_ch_edit2_32).setTitle("Guardar Cambios");
             menu.add(Menu.NONE, Menu_Evaluar, Menu.NONE, "MenuEvaluar").setIcon(R.drawable.icon_ch_check2_32).setTitle("Evaluar");
         } else {
-            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.icon_ch_add2_32).setTitle("Agregar");
+            menu.add(Menu.NONE, Menu_Agregar, Menu.NONE, "MenuAgregar").setIcon(R.drawable.ic_carrito_white_24).setTitle("+Agregar").setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             menu.add(Menu.NONE, Menu_Guardar, Menu.NONE, "MenuGuardar").setIcon(R.drawable.icon_ch_save2_32).setTitle("Guardar");
             menu.add(Menu.NONE, Menu_Eliminar, Menu.NONE, "MenuEliminar").setIcon(R.drawable.icon_ch_delete2_32).setTitle("Anular");
             menu.add(Menu.NONE, Menu_Evaluar, Menu.NONE, "MenuEvaluar").setIcon(R.drawable.icon_ch_check2_32).setTitle("Evaluar");
@@ -3563,9 +3563,10 @@ private void EnvalularMoneda(){
                     int fact_conv 			= data.getIntExtra("fact_conv", 0);
                     final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
                     final String precioLista= data.getStringExtra("precioLista");
+                    final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
 
 
-                    final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento")));
+                    final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
 
                     //String sec_politica = data.getStringExtra("sec_politica");
 
@@ -3623,6 +3624,7 @@ private void EnvalularMoneda(){
                             itemDetalle.setFlag("N");
                             itemDetalle.setPrecioLista(""+precioLista);
                             itemDetalle.setDescuento(""+descuento);
+                            itemDetalle.setPorcentaje_desc(porcentaje_desc);
                             //itemDetalle.setCod_politica(sec_politica);
                             //Campos usados para devoluciones
                             itemDetalle.setLote("");

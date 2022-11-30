@@ -210,7 +210,6 @@
             android:textSize="15sp"
             android:visibility="visible" />
 
-
         <TextView
             android:id="@+id/tv_app_version"
             android:layout_width="wrap_content"

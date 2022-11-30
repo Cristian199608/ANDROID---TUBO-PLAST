@@ -222,7 +222,7 @@
         <item name="colorAccent">@color/orange_600</item>
     </style>
 
-    <style name="AppTheme3" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme3NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/orange_600</item>
@@ -255,6 +255,16 @@
     <style name="MyDialogThemePurple" parent="Theme.AppCompat.Light.Dialog.Alert"> <item name="android:background">@color/purple_100</item> </style>
     <style name="MyDialogThemeRed" parent="Theme.AppCompat.Light.Dialog.Alert"> <item name="android:background">@color/red_100</item> </style>
 
+    <style name="styleCardViewMenu" parent="CardView">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+    </style>
 
     <!-- Start with the Holographic Light theme -->
 </resources>

@@ -40,8 +40,6 @@ public class WS_San_Visitas {
         user = prefs.getString("userid", "0");
         contrasena = prefs.getString("contrasenaid", "0");
         servicio = prefs.getString("servicio", "0");
-
-
     }
 
     public void EnviarVisitasByOc_numero(String oc_numero){

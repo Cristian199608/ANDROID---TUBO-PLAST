@@ -26,8 +26,9 @@ public class ItemProducto {
 	
 	private double precioLista;
 	private double descuento;	
+	private double porcentaje_desc;
 	private String estado;//Discontinuo
-	
+
 	private String grupo;
 	private String familia;
 	private String subfamilia;
@@ -194,5 +195,13 @@ public class ItemProducto {
 
 	public void setPrecio_base(double precio_base) {
 		this.precio_base = precio_base;
+	}
+
+	public double getPorcentaje_desc() {
+		return porcentaje_desc;
+	}
+
+	public void setPorcentaje_desc(double porcentaje_desc) {
+		this.porcentaje_desc = porcentaje_desc;
 	}
 }

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/layoutCabecera"
+        android:background="@color/teal_500"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/txtDetalleCabecera"
+            android:layout_width="wrap_content"
+            android:paddingStart="5dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_gravity="center_vertical"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="Detalle cabecera"/>
+        <TextView
+            android:id="@+id/txtDetalleMontoCabecera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_gravity="center_vertical"
+            android:gravity="end"
+            android:paddingEnd="5dp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:text="ME: 15151"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/item_principal_recycler"
+        android:layout_below="@+id/layoutCabecera"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/linearLayoutt"
+            android:orientation="horizontal"
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            <TextView
+                android:id="@+id/txtProducto"
+                android:layout_marginStart="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_900"
+                android:gravity="start"
+                android:layout_gravity="center_vertical"
+                android:textSize="15sp"
+                android:text="Producto"/>
+
+            <LinearLayout
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_width="0dp"
+                android:layout_weight="5.6"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txtCantidad"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_900"
+                    android:textSize="15sp"
+                    android:gravity="end"
+                    android:layout_gravity="center_vertical"
+                    android:text="Cant = 1500 |S/ 1200"/>
+                <TextView
+                    android:id="@+id/txtEntregado"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_900"
+                    android:textSize="15sp"
+                    android:gravity="end"
+                    android:layout_gravity="center_vertical"
+                    android:text="Entr = 1500 | S/ 1200"/>
+
+                <TextView
+                    android:id="@+id/txtSaldo"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_900"
+                    android:textSize="15sp"
+                    android:gravity="end"
+                    android:layout_gravity="center_vertical"
+                    android:text="Sald = 1500 | S/ 1200"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/txtFechaEntregado"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_900"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="Fecha Entr: \n20/02/22"/>
+                <TextView
+                    android:id="@+id/txtStock"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_900"
+                    android:layout_gravity="center_vertical"
+                    android:textSize="15sp"
+                    android:text="Stock= 152"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

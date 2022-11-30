@@ -11,6 +11,9 @@ import android.util.Log;
 import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
+import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.Retrofit.GetDataControlAcceso;
@@ -35,6 +38,7 @@ import org.ksoap2.transport.HttpTransportSE;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import retrofit2.Call;
@@ -51,6 +55,7 @@ public class DBSync_soap_manager {
 
 	public  String SOAP_ACTION="";
 	public String METHOD_NAME="";
+	public String __PARTIR___="__PARTIR___";
 	//private String NOMBRE="saemoviles.com";
 	private String NOMBRE= GlobalVar.NombreWEB;
 	public  DBclasses dbclass=null;
@@ -6130,7 +6135,17 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		    	transporte.call(SOAP_ACTION, Soapenvelope);
 		    	Log.i(TAG,"RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");	    	
 		    	 SoapPrimitive result =(SoapPrimitive)Soapenvelope.getResponse();
-		    	 Log.i(TAG+":sincro_obtenerStockProducto_json:", result.toString());	    	 
+		    	 Log.i(TAG+":sincro_obtenerStockProducto_json:", result.toString());
+
+				JSONArray jArray = new JSONArray(result.toString());
+				DAO_MtaKardex dao_mtaKardex=new DAO_MtaKardex(context);
+				for (int i = 0; i < jArray.length(); i++) {
+					JSONObject jsonData = jArray.getJSONObject(i);
+					dao_mtaKardex.UpdateItem(jsonData.getString("codigoProducto"),
+							jsonData.getDouble("stock_actual"),
+							jsonData.getDouble("stock_separado"));
+				}
+
 		    	 return result.toString();
 		    }catch(Exception e){
 		    	e.printStackTrace();
@@ -6275,40 +6290,40 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	 
 	 public void Sync_tabla_cta_ingresos_resumen(String codven, String url, String catalog, String user, String contrasena) throws Exception{
 			
-//			String SOAP_ACTION= "http://tempuri.org/obtenerCtasIngresosxVendedor_json";
-//			String METHOD_NAME="obtenerCtasIngresosxVendedor_json";
-//
-//			SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-//			Request.addProperty("codven", codven);
-//			Request.addProperty("url", url);
-//			Request.addProperty("catalog", catalog);
-//			Request.addProperty("user", user);
-//			Request.addProperty("password", contrasena);
-//
-//		    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
-//		    Soapenvelope.dotNet=true;
-//		    Soapenvelope.setOutputSoapObject(Request);
-//
-//		    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
-//
-//		    long beforecall = System.currentTimeMillis();
-//
-//		    try{
-//		    	transporte.call(SOAP_ACTION, Soapenvelope);
-//		    	Log.i("CTA_INGRESOS RESUMEN","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
-//
-//		    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
-//
-//		    	JSONArray jsonstring = new JSONArray(result.toString());
-//		    	Log.i("CTA_INGRESOS RESUMEN","Registros: "+jsonstring.length());
-//
-//		    	dbclass.syncCta_ingresos_resumen(jsonstring);
-//		    	Log.i("CTA_INGRESOS RESUMEN","SINCRONIZADA");
-//
-//		    }catch(Exception e){
-//		    	e.printStackTrace();
-//		    	throw new Exception(e);
-//		    }
+			String SOAP_ACTION= "http://tempuri.org/obtenerCtasIngresosxVendedor_json";
+			String METHOD_NAME="obtenerCtasIngresosxVendedor_json";
+
+			SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
+			Request.addProperty("codven", codven);
+			Request.addProperty("url", url);
+			Request.addProperty("catalog", catalog);
+			Request.addProperty("user", user);
+			Request.addProperty("password", contrasena);
+
+		    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		    Soapenvelope.dotNet=true;
+		    Soapenvelope.setOutputSoapObject(Request);
+
+		    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+
+		    long beforecall = System.currentTimeMillis();
+
+		    try{
+		    	transporte.call(SOAP_ACTION, Soapenvelope);
+		    	Log.i("CTA_INGRESOS RESUMEN","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+
+		    	SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+
+		    	JSONArray jsonstring = new JSONArray(result.toString());
+		    	Log.i("CTA_INGRESOS RESUMEN","Registros: "+jsonstring.length());
+
+		    	dbclass.syncCta_ingresos_resumen(jsonstring);
+		    	Log.i("CTA_INGRESOS RESUMEN","SINCRONIZADA");
+
+		    }catch(Exception e){
+		    	e.printStackTrace();
+		    	throw new Exception(e);
+		    }
 
 		}
 	 
@@ -6581,7 +6596,77 @@ public int actualizarRegistroBonificaciones() throws Exception{
         }
         return flag;
     }
-	
-	
-	
+
+    private  String AddRequestHeader(ArrayList<String> parametros, String _METHOD_NAME) throws Exception{
+
+		SoapObject Request=new SoapObject(NAMESPACE, _METHOD_NAME);
+		Request.addProperty("url", url);
+		Request.addProperty("catalog", catalog);
+		Request.addProperty("user", user);
+		Request.addProperty("password", contrasena);
+
+		for (int i = 0; i < parametros.size(); i++) {
+			String [] data=  parametros.get(i).split(__PARTIR___);
+			Log.i(TAG, _METHOD_NAME+":: PARAMETROS  "+data[0]+" => "+(data.length==2?data[1]:""));
+			Request.addProperty(data[0],(data.length==2?data[1]:""));
+		}
+
+		SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet=true;
+		Soapenvelope.setOutputSoapObject(Request);
+		HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+		transporte.call("http://tempuri.org/"+_METHOD_NAME, Soapenvelope);
+		SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+
+		return result.toString();
+
+	}
+
+	public ArrayList<ViewSeguimientoPedido> get_tplast_seguimiento_pedido(String codven, String codcli, String orden_compra,
+																		  String fecha_desde, String fecha_hasta, String numero_op) throws Exception{
+		try{
+
+			String _METHOD_NAME="get_tplast_seguimiento_pedido_json";
+
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+codven);
+			propiedad.add("codcli"+__PARTIR___+codcli);
+			propiedad.add("orden_compra"+__PARTIR___+orden_compra);
+			propiedad.add("fecha_desde"+__PARTIR___+fecha_desde);
+			propiedad.add("fecha_hasta"+__PARTIR___+fecha_hasta);
+			propiedad.add("numero_op"+__PARTIR___+numero_op);
+
+			String jsonstring = AddRequestHeader(propiedad, _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<ViewSeguimientoPedido>>() {}.getType();
+			final ArrayList<ViewSeguimientoPedido> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i("productoNoDescuento","Registros: "+jsonstring.length());
+			return lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i("productoNoDescuento", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
+	public ArrayList<ViewSeguimientoPedidoDetalle> get_tplast_seguimiento_pedido_detalle_json(String codven, String numero_op ) throws Exception{
+		try{
+
+			String _METHOD_NAME="get_tplast_seguimiento_pedido_detalle_json";
+
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+codven);
+			propiedad.add("numero_op"+__PARTIR___+numero_op);
+
+			String jsonstring = AddRequestHeader(propiedad, _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<ViewSeguimientoPedidoDetalle>>() {}.getType();
+			final ArrayList<ViewSeguimientoPedidoDetalle> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"","Registros: "+lista.size());
+			return lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i("productoNoDescuento", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
 }

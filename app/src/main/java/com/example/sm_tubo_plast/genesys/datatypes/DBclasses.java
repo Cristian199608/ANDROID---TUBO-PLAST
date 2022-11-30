@@ -16,6 +16,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Database;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
@@ -46,8 +47,6 @@ import java.util.HashMap;
 public class DBclasses extends SQLiteAssetHelper {
 
 	private static final String TAG = "DBclasses";
-	private static final String DATABASE_NAME = "fuerzaventas";
-	private static final int DATABASE_VERSION = 1;
 	public static final String KEY_ROWID = "_id";
 	public String codAlmacen = "01";
 	// flag for Internet connection status
@@ -60,7 +59,7 @@ public class DBclasses extends SQLiteAssetHelper {
 	Calendar calendar = Calendar.getInstance();
 
 	public DBclasses(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, DAO_Database.DATABASE_NAME, null,  DAO_Database.DATABASE_VERSION);
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
 
 		_context = context;
@@ -780,16 +779,11 @@ public class DBclasses extends SQLiteAssetHelper {
 		//--PERCEPCIONES DE FACTURA PF NO SE DEBEN MOSTRAR--
 		rawQuery = "Select secuencia,"
 					+ "case codmon when 1 then 'S/.' " 
-								+ "when 2 then '$.' " 
-					+ "end  as codmon, case coddoc when 'NC' then 'NOTA DE CREDITO' "
-												+ "when 'FA' then 'FACTURA' "
-												+ "when 'LT' then 'LETRA' "
-												//+ "when 'BL' then 'BOLETA' "  cambiado
-												+ "when 'BO' then 'BOLETA' "
-												+ "when 'ND' then 'NOTA DE DEBITO' "
-												+ "else coddoc "
-					+ "end as coddoc, case serie_doc when  '' then '' "
-												   + "else (serie_doc||'  ') "
+								+ "when 2 then '$.' "
+					+ "end as codmon, "
+					+ "ifnull((select rm.valor from registrosGeneralesMovil rm where rm.codigoDescripcion=coddoc limit 1), 'Documento '||coddoc) as coddoc, "
+					+"case serie_doc when  '' then '' "
+												   + "else (serie_doc||'') "
 					+ "end as serie_doc, "
 					+ "numero_factura,  total, "
 				    + "acuenta,saldo,feccom,codcli,username,fecha_vencimiento,codven, "
@@ -814,7 +808,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbcta.setNumero_factura(cur.getString(4));
 			dbcta.setTotal(cur.getString(5));
 			dbcta.setAcuenta(cur.getString(6));// No dan ese dato
-			dbcta.setSaldo(cur.getString(7));// Como el total siempre es el saldo
+			dbcta.setSaldo(cur.getString(7));// Como el total casi siempre es el saldo
 			dbcta.setFeccom(cur.getString(8));// fecha de vencimiento
 			dbcta.setCodcli(cur.getString(9));// ruc del cliente
 			dbcta.setUsername(cur.getString(10));// codigo del vendedor
@@ -1588,6 +1582,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("item", item.getItem());
 			Nreg.put("precioLista", item.getPrecioLista());
 			Nreg.put("descuento", item.getDescuento());
+			Nreg.put("porcentaje_desc", item.getPorcentaje_desc());
 			Nreg.put("lote", item.getLote());
 			
 			Nreg.put("motivoDevolucion", item.getMotivoDevolucion());
@@ -2361,6 +2356,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "producto.familia, "
 				+ "producto.sub_familia, "
 				+ "producto.afecto, "
+				+ "pedido_detalle.porcentaje_desc, "
 				+ "producto._precio_base "
 				+ "from "+ Pedido_detalle.TAG+" "
 				+ "inner join "+ Producto.TAG+" "
@@ -2404,6 +2400,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setFamilia(cursor.getString(18));
 				productos[i].setSubfamilia(cursor.getString(19));
 				productos[i].setAfecto(cursor.getString(20));
+				productos[i].setPorcentaje_desc(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc")));
 				productos[i].setPrecio_base(cursor.getDouble(cursor.getColumnIndex("_precio_base")));
 
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Item "+i+"  "+productos[i].getItem());
@@ -4355,12 +4352,8 @@ public class DBclasses extends SQLiteAssetHelper {
 					cv.put(DBtables.Producto.PERCEPCION, "0");
 				}
 
-				String[] parts = jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim().split("@");
-				String part1 = parts[0]; // 123
-				String part2 = parts[1]; // 654321
-
-				cv.put(DBtables.Producto.TIPO_PRODUCTO,part1);
-				cv.put(DBtables.Producto._PRECIO_BASE,part2);
+				cv.put(DBtables.Producto.TIPO_PRODUCTO,jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim());
+				cv.put(DBtables.Producto._PRECIO_BASE,jsonData.getDouble(DBtables.Producto._PRECIO_BASE));
 
 				db.insert(DBtables.Producto.TAG, null, cv);
 				Log.i("PRODUCTO",
@@ -4959,8 +4952,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cta_ingresos.FECOPERACION, "");
 				cv.put(DBtables.Cta_ingresos.CODVEN, codven );
 				cv.put(DBtables.Cta_ingresos.ACUENTA, "0" );
-				cv.put(DBtables.Cta_ingresos.SALDO, jsonData.getString("total") .trim());
-				cv.put(DBtables.Cta_ingresos.SALDO_VIRTUAL, jsonData.getString("total") .trim());
+				cv.put(DBtables.Cta_ingresos.SALDO, jsonData.getString("saldo") .trim());
+				cv.put(DBtables.Cta_ingresos.SALDO_VIRTUAL, jsonData.getString("saldo") .trim());
 				
 				cv.put(DBtables.Cta_ingresos.FORMA, jsonData.getString("forma") .trim());
 				cv.put(DBtables.Cta_ingresos.CC_FLAG, jsonData.getString("cc_flag") .trim());
@@ -5402,6 +5395,7 @@ public class DBclasses extends SQLiteAssetHelper {
 						cv2.put(DBtables.Pedido_detalle.ITEM, j);
 						cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
 						cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
+						cv2.put(DBtables.Pedido_detalle.PROCENTAJE_DESC, jsonData_det.getString("porcentaje_desc").trim());
 						cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
 
 						cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
@@ -7031,6 +7025,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				dbdetalle.setTipoDocumento(cur.getString(25));
 				dbdetalle.setSerieDevolucion(cur.getString(26));
 				dbdetalle.setNumeroDevolucion(cur.getString(27));
+				dbdetalle.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
 				Log.d(TAG, "setPrecio_bruto:"+cur.getString(3));
 				Log.d(TAG, "setPrecio_neto:"+cur.getString(4));
 				lista.add(dbdetalle);
@@ -12133,7 +12128,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	/*--------------------------------------------------- CHEMA ----------------------------------------------------------*/
 	
 
-	public ArrayList<HashMap<String, String>> getCtas_Ingresos_ResumenxCliente() {
+	public ArrayList<HashMap<String, String>> getCtas_Ingresos_ResumenxCliente(String codvendedor) {
 		String rawQuery;
 
 		String fechaConfig = getFecha2().trim();
@@ -12146,8 +12141,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				+ "as cantidad , (select count(ci.secuencia) as cant_entrega from cta_ingresos_resumen ci where ci.forma like '%Entregar%' "
 				+ "and ci.codcli=cl.codcli) as cant_entregar, "
 				+ "(select count(ci.secuencia) as cant_entrega from cta_ingresos_resumen ci where ci.forma like '%Aceptar%' "
-				+ "and ci.codcli=cl.codcli) as cant_aceptar,flagCobranza "
-				+ "from cliente cl where (totalSoles+totalDolares)>0  "
+				+ "and ci.codcli=cl.codcli) as cant_aceptar,flagCobranza, "
+				+ "ifnull( ( select ci.saldo from cta_ingresos_resumen ci where ci.codmon =1 and ci.codcli= cl.codcli and Forma like '%Cobrar%' ),0 ) as totalSaldoSoles, "
+				+ "ifnull( (select ci.saldo from cta_ingresos_resumen ci where ci.codmon =2 and ci.codcli= cl.codcli  and Forma like '%Cobrar%' ),0 ) as totalSaldoDolares "
+				+ "from cliente cl where ((totalSoles!=0 or totalDolares !=0) or (totalSaldoSoles!=0 or totalSaldoDolares !=0)) " +
+				"and cl.codcli in (" +
+				" select znf.codcli from znf_programacion_clientes znf where znf.codven='"+codvendedor+"' ) "
 				+ "order by flagCobranza desc";
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -12164,14 +12163,10 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			// obj.put("codcli", cur.getString(1));
 			obj.put("codigo", cur.getString(0));
 			obj.put("cliente", cur.getString(1));
-			obj.put("total",
-					""
-							+ GlobalFunctions.redondear(Double.parseDouble(cur
-									.getString(2)))); // Deuda en Soles
-			obj.put("total_acuenta",
-					""
-							+ GlobalFunctions.redondear(Double.parseDouble(cur
-									.getString(3)))); // Deuda en Dolares
+			obj.put("total",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(2)))); // Deuda en Soles
+			obj.put("totalSaldoSoles",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(cur.getColumnIndex("totalSaldoSoles"))))); // Deuda saldo en Soles
+			obj.put("total_acuenta",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(3)))); // Deuda en Dolares
+			obj.put("totalSaldoDolares",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(cur.getColumnIndex("totalSaldoDolares"))))); // Deuda saldo en Dolares
 			obj.put("cantidad", cur.getString(4));// Cantidad de cobranzas
 													// obligatorias
 			obj.put("entregar", cur.getString(5));

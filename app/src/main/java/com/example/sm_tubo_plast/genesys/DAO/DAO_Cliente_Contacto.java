@@ -18,7 +18,7 @@ public class DAO_Cliente_Contacto {
 
 
     public ArrayList<Cliente_Contacto> getClientesPendientesAll(DBclasses dBclasses) {
-        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono,cc.celular,cc.email,cc.estado,cc.flag " +
+        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono,cc.celular,cc.email,cc.estado,cc.flag, ifnull(cargo, '') as cargo X " +
                 "FROM "+TABLA_CLEINTE_CONTACTO+" cc inner join cliente c on cc.codcli=c.codcli " +
                 " WHERE  cc.flag='P' ";
         Log.i(TAG, rawQuery);
@@ -36,6 +36,7 @@ public class DAO_Cliente_Contacto {
             contacto.setDni(cursor.getString(cursor.getColumnIndex("dni")));
             contacto.setTelefono(cursor.getString(cursor.getColumnIndex("telefono")));
             contacto.setCelular(cursor.getString(cursor.getColumnIndex("celular")));
+            contacto.setCargo(cursor.getString(cursor.getColumnIndex("cargo")));
             contacto.setEmail(cursor.getString(cursor.getColumnIndex("email")));
             contacto.setEstado(cursor.getString(cursor.getColumnIndex("estado")));
             contacto.setFlag(cursor.getString(cursor.getColumnIndex("flag")));

@@ -46,7 +46,7 @@ public class DAO_Producto extends SQLiteAssetHelper {
     
     public Producto getInformacionProducto(String codigoProducto){
     	String rawQuery = 
-    			"SELECT codpro,despro,desunimed, ifnull(descripcion,''), ifnull(color,'') "+
+    			"SELECT codpro,despro,desunimed, ifnull(descripcion,''), ifnull(color,''), p._precio_base "+
     			"FROM producto p "+
     			"INNER JOIN unidad_medida u on p.codunimed = u.codunimed "+
     			"LEFT JOIN tipoProducto tp on p.tipoProducto = tp.codigoTipo "+
@@ -65,6 +65,7 @@ public class DAO_Producto extends SQLiteAssetHelper {
 				producto.setUnidadMedida(cursor.getString(2));
 				producto.setTipoProducto(cursor.getString(3));
 				producto.setColor(cursor.getString(4));				
+				producto.setPrecio_base(cursor.getDouble(cursor.getColumnIndex("_precio_base")));
 			} while (cursor.moveToNext());
 
 		}		

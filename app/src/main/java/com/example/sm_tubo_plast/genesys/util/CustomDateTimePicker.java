@@ -33,7 +33,7 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
     LinearLayout layour_cabecera;
     CheckBox chk_habilitar_rango;
 
-    String formatFecha=null;
+    String formatFecha="dd-MM-yyyy";
 
     public CustomDateTimePicker(Activity activity, OnTimeSetListener listener, int mInitialHourOfDay, int mInitialMinute, boolean mIs24HourView,
                                 boolean enabled_hora, boolean HabilitarMinDate) {

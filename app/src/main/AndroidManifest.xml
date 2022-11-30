@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.sm_tubo_plast">
-    <!-- Add this permission to check which network access properties (e.g. active type: 3G/WiFi). -->
+    <!-- Add this permission to access WLAN MAC address. -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +12,13 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
-        <activity android:name=".genesys.util.SeleccionarRangoFechas_Activity" android:theme="@style/AppTheme_MD"></activity>
+        <activity
+            android:name=".genesys.fuerza_ventas.SeguimientoPedidoActivity"
+            android:theme="@style/AppThemeAgendaNoBar"
+            ></activity>
+        <activity
+            android:name=".genesys.util.SeleccionarRangoFechas_Activity"
+            android:theme="@style/AppTheme_MD" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -151,7 +157,7 @@
         <activity
             android:name=".genesys.fuerza_ventas.ClientesActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme3" />
+            android:theme="@style/AppTheme3NoActionBar" />
         <activity
             android:name=".genesys.fuerza_ventas.PedidosActivity"
             android:screenOrientation="portrait" />
@@ -208,15 +214,15 @@
             android:value="@string/google_maps_key" />
 
         <receiver android:name=".genesys.service.SampleAlarmReceiver" />
-    </application> <!-- Add this permission to access WLAN MAC address. -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- GCM requires a Google account. -->
+    </application> <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

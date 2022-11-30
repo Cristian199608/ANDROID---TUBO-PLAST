@@ -26,6 +26,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 	private int item;
 	private String precioLista;
 	private String descuento;
+	private double porcentaje_desc;
 	private String lote;
 	private String motivoDevolucion;
 	private String expectativa;
@@ -416,5 +417,12 @@ public class DBPedido_Detalle implements KvmSerializable {
 	public void setDescuento(String descuento) {
 		this.descuento = descuento;
 	}
-	
+
+	public double getPorcentaje_desc() {
+		return porcentaje_desc;
+	}
+
+	public void setPorcentaje_desc(double porcentaje_desc) {
+		this.porcentaje_desc = porcentaje_desc;
+	}
 }

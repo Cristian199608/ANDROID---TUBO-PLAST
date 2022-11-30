@@ -183,7 +183,6 @@ public class AdapterAgendaActividades extends RecyclerView.Adapter<AdapterAgenda
 
                 case R.id.menu_visitar:
 
-
                         listener.onClickAdapterAgenda_visita(visita, finalIsPlanificada);
                     break;
                 case R.id.menu_reprogramar:

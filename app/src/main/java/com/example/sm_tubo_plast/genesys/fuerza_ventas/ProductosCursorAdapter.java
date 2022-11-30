@@ -29,7 +29,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Producto;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
+import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -62,6 +64,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         database = new DBclasses(getApplicationContext());
+
         dao_Producto = new DAO_Producto(getApplicationContext());
         btn_scan.setOnClickListener(new View.OnClickListener() {
 
@@ -121,21 +124,14 @@ public class ProductosCursorAdapter extends AppCompatActivity {
                 try {
                     listaBusqueda.clear();
 
-                    if (TextUtils.isDigitsOnly(charSequence)) {
+
                         for (int x = 0; x < listaProductos.size(); x++) {
                             String codigo = listaProductos.get(x).getCodigo();
-                            if (codigo.indexOf(""+charSequence) != -1) {
-                                listaBusqueda.add(listaProductos.get(x));
-                            }
-                        }
-                    } else {
-                        for (int x = 0; x < listaProductos.size(); x++) {
                             String descripcion = listaProductos.get(x).getDescripcion();
-                            if (descripcion.indexOf(charSequence.toString().toUpperCase()) != -1) {
+                            if ((codigo+""+descripcion).toUpperCase().contains(charSequence.toString().toUpperCase())) {
                                 listaBusqueda.add(listaProductos.get(x));
                             }
                         }
-                    }
                     Log.d("ClientesActivity", "texto cambiado tama�o de la lista: " + listaBusqueda.size());
                     adapter.notifyDataSetChanged();
                 } catch (Exception e) {
@@ -421,8 +417,12 @@ public class ProductosCursorAdapter extends AppCompatActivity {
 	*/
 
     public class ProductoAdapter extends ArrayAdapter<Producto> {
+
+        DAO_MtaKardex dao_mtaKardex=null;
+
         public ProductoAdapter(Context context, ArrayList<Producto> data) {
             super(context,R.layout.producto_info, data);
+            dao_mtaKardex=new DAO_MtaKardex(context);
         }
 
         private class ViewHolder {
@@ -450,7 +450,11 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             try {
                 viewHolder.nombre.setText(listaBusqueda.get(position).getDescripcion().toString());
                 viewHolder.codigo.setText(listaBusqueda.get(position).getCodigo().toString());
-                viewHolder.stock.setText("*");
+
+                DBMta_Kardex mta_kardex = dao_mtaKardex.GetStockProducto(  listaBusqueda.get(position).getCodigo());
+                if (mta_kardex!=null){
+                    viewHolder.stock.setText(""+mta_kardex.getStock()+", Separado: "+mta_kardex.getXtemp()+", Disponibe: "+(mta_kardex.getStock()-mta_kardex.getXtemp())+"");
+                }else viewHolder.stock.setText("Sin stock");
             } catch (Exception e) {
                 Log.e(TAG, "ProductoAdapter "+e.getMessage());
                 e.printStackTrace();

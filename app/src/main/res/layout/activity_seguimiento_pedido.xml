@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fitsSystemWindows="true"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:theme="@style/ThemeOverlay.AppCompat.Light"
+        xmlns:card_view="http://schemas.android.com/tools"
+    tools:context=".genesys.fuerza_ventas.SeguimientoPedidoActivity">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/AppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <!--        <com.google.android.material.appbar.CollapsingToolbarLayout-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"-->
+            <!--            app:contentScrim="?attr/colorPrimary"-->
+            <!--            >-->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/layoutCliente"
+                    android:layout_marginBottom="10dp"
+                    android:elevation="4dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/white"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:src="@drawable/icon_cliente_gris"
+                        />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_margin="2dp"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/txtNombresCliente"
+                            android:layout_gravity="center"
+                            android:background="@drawable/edittext_rounded_corners6"
+                            android:backgroundTint="@color/teal_400"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textColor="@color/white"
+                            android:hint="Seleccione un cliente ->"
+                            android:singleLine="true"
+                            android:text=""/>
+                        <ImageButton
+                            android:id="@+id/ib_seleccionar_cliente"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_A700"
+                            android:src="@drawable/ic_tres_puntos_horizontal_grey"
+                            />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutOrdenCompra"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Orden. C.:"
+                        android:gravity="end"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="15dp"
+                        android:singleLine="true"
+                        android:backgroundTint="@color/white"
+                        android:enabled="false"
+                        />
+                   <LinearLayout
+                       android:orientation="horizontal"
+                       android:layout_width="0dp"
+                       android:layout_weight="10"
+                       android:layout_height="wrap_content">
+                       <EditText
+                           android:id="@+id/edtOrdenCompra"
+                           android:hint="Ingrese orden de compra"
+                           android:gravity="start"
+                           android:layout_gravity="center"
+                           android:background="@drawable/edittext_rounded_corners6"
+                           android:backgroundTint="@color/teal_A700"
+                           android:textColorHint="@color/teal_100"
+                           android:layout_marginStart="5dp"
+                           android:layout_marginEnd="5dp"
+                           android:layout_width="0dp"
+                           android:layout_weight="8"
+                           android:layout_height="wrap_content"
+                           android:textSize="14dp"
+                           android:singleLine="true"
+                           />
+                       <ImageButton
+                           android:id="@+id/ib_numero_pedido"
+                           android:onClick="GestionarBusquedaOrdenCompraPedido"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:backgroundTint="@color/teal_A700"
+                           android:src="@drawable/ic_search_grey"
+                           app:tint="@color/white"
+                           />
+                   </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="N° OP:"
+                        android:gravity="end"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="15dp"
+                        android:singleLine="true"
+                        android:backgroundTint="@color/white"
+                        android:enabled="false"
+                        />
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="10"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:text=""
+                            android:id="@+id/edtNroPedido"
+                            android:hint="Ingrese n° pedido"
+                            android:gravity="start"
+                            android:background="@drawable/edittext_rounded_corners6"
+                            android:backgroundTint="@color/teal_A700"
+                            android:textColorHint="@color/teal_100"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="10"
+                            android:layout_height="wrap_content"
+                            android:textSize="14dp"
+                            android:singleLine="true"
+                            />
+                        <ImageButton
+                            android:id="@+id/ib_buscar_op"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:backgroundTint="@color/teal_A700"
+                            android:src="@drawable/ic_search_grey"
+                            app:tint="@color/white"
+                            />
+                        <ToggleButton
+                            android:id="@+id/ib_min_max"
+                            android:onClick="Minimazar_Maximizar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_A700"
+                            android:textOn="Minimizar"
+                            android:textOff="Mostrar"
+                            android:checked="true"
+                            android:src="@drawable/ic_search_grey"
+                            app:tint="@color/white"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <LinearLayout
+            android:layout_below="@+id/AppBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText android:id="@+id/inputSearch_documento"
+                        android:layout_margin="5dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:hint="Buscar productos..."
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:background="@drawable/edittext_rounded_corners6"
+                        android:drawableEnd="@drawable/ic_search_grey"
+                        android:inputType="textVisiblePassword"/>
+
+                    <Button
+                        android:id="@+id/btnMostrarOcultarResumen"
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minHeight="20dp"
+                        android:backgroundTint="@color/blue_grey_500"
+                        android:text="Ver Resumen"
+                        android:checked="true"
+                        android:textColor="@color/white"
+                        android:src="@drawable/ic_search_grey"
+                        />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </androidx.recyclerview.widget.RecyclerView>
+            </LinearLayout>
+
+</RelativeLayout>

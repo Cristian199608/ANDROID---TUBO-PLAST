@@ -56,8 +56,7 @@ public class CobranzaAdapter extends BaseAdapter {
         
         if(convertView==null)
         vi = inflater.inflate(R.layout.item_cobranza_main, null);
-        
-        TextView txtCodigo =  (TextView)vi.findViewById(R.id.item_cobranza_tv_codigo);
+
         TextView txtCliente = (TextView)vi.findViewById(R.id.item_cobranza_tv_cliente); 
         TextView txtTotalSoles = (TextView)vi.findViewById(R.id.txt_view_total_soles);
         TextView txtTotalDolares = (TextView)vi.findViewById(R.id.txt_view_total_dolares);
@@ -72,8 +71,10 @@ public class CobranzaAdapter extends BaseAdapter {
         
         codigoCliente = song.get("codigo");
         nombreCliente = song.get("cliente");
-        totalSoles ="S/." + formateador.format(Double.parseDouble(song.get("total")));
-        totalDolares = "$." + formateador.format(Double.parseDouble(song.get("total_acuenta")));
+        totalSoles ="S/." + formateador.format(Double.parseDouble(song.get("total"))>0?Double.parseDouble(song.get("total")):0);
+        totalDolares = "$." + formateador.format( Double.parseDouble(song.get("total_acuenta"))>0? Double.parseDouble(song.get("total_acuenta")):0 );
+        String totalSaldoSoles = "S/." + formateador.format(Double.parseDouble(song.get("totalSaldoSoles")));
+        String totalSaldoDolares = "$." + formateador.format(Double.parseDouble(song.get("totalSaldoDolares")));
         //asignado=Integer.parseInt(song.get("asignado"));
         asignado=(song.get("asignado"));
         
@@ -83,15 +84,14 @@ public class CobranzaAdapter extends BaseAdapter {
         
         if(asignado.equals("1") ){
         	vi.setBackgroundColor(activity.getResources().getColor(R.color.orange_A100));
-        }else{ vi.setBackgroundColor(activity.getResources().getColor(R.color.blue_grey_50));  }
+        }else{ vi.setBackgroundColor(activity.getResources().getColor(R.color.white));  }
         
         totalLetraEntregar = song.get("entregar");
         totalLetraAceptar= song.get("aceptar");
          
-        txtCodigo.setText(codigoCliente);
-        txtCliente.setText( nombreCliente );  
-        txtTotalSoles.setText( totalSoles);
-        txtTotalDolares.setText( totalDolares);
+        txtCliente.setText( codigoCliente+" - "+nombreCliente );
+        txtTotalSoles.setText( totalSaldoSoles+" de "+ totalSoles);
+        txtTotalDolares.setText( totalSaldoDolares+ " de "+ totalDolares);
         
         if(Integer.parseInt(totalLetraEntregar)>0){
         	txtTituloLetrasEntregar.setText("Letras por entregar. ");
@@ -104,8 +104,7 @@ public class CobranzaAdapter extends BaseAdapter {
         }else {
         	txtTituloLetrasRecoger.setText("");
         }
-     
-        
+
         return vi;
     }
 }

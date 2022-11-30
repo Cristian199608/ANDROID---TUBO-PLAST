@@ -22,6 +22,10 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -263,7 +267,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             }
         });
 
-        View mostrarSincronizar= window.findViewById(R.id.ly_sincronizar);
+        View mostrarSincronizar= window.findViewById(R.id.iv_sincronizar);
         mostrarSincronizar.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -303,31 +307,71 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             }
         });
+        /* ***************ENVIAR MENSAJE DE SINCRONIZACION************** */
+        boolean sincronizacionCorrecta = preferencias_configuracion.getBoolean("preferencias_sincronizacionCorrecta", false);
+        if (sincronizacionCorrecta == false) {
+            android.app.AlertDialog.Builder alerta = new android.app.AlertDialog.Builder(this);
+            alerta.setTitle("Sincronizacion incompleta");
+            alerta.setMessage("Los datos estan incompletos, sincronice correctamente");
+            alerta.setIcon(R.drawable.icon_warning);
+            alerta.setCancelable(false);
+            alerta.setPositiveButton("Ir a Sincronizar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mostrarSincronizar.performClick();
+                }
+            });
+            alerta.show();
+        }
+        /****************************************************************/
 
-        View mostrarEstadisticas= window.findViewById(R.id.ly_estadisticas);
+
+       /* View mostrarEstadisticas= window.findViewById(R.id.ly_estadisticas);
         mostrarEstadisticas.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-//                final Intent iestadisticas = new Intent(activity,EstadisticasActivity.class);
+             final Intent iestadisticas = new Intent(activity,EstadisticasActivity.class);
                 final Intent iestadisticas = new Intent(activity,ListaCuotaVendedorActivity.class);
                 iestadisticas.putExtra("codven",codven);
                 activity.startActivityForResult(iestadisticas, 0);
             }
-        });
+        });*/
 
-        View mostrarDevoluciones= window.findViewById(R.id.ly_devoluciones);
+        View mostrarDevoluciones= window.findViewById(R.id.iv_seguimiento_pedido);
         mostrarDevoluciones.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
-
-                final Intent icliente = new Intent(activity,CH_ClientesDevolucion.class);
+//                final Intent icliente = new Intent(activity,CH_ClientesDevolucion.class);
+//                icliente.putExtra("codven",codven);
+//                activity.startActivityForResult(icliente, 0);
+                final Intent icliente = new Intent(activity,SeguimientoPedidoActivity.class);
                 icliente.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }
         });
+
+        UtilView.Efectos(this, mostrarClientes, R.color.white);
+        UtilView.Efectos(this, mostrarSincronizar, R.color.white);
+        UtilView.Efectos(this, mostrarAgenda, R.color.white);
+
+        UtilView.Efectos(this, mostrarProductos, R.color.white);
+        UtilView.Efectos(this, mostrarCobranza, R.color.white);
+        UtilView.Efectos(this, mostrarReportes, R.color.white);
+        UtilView.Efectos(this, mostrarSincronizar, R.color.white);
+        UtilView.Efectos(this, mostrarSincronizar, R.color.white);
+
+    }
+    public void NOFunciona(View view){
+        Snackbar snackbar= Snackbar.make(
+                view,
+                "Esta opción no esta disponible",
+                BaseTransientBottomBar.LENGTH_SHORT
+        );
+        snackbar.setBackgroundTint(getResources().getColor(R.color.red_600));
+        snackbar.show();
 
     }
 
@@ -336,7 +380,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         View mostrarCliente = (View) window.findViewById(R.id.ly_clientes);
         View mostrarDepoitos = (View) window.findViewById(R.id.ly_deposito);
         View mostrarReportes = (View) window.findViewById(R.id.ly_reportes);
-        View mostrarSincronizar = (View) window.findViewById(R.id.ly_sincronizar);
+        View mostrarSincronizar = (View) window.findViewById(R.id.iv_sincronizar);
         View mostrarCobranza = (View) window.findViewById(R.id.ly_cobranza);
         View mostrarProductos= (View) window.findViewById(R.id.ly_productos);
         View mostrarEstadisticas= (View) window.findViewById(R.id.ly_estadisticas);

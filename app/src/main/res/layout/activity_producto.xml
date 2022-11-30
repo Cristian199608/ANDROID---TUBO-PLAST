@@ -485,6 +485,7 @@
                 android:orientation="horizontal" >
 
                 <ListView
+                    android:visibility="gone"
                     android:id="@+id/lv_consultaPrecios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -499,8 +500,9 @@
                 android:background="@color/grey_800" />
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:orientation="horizontal" >
 
                 <TextView
@@ -518,6 +520,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
@@ -539,14 +542,11 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_marginTop="10dp"
                 android:background="@color/blue_grey_500"
-                android:orientation="horizontal"
-                android:paddingBottom="3dp"
-                android:paddingTop="3dp" >
+                android:orientation="horizontal" >
 
                 <TextView
                     android:layout_width="0dp"
@@ -557,11 +557,19 @@
                     android:textColor="@color/grey_200" />
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".33"
                     android:gravity="center"
                     android:text="Stock x Confirmar"
+                    android:textColor="@color/grey_200" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Stock\nActual"
                     android:textColor="@color/grey_200" />
 
                 <TextView
@@ -569,7 +577,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".33"
                     android:gravity="center"
-                    android:text="Stock Disponible"
+                    android:text="Stock\nSeparado"
+                    android:textColor="@color/grey_200" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Stock\nDisponible"
                     android:textColor="@color/grey_200" />
             </LinearLayout>
 
@@ -589,6 +605,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/LBusqueda"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/shape_edit_text_acerca_cliente"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edt_buscar_producto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="4"
+            android:background="@null"
+            android:hint="Buscar..."
+            android:imeOptions="actionSearch"
+            android:singleLine="true" />
+
+        <ImageButton
+            android:id="@+id/btn_buscar_producto"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:src="@drawable/buscar_boton" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerProductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"></androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="-2sp"
+        android:indeterminate="true"
+        android:max="100"
+        android:progress="1"
+        android:visibility="visible" />
+
+</LinearLayout>

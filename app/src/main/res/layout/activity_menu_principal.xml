@@ -2,6 +2,7 @@
 
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -86,15 +87,15 @@
 
         <TextView
             android:id="@+id/tv_welcomeUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/txt_te2"
             android:layout_toLeftOf="@+id/iv_inicio"
-            android:layout_width="match_parent"
-            android:paddingStart="5dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/green_600"
-            android:textSize="20dp"
             android:elevation="4dp"
-            android:text="Bienvenido vendedor"/>
+            android:paddingStart="5dp"
+            android:text="Bienvenido vendedor"
+            android:textColor="@color/green_600"
+            android:textSize="20dp" />
 
     </RelativeLayout>
 
@@ -119,357 +120,508 @@
             android:layout_height="match_parent"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:paddingTop="80dp"
-            android:paddingBottom="100dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
 
             android:shrinkColumns="*"
             android:stretchColumns="*">
 
-            <TableRow
+            <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <RelativeLayout
-                    android:id="@+id/ly_clientes"
-                    android:background="@drawable/selector_cliente"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:focusable="true"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="#2962FF"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
 
-                    <ImageView
-                        android:id="@+id/iv_clientes"
-                        android:src="@drawable/clientesv3"
-                        android:visibility="invisible"
+                    <LinearLayout
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"/>
+                        android:gravity="center_vertical"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:layout_gravity="top"
+                        android:foregroundGravity="top"
+                        android:clickable="true">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Clientes "
+                            android:textColor="@color/color_white"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
 
+                        <ImageView
+                            android:id="@+id/ly_clientes"
+                            android:layout_weight="2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_menu_clientes"
+                            app:tint="@color/white"
+                            />
 
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/txt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_clientes"
-                        android:layout_alignTop="@+id/iv_clientes"
-                        android:layout_alignRight="@+id/iv_clientes"
-                        android:layout_alignBottom="@+id/iv_clientes"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Clientes"/>
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/yellow_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
 
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ly_deposito"
-                    android:background="@drawable/selector_depositos"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:focusable="true"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
-                    android:clickable="true">
-
-                    <ImageView
-                        android:id="@+id/iv_depositos"
+                    <LinearLayout
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/depositosv3" />
+                        android:gravity="center"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:clickable="true">
 
-                    <TextView
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Cotizacion y Pedido"
+                            android:textColor="@color/grey_400"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:typeface="sans" />
+                        <ImageView
+                            android:id="@+id/ly_agendax"
+                            android:layout_width="match_parent"
+                            android:scaleType="center"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/ic_menu_cotizaciones"
+                            android:backgroundTint="@color/yellow_700"
+                            android:onClick="NOFunciona"
+                            />
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_depositos"
-                        android:layout_alignTop="@+id/iv_depositos"
-                        android:layout_alignRight="@+id/iv_depositos"
-                        android:layout_alignBottom="@+id/iv_depositos"
-                        android:typeface="sans"
-                        android:textSize="15sp"
-                        android:gravity="center_horizontal"
-                        android:textColor="@color/color_white"
-                        android:text="Depositos"/>
-
-                </RelativeLayout>
 
 
-                <RelativeLayout
-                    android:id="@+id/ly_agenda"
-                    android:background="@drawable/selector_pedidos"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:focusable="true"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <ImageView
-                        android:id="@+id/iv_agendas"
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/teal_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+
+
+                    <LinearLayout
+                        android:id="@+id/ly_deposito"
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/pedidosv3"
-                        />
+                        android:gravity="center"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:clickable="true">
 
-                    <TextView
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Agenda"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_white"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_agendas"
-                        android:layout_alignTop="@+id/iv_agendas"
-                        android:layout_alignRight="@+id/iv_agendas"
-                        android:layout_alignBottom="@+id/iv_agendas"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Agenda"/>
+                        <ImageView
+                            android:id="@+id/ly_agenda"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_menu_agenda"
+                            app:tint="@color/white"
+                            />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                </RelativeLayout>
+            </LinearLayout>
 
-            </TableRow>
-
-            <TableRow
+            <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <RelativeLayout
-                    android:id="@+id/ly_devoluciones"
-                    android:background="@drawable/selector_devoluciones"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:focusable="true"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/purple_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
 
-                    <ImageView
-                        android:id="@+id/iv_devoluciones"
+                    <RelativeLayout
+
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/devolucionesv3"
-                        />
+                        android:gravity="center"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:clickable="true">
 
-                    <TextView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_devoluciones"
-                        android:layout_alignTop="@+id/iv_devoluciones"
-                        android:layout_alignRight="@+id/iv_devoluciones"
-                        android:layout_alignBottom="@+id/iv_devoluciones"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Devoluciones"/>
+                        <ImageView
+                            android:id="@+id/ly_productos"
+                            android:layout_width="fill_parent"
+                            android:scaleType="center"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="5dp"
+                            android:src="@drawable/ic_menu_stock"
+                            app:tint="@color/white"
+                            />
 
 
-                </RelativeLayout>
+                        <TextView
 
-                <RelativeLayout
-                    android:id="@+id/ly_productos"
-                    android:background="@drawable/selector_producto"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:focusable="true"
-                    android:layout_margin="10dp"
-                    android:orientation="vertical"
-                    android:clickable="true">
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Consulta Stock"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_white"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
 
-                    <ImageView
-                        android:id="@+id/iv_productos"
-                        android:visibility="invisible"
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/green_600"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+
+                    <RelativeLayout
+                        android:id="@+id/ly_devoluciones"
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:background="@drawable/productosv3"
-                        />
+                        android:gravity="center"
+                        android:focusable="true"
+                        android:orientation="vertical"
+                        android:clickable="true">
+
+                        <ImageView
+                            android:id="@+id/iv_seguimiento_pedido"
+                            android:layout_width="fill_parent"
+                            android:scaleType="center"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="15dp"
+                            android:src="@drawable/ic_menu_seguimiento_op"
+                            app:tint="@color/white"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Seguimiento OP"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:typeface="sans" />
 
 
-                    <TextView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_productos"
-                        android:layout_alignTop="@+id/iv_productos"
-                        android:layout_alignRight="@+id/iv_productos"
-                        android:layout_alignBottom="@+id/iv_productos"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Productos"/>
-
-                </RelativeLayout>
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
 
-                <RelativeLayout
-                    android:id="@+id/ly_estadisticas"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/selector_estadisticas"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/orange_800"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
 
-                    <ImageView
-                        android:id="@+id/iv_estadisticas"
+                    <LinearLayout
                         android:layout_width="fill_parent"
-                        android:scaleType="center"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/estadistica_v6"/>
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <TextView
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Cuenta x Cobrar"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_white"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
+                        <ImageView
+                            android:id="@+id/ly_cobranza"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:src="@drawable/ic_menu_cuentas_cobrar"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            app:tint="@color/white"/>
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_estadisticas"
-                        android:layout_alignTop="@+id/iv_estadisticas"
-                        android:layout_alignRight="@+id/iv_estadisticas"
-                        android:layout_alignBottom="@+id/iv_estadisticas"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Estadisticas"/>
 
-                </RelativeLayout>
 
-            </TableRow>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-            <TableRow
+
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-                <RelativeLayout
-                    android:id="@+id/ly_reportes"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/selector_reportes"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/orange_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
 
-                    <ImageView
-                        android:id="@+id/iv_reportes"
-                        android:layout_width="fill_parent"
-                        android:scaleType="center"
-                        android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/reportesv3"/>
-
-                    <TextView
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_reportes"
-                        android:layout_alignTop="@+id/iv_reportes"
-                        android:layout_alignRight="@+id/iv_reportes"
-                        android:layout_alignBottom="@+id/iv_reportes"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Reportes"/>
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ly_cobranza"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/selector_cobranza"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/iv_cobranza"
+                    <RelativeLayout
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:src="@drawable/cobranzav3"/>
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <TextView
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:scaleType="center"
+                            android:layout_height="fill_parent"
+                            android:layout_marginTop="20dp"
+                            android:src="@drawable/ic_menu_ventas"
+                            app:tint="@color/orange_A700"
+                            android:onClick="NOFunciona"
+                            />
 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_cobranza"
-                        android:layout_alignTop="@+id/iv_cobranza"
-                        android:layout_alignRight="@+id/iv_cobranza"
-                        android:layout_alignBottom="@+id/iv_cobranza"
-                        android:typeface="sans"
-                        android:layout_margin="1dp"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Cobranza"/>
+                        <TextView
 
-                </RelativeLayout>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Ventas"
+                            android:textStyle="bold"
+                            android:textColor="@color/grey_400"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
 
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                <RelativeLayout
-                    android:id="@+id/ly_sincronizar"
-                    android:background="@drawable/selector_sincronizacion"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="10dp"
-
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/iv_sincronizar"
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/pink_A200"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+                    <RelativeLayout
+                        android:id="@+id/ly_estadisticas"
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_margin="5dp"
-                        android:visibility="invisible"
-                        android:background="@drawable/sincronizarv3"/>
+                        android:gravity="center"
+                        android:orientation="vertical">
 
-                    <TextView
+                        <ImageView
+                            android:id="@+id/iv_estadisticas"
+                            android:layout_width="fill_parent"
+                            android:scaleType="center"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="15dp"
+                            android:src="@drawable/ic_menu_estadistica"
+                            app:tint="@color/pink_A700"
+                            android:onClick="NOFunciona"
+                            />
 
+                        <TextView
+                            android:textStyle="bold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:padding="2dp"
+                            android:typeface="sans"
+                            android:gravity="center_horizontal"
+                            android:textSize="15sp"
+                            android:textColor="@color/grey_400"
+                            android:text="Estadisticas"/>
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/red_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:padding="2dp"
+                            android:typeface="sans"
+                            android:gravity="center_horizontal"
+                            android:textSize="15sp"
+                            android:textColor="@color/grey_400"
+                            android:textStyle="bold"
+                            android:text="Consulta Facturas"/>
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:src="@drawable/ic_menu_factura"
+                            app:tint="@color/red_A700"
+                            android:onClick="NOFunciona"
+                            />
+
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/pink_A700"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/ly_reportes"
+                            android:layout_width="fill_parent"
+                            android:scaleType="center"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="15dp"
+                            android:src="@drawable/ic_menu_reportes"
+                            app:tint="@color/white"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Reportes"
+                            android:textColor="@color/color_white"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:typeface="sans" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/cyan_500"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="20dp"
+                            android:src="@drawable/ic_menu_cuota"
+                            app:tint="@color/cyan_A200"
+                            android:onClick="NOFunciona"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Cuota Ventas"
+                            android:textStyle="bold"
+                            android:textColor="@color/grey_400"
+                            android:textSize="15sp"
+                            android:typeface="sans" />
+
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    app:cardBackgroundColor="@color/purple_800"
+                    style="@style/styleCardViewMenu"
+                    app:cardElevation="4dp"
+                    app:cardCornerRadius="10dp">
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignLeft="@+id/iv_sincronizar"
-                        android:layout_alignTop="@+id/iv_sincronizar"
-                        android:layout_alignRight="@+id/iv_sincronizar"
-                        android:layout_alignBottom="@+id/iv_sincronizar"
-                        android:typeface="sans"
-                        android:gravity="center_horizontal"
-                        android:textSize="15sp"
-                        android:textColor="@color/color_white"
-                        android:text="Sincronizar"/>
-                </RelativeLayout>
-            </TableRow>
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_margin="5dp"
+                            android:visibility="gone"
+                            android:src="@drawable/sincronizarv3"/>
+                        <ImageView
+                            android:id="@+id/iv_sincronizar"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:src="@drawable/ic_menu_sincronizar"
+                            android:layout_margin="10dp"
+                            app:tint="@color/purple_50" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/color_semi_transparente"
+                            android:gravity="center_horizontal"
+                            android:padding="2dp"
+                            android:text="Sincronizar"
+                            android:textColor="@color/color_white"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:typeface="sans" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
         </TableLayout>
     </LinearLayout>
 

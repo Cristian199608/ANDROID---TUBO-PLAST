@@ -87,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         //
         // dbfuerza_ventasbk = new DBclasses2(LoginActivity.this);
         //
-
-//        Intent intent=new Intent(this, ClientesActivity.class);
+//
+//        Intent intent=new Intent(this, SeguimientoPedidoActivity.class);
 //        intent.putExtra("ID_RRHH", "codcli");
 //        intent.putExtra("CODIGO_CRM", "");
 //        intent.putExtra("NOMBRE_INSTI", "Sin nombre");

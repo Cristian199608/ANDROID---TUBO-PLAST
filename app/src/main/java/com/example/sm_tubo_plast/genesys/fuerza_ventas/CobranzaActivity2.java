@@ -34,6 +34,8 @@ import com.example.sm_tubo_plast.genesys.adapters.CobranzaAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -81,21 +83,26 @@ public class CobranzaActivity2 extends AppCompatActivity {
     private static final int ID_DETALLE = 2;
     AlertDialog.Builder alert_bld_cobranza;
     Boolean libre,programada ;
+    String codven="";
 
+    TextView txtDeudaSoles, txtDeudaDolares, txtTotalDolaresDocumento, txtTotalSolesDocumento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cobranza2);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("Cuentas por Cobrar");
 
         alert_bld_cobranza = new AlertDialog.Builder(this);
         //titleBar.afterSetContentView();
         obj_dbclasses= new DBclasses(getApplicationContext());
-        setTitle("Cuentas por Cobrar");
 
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         programada = prefs.getString("Programado", "1").equals("1"); // 0 :Inactivo 1:Activado
         libre = prefs.getString("Libre", "1").equals("1"); // 0 :Inactivo 1:Activado
+
+        codven=new PreferenciaPrincipal(this).ObtenerCodigoVendedor();
 
         //´para que no salga el teclado al iniciar activity
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -106,6 +113,11 @@ public class CobranzaActivity2 extends AppCompatActivity {
         txt_total_cobranzas = (TextView)findViewById(R.id.cobranza_activity_txtTotal_cobranzas);
         txt_total_acuenta = (TextView)findViewById(R.id.cobranza_activity_txtTotal_acuenta);
         txt_total_saldo = (TextView)findViewById(R.id.cobranza_activity_txtTotal_saldo);
+
+        txtDeudaDolares=findViewById(R.id.txtDeudaDolares);
+        txtDeudaSoles=findViewById(R.id.txtDeudaSoles);
+        txtTotalDolaresDocumento=findViewById(R.id.txtTotalDolaresDocumento);
+        txtTotalSolesDocumento=findViewById(R.id.txtTotalSolesDocumento);
 
         soap_manager = new DBSync_soap_manager(getApplicationContext());
 
@@ -172,6 +184,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
                 //String	tot= ((TextView) view.findViewById(R.id.item_cobranza_tv_total)).getText().toString();
                 //String sec= ((TextView) view.findViewById(R.id.item_cobranza_tv_secuencia)).getText().toString();
 
+                String codcli= searchResults.get(position).get("codigo");
                 String nomcli2= ((TextView) view.findViewById(R.id.item_cobranza_tv_cliente)).getText().toString();
                 //codigo
                 //String numf= ((TextView) view.findViewById(R.id.item_cobranza_tv_numero)).getText().toString();
@@ -185,7 +198,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
 
                 Intent i=new Intent(getApplicationContext(), CuentasXCobrarActivity2.class);
-                i.putExtra("CODCLI", obj_dbclasses.obtenerCodigoCliente(nomcli));
+                i.putExtra("CODCLI", codcli);
                 i.putExtra("NOMCLI", nomcli);
                 i.putExtra("ORIGEN", "cobranzaac2");
                 startActivity(i);
@@ -309,7 +322,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
             try{
 
-                alhm_cobranza_soles = obj_dbclasses.getCtas_Ingresos_ResumenxCliente();//getCtas_IngresosxCliente2
+                alhm_cobranza_soles = obj_dbclasses.getCtas_Ingresos_ResumenxCliente(codven);//getCtas_IngresosxCliente2
 
             }
             catch(Exception e)        {
@@ -338,6 +351,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
             // cli_adapter=new Clientes_LazyAdapter(this, searchResults);
             list.setAdapter(adapter_cobranza);
+            adapter_cobranza.notifyDataSetChanged();
             calcular_totales();
 
             //Log.d("", "Totales FIN");
@@ -346,8 +360,11 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
     private void calcular_totales(){
 
-        double total_dolares=0.0;
-        double total_Soles=0.0;
+        double deudaDolares=00;
+        double deudaSoles=00;
+        double  totalDolaresDocumento=00;
+        double totalSolesDocumento=00;
+        
         int total_cantidad_E = 0;
         int total_cantidad_R = 0;
         //int asignado;
@@ -359,21 +376,43 @@ public class CobranzaActivity2 extends AppCompatActivity {
             //asignado=Integer.parseInt(searchResults.get(i).get("asignado"));
             asignado=searchResults.get(i).get("asignado");
             //Log.e("asignado", "asignado: "+asignado);
-            if(asignado.equals("1") ){
-                total_Soles = total_Soles + Double.parseDouble(searchResults.get(i).get("total"));
-                total_dolares = total_dolares + Double.parseDouble(searchResults.get(i).get("total_acuenta"));
+            //if(asignado.equals("1") ){
+                //double _saldo=Double.parseDouble(cta.getSaldo());
+                //double _totalDoc=Double.parseDouble(cta.getTotal());
+
+                totalSolesDocumento += Double.parseDouble(searchResults.get(i).get("total"))>0?Double.parseDouble(searchResults.get(i).get("total")):0;
+                totalDolaresDocumento += Double.parseDouble(searchResults.get(i).get("total_acuenta"))>0?Double.parseDouble(searchResults.get(i).get("total_acuenta")):0;
+
+                double totalAcuentaSoles=Double.parseDouble(searchResults.get(i).get("total"));
+                deudaSoles  += Double.parseDouble(searchResults.get(i).get("totalSaldoSoles"))<0?
+                        totalAcuentaSoles>0?totalAcuentaSoles:0
+                                +Double.parseDouble(searchResults.get(i).get("totalSaldoSoles"))
+                        :Double.parseDouble(searchResults.get(i).get("totalSaldoSoles")) ;
+
+                double totalAcuentaDolar=Double.parseDouble(searchResults.get(i).get("total_acuenta"));
+                deudaDolares += Double.parseDouble(searchResults.get(i).get("totalSaldoDolares"))<0?
+                                totalAcuentaDolar>0?totalAcuentaDolar:0
+                                +Double.parseDouble(searchResults.get(i).get("totalSaldoDolares"))
+                        :Double.parseDouble(searchResults.get(i).get("totalSaldoDolares")) ;
                 total_cantidad_E = total_cantidad_E + Integer.parseInt(searchResults.get(i).get("entregar"));
                 total_cantidad_R = total_cantidad_R + Integer.parseInt(searchResults.get(i).get("aceptar"));
 
-                // Log.e("totales Ingreso", "Sumar "+total_Soles +" sola"+total_dolares);
-            }
+                // Log.e("totales Ingreso", "Sumar "+deudaSoles +" sola"+deudaDolares);
+            //}
         }
 
-        // Log.e("totales ", ""+total_Soles+"-"+total_dolares+"-");
-        txt_total_cobranzas.setText("S/." + formateador.format(GlobalFunctions.redondear(total_Soles)));
-        txt_cantidad_cobranzas.setText("$."+ formateador.format(GlobalFunctions.redondear(total_dolares)));
+        // Log.e("totales ", ""+deudaSoles+"-"+deudaDolares+"-");
+        txt_total_cobranzas.setText("S/." + formateador.format(GlobalFunctions.redondear(deudaSoles)));
+        txt_cantidad_cobranzas.setText("$."+ formateador.format(GlobalFunctions.redondear(deudaDolares)));
         txt_total_acuenta.setText("Entregar " +total_cantidad_E+" L.");
         txt_total_saldo.setText("Recoger "+total_cantidad_R+" L.");
+
+        txtDeudaDolares.setText(VARIABLES.formater_thow_decimal.format(deudaDolares));
+        txtDeudaSoles.setText(VARIABLES.formater_thow_decimal.format(deudaSoles));
+        txtTotalDolaresDocumento.setText("de "+VARIABLES.formater_thow_decimal.format(totalDolaresDocumento));
+        txtTotalSolesDocumento.setText("de "+VARIABLES.formater_thow_decimal.format(totalSolesDocumento));
+
+        getSupportActionBar().setSubtitle(searchResults.size()+" Clientes Encontrados");
 
 
     }
@@ -385,6 +424,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
         //Alternativa 1
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_cobranza, menu);
+
         return true;
 
     }
@@ -397,11 +437,13 @@ public class CobranzaActivity2 extends AppCompatActivity {
             case R.id.menu_configuracion_cuentas_ingreso:
                 mostrarDialogoConfiguracion();
                 return true;
-
+            case android.R.id.home:
+                finish();
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     private void mostrarDialogoConfiguracion() {
         // TODO Auto-generated method stub
@@ -503,6 +545,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
         protected void onPostExecute(String result) {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute=", "" + result);
+            new cargarCobranzas().execute("");
         }
 
     }

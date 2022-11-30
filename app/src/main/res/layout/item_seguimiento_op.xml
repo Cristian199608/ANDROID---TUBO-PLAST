@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/layout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/l1"
+            android:background="@color/blue_grey_500"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtOrdenCompra"
+                android:text="O.C.: 00512715    Moneda: Soles"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="Monto:"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtTotal"
+                android:text="(ME) 000,000.00"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:text="Despac.:"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="15dp"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/txtDespachado"
+                        android:text="(ME) 0,000.00 [63%]"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="15dp"
+                        android:enabled="false"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:text="Saldo:    "
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="15dp"
+                        android:enabled="false"
+                        />
+                    <TextView
+                        android:id="@+id/txtSaldo"
+                        android:text="(ME) 0,000.00 [30%]"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="15dp"
+                        android:enabled="false"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_rounded_corners5"
+                android:backgroundTint="@color/blue_grey_100"
+                android:layout_marginEnd="3dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:id="@+id/layoutSeleccion"
+                android:orientation="vertical">
+                <TextView
+                    android:text="Núm. OP:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:textSize="15dp"
+                    android:enabled="false"
+                    android:drawableTint="@color/primary_text"
+                    android:drawableEnd="@drawable/arrow"
+
+                    />
+
+                <TextView
+                    android:id="@+id/txtNumeroOP"
+                    android:text="055232750"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:textStyle="bold"
+                    android:textSize="15dp"
+                    android:enabled="false"
+                    />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Fecha rec:"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtFechaRec"
+                android:text="dd/mm/aa"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+
+            <TextView
+                android:text="Fecha Aut:"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtAutorizada"
+                android:text="dd/mm/aa"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Guías  "
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtCantGuias"
+                android:text="4"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:text="GROP:"
+                android:layout_marginEnd="1dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtMontoGrop"
+                android:text="(ME) 0,000.00 [63%]"
+                android:layout_marginEnd="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="P. Ent.:"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtPrimerEntrega"
+                android:text="15215 15/10/22"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:text="U. Ent.:"
+                android:layout_marginEnd="1dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtUltimaEntrega"
+                android:text="GRO2-15215\n15/10/22"
+                android:layout_marginEnd="1dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Dias:    "
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+            <TextView
+                android:id="@+id/txtDiasEntrega"
+                android:text="60"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:enabled="false"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <View
+        android:layout_below="@+id/layout1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_400"/>
+
+</RelativeLayout>
