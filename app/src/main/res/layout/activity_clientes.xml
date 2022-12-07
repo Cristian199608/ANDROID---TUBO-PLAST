@@ -47,24 +47,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
+        <HorizontalScrollView
+            android:id="@+id/scrolHorizontal"
             android:layout_width="match_parent"
+            android:orientation="vertical"
             android:layout_height="wrap_content">
-           <LinearLayout
-               android:layout_width="match_parent"
-               android:orientation="vertical"
-               android:layout_height="wrap_content">
+
             <LinearLayout
                 android:padding="5dp"
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-
                 <TextView
                     android:id="@+id/tv_fecha_filtrado_de"
                     android:background="@drawable/edittext_rounded_corners_cicle"
                     android:text="de 15/10/2021"
+                    android:drawableEnd="@drawable/cancel"
+                    android:drawableTint="@color/white"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tvClientesAnulados"
+                    android:background="@drawable/edittext_rounded_corners_cicle"
+                    android:backgroundTint="@color/red_500"
+                    android:text="Clientes inactivos"
                     android:drawableEnd="@drawable/cancel"
                     android:drawableTint="@color/white"
                     android:paddingStart="5dp"
@@ -88,6 +98,13 @@
                     android:text="Programada"/>
 
             </LinearLayout>
+        </HorizontalScrollView>
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_below="@+id/scrolHorizontal"
+            android:layout_above="@+id/LinearPie"
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
                <ListView
                    android:id="@+id/lv_clientes"
@@ -97,7 +114,6 @@
                    android:dividerHeight="1dp"
                    android:listSelector="@drawable/list_selector" />
 
-           </LinearLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

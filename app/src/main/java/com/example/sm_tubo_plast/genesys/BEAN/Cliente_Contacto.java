@@ -11,6 +11,7 @@ public class Cliente_Contacto {
     String email;
     String cargo;
     String estado;
+    String fec_nacimiento;
     String flag;
 
 
@@ -92,5 +93,13 @@ public class Cliente_Contacto {
 
     public void setCargo(String cargo) {
         this.cargo = cargo;
+    }
+
+    public String getFec_nacimiento() {
+        return fec_nacimiento;
+    }
+
+    public void setFec_nacimiento(String fec_nacimiento) {
+        this.fec_nacimiento = fec_nacimiento;
     }
 }

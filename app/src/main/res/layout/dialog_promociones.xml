@@ -73,7 +73,7 @@
            
          </LinearLayout>
        
-      <View android:id="@+id/view_tipoProducto" 
+      <View
             android:layout_width="fill_parent"
             android:layout_marginTop="40dp" android:background="@android:color/white"
             android:layout_height="2dp">

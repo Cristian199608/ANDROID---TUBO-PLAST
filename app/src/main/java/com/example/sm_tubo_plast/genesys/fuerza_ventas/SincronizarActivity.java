@@ -1151,6 +1151,8 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("50");
                                     soap_manager.Sync_tabla_vendedores(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("75");
+                                    soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD,nombreBD, usuarioBD, contrasenaBD);
+                                    publishProgress("90");
                                     try {
                                         publishProgress("100");
                                         controlAcceso=soap_manager.Verificar_control_acceso(""+clave_manual);
@@ -1209,8 +1211,18 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                         }
                         else if (controlAcceso.getEstado().equals("S")){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    pDialog.setMessage("Sincronizando configuracion");
+                                }
+                            });
+                            publishProgress("10");
                             soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
+                            publishProgress("50");
                             soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                            publishProgress("80");
+                            soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD, nombreBD, usuarioBD, contrasenaBD);
                         }else{
                             error = "sin_servicio";
 
@@ -1278,8 +1290,39 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         }
 
                                     }
-                                    publishProgress("33");
+                                    publishProgress("25");
 
+
+                                    //SERVER 212
+                                    existeDatos=true;
+                                    start=0;
+                                    paginacion=5000;
+                                    while (existeDatos){
+                                        int finalStart = start;
+                                        int finalPaginacion = paginacion;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo estado de clientes ";
+                                                }else{
+                                                    mensaje="  \nObteniendo estado de clientes de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
+
+                                            }
+                                        });
+                                        int lista_tamanio=soap_manager.getTBcliente_estado(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        start+=paginacion;
+                                        existeDatos=lista_tamanio>0;
+                                        if (!esSuperVendedor){
+                                            existeDatos=false;
+                                        }
+
+                                    }
+                                    publishProgress("33");
 
                                     //SERVER 212
                                     existeDatos=true;
@@ -1342,6 +1385,38 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         }
 
                                     }
+
+                                    //SERVER 212
+                                    existeDatos=true;
+                                    start=0;
+                                    paginacion=5000;
+                                    while (existeDatos){
+                                        int finalStart = start;
+                                        int finalPaginacion = paginacion;
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String mensaje="";
+                                                if (!esSuperVendedor){
+                                                    mensaje="Obteniendo clientes contactos";
+                                                }else{
+                                                    mensaje="  \nObteniendo clientes contactos de "+ finalStart+" a "+(finalPaginacion +finalStart);
+                                                }
+                                                pDialog.setMessage(mensaje);
+
+
+                                            }
+                                        });
+                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        start+=paginacion;
+                                        existeDatos=lista_tamanio>0;
+                                        if (!esSuperVendedor){
+                                            existeDatos=false;
+                                        }
+
+                                    }
+                                    publishProgress("40");
+
                                     publishProgress("50");
                                     soap_manager.Sync_tabla_locales(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("59");

@@ -7,12 +7,14 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -23,6 +25,7 @@ public class CrearCliente_Contacto {
 
     Activity activity;
     DBclasses dBclasses;
+    TextView tvFechaNacimiento;
     EditText et_nombres,etdni, et_telefono,et_celular, et_correo,et_cargo;
     Button text_cancelar,txt_guardar;
     String codcliente;
@@ -42,6 +45,7 @@ public class CrearCliente_Contacto {
         dialogo.setCancelable(false);
         et_nombres=dialogo.findViewById(R.id.et_nombres);
         etdni=dialogo.findViewById(R.id.etdni);
+        tvFechaNacimiento=dialogo.findViewById(R.id.tvFechaNacimiento);
         et_telefono=dialogo.findViewById(R.id.et_telefono);
         et_celular=dialogo.findViewById(R.id.et_celular);
         et_correo=dialogo.findViewById(R.id.et_correo);
@@ -53,6 +57,21 @@ public class CrearCliente_Contacto {
 
         dialogo.show();
 
+        tvFechaNacimiento.setOnClickListener(v -> {
+            CustomDateTimePicker custom= new CustomDateTimePicker(activity, (myCalendar, fecha_formateado) -> {
+                if (fecha_formateado!=null){
+                    tvFechaNacimiento.setText(fecha_formateado);
+                    tvFechaNacimiento.setHint(fecha_formateado);
+                } else{
+                    tvFechaNacimiento.setError("Error Fecha");
+                }
+                return null;
+            }, 0,0, true, false, false);
+            custom.setFormatFecha("dd/MM/yyyy");
+            custom.Show();
+
+        });
+        
         txt_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,6 +108,16 @@ public class CrearCliente_Contacto {
             }
         }
 
+        tvFechaNacimiento.setError(null);
+        if (!TextUtils.isEmpty(tvFechaNacimiento.getText().toString())) {
+            if(!VARIABLES.isDate(tvFechaNacimiento.getText().toString())){
+                tvFechaNacimiento.setError("Ingrese fecha valido dd/mm/yyyy");
+                error++;
+            }
+        }
+
+
+
         if (error==0){
 
             DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
@@ -112,6 +141,7 @@ public class CrearCliente_Contacto {
             contacto.setCelular(et_celular.getText().toString());
             contacto.setEmail(et_correo.getText().toString());
             contacto.setCargo(et_cargo.getText().toString());
+            contacto.setFec_nacimiento(tvFechaNacimiento.getText().toString());
             contacto.setEstado("G");
             contacto.setFlag("P");
 

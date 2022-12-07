@@ -18,12 +18,12 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
-            android:textSize="13sp"
+            android:background="@color/black"
+            android:gravity="center"
             android:padding="1dp"
             android:text="5"
-            android:gravity="center"
             android:textColor="@color/white"
-            android:background="@color/indigo_500" />
+            android:textSize="13sp" />
 
 
         <LinearLayout
@@ -90,6 +90,31 @@
 
         <LinearLayout
             android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight=".35" >
+
+            <TextView
+                android:id="@+id/txtid_usuario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:text="Cantidad:"
+                android:textSize="@dimen/text_item_pedido_producto" />
+
+            <TextView
+                android:id="@+id/tv_cantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="xxxxx"
+                android:textSize="@dimen/text_item_pedido_producto" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_weight=".37"
             android:orientation="horizontal" >
@@ -130,7 +155,7 @@
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
-                android:id="@+id/tv_loteDevolucion"
+                android:id="@+id/precioLista"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
@@ -138,30 +163,29 @@
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight=".28" >
 
             <TextView
-                android:id="@+id/txtid_usuario"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Cantidad:"
+                android:text="Descuento:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
-                android:id="@+id/tv_cantidad"
+                android:id="@+id/tv_descuentoPorcentaje"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="xxxxx"
+                android:text="0%"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>
+
     </LinearLayout>
 
     <!-- ........................................................ -->
@@ -177,7 +201,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".37" >
+            android:layout_weight=".35" >
 
             <TextView
                 android:id="@+id/textView4"
@@ -185,11 +209,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Total Venta:"
+                android:text="Precio Neto:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
-                android:id="@+id/tv_tipoDocumento"
+                android:id="@+id/precioUnitario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
@@ -228,11 +252,21 @@
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:minLines="1"
-                android:text="Percepcion:"
+                android:text="Sub Total:"
+                android:textSize="@dimen/text_item_pedido_producto" />
+
+
+            <TextView
+                android:id="@+id/tv_subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="xxxxxx.xx"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
                 android:id="@+id/tv_serie"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
@@ -252,7 +286,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Desc.:"
+                android:text="Descuento:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
@@ -261,6 +295,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 android:text="xxxxx"
+                android:textStyle="bold"
+                android:textColor="@color/grey_900"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>

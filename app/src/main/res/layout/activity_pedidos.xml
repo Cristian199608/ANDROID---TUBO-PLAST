@@ -62,7 +62,271 @@
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
+                <RelativeLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
 
+                    <ListView
+                        android:id="@+id/lstProductos"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignBottom="@+id/view_line1"
+                        android:dividerHeight="2dp" >
+                    </ListView>
+
+                    <!-- ************************************************************** -->
+                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
+                        android:id="@+id/view_line1"
+                        android:layout_above="@+id/linear_items"/>
+
+                    <!-- ************************************************************** -->
+                    <LinearLayout
+                        android:id="@+id/linear_items"
+                        android:layout_above="@+id/view_line2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:background="@color/grey_800"
+                        android:orientation="horizontal">
+
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.30">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                android:text="Moneda:"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_moneda"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white" android:textStyle="bold"
+                                android:text=""
+                                android:layout_marginLeft="5dp"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.40" android:gravity="center">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                android:text="Tipo Cambio:"/>
+                            <TextView android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/tvTipoCambio"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                android:text="0.00"
+                                android:layout_marginLeft="5dp"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.30">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                android:text="Total item:"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_cantidadItems"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                android:text="0"
+                                android:layout_marginLeft="5dp"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <!-- ************************************************************** -->
+                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
+                        android:id="@+id/view_line2"
+                        android:layout_above="@+id/linear_totales"/>
+                    <!-- ************************************************************** -->
+                    <LinearLayout
+                        android:id="@+id/linear_totales"
+                        android:visibility="gone"
+                        android:layout_above="@+id/view_line3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:background="@color/grey_800"
+                        android:orientation="vertical">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".6">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="Subtotal:"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_subtotal"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".4">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="IGV:"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_IGV"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".6">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="Total:"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_total"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".4">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="Percepcion:"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_serie"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300" android:textStyle="bold"
+                                    android:text="Total + Percepción:"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_totalCompleto"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white" android:textStyle="bold"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <!-- ************************************************************** -->
+                    <View android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey_700"
+                        android:id="@+id/view_line3"
+                        android:layout_above="@+id/linear_descuento"/>
+                    <!-- ************************************************************** -->
+                    <LinearLayout
+                        android:id="@+id/linear_descuento"
+                        android:visibility="gone"
+                        android:layout_above="@+id/view_line4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="3dp"
+                        android:background="@color/grey_800"
+                        android:orientation="vertical">
+                        <LinearLayout   android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:visibility="gone"
+                                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".5">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="Descuento: "/>
+                                <TextView android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" android:id="@+id/tv_descuento"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0.00" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".5">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                    android:text="Descuento: "/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_descuentoPorcentaje"
+                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                    android:text="0 %" android:layout_marginLeft="5dp"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
+                                android:text="Sub Total Precio por kilo en dolar ($)"/>
+                            <TextView android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" android:id="@+id/tvPrecioPorKilo"
+                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
+                                android:text="0.00" android:layout_marginLeft="5dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                    <!-- ************************************************************** -->
+                    <View
+                        android:id="@+id/view_line4"
+                        android:visibility="gone"
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:layout_above="@+id/layoutResumentByTipoProducto"
+                        android:background="@color/grey_700" />
+                    <!-- ************************************************************** -->
+
+                    <LinearLayout
+                        android:id="@+id/layoutResumentByTipoProducto"
+                        android:layout_alignParentBottom="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/grey_700"
+                        android:orientation="vertical" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/grey_700"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="3"
+                                android:text="Tipo Prod"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="Peso KG"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="Sub Total"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="PK"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="IGV"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_margin="1dp"
+                                android:background="@color/grey_900"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="2"
+                                android:text="Total"
+                                android:textColor="@color/grey_300"
+                                android:textSize="@dimen/text_resumen_pedido" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                   
+
+                </RelativeLayout>
                 <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
@@ -133,17 +397,17 @@
                                     android:orientation="horizontal" >
 
                                     <RadioButton
+                                        android:id="@+id/rButton_factura"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Factura" />
+
+                                    <RadioButton
                                         android:id="@+id/rButton_boleta"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:checked="true"
                                         android:text="Boleta" />
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_factura"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Factura" />
                                 </RadioGroup>
                             </LinearLayout>
                             <LinearLayout
@@ -768,243 +1032,7 @@
                     </ScrollView>
                 </LinearLayout>
 
-                <RelativeLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
 
-                    <ListView
-                        android:id="@+id/lstProductos"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_alignBottom="@+id/view_line1"
-                        android:dividerHeight="2dp" >
-                    </ListView>
-
-                    <!-- ************************************************************** -->
-                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
-                        android:id="@+id/view_line1"
-                        android:layout_above="@+id/linear_items"/>
-
-                    <!-- ************************************************************** -->
-                    <LinearLayout
-                        android:id="@+id/linear_items"
-                        android:layout_above="@+id/view_line2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="3dp"
-                        android:background="@color/grey_800"
-                        android:orientation="horizontal">
-
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.30">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                android:text="Moneda:"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_moneda"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white" android:textStyle="bold"
-                                android:text=""
-                                android:layout_marginLeft="5dp"/>
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.40" android:gravity="center">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                android:text="Peso Kg:"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_peso"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                android:text="0.00"
-                                android:layout_marginLeft="5dp"/>
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.30">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                android:text="Total item:"/>
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_cantidadItems"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                android:text="0"
-                                android:layout_marginLeft="5dp"/>
-                        </LinearLayout>
-
-                    </LinearLayout>
-                    <!-- ************************************************************** -->
-                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
-                        android:id="@+id/view_line2"
-                        android:layout_above="@+id/linear_totales"/>
-                    <!-- ************************************************************** -->
-                    <LinearLayout
-                        android:id="@+id/linear_totales"
-                        android:layout_above="@+id/view_line3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="3dp"
-                        android:background="@color/grey_800"
-                        android:orientation="vertical">
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".6">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="Subtotal:"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_subtotal"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".4">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="IGV:"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_IGV"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".6">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="Total:"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_total"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".4">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="Percepcion:"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_serie"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300" android:textStyle="bold"
-                                    android:text="Total + Percepción:"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_totalCompleto"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white" android:textStyle="bold"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                    </LinearLayout>
-                    <!-- ************************************************************** -->
-                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
-                        android:id="@+id/view_line3"
-                        android:layout_above="@+id/linear_descuento"/>
-                    <!-- ************************************************************** -->
-                    <LinearLayout
-                        android:id="@+id/linear_descuento"
-                        android:layout_above="@+id/view_line4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="3dp"
-                        android:background="@color/grey_800"
-                        android:orientation="vertical">
-                        <LinearLayout   android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <LinearLayout
-                                android:visibility="gone"
-                                android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".5">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="Descuento: "/>
-                                <TextView android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/tv_descuento"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0.00" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight=".5">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                    android:text="Descuento: "/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/tv_descuentoPorcentaje"
-                                    android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                    android:text="0 %" android:layout_marginLeft="5dp"/>
-                            </LinearLayout>
-                        </LinearLayout>
-                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/grey_300"
-                                android:text="Sub Total Precio por kilo en dolar ($)"/>
-                            <TextView android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" android:id="@+id/tvPrecioPorKilo"
-                                android:textSize="@dimen/text_resumen_pedido" android:textColor="@color/white"
-                                android:text="0.00" android:layout_marginLeft="5dp"/>
-                        </LinearLayout>
-                    </LinearLayout>
-                    <!-- ************************************************************** -->
-                    <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
-                        android:id="@+id/view_line4"
-                        android:layout_above="@+id/linearObservacionDescuento"/>
-                    <!-- ************************************************************** -->
-                    <LinearLayout
-                        android:id="@+id/linearObservacionDescuento"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_above="@+id/linearObservacionTipo"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:background="@color/grey_800"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2.5"
-                            android:text="Observación 1:"
-                            android:textSize="@dimen/text_resumen_pedido"
-                            android:textColor="@color/grey_300"
-                            />
-
-                        <TextView
-                            android:id="@+id/tv_observacionDescuento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1.5"
-                            android:hint="Descripcion del Descuento"
-                            android:textSize="@dimen/text_resumen_pedido"
-                            android:textColor="@color/white"
-                            android:text="" />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/linearObservacionTipo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:paddingLeft="3dp"
-                        android:paddingRight="3dp"
-                        android:background="@color/grey_800"
-                        android:orientation="horizontal" >
-
-
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="2.5"
-                            android:text="Observación 2:"
-                            android:textColor="@color/grey_300"
-                            android:visibility="gone"
-                            android:textSize="@dimen/text_resumen_pedido" />
-
-                        <TextView
-                            android:id="@+id/tv_observacionTipoProducto"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1.5"
-                            android:textColor="@color/white"
-                            android:hint="Descripcion del tipo de producto"
-                            android:textSize="@dimen/text_resumen_pedido"
-                            android:text="" />
-
-
-
-                    </LinearLayout>
-                </RelativeLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>
@@ -1017,7 +1045,7 @@
         android:layout_marginBottom="5dp"
         android:background="@color/color_transparent"
         android:gravity="right"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/pedido_lyt_btnAgregar"
@@ -1029,7 +1057,6 @@
             android:text="Agregar"
             android:textSize="14dp"
             android:visibility="gone" />
-
 
 
     </RelativeLayout>

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaConfiguracion;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.util.ArrayList;
@@ -25,14 +26,14 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 	String oc_numero="";
 	DAO_RegistroBonificaciones promo=new DAO_RegistroBonificaciones(getContext());
 	double valor_cambio;
-
+	PreferenciaConfiguracion preferenciaConfiguracion=null ;
 	public Adapter_itemPedidoProducto(Activity context, ArrayList<ItemProducto> datos, String oc_numero, double valor_cambio) {
 		super(context, R.layout.ch_item_pedido_producto, datos);
 		this.context=context;
 		this.datos=datos;
 		this.oc_numero=oc_numero;
 		this.valor_cambio=valor_cambio;
-
+		this.preferenciaConfiguracion=new PreferenciaConfiguracion(context);
 
 	}
 	
@@ -51,10 +52,12 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 			holder.descripcion = (TextView) item.findViewById(R.id.tv_descripcionD);
 			holder.bonificacion = (TextView) item.findViewById(R.id.tv_bonificacion);			
 			holder.precioUnidad = (TextView)item.findViewById(R.id.tv_cantidadDevolucion);
-			holder.precioLista = (TextView)item.findViewById(R.id.tv_loteDevolucion);
+			holder.precioLista = (TextView)item.findViewById(R.id.precioLista);
 			holder.cantidad = (TextView)item.findViewById(R.id.tv_cantidad);
-			holder.totalVenta = (TextView)item.findViewById(R.id.tv_tipoDocumento);
+			holder.precioUnitario = (TextView)item.findViewById(R.id.precioUnitario);
+			holder.tv_subtotal = (TextView)item.findViewById(R.id.tv_subtotal);
 			holder.percepcion = (TextView)item.findViewById(R.id.tv_serie);
+			holder.tv_descuentoPorcentaje = (TextView)item.findViewById(R.id.tv_descuentoPorcentaje);
 			holder.descuento = (TextView)item.findViewById(R.id.tv_numero);
 			holder.tipoProducto = (TextView) item.findViewById(R.id.view_tipoProducto);
 			holder.imgCampanaYellow = (TextView) item.findViewById(R.id.imgCampanaYellow);
@@ -69,7 +72,7 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		double precioUnidad = datos.get(posicion).getPrecio();
 		double precioLista	= datos.get(posicion).getPrecioLista();
 		double cantidad		= datos.get(posicion).getCantidad();
-		double totalVenta	= datos.get(posicion).getSubtotal();
+		double subTotal	= datos.get(posicion).getSubtotal();
 		double percepcion	= datos.get(posicion).getPercepcionPedido();
 		double descuento	= datos.get(posicion).getDescuento();
 		double porcentaje_desc	= datos.get(posicion).getPorcentaje_desc();
@@ -78,13 +81,15 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		double porcenajeDescuentoMatriz= Double.parseDouble(VARIABLES.ParseDecimalTwo((((precio_base*valor_cambio) -precioLista)*100/(precio_base*valor_cambio))));
 		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(porcentaje_desc));
 
-		holder.descripcion.setText(codigoProduc+" "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc "+porcenajeDescuentoMatriz+"%":"") +(porcenajeDescuento>0.00?" + Desc "+porcenajeDescuento+"% sobre lista":""));
+		holder.descripcion.setText(codigoProduc+" "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc a precio base "+porcenajeDescuentoMatriz+"%":""));
 		holder.precioUnidad.setText(String.valueOf(precioUnidad));
 		holder.precioLista.setText(String.valueOf(precioLista));
 		holder.cantidad.setText(String.valueOf(cantidad));
-		holder.totalVenta.setText(String.valueOf(totalVenta));
+		holder.tv_subtotal.setText(String.valueOf(subTotal));
+		holder.precioUnitario.setText(VARIABLES.formater_thow_decimal.format( precioUnidad));
 		holder.percepcion.setText(String.valueOf(percepcion));
 		holder.descuento.setText(VARIABLES.formater_thow_decimal.format(descuento));
+		holder.tv_descuentoPorcentaje.setText(""+porcenajeDescuento+"%");
 		holder.imgCampanaYellow.setVisibility(porcenajeDescuento>3.00?View.VISIBLE:View.GONE);
 		OnClickCustom(holder.imgCampanaYellow);
 		holder.tipoProducto.setText(""+(datos.size()-posicion));
@@ -125,9 +130,9 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		TextView precioUnidad;
 		TextView precioLista;
 		TextView cantidad;
-		TextView totalVenta;
+		TextView tv_subtotal, precioUnitario;
 		TextView percepcion;
-		TextView descuento;	
+		TextView tv_descuentoPorcentaje, descuento;
 		TextView tipoProducto;
 		TextView imgCampanaYellow;
 	}

@@ -12,6 +12,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -21,8 +22,7 @@ import java.util.Calendar;
 public class DAO_Pedido extends SQLiteAssetHelper{
 	
 	private static final String TAG = "DAO_PedidoDetalle";
-	private static final String DATABASE_NAME = "fuerzaventas";
-	private static final int DATABASE_VERSION = 1;
+
 	public static final String KEY_ROWID = "_id";
 	public String codAlmacen = "01";
 	// flag for Internet connection status
@@ -35,7 +35,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 	Calendar calendar = Calendar.getInstance();
 
 	public DAO_Pedido(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
 		// TODO Auto-generated constructor stub
 	}
 	

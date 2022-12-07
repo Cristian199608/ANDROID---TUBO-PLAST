@@ -18,6 +18,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.TB_registro_bonificaciones;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -27,8 +28,7 @@ import java.util.Calendar;
 public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 
 	private static final String TAG = "DAO_RegistroBonificaciones";
-	private static final String DATABASE_NAME = "fuerzaventas";
-	private static final int DATABASE_VERSION = 1;
+
 	public static final String KEY_ROWID = "_id";
 	public String codAlmacen = "01";
 	// flag for Internet connection status
@@ -41,7 +41,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 	Calendar calendar = Calendar.getInstance();
 
 	public DAO_RegistroBonificaciones(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
 		// TODO Auto-generated constructor stub
 	}
 	

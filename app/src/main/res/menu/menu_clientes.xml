@@ -35,6 +35,11 @@
                 android:icon="@drawable/check"></item>
         </menu>
     </item>
+    <item android:id="@+id/menu_ver_clientes_inactivos"
+        android:title="Ver Clientes Inactivos"
+        android:icon="@drawable/ic_account_grey_24">
+
+    </item>
 
 
 

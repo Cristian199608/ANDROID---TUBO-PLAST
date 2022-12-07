@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#EEEEEE"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tv_motivo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#2196F3"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="INDIQUE EL MOTIVO DE LA BAJA O DE ALTA"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:textSize="16sp" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/et_bodyMotivoBaja_alta"
+        android:layout_below="@+id/tv_motivo"
+        android:layout_width="match_parent"
+        app:counterEnabled="true"
+        app:counterMaxLength="300"
+        app:errorTextAppearance="@style/AppTheme.EditTextError"
+        app:hintTextAppearance="@style/AppTheme.FloatingLabel"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:lines="10"
+            android:theme="@style/EditText"
+            android:minLines="4"
+            android:textColor="@color/grey_800"
+            android:textSize="15sp"
+            android:gravity="top"
+            android:padding="4dp"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <LinearLayout
+        android:layout_below="@+id/et_bodyMotivoBaja_alta"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/btn_cancelar"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="2dp"
+            android:textColor="#ffffff"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:background="@drawable/hover_btn_red"
+            android:visibility="visible"
+            android:text="Cancelar"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            />
+
+        <ProgressBar
+            android:id="@+id/ProgBarAltaBaja"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/btnAceptar"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="10dp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="30dp"
+            android:textSize="15sp"
+            android:background="@drawable/hover_btn_blue"
+            android:visibility="visible"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:text="Aceptar"/>
+    </LinearLayout>
+
+</RelativeLayout>

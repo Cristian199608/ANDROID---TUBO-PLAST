@@ -139,7 +139,6 @@
                 android:text=":"/>
         </LinearLayout>
 
-
         <EditText
             android:id="@+id/etdni"
             android:layout_width="match_parent"
@@ -154,6 +153,48 @@
             android:singleLine="true"
             android:inputType="number"
             android:hint="8 digitos"/>
+
+        <LinearLayout
+            android:layout_below="@+id/layout"
+            android:weightSum="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primary_text"
+                android:layout_gravity="center"
+                android:gravity="center|left"
+                android:textSize="14dp"
+                android:padding="10dp"
+                android:text="Fecha Nacimiento"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textColor="@color/secondary_text"
+                android:layout_gravity="center"
+                android:gravity="center|left"
+                android:textSize="14dp"
+                android:padding="10dp"
+                android:text=":"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvFechaNacimiento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/secondary_text"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:layout_gravity="center"
+            android:gravity="center|left"
+            android:textSize="14dp"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:inputType="number"
+            android:hint="dd/mm/aaaa"/>
 
         <LinearLayout
             android:weightSum="10"

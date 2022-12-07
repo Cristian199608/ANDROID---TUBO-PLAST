@@ -1901,7 +1901,7 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
                                     dbclass.eliminar_pedido(Oc_numero);
                                     DAOBonificaciones.Eliminar_RegistrosBonificacion(Oc_numero);
-                                    dbclass.actualizarEstadoCliente(codcli, "S");
+                                    //dbclass.actualizarEstadoCliente(codcli, "S");
                                     finish();
 
                                 }

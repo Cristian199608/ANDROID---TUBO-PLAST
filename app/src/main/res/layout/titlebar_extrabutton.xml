@@ -17,7 +17,7 @@
         android:background="@drawable/tab_back_button"
         android:text="" />
 
-    <com.genesys.service.FontFitTextView
+    <com.example.sm_tubo_plast.genesys.service.FontFitTextView
         android:id="@+id/title_text"
         style="@style/WhiteTitleText"
         android:layout_width="fill_parent"

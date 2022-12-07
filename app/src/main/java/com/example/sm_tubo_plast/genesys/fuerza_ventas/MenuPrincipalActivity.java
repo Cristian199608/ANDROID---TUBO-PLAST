@@ -17,13 +17,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.databinding.ActivityMenuPrincipalBinding;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.ITiposDeAccesoMenuPrinicipal;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
-import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -47,20 +51,26 @@ public class MenuPrincipalActivity extends AppCompatActivity {
     double limiteDescuento;
     DBclasses database;
 
+    AccesosOpciones.OptionMenuPrincipal accesoMenuPrincipal;
+
 
     //Parametros de configuracion
     SharedPreferences preferencias_configuracion;
     SharedPreferences.Editor editor_preferencias;
+    ActivityMenuPrincipalBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_principal);
+        binding =ActivityMenuPrincipalBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         database = new DBclasses(getApplicationContext());
         // Session Manager Class
         session = new SessionManager(getApplicationContext());
+        AdministrarAccesos();
+
 
         valorIGV = Double.parseDouble(database.getCambio("IGV"));
         limiteDescuento = Double.parseDouble(database.getCambio("limiteDescuento"));
@@ -243,7 +253,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             }
         });
 
-        View mostrarDepositos= window.findViewById(R.id.ly_deposito);
+        /*View mostrarDepositos= window.findViewById(R.id.ly_deposito);
         mostrarDepositos.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -253,7 +263,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
                 // ipedido.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }
-        });
+        });*/
 
         View mostrarReportes= window.findViewById(R.id.ly_reportes);
         mostrarReportes.setOnClickListener(new View.OnClickListener() {
@@ -326,21 +336,21 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         /****************************************************************/
 
 
-       /* View mostrarEstadisticas= window.findViewById(R.id.ly_estadisticas);
+        View mostrarEstadisticas= window.findViewById(R.id.iv_estadisticas);
         mostrarEstadisticas.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-             final Intent iestadisticas = new Intent(activity,EstadisticasActivity.class);
-                final Intent iestadisticas = new Intent(activity,ListaCuotaVendedorActivity.class);
+//             final Intent iestadisticas = new Intent(activity,EstadisticasActivity.class);
+                final Intent iestadisticas = new Intent(activity, ReportesWebVentasVendedorActivity.class);
                 iestadisticas.putExtra("codven",codven);
                 activity.startActivityForResult(iestadisticas, 0);
             }
-        });*/
+        });
 
-        View mostrarDevoluciones= window.findViewById(R.id.iv_seguimiento_pedido);
-        mostrarDevoluciones.setOnClickListener(new View.OnClickListener() {
+        View mostrarSeguimientoOP= window.findViewById(R.id.iv_seguimiento_pedido);
+        mostrarSeguimientoOP.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
@@ -354,16 +364,38 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         });
 
         UtilView.Efectos(this, mostrarClientes, R.color.white);
-        UtilView.Efectos(this, mostrarSincronizar, R.color.white);
         UtilView.Efectos(this, mostrarAgenda, R.color.white);
 
         UtilView.Efectos(this, mostrarProductos, R.color.white);
+        UtilView.Efectos(this, mostrarSeguimientoOP, R.color.white);
         UtilView.Efectos(this, mostrarCobranza, R.color.white);
         UtilView.Efectos(this, mostrarReportes, R.color.white);
-        UtilView.Efectos(this, mostrarSincronizar, R.color.white);
+        UtilView.Efectos(this, mostrarEstadisticas, R.color.white);
         UtilView.Efectos(this, mostrarSincronizar, R.color.white);
 
     }
+
+    private void AdministrarAccesos() {
+        accesoMenuPrincipal=new AccesosOpciones.OptionMenuPrincipal(this);
+        OptionMenuPrinicipal optiones=accesoMenuPrincipal.accesoOptionMenuPrincipal();
+        /*binding.lContainerMenuCotizacionAndPedido.setAlpha(0.3f);
+        for (int i = 0; i < binding.lContainerMenuCotizacionAndPedido.getChildCount(); i++) {
+            binding.lContainerMenuCotizacionAndPedido.getChildAt(i).setOnClickListener(null);
+        }*/
+        binding.lContainerMenuCliente.setVisibility(optiones.getMenuCliente()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuCotizacionAndPedido.setVisibility(optiones.getMenuCotizacionAndPedido()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuAgenda.setVisibility(optiones.getMenuAgenda()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuProducto.setVisibility(optiones.getMenuProducto()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuSeguimientoOp.setVisibility(optiones.getMenuSeguimientoOp()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuVentas.setVisibility(optiones.getMenuVentas()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuCuentasXCobrar.setVisibility(optiones.getMenuCuentasXCobrar()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuEstadistica.setVisibility(optiones.getMenuEstadistica()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuConsultaFacturas.setVisibility(optiones.getMenuConsultaFacturas()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuReportes.setVisibility(optiones.getMenuReportes()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuCuotaVentas.setVisibility(optiones.getMenuCuotaVentas()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuSincronizar.setVisibility(optiones.getMenuSincronizar()?View.VISIBLE:View.GONE);
+    }
+
     public void NOFunciona(View view){
         Snackbar snackbar= Snackbar.make(
                 view,
@@ -378,13 +410,13 @@ public class MenuPrincipalActivity extends AppCompatActivity {
     public static void onCreateMainMenu(Window window, final Activity activity){
         View mostrar = (View) window.findViewById(R.id.ly_agenda);
         View mostrarCliente = (View) window.findViewById(R.id.ly_clientes);
-        View mostrarDepoitos = (View) window.findViewById(R.id.ly_deposito);
+//        View mostrarDepoitos = (View) window.findViewById(R.id.ly_deposito);
         View mostrarReportes = (View) window.findViewById(R.id.ly_reportes);
         View mostrarSincronizar = (View) window.findViewById(R.id.iv_sincronizar);
         View mostrarCobranza = (View) window.findViewById(R.id.ly_cobranza);
         View mostrarProductos= (View) window.findViewById(R.id.ly_productos);
         View mostrarEstadisticas= (View) window.findViewById(R.id.ly_estadisticas);
-        View mostrarDevoluciones= (View) window.findViewById(R.id.ly_devoluciones);
+        //View mostrarSeguimientoOP= (View) window.findViewById(R.id.ly_devoluciones);
     }
 
     @Override

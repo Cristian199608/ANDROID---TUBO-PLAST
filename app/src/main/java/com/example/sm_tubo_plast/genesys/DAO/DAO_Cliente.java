@@ -13,6 +13,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
@@ -20,12 +21,11 @@ import java.util.ArrayList;
 @SuppressLint("LongLogTag")
 public class DAO_Cliente extends SQLiteAssetHelper {
 	public static final String TAG = "DAO_Cliente";
-    public static final String DATABASE_NAME = "fuerzaventas";
-    private static final int DATABASE_VERSION = 1;
+
     Context context;
 
     public DAO_Cliente(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
         this.context = context;
     }
     

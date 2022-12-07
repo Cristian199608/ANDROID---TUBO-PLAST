@@ -1584,7 +1584,7 @@ public class PedidosActivityVentana2 extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
 
                             dbclass.eliminar_pedido(Oc_numero);
-                            dbclass.actualizarEstadoCliente(codcli, "S");
+                            //dbclass.actualizarEstadoCliente(codcli, "S");
                             finish();
                         }
 

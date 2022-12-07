@@ -55,6 +55,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.databinding.ItemResumenByTipoProductoBinding;
 import com.example.sm_tubo_plast.genesys.BEAN.Almacen;
 import com.example.sm_tubo_plast.genesys.BEAN.FormaPago;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
@@ -62,6 +63,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
 import com.example.sm_tubo_plast.genesys.BEAN.Obra;
 import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
+import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
@@ -93,7 +95,9 @@ import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaConfiguracion;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.gson.Gson;
@@ -249,7 +253,6 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     /* Cabecera Pedido -------------- */
     private AutoCompleteTextView autocomplete;
     private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_direccionFiscal, edt_fechaPedido,edt_observacion1, edt_observacion2, edt_observacion3, edt_observacion4,edt_docAdicional;
-    private TextView tv_observacionDescuento, tv_observacionTipoProducto;
     private LinearLayout linear_obra;
     private RadioButton rButton_boleta,rButton_factura;
     private RadioButton rButtonSoles,rButtonDolares;
@@ -258,7 +261,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private RadioGroup rGroup_tipoDocumento,  rGroup_moneda,rGroup_aplicaDescuento;
     private Spinner spn_prioridad, spn_sucursal, spn_puntoEntrega,spn_tipoDespacho, spn_obra, spn_transportista, spn_almacenDespacho,spn_condicionVenta,spn_turno, spn_numeroletra;
     private Spinner spn_despacho;
-    private TextView tv_moneda,tv_peso,tv_cantidadItems;
+    private TextView tv_moneda,tvTipoCambio, tv_cantidadItems;
     private TextView tv_subTotal,tv_total,tv_totalCompleto,tv_IGV,tv_percepcion;
     private TextView tv_descuento,tv_descuentoPorcentaje,tvPrecioPorKilo;
     //Cotizacion
@@ -438,7 +441,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         /*---------------------------------------------------------------------------------------*/
         /* Detalle Pedido -----------------------------------------------------------------------*/
         tv_moneda		= (TextView) findViewById(R.id.tv_moneda);
-        tv_peso			= (TextView) findViewById(R.id.tv_peso);
+        tvTipoCambio			= (TextView) findViewById(R.id.tvTipoCambio);
         tv_cantidadItems= (TextView) findViewById(R.id.tv_cantidadItems);
         tv_subTotal		= (TextView) findViewById(R.id.tv_subtotal);
         tv_total		= (TextView) findViewById(R.id.tv_total);
@@ -449,8 +452,6 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         tv_descuento	= (TextView) findViewById(R.id.tv_descuento);
         tv_descuentoPorcentaje = (TextView) findViewById(R.id.tv_descuentoPorcentaje);
         tvPrecioPorKilo= (TextView) findViewById(R.id.tvPrecioPorKilo);
-        tv_observacionDescuento = (TextView)findViewById(R.id.tv_observacionDescuento);
-        tv_observacionTipoProducto = (TextView)findViewById(R.id.tv_observacionTipoProducto);
         /*---------------------------------------------------------------------------------------*/
 
 
@@ -1083,7 +1084,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         spec.setContent(R.id.tab1);
         // spec.setIndicator("Pedido",getResources().getDrawable(android.R.drawable.ic_btn_speak_now));
         // spec.setIndicator("Pedido");
-        spec.setIndicator(getTabIndicador("PEDIDO"));
+        spec.setIndicator(getTabIndicador(""+TIPO_REGISTRO));
         tabs.addTab(spec);
 
         spec = tabs.newTabSpec("mitab2");
@@ -1962,8 +1963,8 @@ private void EnvalularMoneda(){
             Log.i(TAG, "listaNumeroLetra "+listaNumeroLetra+", valor seleccionado es "+codigoLetraCondicionVenta+", Tamaño de lista NRO_LETRA "+listaNumeroLetra.size());
         }
 
-        observacionDescuento	= tv_observacionDescuento.getText().toString();
-        observacionTipoProducto	= tv_observacionTipoProducto.getText().toString();
+        observacionDescuento	= "";
+        observacionTipoProducto	= "";
 
         //Cotizacion
         diasVigencia	= edt_diasVigencia.getText().toString();
@@ -3031,6 +3032,53 @@ private void EnvalularMoneda(){
 
     }
 
+
+    private void MostrarResumenByTipoProducto(){
+        LinearLayout layoutResumentByTipoProducto=findViewById(R.id.layoutResumentByTipoProducto);
+        double valorIgv=new PreferenciaConfiguracion(this).getValorIgv();
+        ArrayList<ResumenVentaTipoProducto> lista=dbclass.getPedidoResumenByTipoProducto(Oc_numero, valorIgv);
+        double sumPesoTotal=0;
+        double sumSubTotal=0;
+        double sumPrecioKiTotal=0;
+        double sumIgvTotal=0;
+        for (ResumenVentaTipoProducto itemRes : lista) {
+            sumPesoTotal+=itemRes.getPesoTotal();
+            sumSubTotal+=itemRes.getSutTotal();
+            sumPrecioKiTotal+=itemRes.getPk();
+            sumIgvTotal+=itemRes.getIgvTotal();
+            layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_800));
+        }
+        ResumenVentaTipoProducto itemRes=new ResumenVentaTipoProducto(
+                "Total", sumPesoTotal,sumSubTotal, sumPrecioKiTotal, sumIgvTotal);
+
+        layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900));
+    }
+    private View  GetViewResumenByTipoProducto(ResumenVentaTipoProducto itemRes, int resColor){
+        LayoutInflater inflater = LayoutInflater.from(this);
+        final View laViewInflada = inflater.inflate(R.layout.item_resumen_by_tipo_producto, null, true);
+        TextView tvTipoProducto =laViewInflada.findViewById(R.id.tvTipoProducto);
+        TextView tvPesoTotal =laViewInflada.findViewById(R.id.tvPesoTotal);
+        TextView tvSubTotal =laViewInflada.findViewById(R.id.tvSubTotal);
+        TextView tvPrecioKilo =laViewInflada.findViewById(R.id.tvPrecioKilo);
+        TextView tvIgvTotal =laViewInflada.findViewById(R.id.tvIgvTotal);
+        TextView tvTotal =laViewInflada.findViewById(R.id.tvTotal);
+
+        tvTipoProducto.setText(itemRes.getTipoProducto());
+        tvPesoTotal.setText(""+ VARIABLES.formater_thow_decimal.format(itemRes.getPesoTotal()));
+        tvSubTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()));
+        tvPrecioKilo.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getPk()));
+        tvIgvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getIgvTotal()));
+        tvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()+itemRes.getIgvTotal()));
+
+        tvTipoProducto.setBackgroundColor(getResources().getColor(resColor));
+        tvPesoTotal.setBackgroundColor(getResources().getColor(resColor));
+        tvSubTotal.setBackgroundColor(getResources().getColor(resColor));
+        tvPrecioKilo.setBackgroundColor(getResources().getColor(resColor));
+        tvIgvTotal.setBackgroundColor(getResources().getColor(resColor));
+        tvTotal.setBackgroundColor(getResources().getColor(resColor));
+        return laViewInflada;
+    }
+
     public void verDialogEntregas(ArrayList<DB_Detalle_Entrega> filas,final MenuItem itemenu, String versionAndroid){
 
         String codPro="";
@@ -3953,7 +4001,7 @@ private void EnvalularMoneda(){
 
                                 dbclass.eliminar_pedido(Oc_numero);
                                 DAOBonificaciones.Eliminar_RegistrosBonificacion(Oc_numero);
-                                dbclass.actualizarEstadoCliente(codcli, "S");
+                                //dbclass.actualizarEstadoCliente(codcli, "S");
                                 finish();
 
                             }
@@ -5760,8 +5808,8 @@ private void EnvalularMoneda(){
         }else{
             tv_moneda.setText(rButtonSoles.getText());
         }
-
-        tv_peso.setText(formaterMoneda.format(peso_total));
+        String tipoCambio=dbclass.getConfiguracionByName("Tipo_cambio", "0");
+        tvTipoCambio.setText(formaterMoneda.format(Double.parseDouble(tipoCambio)));
         tv_cantidadItems.setText(""+productos.size());
         tv_subTotal.setText(formaterMoneda.format(subtotal));
         tv_total.setText(formaterMoneda.format(total));
@@ -5777,6 +5825,8 @@ private void EnvalularMoneda(){
 
         //dbclass.GuardarMontoPesoPercepcion_Pedido(total, percepcion,peso_total, totalSujetoPercepcion, Oc_numero);
         dbclass.guardarPedidoTotales(peso_total, subtotal, IGV, total, percepcion, totalSujetoPercepcion, Oc_numero);
+
+        MostrarResumenByTipoProducto();
     }
 
     private void ActualizarBonificacionesPendientes(String codigoSalida) {

@@ -1,13 +1,17 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -65,42 +69,11 @@ CreacionNuevoCliente2Activity extends AppCompatActivity {
                     getResources().getColor(R.color.s4)
             );
 
-            /*import android.app.Activity;
-            import android.os.Bundle;
-            import android.webkit.WebView;
-            import android.webkit.WebViewClient;
-            public class MainActivity extends Activity {
-                private WebView webView;
-                private JavaScriptInterFace javaScriptInterFace; @Override protected void
-                onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-                    setContentView(R.layout.activity_main);
-                    webView=(WebView)findViewById(R.id.webView);
-                    javaScriptInterFace=new JavaScriptInterFace(this);
-                    webView.addJavascriptInterface(javaScriptInterFace, "AndroidFunction");
-                    webView.getSettings().setJavaScriptEnabled(true);
-                    webView.loadUrl("file:///android_asset/test.html");
-                    webView.setWebViewClient(new WebViewClient()); } }*/
-
-             /*import android.content.Context;
-             import android.util.Log;
-             import android.widget.Toast;
-             public class JavaScriptInterFace {
-                 Context mContext;
-                 JavaScriptInterFace(Context c) {
-                     mContext = c; }
-                     public int changeImage(){
-                     Log.e("Got", "it"+2); return 2;
-                 }
-                 public void showToast(){
-                         Toast.makeText(mContext, "hi", Toast.LENGTH_SHORT).show();
-                     }
-             }
-             */
 
 
             myWebVew.setWebChromeClient(new WebChromeClient());
             myWebVew.setWebChromeClient(new WebChromeClient() {
+
                 @Override
                 public void onProgressChanged(WebView view, int progress) {
                     swipe_refresh.setRefreshing(true);
@@ -140,4 +113,6 @@ CreacionNuevoCliente2Activity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+
 }

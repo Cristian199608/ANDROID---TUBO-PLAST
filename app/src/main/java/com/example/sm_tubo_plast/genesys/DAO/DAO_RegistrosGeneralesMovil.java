@@ -11,22 +11,21 @@ import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
 import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
 
 public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
 	public static final String TAG = "DAO_Configuracion";
-    public static final String DATABASE_NAME = "fuerzaventas";
-    private static final int DATABASE_VERSION = 1;
-    
+
     private static final String CONDICION_VENTA = "CV";
     private static final String FORMA_PAGO = "FP";
     
     Context context;
 
     public DAO_RegistrosGeneralesMovil(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
         this.context = context;
     }
     

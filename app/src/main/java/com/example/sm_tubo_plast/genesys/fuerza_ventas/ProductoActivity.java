@@ -133,6 +133,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     private double descuentoMin = 0.0;
     private double descuentoMax = 0.0;
     private double valorIGV;
+    private double finalvalorIGV;
 
     private double totalStockConfirmar = 0.0d;
     private double totalStockDisponible = 0.0d;
@@ -151,6 +152,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     String descuentoAplicado = "0";
     String PRECIO_BASE = "";
     String PRECIO_LISTA = "0";
+    String afecto_igv="0";
 
 
     @Override
@@ -265,12 +267,11 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 final String precioProducto = edtPrecioUnt.getText().toString().trim().length()==0?"0":edtPrecioUnt.getText().toString();
                 if (!precioProducto.equals("") || precioProducto.length() != 0) {
                     if (isChecked) {
-
                         if(Double.parseDouble(precioProducto)>Double.parseDouble(PRECIO_BASE) ){
                             PRECIO_BASE=precioProducto;
                             tv_precioSinIGV.setText(GlobalFunctions.redondear(String.valueOf(precioProducto)));
                             tv_precioSinIGV.setTextColor(getResources().getColor(R.color.green_800));
-                            double precioIncIGV = Double.parseDouble(precioProducto) * (1 + valorIGV);
+                            double precioIncIGV = Double.parseDouble(precioProducto) * (1 + finalvalorIGV);
                             tv_precioIncIGV.setText(GlobalFunctions.redondear(String.valueOf(precioIncIGV)));
                             tv_precioIncIGV.setTextColor(getResources().getColor(R.color.green_800));
 
@@ -281,7 +282,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                             edtPrecioUnt.setText(PRECIO_BASE);
                             tv_precioSinIGV.setText(GlobalFunctions.redondear(String.valueOf(PRECIO_BASE)));
                             tv_precioSinIGV.setTextColor(getResources().getColor(R.color.green_500));
-                            double precioIncIGV = Double.parseDouble(PRECIO_BASE) * (1 + valorIGV);
+                            double precioIncIGV = Double.parseDouble(PRECIO_BASE) * (1 + finalvalorIGV);
                             tv_precioIncIGV.setText(GlobalFunctions.redondear(String.valueOf(precioIncIGV)));
                             tv_precioIncIGV.setTextColor(getResources().getColor(R.color.green_500));
 
@@ -534,7 +535,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         descuento = edt_descuento.getText().toString();
         if(descuento.equals("")) descuento="0.0";
 
-        if (valorIGV==0.0) {
+        if (finalvalorIGV==0.0) {
             GlobalFunctions.showCustomToast(ProductoActivity.this, "valor IGV es 0.0 !", GlobalFunctions.TOAST_ERROR,GlobalFunctions.POSICION_BOTTOM);
         }else{
             if (!codprod.equals("") && !edtBusqueda.getText().equals("")) { //validacion del producto
@@ -863,7 +864,8 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
-                        String afecto = productos[position].getAfecto();
+
+                        afecto_igv = productos[position].getAfecto();
                         edtBusqueda.setText(productos[position].getDescripcion());
 
                         String undMedidas[] = obj_dbclasses.getUndmedidas(productos[position].getCodprod());
@@ -888,10 +890,15 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
                         swt_afecto.setFocusable(false);
 
-                        if (afecto.equals("0") || afecto.equals("")) {
+
+
+
+                        if (afecto_igv.equals("0") || afecto_igv.equals("")) {
                             swt_afecto.setChecked(false);
+                            finalvalorIGV=0;
                         }else{
                             swt_afecto.setChecked(true);
+                            finalvalorIGV=valorIGV;
                         }
                         edtCantidad.requestFocus();
                         btn_consultarProducto.performClick();

@@ -14,6 +14,7 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
+import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Database;
@@ -28,6 +29,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Producto;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -59,11 +61,12 @@ public class DBclasses extends SQLiteAssetHelper {
 	Calendar calendar = Calendar.getInstance();
 
 	public DBclasses(Context context) {
-		super(context, DAO_Database.DATABASE_NAME, null,  DAO_Database.DATABASE_VERSION);
+		super(context, VARIABLES.DATABASA_NAME, null,  VARIABLES.DATABASA_VERSION);
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
 
 		_context = context;
 	}
+
 
 	/*
 	 * @Override public void onCreate(SQLiteDatabase db) {
@@ -131,7 +134,18 @@ public class DBclasses extends SQLiteAssetHelper {
 		onCreate(db);
 		db.close();
 	}
+	public void EliminaOldDatabase(){
 
+
+		String S_TAG="EliminaOldDatabase:: ";
+		try {
+			_context.deleteDatabase(VARIABLES.DATABASA_NAMEO_OLD);
+			Log.i(TAG, S_TAG+" se ha eliminado el anterior db "+VARIABLES.DATABASA_NAMEO_OLD);
+		} catch (Exception e) {
+			Log.e(TAG, S_TAG+"Ohh no se pudo eliminar la base de datos antiguo "+VARIABLES.DATABASA_NAMEO_OLD);
+			e.printStackTrace();
+		}
+	}
 	public Cursor fetchProductsByName(String inputText) throws SQLException {
 		Log.w(TAG, inputText);
 		SQLiteDatabase mDb = getReadableDatabase();
@@ -488,7 +502,12 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public ArrayList<HashMap<String, Object>> getProgramacionxDia2( String txtBusqueda, int start, int  end, int bucle, String fecha_formateado, boolean checkProgramada, boolean checkVisitado) {
+	public ArrayList<HashMap<String, Object>> getProgramacionxDia2( String txtBusqueda,
+																	int start,
+																	int  end, int bucle,
+																	String fecha_formateado,
+																	boolean soloAnulados
+																	 ) {
 		SharedPreferences prefs = _context.getSharedPreferences(
 				"MisPreferencias", Context.MODE_PRIVATE);
 		String codven = prefs.getString("codven", "por_defecto");
@@ -499,15 +518,21 @@ public class DBclasses extends SQLiteAssetHelper {
 		if (fecha_formateado.length()>0){
 			addwhere="and cliente.codcli in (select sv.id_rrhh from "+DBtables.San_Visitas.TAG+" sv where Fecha_planificada like '"+fecha_formateado+"%' or Fecha_Ejecutada like '"+fecha_formateado+"%' ) ";
 		}
+		if (soloAnulados){
+			addwhere="and cliente.stdcli='0' ";
+		}else addwhere="and cliente.stdcli='1' ";
 
 		rawQuery = "select * from (select distinct(nomcli) as nomcli,ruccli,fecha_compra,monto_compra,cliente.codcli,item_dircli,n_dia,ifnull(observacion,'') as observacion, " +
 				"ifnull((" +
 				"  dc.direccion), 'Sin dirección') as direccion," +
-				"cliente.codcli as codcli " +
+				"cliente.codcli as codcli," +
+				"cliente.stdcli as estado_cli," +
+				"ifnull(motivo, '') as motivoBajaCliente " +
 				" from "
 				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
 				+"inner join "+Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
-				+ "where codven='"  + codven+"' "
+				+" left join cliente_estado ce on ce.codcli= cliente.codcli "
+				+ "where znf_programacion_clientes.codven='"  + codven+"' "
 				+"and (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
 				+""+addwhere+""
 				+ " limit "+start+", "+end+" "
@@ -521,7 +546,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		ArrayList<HashMap<String, Object>> dbcliente = new ArrayList<HashMap<String, Object>>();
 		if (cur.isClosed() && bucle>50){
 			bucle--;
-			return getProgramacionxDia2( txtBusqueda, start, end, bucle, fecha_formateado, checkProgramada, checkVisitado);
+			return getProgramacionxDia2( txtBusqueda, start, end, bucle, fecha_formateado, soloAnulados);
 		}
 		int coint=cur.getCount();
 		db.close();
@@ -546,6 +571,8 @@ public class DBclasses extends SQLiteAssetHelper {
 
 			dbc.put("estado_localizacion", estado_localizacion);
 			dbc.put("estado_pedido", estado_pedido);
+			dbc.put("estado_cli", cur.getString(cur.getColumnIndex("estado_cli")));
+			dbc.put("motivoBajaCliente", cur.getString(cur.getColumnIndex("motivoBajaCliente")));
 
 			dbcliente.add(dbc);
 		}
@@ -3781,6 +3808,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.CLiente_Contacto.email, jsonData.getString("email").trim());
 				cv.put(DBtables.CLiente_Contacto.cargo, jsonData.getString("cargo").trim());
 				cv.put(DBtables.CLiente_Contacto.estado, jsonData.getString("estado").trim());
+				cv.put(DBtables.CLiente_Contacto.fec_nacimiento, jsonData.getString("fec_nacimiento").trim());
 				cv.put(DBtables.CLiente_Contacto.flag, jsonData.getString("flag").trim());
 
 
@@ -4230,8 +4258,8 @@ public class DBclasses extends SQLiteAssetHelper {
 						.trim());
 				cv.put(DBtables.Usuarios.USEUSR, jsonData.getString("useusr")
 						.trim());
-				cv.put(DBtables.Usuarios.USESGL, jsonData.getString("usesgl")
-						.trim());
+				cv.put(DBtables.Usuarios.USESGL, jsonData.getString("usesgl").trim());
+				cv.put(DBtables.Usuarios.codigoRol, jsonData.getString("codigoRol").trim());
 
 				db.insert(DBtables.Usuarios.TAG, null, cv);
 				Log.i("USUARIOS",
@@ -13033,6 +13061,40 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return valor;
+	}
+
+	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv) {
+		String rawQuery;
+		rawQuery = "SELECT " +
+				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, sum(precio_neto)/sum(cantidad) as pk,\n" +
+				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
+				"select  \n" +
+				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
+				"pd.peso_bruto, pd.precio_neto, pd.cantidad\n" +
+				" from pedido_detalle pd   \n" +
+				"inner join producto p on pd.cip=p.codpro\n" +
+				"where pd.oc_numero='"+oc_numero+"'\n" +
+				") res group by tipoProducto " +
+				"order by tipoProducto asc";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		ArrayList<ResumenVentaTipoProducto> lista=new ArrayList<>();
+		ResumenVentaTipoProducto item=null;
+		while (cur.moveToNext()){
+			item=new ResumenVentaTipoProducto(
+				cur.getString(cur.getColumnIndex("tipoProducto")),
+				cur.getDouble(cur.getColumnIndex("pesoTotal")),
+				cur.getDouble(cur.getColumnIndex("sutTotal")),
+				cur.getDouble(cur.getColumnIndex("pk")),
+				cur.getDouble(cur.getColumnIndex("igvTotal"))
+			);
+			lista.add(item);
+		}
+		cur.close();
+		db.close();
+		return lista;
 	}
 }
 

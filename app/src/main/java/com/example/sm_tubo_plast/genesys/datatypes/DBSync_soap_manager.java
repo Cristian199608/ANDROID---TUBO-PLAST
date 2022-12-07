@@ -9,17 +9,24 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
+import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
+import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app;
+import com.example.sm_tubo_plast.genesys.BEAN.Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.Retrofit.GetDataControlAcceso;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.DataRetrofit;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClient;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -547,6 +554,39 @@ public class DBSync_soap_manager {
 		}
 
 	}
+
+	public int getTBcliente_estado( String codven, String url, String catalog, String user, String contrasena, int start, int paginacion) throws Exception{
+		try{
+
+			String _METHOD_NAME="getTBcliente_estado_json";
+
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+codven);
+			propiedad.add("url"+__PARTIR___+url);
+			propiedad.add("catalog"+__PARTIR___+catalog);
+			propiedad.add("user"+__PARTIR___+user);
+			propiedad.add("contrasena"+__PARTIR___+contrasena);
+			propiedad.add("start"+__PARTIR___+start);
+			propiedad.add("paginacion"+__PARTIR___+paginacion);
+
+			String jsonstring = AddRequestHeader(propiedad, _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<Cliente_estado>>() {}.getType();
+			final ArrayList<Cliente_estado> lista = gson.fromJson(jsonstring.toString(), malla);
+			DAO_ClienteEstado dao_clienteEstado=new DAO_ClienteEstado(context);
+			dao_clienteEstado.DeleteAll();
+			for (Cliente_estado cliente_estado : lista) {
+				dao_clienteEstado.InsertItem(cliente_estado);
+			}
+			dao_clienteEstado.close();
+			dao_clienteEstado=null;
+			return lista.size();
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i("productoNoDescuento", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
 /*
  public void Sync_tabla_cta_ingresos(String codven, String url, String catalog, String user, String contrasena) throws Exception{
 		
@@ -6668,5 +6708,119 @@ public int actualizarRegistroBonificaciones() throws Exception{
 			throw new Exception(e);
 		}
 	}
+
+	public int realizar_altas_bajas_clientes(Cliente_estado cliente_estado) throws Exception {
+		String S_TAG = "realizar_altas_bajas_clientes:: ";
+		int STD_ENVIO = VARIABLES.ID_ENVIO_FALLIDA;
+		String SOAP_ACTION = "http://tempuri.org/realizar_altas_bajas_clientes_json";
+		String METHOD_NAME = "realizar_altas_bajas_clientes_json";
+
+		String cadenaJson=gson.toJson(cliente_estado);
+		Log.i(TAG, "realizar_altas_bajas_clientes:: Envio cadena json "+cadenaJson);
+
+		SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+		Request.addProperty("url", url);
+		Request.addProperty("catalog", catalog);
+		Request.addProperty("user", user);
+		Request.addProperty("password", contrasena);
+		Request.addProperty("cadena", cadenaJson);
+
+		SoapSerializationEnvelope Soapenvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet = true;
+		Soapenvelope.setOutputSoapObject(Request);
+
+		HttpTransportSE transporte = new HttpTransportSE(URL + GlobalVar.urlService);
+
+		try {
+			transporte.call(SOAP_ACTION, Soapenvelope);
+			SoapPrimitive result = (SoapPrimitive) Soapenvelope.getResponse();
+			Log.i(TAG, S_TAG + "respuesta es " + result.toString());
+			if (result.toString().equals("OK")) {
+				STD_ENVIO = VARIABLES.ID_ENVIO_EXITOSA;
+			}
+		} catch (Exception e) {
+			Log.e(TAG, S_TAG + "error al intentar dar la baja o la alta de cliente. " + e.getMessage());
+			e.printStackTrace();
+		}
+		return STD_ENVIO;
+	}
+
+	public void SyncRolesAccesoApp() throws Exception{
+		 String S_TAG="SyncRolesAccesoApp";
+		try{
+
+			String _METHOD_NAME="get_tplast_seguimiento_pedido_detalle_json";
+			String jsonstring = AddRequestHeader(new ArrayList<>(), _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<Roles_accesos_app>>() {}.getType();
+			final ArrayList<Roles_accesos_app> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			DAO_Roles_accesos_app daoRolesAccesosApp=new DAO_Roles_accesos_app(context);
+			daoRolesAccesosApp.DeleteAll();
+			for (Roles_accesos_app itemAcceso : lista) {
+				daoRolesAccesosApp.InsertItem(itemAcceso);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+	public void SyncMenuOpcionesYRolesAcceso(String url, String catalog, String user, String contrasena)throws Exception{
+		try {
+			this.url=url;
+			this.catalog=catalog;
+			this.user=user;
+			this.contrasena=contrasena;
+			SyncTBRoles_accesos_app();
+			SyncTBMenu_opciones_app();
+		}catch (Exception e){
+			throw new Exception(e);
+		}
+	}
+	private void SyncTBRoles_accesos_app() throws Exception{
+		String S_TAG="SyncTBRoles_accesos_app";
+		String jsonstring=null;
+		try{
+
+			String _METHOD_NAME="getTBRoles_accesos_app_json";
+			jsonstring = AddRequestHeader(new ArrayList<>(), _METHOD_NAME);
+
+			final Type malla = new TypeToken<ArrayList<Roles_accesos_app>>() {}.getType();
+			final ArrayList<Roles_accesos_app> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			DAO_Roles_accesos_app daoroles_accesos_app=new DAO_Roles_accesos_app(context);
+			daoroles_accesos_app.DeleteAll();
+			for (Roles_accesos_app itemAcceso : lista) {
+				daoroles_accesos_app.InsertItem(itemAcceso);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA: msg "+jsonstring);
+			throw new Exception(e);
+		}
+	}
+	private void SyncTBMenu_opciones_app() throws Exception{
+		String S_TAG="SyncTBMenu_opciones_app";
+		String jsonstring=null;
+		try{
+
+			String _METHOD_NAME="getTBMenu_opciones_app_json";
+			jsonstring = AddRequestHeader(new ArrayList<>(), _METHOD_NAME);
+
+			final Type malla = new TypeToken<ArrayList<Menu_opciones_app>>() {}.getType();
+			final ArrayList<Menu_opciones_app> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			DAO_Menu_opciones_app daomenu_opciones_app=new DAO_Menu_opciones_app(context);
+			daomenu_opciones_app.DeleteAll();
+			for (Menu_opciones_app itemAcceso : lista) {
+				daomenu_opciones_app.InsertItem(itemAcceso);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA: msg "+jsonstring);
+			throw new Exception(e);
+		}
+	}
+
 
 }

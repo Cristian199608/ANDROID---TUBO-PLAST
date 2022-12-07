@@ -15,7 +15,10 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -48,8 +51,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionMenuPrinicipal;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionPantallaClientes;
+import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBClientes;
@@ -75,6 +83,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -133,6 +142,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private static final int ID_VISITA_CLIENTE = 9;
     private static final int ID_PROGRAMACION_VISITA_CLIENTE = 10;
     private static final int ID_LOCALIZACION = 11;
+    private static final int ID_BAJA_ClIENTE = 12;
+    private static final int ID_ALTA_ClIENTE = 13;
 
 
     Boolean isInternetPresent = false;
@@ -164,12 +175,14 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private EditText alert_edt;
     private boolean isAlert = false;
 
-    TextView tv_cantidadGeneral, tv_cantidad_filtrado, tv_fecha_filtrado_de;
+    TextView tv_cantidadGeneral, tv_cantidad_filtrado, tv_fecha_filtrado_de, tvClientesAnulados;
     CheckBox check_programada,check_visitado;
+    Dialog customDialog = null;
 
     SharedPreferences prefs;
     String _usuario;
     String _pass;
+    AccesosOpciones.PantallaClientes accesosOpciones=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +226,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         tv_cantidadGeneral = (TextView) findViewById(R.id.tv_cantidadClientesGeneral);
         tv_cantidad_filtrado = (TextView) findViewById(R.id.tv_cantidad_filtrado);
         tv_fecha_filtrado_de = (TextView) findViewById(R.id.tv_fecha_filtrado_de);
+        tvClientesAnulados = (TextView) findViewById(R.id.tvClientesAnulados);
         check_programada =  findViewById(R.id.check_programada);
         check_visitado =  findViewById(R.id.check_visitado);
 
@@ -223,6 +237,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         swipeRefreshLayout.setColorSchemeResources(UtilView.getColorsSwipe());
         swipeRefreshLayout.setEnabled(false);
         tv_fecha_filtrado_de.setVisibility(View.GONE);
+        tvClientesAnulados.setVisibility(View.GONE);
 
         myFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,6 +260,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 tv_fecha_filtrado_de.setVisibility(View.GONE);
                 tv_fecha_filtrado_de.setText("");
                 tv_fecha_filtrado_de.setHint("");
+                GestionCargarCliente(0, "");
+            }
+        });
+        tvClientesAnulados.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tvClientesAnulados.setVisibility(View.GONE);
                 GestionCargarCliente(0, "");
             }
         });
@@ -295,42 +317,51 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         ActionItem infoItem = new ActionItem(ID_INFO, "Informacion", R.drawable.icon_man_24dp);
         //ActionItem infoWebItem = new ActionItem(ID_INFOWEB,"Informacion Online", getResources().getDrawable(R.drawable.infoweb));
-        ActionItem addItem = new ActionItem(ID_PEDIDO, "Orden Compra",R.drawable.pedidopn);
-        ActionItem acceptItem = new ActionItem(ID_COBRANZA, "Cobranza", R.drawable.icon_coins_24dp);
+        ActionItem itemPedido = new ActionItem(ID_PEDIDO, "Orden Compra",R.drawable.pedidopn);
+        ActionItem itemCobranza = new ActionItem(ID_COBRANZA, "Estado de Cuenta", R.drawable.icon_coins_24dp);
         ActionItem uploadItem = new ActionItem(ID_NO_VENTA, "Motivo no venta", R.drawable.icon_stop_24dp);
         ActionItem gestionVisita = new ActionItem(ID_VISITA_CLIENTE, "Gestión visita", R.drawable.icon_man_24dp);
         ActionItem programar_visita = new ActionItem(ID_PROGRAMACION_VISITA_CLIENTE, "Programar Visita", R.drawable.icon_man_24dp);
         ActionItem observacion = new ActionItem(ID_OBSERVACION, "Observacion", R.drawable.alert);
-        ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
+        //ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
         ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Localización", R.drawable.ic_ubicacion_grey);
+        ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_ClIENTE, "Baja de Cliente", R.drawable.icon_stop_24dp);
 
         final QuickAction mQuickAction = new QuickAction(this);
         final QuickAction mQuickAction2 = new QuickAction(this);
 
         mQuickAction.addActionItem(infoItem);
         mQuickAction.addActionItem(geolocalizacion);
-        //mQuickAction.addActionItem(infoWebItem);
-        mQuickAction.addActionItem(addItem);
-        mQuickAction.addActionItem(acceptItem);
-        mQuickAction.addActionItem(uploadItem);
-        mQuickAction.addActionItem(programar_visita);
-        mQuickAction.addActionItem(gestionVisita);
-        mQuickAction.addActionItem(observacion);
-        mQuickAction.addActionItem(devolucionItem);
         mQuickAction.addActionItem(cotizacionItem);
+        //mQuickAction.addActionItem(infoWebItem);
+        mQuickAction.addActionItem(itemPedido);
+
+        mQuickAction.addActionItem(itemCobranza);
+        mQuickAction.addActionItem(gestionVisita);
+        mQuickAction.addActionItem(programar_visita);
+
+        mQuickAction.addActionItem(uploadItem);
+        mQuickAction.addActionItem(observacion);
+        //mQuickAction.addActionItem(devolucionItem);
+        mQuickAction.addActionItem(motivoBajaOrAlta);
 
         mQuickAction2.addActionItem(infoItem);
         mQuickAction2.addActionItem(geolocalizacion);
-        //mQuickAction2.addActionItem(infoWebItem);
-        mQuickAction2.addActionItem(addItem);
-        mQuickAction2.addActionItem(acceptItem);
-        mQuickAction2.addActionItem(uploadItem);
-        mQuickAction2.addActionItem(programar_visita);
-        mQuickAction2.addActionItem(gestionVisita);
-        mQuickAction2.addActionItem(observacion);
-        mQuickAction2.addActionItem(devolucionItem);
         mQuickAction2.addActionItem(cotizacionItem);
+        //mQuickAction2.addActionItem(infoWebItem);
+        mQuickAction2.addActionItem(itemPedido);
+        mQuickAction2.addActionItem(itemCobranza);
+        mQuickAction2.addActionItem(gestionVisita);
+        mQuickAction2.addActionItem(programar_visita);
+
+        mQuickAction2.addActionItem(uploadItem);
+        mQuickAction2.addActionItem(observacion);
+        //mQuickAction2.addActionItem(devolucionItem);
+        mQuickAction2.addActionItem(motivoBajaOrAlta);
+
+        AdministrarAccesos(mQuickAction, mQuickAction2);
+        AdministrarAccesos(mQuickAction, mQuickAction2);
 
 
         // ///////////////////Acciones para mQuickAction///////////////////////
@@ -461,6 +492,56 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     }
 
+    private void AdministrarAccesos(QuickAction quikAction1, QuickAction quikAction2) {
+        accesosOpciones= new AccesosOpciones.PantallaClientes(this);
+        OptionPantallaClientes opciones=accesosOpciones.option();
+        try {
+            if (!opciones.getVerInformacionCliente()){
+                if (quikAction1.getActionItemById(ID_INFO)!=null)  quikAction1.remove(ID_INFO);
+                if (quikAction2.getActionItemById(ID_INFO)!=null)   quikAction2.remove(ID_INFO);
+            }
+            if (!opciones.getOdenPedido()){
+                if (quikAction1.getActionItemById(ID_PEDIDO)!=null) quikAction1.remove(ID_PEDIDO);
+                if (quikAction2.getActionItemById(ID_PEDIDO)!=null) quikAction2.remove(ID_PEDIDO);
+            }
+            if (!opciones.getEstadoDeCuenta()){
+                if (quikAction1.getActionItemById(ID_COBRANZA)!=null) quikAction1.remove(ID_COBRANZA);
+                if (quikAction2.getActionItemById(ID_COBRANZA)!=null) quikAction2.remove(ID_COBRANZA);
+            }
+            if (!opciones.getMotivoNoVenta()){
+                if (quikAction1.getActionItemById(ID_NO_VENTA)!=null) quikAction1.remove(ID_NO_VENTA);
+                if (quikAction2.getActionItemById(ID_NO_VENTA)!=null) quikAction2.remove(ID_NO_VENTA);
+            }
+            if (!opciones.getGestionarVisita()){
+                if (quikAction1.getActionItemById(ID_VISITA_CLIENTE)!=null) quikAction1.remove(ID_VISITA_CLIENTE);
+                if (quikAction2.getActionItemById(ID_VISITA_CLIENTE)!=null) quikAction2.remove(ID_VISITA_CLIENTE);
+            }
+            if (!opciones.getProgramarVisita()){
+                if (quikAction1.getActionItemById(ID_PROGRAMACION_VISITA_CLIENTE)!=null) quikAction1.remove(ID_PROGRAMACION_VISITA_CLIENTE);
+                if (quikAction2.getActionItemById(ID_PROGRAMACION_VISITA_CLIENTE)!=null) quikAction2.remove(ID_PROGRAMACION_VISITA_CLIENTE);
+            }
+            if (!opciones.getObservacion()){
+                if (quikAction1.getActionItemById(ID_OBSERVACION)!=null) quikAction1.remove(ID_OBSERVACION);
+                if (quikAction2.getActionItemById(ID_OBSERVACION)!=null) quikAction2.remove(ID_OBSERVACION);
+            }
+            if (!opciones.getCotizacion()){
+                if (quikAction1.getActionItemById(ID_COTIZACION)!=null) quikAction1.remove(ID_COTIZACION);
+                if (quikAction2.getActionItemById(ID_COTIZACION)!=null) quikAction2.remove(ID_COTIZACION);
+            }
+            if (!opciones.getGeolocalizarCliente()){
+                if (quikAction1.getActionItemById(ID_LOCALIZACION)!=null) quikAction1.remove(ID_LOCALIZACION);
+                if (quikAction2.getActionItemById(ID_LOCALIZACION)!=null) quikAction2.remove(ID_LOCALIZACION);
+            }
+            if (!opciones.getBajaDeCliente()){
+                if (quikAction1.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction1.remove(ID_BAJA_ClIENTE);
+                if (quikAction2.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction2.remove(ID_BAJA_ClIENTE);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
     private void starWebCreateCliente(boolean forzar) {
 
         double lat=0.0,lng=0.0, altitud=0.0;
@@ -518,7 +599,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         private class ViewHolder {
 
-            TextView txt_flag_pedido,name, ruc, observacion, fecha, monto, direccion,item_fecha_visitado, item_fecha_programada;
+            TextView txt_flag_pedido,name, ruc, observacion,itemMotivoBajaCliente, fecha, monto, direccion,item_fecha_visitado, item_fecha_programada;
             ImageView foto;
 
         }
@@ -541,8 +622,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         .findViewById(R.id.tv_ruc);
                 viewHolder.foto = (ImageView) convertView
                         .findViewById(R.id.item_cliente_iv_foto);
-                viewHolder.observacion = (TextView) convertView
-                        .findViewById(R.id.list_item_cliente_observacion);
+                viewHolder.observacion = (TextView) convertView .findViewById(R.id.list_item_cliente_observacion);
+                viewHolder.itemMotivoBajaCliente = (TextView) convertView .findViewById(R.id.itemMotivoBajaCliente);
                 viewHolder.fecha = (TextView) convertView
                         .findViewById(R.id.list_item_cliente_fecha);
                 viewHolder.monto = (TextView) convertView
@@ -559,6 +640,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
                 int i=Integer.parseInt(searchResults.get(position).get("estado_pedido").toString());
+                int estadoCliente=Integer.parseInt(searchResults.get(position).get("estado_cli").toString());
+                String motivoBajaCliente=searchResults.get(position).get("motivoBajaCliente").toString();
                 /*int i = "" obj_dbclasses.obtenerPedidosXCodcli(
                         searchResults.get(position).get("codigo").toString(),
                         searchResults.get(position).get("item_direccion").toString());
@@ -568,16 +651,23 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
                 Log.w("SITIO_ENFA", i + "obtenerPedidosXCODCLI");
-                if (i == 1) {
+                viewHolder.itemMotivoBajaCliente.setText("");
+                viewHolder.itemMotivoBajaCliente.setVisibility(View.GONE);
+               if (i == 2 || estadoCliente==0) {
+                    // convertView.setBackgroundResource(R.drawable.list_selector);
+                    viewHolder.foto.setImageDrawable(getResources().getDrawable(R.drawable.icon_cliente_rojo));
+                    if (estadoCliente==0)  {
+                        viewHolder.itemMotivoBajaCliente.setVisibility(View.VISIBLE);
+                        viewHolder.itemMotivoBajaCliente.setText("Motivo baja: "+motivoBajaCliente);
+                    }
+               }
+               else if (i == 1) {
                     // convertView.setBackgroundColor(getResources().getColor(R.color.color_pedidos_realizados));
                     viewHolder.foto.setImageDrawable(getResources()
                             .getDrawable(R.drawable.icon_cliente_verde));
 
-                } else if (i == 2) {
-                    // convertView.setBackgroundResource(R.drawable.list_selector);
-                    viewHolder.foto.setImageDrawable(getResources()
-                            .getDrawable(R.drawable.icon_cliente_rojo));
-                } else if (i == 3) {
+                }
+                else if (i == 3) {
                     // convertView.setBackgroundResource(R.drawable.list_selector);
                     viewHolder.foto.setImageDrawable(getResources()
                             .getDrawable(R.drawable.icon_cliente_orange));
@@ -620,14 +710,14 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         viewHolder.txt_flag_pedido.setBackgroundColor(getResources().getColor(R.color.grey_400));
                     }
 
-                    obs = obj_dbclasses.getObservacionCliente(searchResults
-                            .get(position).get("codigo").toString());
+                    obs = obj_dbclasses.getObservacionCliente(searchResults .get(position).get("codigo").toString());
                 } catch (Exception e) {
                     Log.w("LOG CLIENTES ACTIVITY ADAPTER", e);
                 }
 
                 // viewHolder.observacion.setText(searchResults.get(position).get("observacion").toString());
                 viewHolder.observacion.setText(obs);
+
 
                 viewHolder.monto.setText(searchResults.get(position)
                         .get("monto").toString());
@@ -920,6 +1010,12 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 ws_cliente_contacto.EnviarCliente_Contacto();
 
             return true;
+            case R.id.menu_ver_clientes_inactivos:
+                tvClientesAnulados.setVisibility(View.VISIBLE);
+                tvClientesAnulados.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_top_in));
+                GestionCargarCliente(0, "");
+
+                return true;
             case R.id.menu_calendario_visita:
                 final String CERO = "0";
                 final Calendar c = Calendar.getInstance();
@@ -1123,6 +1219,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
                     boolean checkProgramada=check_programada.isChecked();
                     boolean checkVisitado=check_visitado.isChecked();
+                    boolean verClientesAnulados = tvClientesAnulados.getVisibility()==View.VISIBLE;
 
                     String fecha_formateada="";
                     if (tv_fecha_filtrado_de.getHint()!=null) {
@@ -1131,7 +1228,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     }
                     String newBusqueda=inputSearch.getText().toString().replace(" ", "%");
                     ArrayList<HashMap<String, Object>>  data = obj_dbclasses.getProgramacionxDia2(
-                            newBusqueda, start, nro_paginacion, 50, fecha_formateada, checkProgramada, checkVisitado);
+                            newBusqueda, start, nro_paginacion, 50, fecha_formateada, verClientesAnulados);
 
                     DAO_Cliente dao_Cliente = new DAO_Cliente(getApplicationContext());
                     int cantidad_total=dao_Cliente.getClienteDirrectionAll();
@@ -1510,6 +1607,32 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             i.putExtra("codigoVendedor", codven);
             startActivity(i);
             finish();
+        } else if (actionId == ID_BAJA_ClIENTE) {
+            if (obj_dbclasses.VerificarCtasXCobrar(codcli).size()>0){
+                UtilViewMensaje.MENSAJE_simple(this, "DEUDA", "No se puede dar de baja al cliente, ya que mantiene deuda");
+            }else{
+                String mensaje="¿Estas seguro de solicitar la baja de este cliente?";
+
+                AlertDialog.Builder dialogo = new AlertDialog.Builder(ClientesActivity.this);
+                dialogo.setMessage(mensaje);
+                dialogo.setPositiveButton("SI",
+                        new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mostrarDialog_motivo_BAJA_ALTA(ID_BAJA_ClIENTE);
+                            }
+                        });
+                dialogo.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                dialogo.create();
+                dialogo.show();
+            }
+
         }else if (actionId == ID_COTIZACION) {
             final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
             i.putExtra("origen", "CLIENTES");
@@ -1686,6 +1809,212 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         }
 
+    }
+
+    private void mostrarDialog_motivo_BAJA_ALTA(int id) {
+
+
+            String mensaje="";
+            String estado="";
+            String titulo="";
+            if (id==ID_BAJA_ClIENTE){
+                mensaje="Se procederá a enviar la solicitud de baja. ¿Confirmar?";
+                estado="0";
+                titulo="INDIQUE EL MOTIVO DE LA BAJA";
+            }
+            else if(id==ID_ALTA_ClIENTE){
+                mensaje="Se procederá a enviar la solicitud de alta. ¿Confirmar?";
+                estado="1";
+                titulo="INDIQUE EL MOTIVO DE LA ALTA";
+
+            }
+
+            customDialog = new Dialog(this);
+            customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            customDialog.setCancelable(true);
+
+            customDialog.setContentView(R.layout.dialog__indique_motivo_baja_o_alta);
+
+            final ProgressBar ProgBarAltaBaja;
+            final TextInputLayout et_bodyMotivoBaja_alta=(TextInputLayout)customDialog.findViewById(R.id.et_bodyMotivoBaja_alta);
+            TextView tv_motivo=(TextView)customDialog.findViewById(R.id.tv_motivo);
+            TextView btn_cancelar=(TextView)customDialog.findViewById(R.id.btn_cancelar);
+            final TextView btnAceptar=(TextView)customDialog.findViewById(R.id.btnAceptar);
+            ProgBarAltaBaja=(ProgressBar)customDialog.findViewById(R.id.ProgBarAltaBaja);
+            ProgBarAltaBaja.setVisibility(View.GONE);
+
+            tv_motivo.setText(titulo);
+            et_bodyMotivoBaja_alta.getEditText().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    if(editable.toString().length()>0){
+                        et_bodyMotivoBaja_alta.setError(null);
+                        et_bodyMotivoBaja_alta.setErrorEnabled(false);
+                    }
+                }
+            });
+            btn_cancelar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String contenido=et_bodyMotivoBaja_alta.getEditText().getText().toString();
+                    Log.i(TAG, "cantidad de letras son: "+contenido.length());
+                    if (!TextUtils.isEmpty(contenido)){
+                        AlertDialog.Builder alert=new AlertDialog.Builder(ClientesActivity.this);
+                        alert.setMessage("Se perderan los datos.\n¿Estas seguro que quieres salir?");
+                        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //No se ciiera el dialogo
+                            }
+                        });
+                        alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                et_bodyMotivoBaja_alta.setError(null);
+                                et_bodyMotivoBaja_alta.setErrorEnabled(false);
+                                customDialog.dismiss();
+                            }
+                        });
+                        alert.create().show();
+                    }else customDialog.dismiss();
+
+                }
+            });
+            final String finalMensaje = mensaje;
+            final String finalEstado = estado;
+            btnAceptar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    String contenido=et_bodyMotivoBaja_alta.getEditText().getText().toString();
+                    if (!TextUtils.isEmpty(contenido)){
+                        AlertDialog.Builder alert=new AlertDialog.Builder(ClientesActivity.this);
+                        alert.setMessage(finalMensaje);
+                        alert.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ProgBarAltaBaja.setVisibility(View.VISIBLE);
+                                view.setVisibility(View.GONE);
+                                new AsyncTask<Void, Void, Void>() {
+                                    int STD_ENVIO= VARIABLES.ID_ENVIO_FALLIDA;
+                                    boolean peticion=false;
+                                    boolean internet=false;
+                                    String errorExepcion="";
+
+                                    Cliente_estado cliente_estado=null;
+
+                                    @Override
+                                    protected void onPreExecute() {
+                                        boolean peticion=false;
+                                        super.onPreExecute();
+                                        cliente_estado=new Cliente_estado();
+                                        cliente_estado.setCodcli(codcli);
+                                        cliente_estado.setEstado(finalEstado);
+                                        cliente_estado.setCodven(codven);
+                                        cliente_estado.setFec_server(obj_dbclasses.getFecha2());
+                                        cliente_estado.setMotivo(et_bodyMotivoBaja_alta.getEditText().getText().toString());
+
+                                    }
+
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        try {
+
+                                            ConnectionDetector cd=new ConnectionDetector(getApplicationContext());
+                                            if (cd.isConnectingToInternet()) {
+                                                internet=true;
+                                                DBSync_soap_manager DBsyn=new DBSync_soap_manager(getApplicationContext());
+
+                                                STD_ENVIO=DBsyn.realizar_altas_bajas_clientes(cliente_estado);
+                                                if (STD_ENVIO==VARIABLES.ID_ENVIO_EXITOSA) {
+                                                    DAO_ClienteEstado dao_clienteEstado=new DAO_ClienteEstado(getApplicationContext());
+                                                    peticion= dao_clienteEstado.InsertOrReplaceItem (cliente_estado);
+                                                }
+                                            }
+                                            Thread.sleep(500);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }catch (Exception e){
+                                            errorExepcion="No se ha podido enviar su petición al sistema. Intenta nuevamente .\n" +
+                                                    "\nDetalle de error:\n" +
+                                                    ""+e.getMessage();
+                                            e.printStackTrace();
+                                        }
+                                        return null;
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Void aVoid) {
+                                        ProgBarAltaBaja.setVisibility(View.GONE);
+                                        view.setVisibility(View.VISIBLE);
+                                        if (internet) {
+                                            if (errorExepcion.length()>0){
+                                                MENSAJES(""+errorExepcion, 0, false, 0);
+                                            }else{
+                                                if (STD_ENVIO==VARIABLES.ID_ENVIO_EXITOSA) {
+                                                    if (peticion){
+                                                        customDialog.dismiss();
+                                                        MENSAJES( "Su petición ha sido completado correctamente", 0, true, 0);
+//                                                new cargarClientes().execute("");
+                                                        searchResults.get(mSelectedRow).put("estado_cli", cliente_estado.getEstado());
+                                                        searchResults.get(mSelectedRow).put("motivoBajaCliente", cliente_estado.getMotivo());
+                                                        adapter.notifyDataSetChanged();
+                                                    }else MENSAJES( "Su petición ha sido enviada sin embargo, no se ha recuperado la data.\nDebe sincronizar para recuperar.", 0, false, 0);
+                                                }else  MENSAJES( "Lo sentimos, su petición no se ha completado", 0, false, 0);
+                                            }
+                                        }else MENSAJES("", 1, false, 0);
+                                        super.onPostExecute(aVoid);
+                                    }
+                                }.execute();
+
+                            }
+                        });
+                        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        });
+                        alert.create().show();
+                        et_bodyMotivoBaja_alta.setError(null);
+                        et_bodyMotivoBaja_alta.setErrorEnabled(false);
+                        Log.i(TAG, "Valor de motivo de la baja es "+et_bodyMotivoBaja_alta.getEditText().getText());
+
+                    }
+                    else {
+                        et_bodyMotivoBaja_alta.setErrorEnabled(true);
+                        et_bodyMotivoBaja_alta.setError("Es necesario que escribas el motivo");
+                        et_bodyMotivoBaja_alta.getEditText().setBackgroundResource(R.drawable.edittext_rounded_corners5);
+                    }
+
+                }
+            });
+            customDialog.show();
+    }
+
+    public  void MENSAJES(String mensaje, int error, boolean calcelable, final int ID_ACCION){
+        if (error==1) mensaje="Verifica tu conexión a internet y vuelva a intentar de nuevo.";
+        else if (error==2) mensaje="No hay conexión al servidor.\nVuelva a intentar mas tarde.";
+        android.app.AlertDialog.Builder dialog=new android.app.AlertDialog.Builder(ClientesActivity.this);
+        dialog.setCancelable(calcelable);
+        dialog.setMessage(mensaje);
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        dialog.setNegativeButton("Cancelar", null);
+        dialog.create();
+        dialog.show();
     }
 
     public void lanzarGooleMaps(LatLng latLng) {

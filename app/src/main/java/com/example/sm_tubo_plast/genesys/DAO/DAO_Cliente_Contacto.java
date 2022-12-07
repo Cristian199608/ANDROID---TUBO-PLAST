@@ -18,7 +18,9 @@ public class DAO_Cliente_Contacto {
 
 
     public ArrayList<Cliente_Contacto> getClientesPendientesAll(DBclasses dBclasses) {
-        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono,cc.celular,cc.email,cc.estado,cc.flag, ifnull(cargo, '') as cargo X " +
+        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono," +
+                "cc.celular,cc.email,cc.estado,cc.flag, ifnull(cargo, '') as cargo, " +
+                "fec_nacimiento " +
                 "FROM "+TABLA_CLEINTE_CONTACTO+" cc inner join cliente c on cc.codcli=c.codcli " +
                 " WHERE  cc.flag='P' ";
         Log.i(TAG, rawQuery);
@@ -37,6 +39,7 @@ public class DAO_Cliente_Contacto {
             contacto.setTelefono(cursor.getString(cursor.getColumnIndex("telefono")));
             contacto.setCelular(cursor.getString(cursor.getColumnIndex("celular")));
             contacto.setCargo(cursor.getString(cursor.getColumnIndex("cargo")));
+            contacto.setFec_nacimiento(cursor.getString(cursor.getColumnIndex("fec_nacimiento")));
             contacto.setEmail(cursor.getString(cursor.getColumnIndex("email")));
             contacto.setEstado(cursor.getString(cursor.getColumnIndex("estado")));
             contacto.setFlag(cursor.getString(cursor.getColumnIndex("flag")));
@@ -50,7 +53,8 @@ public class DAO_Cliente_Contacto {
 
 
     public ArrayList<Cliente_Contacto> getClienteContactoByID(DBclasses dBclasses, String codigoCliente, int idcontacto) {
-        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono,cc.celular,cc.email,cc.estado,cc.flag, ifnull(cargo, '') as cargo " +
+        String rawQuery = "SELECT cc.codcli,cc.id_contacto,cc.nombre_contacto,cc.dni,cc.telefono,cc.celular,cc.email," +
+                "cc.estado,cc.flag, ifnull(cargo, '') as cargo, fec_nacimiento " +
                 "FROM "+TABLA_CLEINTE_CONTACTO+" cc inner join cliente c on cc.codcli=c.codcli " +
                 " WHERE cc.codcli like '"+codigoCliente+"' and (cc.id_contacto = "+idcontacto+" or 0 ="+idcontacto+" ) order by cc.nombre_contacto asc";
         Log.i(TAG, rawQuery);
@@ -71,6 +75,7 @@ public class DAO_Cliente_Contacto {
            contacto.setEmail(cursor.getString(cursor.getColumnIndex("email")));
            contacto.setCargo(cursor.getString(cursor.getColumnIndex("cargo")));
            contacto.setEstado(cursor.getString(cursor.getColumnIndex("estado")));
+           contacto.setFec_nacimiento(cursor.getString(cursor.getColumnIndex("fec_nacimiento")));
            contacto.setFlag(cursor.getString(cursor.getColumnIndex("flag")));
            lista.add(contacto);
        }
@@ -130,6 +135,7 @@ public class DAO_Cliente_Contacto {
             nre.put(DBtables.CLiente_Contacto.email, contacto.getEmail());
             nre.put(DBtables.CLiente_Contacto.cargo, contacto.getCargo());
             nre.put(DBtables.CLiente_Contacto.estado, contacto.getEstado());
+            nre.put(DBtables.CLiente_Contacto.fec_nacimiento, contacto.getFec_nacimiento());
             nre.put(DBtables.CLiente_Contacto.flag, contacto.getFlag());
 
             SQLiteDatabase db = dBclasses.getReadableDatabase();

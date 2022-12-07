@@ -10,19 +10,19 @@ import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.FichaCliente;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 @SuppressLint("LongLogTag")
 public class DAO_RegistroCliente extends SQLiteAssetHelper {
 	public static final String TAG = "DAO_RegistroCliente";
-    public static final String DATABASE_NAME = "fuerzaventas";
-    private static final int DATABASE_VERSION = 1;
+
     
         
     Context context;
 
     public DAO_RegistroCliente(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
         this.context = context;
     }
     

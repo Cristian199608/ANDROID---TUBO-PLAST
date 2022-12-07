@@ -21,6 +21,14 @@ import java.util.regex.Pattern;
 
 public class VARIABLES {
 
+    public static final  int ID_ENVIO_FALLIDA=-1;
+    public static final  int ID_ENVIO_EXITOSA=-2;
+
+
+    public static final String DATABASA_NAMEO_OLD="vacio";
+    public static final String DATABASA_NAME="fuerzaventas";
+    public static final  int DATABASA_VERSION=1;
+
     public static final  String[] MESES = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"
             ,"Octubre","Noviembre","Diciembre"};
 
@@ -325,6 +333,17 @@ public class VARIABLES {
 
     public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
     public static      DecimalFormat formater_one_decimal = new DecimalFormat("#,##0.0");
+
+    public static  boolean isDate(String dateString){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            Date date = formatter.parse(""+dateString);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
 }

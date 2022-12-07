@@ -37,6 +37,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 public class ProductosCursorAdapter extends AppCompatActivity {
 
@@ -124,14 +125,13 @@ public class ProductosCursorAdapter extends AppCompatActivity {
                 try {
                     listaBusqueda.clear();
 
-
-                        for (int x = 0; x < listaProductos.size(); x++) {
-                            String codigo = listaProductos.get(x).getCodigo();
-                            String descripcion = listaProductos.get(x).getDescripcion();
-                            if ((codigo+""+descripcion).toUpperCase().contains(charSequence.toString().toUpperCase())) {
-                                listaBusqueda.add(listaProductos.get(x));
-                            }
+                    for (int x = 0; x < listaProductos.size(); x++) {
+                        String codigo = listaProductos.get(x).getCodigo();
+                        String descripcion = listaProductos.get(x).getDescripcion();
+                        if ((codigo+""+descripcion).toUpperCase().contains(charSequence.toString().toUpperCase())) {
+                            listaBusqueda.add(listaProductos.get(x));
                         }
+                    }
                     Log.d("ClientesActivity", "texto cambiado tama�o de la lista: " + listaBusqueda.size());
                     adapter.notifyDataSetChanged();
                 } catch (Exception e) {

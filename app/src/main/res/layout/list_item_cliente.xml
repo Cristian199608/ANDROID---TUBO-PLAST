@@ -141,6 +141,16 @@
 
             </LinearLayout>
         </LinearLayout>
+        <TextView
+            android:id="@+id/itemMotivoBajaCliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Motivo de baja de cliente"
+            android:gravity="start|center"
+            android:layout_gravity="center"
+            android:textColor="@color/red_500"
+            android:textSize="13sp"
+            android:textStyle="normal"/>
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

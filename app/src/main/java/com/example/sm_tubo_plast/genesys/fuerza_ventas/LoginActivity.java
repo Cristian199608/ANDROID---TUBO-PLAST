@@ -99,6 +99,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
         dbusuarios = new DBclasses(LoginActivity.this);
+        dbusuarios.EliminaOldDatabase();
+
         // txtPlaca=(EditText)findViewById(R.id.txtPlaca);
         txtUsuario = (EditText) findViewById(R.id.txtUsuario);
         txtPassword = (EditText) findViewById(R.id.txtPassword);

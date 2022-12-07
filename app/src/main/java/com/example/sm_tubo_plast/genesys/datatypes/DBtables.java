@@ -67,6 +67,14 @@ public class DBtables {
 
 	}
 
+	public static  final class Cliente_estado {
+		public static final String TAG = "cliente_estado";
+		public static final String codcli="codcli";
+		public static final String estado="estado";
+		public static final String motivo="motivo";
+		public static final String codven="codven";
+		public static final String fec_server="fec_server";
+	}
 	public static  final class CLiente_Contacto implements BaseColumns{
 		public static final String TAG = "cliente_contacto";
 		public static final String codcli ="codcli";
@@ -78,6 +86,7 @@ public class DBtables {
 		public static final String email ="email";
 		public static final String cargo ="cargo";
 		public static final String estado ="estado";
+		public static final String fec_nacimiento ="fec_nacimiento";
 		public static final String flag ="flag";
 
 	}
@@ -847,6 +856,7 @@ public class DBtables {
 		public static final String USEUSR = "useusr";
 		public static final String USESGL = "usesgl";
 		public static final String CODIGOC2DM = "codigoc2dm";
+		public static final String codigoRol = "codigoRol";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_USECOD + " INTEGER PRIMARY KEY, " + USEPAS
@@ -1655,7 +1665,6 @@ public class DBtables {
 
 	}
 
-
 	public static final class San_Opciones implements BaseColumns {
 
 		public static final String TAG = "san_opciones";
@@ -1663,7 +1672,28 @@ public class DBtables {
 		public static final String codigo_crm = "codigo_crm";
 		public static final String instancia = "instancia";
 		public static final String opciones = "opciones";
+	}
 
+	public static final class Menu_opciones_app {
+
+		private Menu_opciones_app() {
+		}
+
+		public static final String TAG = "menu_opciones_app";
+		public static final String codigoOpcion = "codigoOpcion";
+		public static final String pantallas = "pantallas";
+		public static final String opciones = "opciones";
+		public static final String descripcion = "descripcion";
+	}
+	public static final class Roles_accesos_app {
+
+		private Roles_accesos_app() {
+		}
+
+		public static final String TAG = "roles_accesos_app";
+		public static final String idRol = "idRol";
+		public static final String codigoRol = "codigoRol";
+		public static final String codigoOpcion = "codigoOpcion";
 	}
 
 }

@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.example.sm_tubo_plast"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -23,10 +23,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        repositories {
+            maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -42,8 +48,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
 
-    implementation files('libs/ksoap2-android-assembly-3.0.0-RC.4-jar-with-dependencies.jar')
-    implementation files('libs/jsonrpc2-base-1.24.jar')
+
     //implementation files('libs/classes.jar')
 
     //envio de correro gmail
@@ -87,6 +92,10 @@ dependencies {
 //    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
 //    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 //    FIN RX
+
+    //    implementation 'sopa'
+    implementation 'com.google.code.ksoap2-android:ksoap2-android:3.1.1'
+    implementation files('libs/jsonrpc2-base-1.24.jar')
 
     //depuración base de datos //modificar via terminal adb forward tcp:8080 tcp:8080
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'

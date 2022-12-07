@@ -35,7 +35,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
 
     EditText tv_ruc,tv_sector, tv_rubro,tv_razonSocial,tv_direccionFiscal,tv_tipo_cliente,tv_telefono,
             tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito,tv_unidadNegocio,tv_monedaFacturacion;
-    EditText tv_direccion_sucursal, tv_telefono_sucursal, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
+    EditText tv_direccion_sucursal, tv_telefono_sucursal, tvFechaNacimiento, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
     Spinner spn_direccion, SpinnerContacto;
 
     @SuppressLint("NewApi")
@@ -69,6 +69,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         tv_direccion_sucursal = findViewById(R.id.tv_direccion_sucursal);
         tv_telefono_sucursal = findViewById(R.id.tv_telefono_sucursal);
         tv_cargo_contacto = findViewById(R.id.tv_cargo_contacto);
+        tvFechaNacimiento = findViewById(R.id.tvFechaNacimiento);
         tv_email_contacto = findViewById(R.id.tv_email_contacto);
         tv_telefono_contacto = findViewById(R.id.tv_telefono_contacto);
         tv_celular = findViewById(R.id.tv_celular);
@@ -159,6 +160,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
                     position--;
                     if (position>=0){
                         tv_cargo_contacto.setText(lista.get(position).getCargo());
+                        tvFechaNacimiento.setText(lista.get(position).getFec_nacimiento());
                         tv_email_contacto.setText(lista.get(position).getEmail());
                         tv_telefono_contacto.setText(lista.get(position).getTelefono());
                         tv_celular.setText(lista.get(position).getCelular());
