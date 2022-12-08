@@ -7,7 +7,6 @@ import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sm_tubo_plast.R
 import com.example.sm_tubo_plast.databinding.ActivityReportesVentasVendedorBinding
-import com.example.sm_tubo_plast.genesys.util.GlobalVar
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal
 
 
@@ -26,7 +25,7 @@ class ReportesWebVentasVendedorActivity : AppCompatActivity() {
 
     private fun loadWebView() {
         binding.myWebVew.setWebViewClient(WebViewClient());
-        val ruta="http://200.60.105.44/tuboplast?codven="+(PreferenciaPrincipal(this).ObtenerCodigoVendedor());
+        val ruta="http://200.60.105.44/tuboplast?codven="+(PreferenciaPrincipal(this).getCodigoVendedor());
         binding.myWebVew.loadUrl(ruta);
         val webSettings: WebSettings = binding.myWebVew.getSettings()
         webSettings.javaScriptEnabled = true

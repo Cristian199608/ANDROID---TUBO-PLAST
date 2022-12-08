@@ -28,7 +28,7 @@ public class WS_SeguimientoOP {
     ArrayList<ViewSeguimientoPedido> dataPrecargada=new ArrayList<>();
     public WS_SeguimientoOP(Activity activity) {
         this.activity = activity;
-        codven = new PreferenciaPrincipal(activity).ObtenerCodigoVendedor();
+        codven = new PreferenciaPrincipal(activity).getCodigoVendedor();
 
     }
 

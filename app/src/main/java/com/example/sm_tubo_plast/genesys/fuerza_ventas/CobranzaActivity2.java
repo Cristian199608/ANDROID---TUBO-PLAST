@@ -102,7 +102,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
         programada = prefs.getString("Programado", "1").equals("1"); // 0 :Inactivo 1:Activado
         libre = prefs.getString("Libre", "1").equals("1"); // 0 :Inactivo 1:Activado
 
-        codven=new PreferenciaPrincipal(this).ObtenerCodigoVendedor();
+        codven=new PreferenciaPrincipal(this).getCodigoVendedor();
 
         //´para que no salga el teclado al iniciar activity
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

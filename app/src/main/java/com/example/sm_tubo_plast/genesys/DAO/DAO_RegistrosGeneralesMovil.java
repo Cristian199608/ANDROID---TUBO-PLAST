@@ -25,7 +25,7 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
     Context context;
 
     public DAO_RegistrosGeneralesMovil(Context context) {
-        super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
+        super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
         this.context = context;
     }
     

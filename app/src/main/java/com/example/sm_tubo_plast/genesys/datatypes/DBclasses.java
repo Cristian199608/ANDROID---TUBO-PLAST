@@ -17,7 +17,6 @@ import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
 import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
-import com.example.sm_tubo_plast.genesys.DAO.DAO_Database;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
@@ -61,7 +60,7 @@ public class DBclasses extends SQLiteAssetHelper {
 	Calendar calendar = Calendar.getInstance();
 
 	public DBclasses(Context context) {
-		super(context, VARIABLES.DATABASA_NAME, null,  VARIABLES.DATABASA_VERSION);
+		super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
 
 		_context = context;
@@ -139,10 +138,10 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		String S_TAG="EliminaOldDatabase:: ";
 		try {
-			_context.deleteDatabase(VARIABLES.DATABASA_NAMEO_OLD);
-			Log.i(TAG, S_TAG+" se ha eliminado el anterior db "+VARIABLES.DATABASA_NAMEO_OLD);
+			_context.deleteDatabase(VARIABLES.ConfigDatabase.getDatabaseNameOld());
+			Log.i(TAG, S_TAG+" se ha eliminado el anterior db "+ VARIABLES.ConfigDatabase.getDatabaseNameOld());
 		} catch (Exception e) {
-			Log.e(TAG, S_TAG+"Ohh no se pudo eliminar la base de datos antiguo "+VARIABLES.DATABASA_NAMEO_OLD);
+			Log.e(TAG, S_TAG+"Ohh no se pudo eliminar la base de datos antiguo "+ VARIABLES.ConfigDatabase.getDatabaseNameOld());
 			e.printStackTrace();
 		}
 	}
@@ -6938,23 +6937,24 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				item.setOc_numero(cur.getString(0));
 				item.setSitio_enfa(cur.getString(1));
 				item.setMonto_total(cur.getString(2));
-				item.setValor_igv(cur.getString(3));
-				item.setMoneda(cur.getString(4));
-				item.setFecha_oc(cur.getString(5));
-				item.setFecha_mxe(cur.getString(6));
-				item.setCond_pago(cur.getString(7));
-				item.setCod_cli(cur.getString(8));
-				item.setCod_emp(cur.getString(9));
-				item.setEstado(cur.getString(10));
-				item.setUsername(cur.getString(11));
-				item.setRuta(cur.getString(12));
-				item.setObserv(cur.getString(13));
-				item.setCod_noventa(cur.getInt(14));
-				item.setPeso_total(cur.getString(15));
-				item.setFlag(cur.getString(16));
-				item.setLatitud(cur.getString(17));
-				item.setLongitud(cur.getString(18));
-				item.setCodigo_familiar(cur.getString(19));
+				item.setPercepcion_total(cur.getString(3));
+				item.setValor_igv(cur.getString(4));
+				item.setMoneda(cur.getString(5));
+				item.setFecha_oc(cur.getString(6));
+				item.setFecha_mxe(cur.getString(7));
+				item.setCond_pago(cur.getString(8));
+				item.setCod_cli(cur.getString(9));
+				item.setCod_emp(cur.getString(10));
+				item.setEstado(cur.getString(11));
+				item.setUsername(cur.getString(12));
+				item.setRuta(cur.getString(13));
+				item.setObserv(cur.getString(14));
+				item.setCod_noventa(cur.getInt(15));
+				item.setPeso_total(cur.getString(16));
+				item.setFlag(cur.getString(17));
+				item.setLatitud(cur.getString(18));
+				item.setLongitud(cur.getString(19));
+				item.setCodigo_familiar(cur.getString(20));
 
 				Log.w("GetPedidoCabecera_x_Flag",
 						"codfmiliar:" + cur.getString(19));
@@ -13095,6 +13095,25 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return lista;
+	}
+
+	public  String getCodigoNivelByUserandPass(String user, String pass) {
+		String rawQuery = "SELECT codigoRol  FROM "+DBtables.Usuarios.TAG+" " +
+				"WHERE useusr = '"+user+"' and usepas ='"+pass+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		Log.w(TAG+"raw query:",rawQuery);
+		String valor="";
+		while (cur.moveToNext()) {
+			valor = cur.getString(0);
+		}
+		Log.w(TAG,"Luego del query");
+		Log.w(TAG+":getCodigoNivelByUserandPass:",""+valor);
+		cur.close();
+		db.close();
+		return valor;
 	}
 }
 

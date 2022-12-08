@@ -20,7 +20,7 @@ public class DAO_PromocionDetalle  extends SQLiteAssetHelper{
 	public static final String KEY_ROWID = "_id";
 
 	public DAO_PromocionDetalle(Context context) {
-		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
+		super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
 		
 	}
 	

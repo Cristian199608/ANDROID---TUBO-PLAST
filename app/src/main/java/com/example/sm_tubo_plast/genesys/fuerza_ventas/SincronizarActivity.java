@@ -1,6 +1,7 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -43,6 +44,7 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_pre
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.google.gson.Gson;
@@ -1219,10 +1221,15 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                             });
                             publishProgress("10");
                             soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("50");
+                            publishProgress("20");
+                            soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
+                            publishProgress("30");
+                            soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
+                            publishProgress("60");
                             soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("80");
+                            publishProgress("90");
                             soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                            AsignarPreferenciaCodigoNivel(_helper, SincronizarActivity.this);
                         }else{
                             error = "sin_servicio";
 
@@ -1535,11 +1542,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("35");
                                     soap_manager.Sync_tabla_Ruta(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
-                                    //SERVER 212
-                                    soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
-                                    publishProgress("59");
-                                    soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
-                                    publishProgress("65");
+
 
                                     soap_manager.Sync_tabla_almacenes(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("76");
@@ -1846,6 +1849,13 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
         }
 
+    }
+
+    public static void AsignarPreferenciaCodigoNivel(DBclasses dbClas, Activity acvity) {
+        PreferenciaPrincipal prefer=new PreferenciaPrincipal(acvity);
+        String codigoNivel=dbClas.getCodigoNivelByUserandPass(prefer.getUsuario(), prefer.getPassword());
+        prefer.setCodigoNivel(codigoNivel);
+        prefer=null;
     }
 
     @Override

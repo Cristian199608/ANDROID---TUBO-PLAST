@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.SQLException
 import android.util.Log
-import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado
 import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app
 import com.example.sm_tubo_plast.genesys.BEAN.Roles_accesos_app
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables
@@ -12,11 +11,9 @@ import com.example.sm_tubo_plast.genesys.util.VARIABLES
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper
 import java.util.ArrayList
 
-class DAO_Roles_accesos_app(var context: Context) : SQLiteAssetHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DAO_Roles_accesos_app(var context: Context) : SQLiteAssetHelper(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion()) {
     companion object {
         const val TAG = "DAO_ClienteEstado"
-        const val DATABASE_NAME = VARIABLES.DATABASA_NAME
-        private const val DATABASE_VERSION = VARIABLES.DATABASA_VERSION
     }
     private var codigoRol="";
     fun setcodigoRol(_codigoRol: String){
@@ -64,7 +61,7 @@ class DAO_Roles_accesos_app(var context: Context) : SQLiteAssetHelper(context, D
         }
         cur.close()
         db.close()
-        return lista.size>0;
+        return true;//lista.size>0;
 
     }
 

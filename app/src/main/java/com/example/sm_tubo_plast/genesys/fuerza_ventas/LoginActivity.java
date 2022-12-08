@@ -343,6 +343,7 @@ public class LoginActivity extends AppCompatActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute=", "" + result);
 
+
             String mensajeLicenciaUso= dbusuarios.getConfiguracionByName("mensaje_licencia_uso", "");
 
             if (mensajeLicenciaUso.length()>0){
@@ -363,6 +364,7 @@ public class LoginActivity extends AppCompatActivity {
                 editor.apply();
 
                 session.createLoginSession(user, pass);
+                SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
 
                 Intent intentVendedor = new Intent(getApplicationContext(),
                         MenuPrincipalActivity.class);

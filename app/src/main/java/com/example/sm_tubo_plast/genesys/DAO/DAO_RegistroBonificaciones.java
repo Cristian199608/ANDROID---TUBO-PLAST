@@ -41,7 +41,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 	Calendar calendar = Calendar.getInstance();
 
 	public DAO_RegistroBonificaciones(Context context) {
-		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
+		super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
 		// TODO Auto-generated constructor stub
 	}
 	

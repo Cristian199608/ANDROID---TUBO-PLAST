@@ -64,7 +64,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         Toolbar toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("SEGUIMIENTO DE PEDIDO");
-        codven= new PreferenciaPrincipal(this).ObtenerCodigoVendedor();
+        codven= new PreferenciaPrincipal(this).getCodigoVendedor();
 
         edtOrdenCompra=findViewById(R.id.edtOrdenCompra);
         edtNroPedido=findViewById(R.id.edtNroPedido);

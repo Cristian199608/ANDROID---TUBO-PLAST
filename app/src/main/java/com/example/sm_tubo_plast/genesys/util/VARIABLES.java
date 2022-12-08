@@ -24,10 +24,33 @@ public class VARIABLES {
     public static final  int ID_ENVIO_FALLIDA=-1;
     public static final  int ID_ENVIO_EXITOSA=-2;
 
+    public static final  boolean isProduccion=false;
+    public static final class ConfigDatabase {
 
-    public static final String DATABASA_NAMEO_OLD="vacio";
-    public static final String DATABASA_NAME="fuerzaventas";
-    public static final  int DATABASA_VERSION=1;
+        private static final String DATABASA_NAME_OLD   ="vacio";
+        private static final String DATABASA_NAME       ="fuerzaventas";
+        private static final  int DATABASA_VERSION      =1;
+
+
+        private static final String DATABASA_NAMEO_OLD_prueba   ="vacio";
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_prueba";
+        private static final  int DATABASA_VERSION_prueba       =1;
+
+        public static String getDatabaseNameOld() {
+            if(isProduccion) return DATABASA_NAME_OLD;
+            else return DATABASA_NAMEO_OLD_prueba;
+        }
+        public static String getDatabaseName() {
+            if(isProduccion) return DATABASA_NAME;
+            else return DATABASA_NAME_prueba;
+        }
+        public static int getDatabaseVersion() {
+            if(isProduccion) return DATABASA_VERSION;
+            else return DATABASA_VERSION_prueba;
+        }
+
+    }
+
 
     public static final  String[] MESES = {"Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre"
             ,"Octubre","Noviembre","Diciembre"};

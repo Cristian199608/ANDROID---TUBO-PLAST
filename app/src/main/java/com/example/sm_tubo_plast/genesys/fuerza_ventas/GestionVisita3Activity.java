@@ -112,6 +112,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     Location LOCATION;
     int DISTACIA_to_Colegio=-1;
+    String fechaOcOriginal=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -467,6 +468,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 }
             }
             DBPedido_Cabecera dbPedido_cabecera=dBclasses.getPedido_cabecera(FINAL_OC_NUMERO);
+            fechaOcOriginal=dbPedido_cabecera.getFecha_oc();
             int sitio_enfa=0;
             if (dbPedido_cabecera!=null){
                 sitio_enfa=Integer.parseInt(dbPedido_cabecera.getSitio_enfa());
@@ -1260,7 +1262,6 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         DB_ObjPedido itemCabecera=new DB_ObjPedido();
         itemCabecera.setOc_numero(oc_numero);
-
         itemCabecera.setFecha_oc(VARIABLES.GET_FECHA_ACTUAL_STRING_dd_mm_yyy2()+ " "+ GlobalFunctions.getHoraActual());
         itemCabecera.setMonto_total("0");
         itemCabecera.setSubtotal("0");
@@ -1334,6 +1335,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 }else{
                     mensaje_error=dBclasses.deletePedidoCabeceraxOc(itemCabecera.getOc_numero(),__DB)?"":"No se ha podido restaurar la cabecera de la visita";//Eliminamos}
                     if(mensaje_error.length()==0){
+                        itemCabecera.setFecha_oc(fechaOcOriginal!=null?fechaOcOriginal:itemCabecera.getFecha_oc());
                         mensaje_error=dBclasses.AgregarPedidoCabecera_raiz(itemCabecera, __DB)?"":"No se ha podido actualizar la cabecera de la visita";///Insertamos nuevo
                     }
                 }

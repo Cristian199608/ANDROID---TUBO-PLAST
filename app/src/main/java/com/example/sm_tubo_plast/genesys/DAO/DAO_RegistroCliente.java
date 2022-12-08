@@ -22,7 +22,7 @@ public class DAO_RegistroCliente extends SQLiteAssetHelper {
     Context context;
 
     public DAO_RegistroCliente(Context context) {
-		super(context, VARIABLES.DATABASA_NAME, null, VARIABLES.DATABASA_VERSION);
+		super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
         this.context = context;
     }
     

@@ -14,12 +14,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.SincronizarActivity2;
-import com.example.sm_tubo_plast.genesys.session.SessionManager;
 
 public class MenuLiquidacionActivity extends AppCompatActivity {
 
     String codven;
-    SessionManager session;
     String nomcli="";
     String origen="MENU";
 
@@ -29,8 +27,6 @@ public class MenuLiquidacionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu_liquidacion);
 
 
-        // Session Manager Class
-        session = new SessionManager(getApplicationContext());
         SharedPreferences prefs =  getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         codven = prefs.getString("codven", "por_defecto");
 

@@ -12,5 +12,5 @@ class OptionMenuPrinicipal {
     var menuConsultaFacturas = false
     var menuReportes = false
     var menuCuotaVentas = false
-    var menuSincronizar = true
+    var menuSincronizar = false
 }

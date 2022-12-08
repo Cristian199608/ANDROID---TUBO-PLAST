@@ -19,15 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.databinding.ActivityMenuPrincipalBinding;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
-import com.example.sm_tubo_plast.genesys.AccesosPerfil.ITiposDeAccesoMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
-import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -41,7 +40,6 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
     String codven, url,catalog, userid, contrasenaid,servicio,servicio_local;
     boolean check_web,check_local;
-    SessionManager session;
     String nomcli="";
     String origen="MENU";
     private String fecha_configuracion;
@@ -68,8 +66,8 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
         database = new DBclasses(getApplicationContext());
         // Session Manager Class
-        session = new SessionManager(getApplicationContext());
         AdministrarAccesos();
+        binding.tvMensajeModoPrueba.setVisibility(VARIABLES.isProduccion?View.GONE:View.VISIBLE);
 
 
         valorIGV = Double.parseDouble(database.getCambio("IGV"));
@@ -393,7 +391,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         binding.lContainerMenuConsultaFacturas.setVisibility(optiones.getMenuConsultaFacturas()?View.VISIBLE:View.GONE);
         binding.lContainerMenuReportes.setVisibility(optiones.getMenuReportes()?View.VISIBLE:View.GONE);
         binding.lContainerMenuCuotaVentas.setVisibility(optiones.getMenuCuotaVentas()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuSincronizar.setVisibility(optiones.getMenuSincronizar()?View.VISIBLE:View.GONE);
+        binding.lContainerMenuSincronizar.setVisibility(optiones.getMenuSincronizar()?View.VISIBLE:View.INVISIBLE);
     }
 
     public void NOFunciona(View view){

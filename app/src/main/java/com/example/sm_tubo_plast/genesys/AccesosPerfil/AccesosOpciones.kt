@@ -1,24 +1,25 @@
 package com.example.sm_tubo_plast.genesys.AccesosPerfil
 
+import android.app.Activity
 import android.content.Context
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Roles_accesos_app
-import com.example.sm_tubo_plast.genesys.util.VARIABLES
+import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal
 
 class AccesosOpciones {
     companion object {
         const val  CODIGO_NIVEL="Nivel2";
-
     }
 
-    class OptionMenuPrincipal(context: Context?) : ITiposDeAccesoMenuPrinicipal {
+    class OptionMenuPrincipal(context: Context?) {
         var daoRolesAccesosApp: DAO_Roles_accesos_app
         init {
             daoRolesAccesosApp = DAO_Roles_accesos_app(context!!)
+            val prefer=PreferenciaPrincipal(context as Activity?);
+            daoRolesAccesosApp.setcodigoRol(prefer.getCodigoNivel());
         }
-        override fun accesoOptionMenuPrincipal(): OptionMenuPrinicipal {
+        fun accesoOptionMenuPrincipal(): OptionMenuPrinicipal {
             val menu = OptionMenuPrinicipal()
 
-            daoRolesAccesosApp.setcodigoRol(CODIGO_NIVEL);
             menu.menuCliente                = daoRolesAccesosApp.getOpcionPermitido("MenuClientes", "%");
             menu.menuCotizacionAndPedido    = daoRolesAccesosApp.getOpcionPermitido("MenuCotizacionYPedido", "%");
             menu.menuAgenda                 = daoRolesAccesosApp.getOpcionPermitido("MenuAgenda", "%");
@@ -37,22 +38,25 @@ class AccesosOpciones {
 
     class PantallaClientes(context: Context?) {
         var daoRolesAccesosApp: DAO_Roles_accesos_app
+
         init {
             daoRolesAccesosApp = DAO_Roles_accesos_app(context!!)
+            val prefer=PreferenciaPrincipal(context as Activity?);
+            daoRolesAccesosApp.setcodigoRol(prefer.getCodigoNivel());
         }
         fun option(): OptionPantallaClientes {
             val option = OptionPantallaClientes()
-            daoRolesAccesosApp.setcodigoRol(CODIGO_NIVEL);
+
             option.VerInformacionCliente    = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","VerInformacionCliente");
-            option.GeolocalizarCliente  = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","GeolocalizarCliente");
-            option.Cotizacion   = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","Cotizacion");
-            option.OdenPedido   = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","OdenPedido");
-            option.EstadoDeCuenta   = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","EstadoDeCuenta");
-            option.GestionarVisita  = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","GestionarVisita");
-            option.ProgramarVisita  = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","ProgramarVisita");
-            option.MotivoNoVenta    = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","MotivoNoVenta");
-            option.Observacion  = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","Observacion");
-            option.BajaDeCliente    = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","BajaDeCliente");
+            option.GeolocalizarCliente      = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","GeolocalizarCliente");
+            option.Cotizacion               = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","Cotizacion");
+            option.OdenPedido               = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","OdenPedido");
+            option.EstadoDeCuenta           = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","EstadoDeCuenta");
+            option.GestionarVisita          = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","GestionarVisita");
+            option.ProgramarVisita          = option.GestionarVisita;
+            option.MotivoNoVenta            = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","MotivoNoVenta");
+            option.Observacion              = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","Observacion");
+            option.BajaDeCliente            = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","BajaDeCliente");
             return option;
         }
     }
