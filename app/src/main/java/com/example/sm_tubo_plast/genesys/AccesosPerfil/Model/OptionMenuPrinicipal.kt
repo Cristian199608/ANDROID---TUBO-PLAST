@@ -1,4 +1,4 @@
-package com.example.sm_tubo_plast.genesys.AccesosPerfil
+package com.example.sm_tubo_plast.genesys.AccesosPerfil.Model
 
 class OptionMenuPrinicipal {
     var menuCliente = false

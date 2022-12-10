@@ -79,7 +79,6 @@ public class VARIABLES {
                 break;
             case 7: letraD = "Sábado";
                 break;
-
         }
         return letraD;
     }

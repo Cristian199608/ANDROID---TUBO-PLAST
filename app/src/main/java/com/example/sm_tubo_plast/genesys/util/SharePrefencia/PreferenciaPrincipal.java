@@ -35,16 +35,16 @@ public class PreferenciaPrincipal {
         return  dbServidor;
     }
 
-    public String getCodigoVendedor(){
+    /*public String getCodigoVendedor(){
         if (prefs!=null) return prefs.getString("codven", "por_defecto");
         return "";
     }
     public String getUsuario(){
-        if (prefs!=null) return prefs.getString("usuario", "por_defecto");
+        if (prefs!=null) return prefs.getString("usuario", "");
         return "";
     }
     public String getPassword(){
-        if (prefs!=null)  return prefs.getString("pass", "por_defecto");
+        if (prefs!=null)  return prefs.getString("pass", "");
         return "";
     }
     public String getCodigoNivel(){
@@ -55,6 +55,6 @@ public class PreferenciaPrincipal {
         openEdit();
         editor.putString("codigoRol", valor);
         ApplyCloseEdit();
-    }
+    }*/
 
 }

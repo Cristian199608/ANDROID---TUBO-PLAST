@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,7 +40,6 @@ import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
-import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
     SampleAlarmReceiver sar;
 
     FloatingActionButton myFABlogin_configuraciones;
+    CheckBox ckRecordarInicioSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +120,11 @@ public class LoginActivity extends AppCompatActivity {
         myFABlogin_configuraciones =  findViewById(R.id.myFABlogin_configuraciones);
         RlayoutContactos =  findViewById(R.id.RlayoutContactos);
         txt_imei_celular =  findViewById(R.id.txt_imei_celular);
-        Animation animacion = AnimationUtils.loadAnimation(this,
-                R.anim.animacion);
+        ckRecordarInicioSession =  findViewById(R.id.ckRecordarInicioSession);
+        Animation animacion = AnimationUtils.loadAnimation(this, R.anim.animacion);
         logo.startAnimation(animacion);
 
-        Animation animacion2 = AnimationUtils.loadAnimation(this,
-                R.anim.animacion2);
+        Animation animacion2 = AnimationUtils.loadAnimation(this, R.anim.animacion2);
         lyt_form_login.startAnimation(animacion2);
         // mostrarPlacas();
         // termina animacion
@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         Lyout_saemovil2018.startAnimation(animacion2);
         RlayoutContactos.startAnimation(animacion2);
         txt_imei_celular.startAnimation(animacion2);
+        ckRecordarInicioSession.startAnimation(animacion2);
 
 
         Animation animacionforAppversion = AnimationUtils.loadAnimation(this, R.anim.anim_ocultar_aparecer);
@@ -169,6 +170,14 @@ public class LoginActivity extends AppCompatActivity {
 
         // Session Manager
         session = new SessionManager(getApplicationContext());
+        ckRecordarInicioSession.setChecked(session.getRecordarInicioSession());
+        txtUsuario.setText(session.getUsuario());
+        if (ckRecordarInicioSession.isChecked()){
+            txtUsuario.setText(session.getUsuario());
+            txtPassword.setText(session.getPassword());
+        }
+
+
 
         boton.setOnClickListener(new View.OnClickListener() {
 
@@ -352,18 +361,9 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (result.equals("vendedor")) {
-                SharedPreferences prefs = getSharedPreferences(
-                        "MisPreferencias", Context.MODE_PRIVATE);
-
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("usuario", txtUsuario.getText().toString()
-                        .trim());
-                editor.putString("pass", txtPassword.getText().toString()
-                        .trim());
-                editor.putString("codven", codVendedor);
-                editor.apply();
-
+                session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
                 session.createLoginSession(user, pass);
+
                 SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
 
                 Intent intentVendedor = new Intent(getApplicationContext(),

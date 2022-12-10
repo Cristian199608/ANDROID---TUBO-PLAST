@@ -22,6 +22,10 @@ public class GlobalVar {
 	public static int id_servicio;
 	public static boolean autoActualizacionStock;
 
+	public static String UrlBase(){
+		String[] partes = direccion_servicio.split("/");
+		return partes[0];
+	}
 	public static final class SAN_OPCIONES {
 		public static final String ASOCIACION_EDUCATIVA ="ASOCIACION EDUCATIVA";
 		public static final String TIPO_DE_EDUCACION ="TIPO DE EDUCACION";

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.databinding.ActivityMenuPrincipalBinding;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
-import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionMenuPrinicipal;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
@@ -142,15 +143,14 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         }
 
 
-        if (url == "0" || servicio == "0") {
+        if (url.equals("0") || servicio.equals( "0")) {
 
             // Al logearse directamente, sin sincronizar (uso de datos locales)
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
                     MenuPrincipalActivity.this);
             alertDialog.setCancelable(false);
             alertDialog.setTitle("Alerta");
-            alertDialog
-                    .setMessage("No tiene asignado un servidor asociado. Presiones Aceptar para asignar uno");
+            alertDialog.setMessage("No tiene asignado un servidor asociado. Presiones Aceptar para asignar uno");
             alertDialog.setIcon(R.drawable.ic_alert);
             alertDialog.setPositiveButton("Aceptar",
                     new DialogInterface.OnClickListener() {
@@ -373,25 +373,35 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
     }
 
+
+
     private void AdministrarAccesos() {
         accesoMenuPrincipal=new AccesosOpciones.OptionMenuPrincipal(this);
         OptionMenuPrinicipal optiones=accesoMenuPrincipal.accesoOptionMenuPrincipal();
-        /*binding.lContainerMenuCotizacionAndPedido.setAlpha(0.3f);
-        for (int i = 0; i < binding.lContainerMenuCotizacionAndPedido.getChildCount(); i++) {
-            binding.lContainerMenuCotizacionAndPedido.getChildAt(i).setOnClickListener(null);
-        }*/
-        binding.lContainerMenuCliente.setVisibility(optiones.getMenuCliente()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuCotizacionAndPedido.setVisibility(optiones.getMenuCotizacionAndPedido()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuAgenda.setVisibility(optiones.getMenuAgenda()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuProducto.setVisibility(optiones.getMenuProducto()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuSeguimientoOp.setVisibility(optiones.getMenuSeguimientoOp()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuVentas.setVisibility(optiones.getMenuVentas()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuCuentasXCobrar.setVisibility(optiones.getMenuCuentasXCobrar()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuEstadistica.setVisibility(optiones.getMenuEstadistica()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuConsultaFacturas.setVisibility(optiones.getMenuConsultaFacturas()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuReportes.setVisibility(optiones.getMenuReportes()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuCuotaVentas.setVisibility(optiones.getMenuCuotaVentas()?View.VISIBLE:View.GONE);
-        binding.lContainerMenuSincronizar.setVisibility(optiones.getMenuSincronizar()?View.VISIBLE:View.INVISIBLE);
+
+        DisableOrEnableOpcion(binding.lContainerMenuCliente, optiones.getMenuCliente());
+        DisableOrEnableOpcion(binding.lContainerMenuCotizacionAndPedido, optiones.getMenuCotizacionAndPedido());
+        DisableOrEnableOpcion(binding.lContainerMenuAgenda, optiones.getMenuAgenda());
+        DisableOrEnableOpcion(binding.lContainerMenuProducto, optiones.getMenuProducto());
+        DisableOrEnableOpcion(binding.lContainerMenuSeguimientoOp, optiones.getMenuSeguimientoOp());
+        DisableOrEnableOpcion(binding.lContainerMenuVentas, optiones.getMenuVentas());
+        DisableOrEnableOpcion(binding.lContainerMenuCuentasXCobrar, optiones.getMenuCuentasXCobrar());
+        DisableOrEnableOpcion(binding.lContainerMenuEstadistica, optiones.getMenuEstadistica());
+        DisableOrEnableOpcion(binding.lContainerMenuConsultaFacturas, optiones.getMenuConsultaFacturas());
+        DisableOrEnableOpcion(binding.lContainerMenuReportes, optiones.getMenuReportes());
+        DisableOrEnableOpcion(binding.lContainerMenuCuotaVentas, optiones.getMenuCuotaVentas());
+        DisableOrEnableOpcion(binding.lContainerMenuSincronizar, optiones.getMenuSincronizar());
+
+    }
+    private void DisableOrEnableOpcion(LinearLayout linearLayout, boolean enabled){
+        if (enabled)return;
+        linearLayout.setAlpha(0.3f);
+        linearLayout.setEnabled(false);
+        linearLayout.setClickable(false);
+        for (int i = 0; i < linearLayout.getChildCount(); i++) {
+            linearLayout.getChildAt(i).setEnabled(false);
+            linearLayout.getChildAt(i).setClickable(false);
+        }
     }
 
     public void NOFunciona(View view){
@@ -403,6 +413,20 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         snackbar.setBackgroundTint(getResources().getColor(R.color.red_600));
         snackbar.show();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("MENU PRINCIPAL","on destroy 1");
+        super.onDestroy();
+        Log.i("MENU PRINCIPAL","on destroy 2");
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i("MENU PRINCIPAL","on onStop 1");
+        super.onStop();
+        Log.i("MENU PRINCIPAL","on onStop 1");
     }
 
     public static void onCreateMainMenu(Window window, final Activity activity){

@@ -33,6 +33,7 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.adapters.CobranzaAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -102,7 +103,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
         programada = prefs.getString("Programado", "1").equals("1"); // 0 :Inactivo 1:Activado
         libre = prefs.getString("Libre", "1").equals("1"); // 0 :Inactivo 1:Activado
 
-        codven=new PreferenciaPrincipal(this).getCodigoVendedor();
+        codven=new SessionManager(this).getCodigoVendedor();
 
         //´para que no salga el teclado al iniciar activity
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

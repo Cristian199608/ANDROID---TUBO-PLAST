@@ -52,8 +52,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
-import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionMenuPrinicipal;
-import com.example.sm_tubo_plast.genesys.AccesosPerfil.OptionPantallaClientes;
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionPantallaClientes;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
@@ -496,6 +495,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         accesosOpciones= new AccesosOpciones.PantallaClientes(this);
         OptionPantallaClientes opciones=accesosOpciones.option();
         try {
+            opciones.setPasswordx(false);
             if (!opciones.getVerInformacionCliente()){
                 if (quikAction1.getActionItemById(ID_INFO)!=null)  quikAction1.remove(ID_INFO);
                 if (quikAction2.getActionItemById(ID_INFO)!=null)   quikAction2.remove(ID_INFO);

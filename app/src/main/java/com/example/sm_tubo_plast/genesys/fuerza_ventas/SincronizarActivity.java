@@ -42,6 +42,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_Servidor;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_preferencias;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
@@ -1852,7 +1853,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
     }
 
     public static void AsignarPreferenciaCodigoNivel(DBclasses dbClas, Activity acvity) {
-        PreferenciaPrincipal prefer=new PreferenciaPrincipal(acvity);
+        SessionManager prefer=new SessionManager(acvity);
         String codigoNivel=dbClas.getCodigoNivelByUserandPass(prefer.getUsuario(), prefer.getPassword());
         prefer.setCodigoNivel(codigoNivel);
         prefer=null;

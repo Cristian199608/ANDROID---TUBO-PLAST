@@ -11,6 +11,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Servidor;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.SeguimientoPedidoActivity;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 
@@ -28,7 +29,7 @@ public class WS_SeguimientoOP {
     ArrayList<ViewSeguimientoPedido> dataPrecargada=new ArrayList<>();
     public WS_SeguimientoOP(Activity activity) {
         this.activity = activity;
-        codven = new PreferenciaPrincipal(activity).getCodigoVendedor();
+        codven = new SessionManager(activity).getCodigoVendedor();
 
     }
 

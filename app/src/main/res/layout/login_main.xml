@@ -315,13 +315,21 @@
                         android:singleLine="true"
                         android:text=""
                         android:textSize="17sp" />
+
                 </LinearLayout>
+
+                <CheckBox
+                    android:id="@+id/ckRecordarInicioSession"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linear3"
+                    android:text="Recordar inicio session" />
 
                 <Button
                     android:id="@+id/btningresar"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
-                    android:layout_below="@+id/linear3"
+                    android:layout_below="@+id/ckRecordarInicioSession"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="5dp"
@@ -330,6 +338,8 @@
                     android:paddingRight="10dp"
                     android:text="Ingresar"
                     android:textColor="@color/white" />
+
+
 
             </RelativeLayout>
 

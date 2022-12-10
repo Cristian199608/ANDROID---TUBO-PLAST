@@ -2,20 +2,18 @@ package com.example.sm_tubo_plast.genesys.AccesosPerfil
 
 import android.app.Activity
 import android.content.Context
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionMenuPrinicipal
+import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionPantallaClientes
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Roles_accesos_app
-import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal
+import com.example.sm_tubo_plast.genesys.session.SessionManager
 
 class AccesosOpciones {
-    companion object {
-        const val  CODIGO_NIVEL="Nivel2";
-    }
-
     class OptionMenuPrincipal(context: Context?) {
         var daoRolesAccesosApp: DAO_Roles_accesos_app
         init {
             daoRolesAccesosApp = DAO_Roles_accesos_app(context!!)
-            val prefer=PreferenciaPrincipal(context as Activity?);
-            daoRolesAccesosApp.setcodigoRol(prefer.getCodigoNivel());
+            val prefer=SessionManager(context as Activity);
+            daoRolesAccesosApp.setcodigoRol(prefer.codigoNivel!!);
         }
         fun accesoOptionMenuPrincipal(): OptionMenuPrinicipal {
             val menu = OptionMenuPrinicipal()
@@ -41,8 +39,8 @@ class AccesosOpciones {
 
         init {
             daoRolesAccesosApp = DAO_Roles_accesos_app(context!!)
-            val prefer=PreferenciaPrincipal(context as Activity?);
-            daoRolesAccesosApp.setcodigoRol(prefer.getCodigoNivel());
+            val prefer=SessionManager(context as Activity);
+            daoRolesAccesosApp.setcodigoRol(prefer.codigoNivel!!);
         }
         fun option(): OptionPantallaClientes {
             val option = OptionPantallaClientes()

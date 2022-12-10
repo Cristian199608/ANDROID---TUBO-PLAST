@@ -61,7 +61,7 @@ class DAO_Roles_accesos_app(var context: Context) : SQLiteAssetHelper(context, V
         }
         cur.close()
         db.close()
-        return true;//lista.size>0;
+        return lista.size>0;
 
     }
 

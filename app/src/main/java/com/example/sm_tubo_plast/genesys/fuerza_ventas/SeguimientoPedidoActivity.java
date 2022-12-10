@@ -33,6 +33,7 @@ import com.example.sm_tubo_plast.genesys.adapters.AdapterViewSeguimientoOp;
 import com.example.sm_tubo_plast.genesys.adapters.AdapterViewSeguimientoOpDetalle;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.MyAlertDialogFragment;
 import com.example.sm_tubo_plast.genesys.service.WS_SeguimientoOP;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
@@ -64,7 +65,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         Toolbar toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("SEGUIMIENTO DE PEDIDO");
-        codven= new PreferenciaPrincipal(this).getCodigoVendedor();
+        codven= new SessionManager(this).getCodigoVendedor();
 
         edtOrdenCompra=findViewById(R.id.edtOrdenCompra);
         edtNroPedido=findViewById(R.id.edtNroPedido);
