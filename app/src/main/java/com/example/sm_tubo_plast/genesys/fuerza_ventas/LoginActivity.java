@@ -43,6 +43,7 @@ import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -363,6 +364,7 @@ public class LoginActivity extends AppCompatActivity {
             if (result.equals("vendedor")) {
                 session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
                 session.createLoginSession(user, pass);
+                session.setCodigoVendedor(codVendedor);
 
                 SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
 
@@ -485,15 +487,7 @@ public class LoginActivity extends AppCompatActivity {
                 entityEmpresa = dbusuarios.getEmpresa();
                 txtRuc.setText(entityEmpresa.getEmpresa());
                 // loginstatus(Usuario,Contrasena);
-                SharedPreferences prefs = getSharedPreferences(
-                        "MisPreferencias", Context.MODE_PRIVATE);
 
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("usuario", txtUsuario.getText().toString());
-                editor.putString("pass", txtPassword.getText().toString()
-                        .trim());
-                editor.putString("codven", codVendedor);
-                editor.commit();
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
                         LoginActivity.this);
                 alertDialog.setTitle("Verificacion Correcta");

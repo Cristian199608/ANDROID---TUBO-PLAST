@@ -19,7 +19,14 @@ class SessionManager(var context: Context) {
         editor = null
     }
 
-    val codigoVendedor: String? get() = if (prefs != null) prefs!!.getString("codven", "por_defecto") else ""
+    var codigoVendedor: String?
+        get() = if (prefs != null) prefs!!.getString("codven", "por_defecto") else ""
+        set(codven) {
+            openEdit()
+            editor!!.putString("codven", codven)
+            ApplyCloseEdit()
+        }
+
     val usuario: String? get() = if (prefs != null) prefs!!.getString("usuario", "") else ""
     val password: String?  get() = if (prefs != null) prefs!!.getString("pass", "") else ""
 

@@ -169,7 +169,8 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         prefs2 = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
 
-        codven = prefs.getString("codven", "0");
+        //codven = prefs.getString("codven", "0");
+        codven = new SessionManager(this).getCodigoVendedor();
 
         url = prefs.getString("url", "0");
         catalog = prefs.getString("catalog", "0");

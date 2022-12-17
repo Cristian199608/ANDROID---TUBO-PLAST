@@ -41,6 +41,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.google.gson.JsonParseException;
 
@@ -158,9 +159,8 @@ public class AmortizarCuentasXCobrarActivity2 extends AppCompatActivity implemen
         setContentView(R.layout.activity_amortizar_cuentas_x_cobrar2);
 
 
-        SharedPreferences prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        codven = new SessionManager(this).getCodigoVendedor();
 
-        codven = prefs.getString("codven", "por_defecto");
 
         obj_dbclasses = new DBclasses(getApplicationContext());
 

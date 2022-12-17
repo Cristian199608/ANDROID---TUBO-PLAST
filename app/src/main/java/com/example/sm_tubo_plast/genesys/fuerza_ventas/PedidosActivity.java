@@ -55,7 +55,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.databinding.ItemResumenByTipoProductoBinding;
 import com.example.sm_tubo_plast.genesys.BEAN.Almacen;
 import com.example.sm_tubo_plast.genesys.BEAN.FormaPago;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
@@ -89,11 +88,13 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
 import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaConfiguracion;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
@@ -108,6 +109,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -252,7 +254,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
     /* Cabecera Pedido -------------- */
     private AutoCompleteTextView autocomplete;
-    private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_direccionFiscal, edt_fechaPedido,edt_observacion1, edt_observacion2, edt_observacion3, edt_observacion4,edt_docAdicional;
+    private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_direccionFiscal, edt_fechaPedido,edt_observacion1NombreContacto, edt_observacion1Telefono, 
+            edt_observacion2NombreTrasporte,edt_observacion2DireccionTransporte, edt_observacion2Proyecto, edt_observacion3, edt_observacion4,edt_docAdicional;
     private LinearLayout linear_obra;
     private RadioButton rButton_boleta,rButton_factura;
     private RadioButton rButtonSoles,rButtonDolares;
@@ -426,8 +429,11 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         //btn_horaPedido 		= (Button) findViewById(R.id.btn_horaPedido);
         edt_fechaPedido 	= (EditText) findViewById(R.id.edt_fechaPedido);
         //edt_horaPedido 		= (EditText) findViewById(R.id.edt_horaPedido);
-        edt_observacion1 	= (EditText) findViewById(R.id.edt_observacion1);
-        edt_observacion2 	= (EditText) findViewById(R.id.edt_observacion2);
+        edt_observacion1NombreContacto 	= (EditText) findViewById(R.id.edt_observacion1NombreContacto);
+        edt_observacion1Telefono 	= (EditText) findViewById(R.id.edt_observacion1Telefono);
+        edt_observacion2NombreTrasporte 	= (EditText) findViewById(R.id.edt_observacion2NombreTrasporte);
+        edt_observacion2DireccionTransporte 	= (EditText) findViewById(R.id.edt_observacion2DireccionTransporte);
+        edt_observacion2Proyecto 	= (EditText) findViewById(R.id.edt_observacion2Proyecto);
         edt_observacion3 	= (EditText) findViewById(R.id.edt_observacion3);
         edt_observacion4 	= (EditText) findViewById(R.id.edt_observacion4);
         rButtonSoles 		= (RadioButton)findViewById(R.id.rButton_soles);
@@ -569,7 +575,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
                             preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
 
-                            codven = prefs.getString("codven", "0");
+                            codven = new SessionManager(PedidosActivity.this).getCodigoVendedor();
+
 
                             final String url = prefs.getString("url", "0");
                             final String catalog = prefs.getString("catalog", "0");
@@ -1150,8 +1157,11 @@ private  void llenarSpinnerDespacho(String valor){
         chkBox_embalaje.setEnabled(true);
         chkBox_pedidoAnticipo.setEnabled(true);
         spn_transportista.setEnabled(true);
-        edt_observacion1.setEnabled(true);
-        edt_observacion2.setEnabled(true);
+        edt_observacion1NombreContacto.setEnabled(true);
+        edt_observacion1Telefono.setEnabled(true);
+        edt_observacion2NombreTrasporte.setEnabled(true);
+        edt_observacion2DireccionTransporte.setEnabled(true);
+        edt_observacion2Proyecto.setEnabled(true);
         edt_observacion3.setEnabled(true);
         edt_observacion4.setEnabled(true);
     }
@@ -1187,8 +1197,11 @@ private  void llenarSpinnerDespacho(String valor){
         //btn_horaPedido.setEnabled(flag);
         edt_fechaPedido.setEnabled(flag);
         //edt_horaPedido.setEnabled(flag);
-        edt_observacion1.setEnabled(flag);
-        edt_observacion2.setEnabled(flag);
+        edt_observacion1NombreContacto.setEnabled(flag);
+        edt_observacion1Telefono.setEnabled(flag);
+        edt_observacion2NombreTrasporte.setEnabled(flag);
+        edt_observacion2DireccionTransporte.setEnabled(flag);
+        edt_observacion2Proyecto.setEnabled(flag);
         edt_observacion3.setEnabled(flag);
         rButtonDescuentoSi.setEnabled(flag);
         rButtonDescuentoNo.setEnabled(flag);
@@ -1533,8 +1546,15 @@ private  void llenarSpinnerDespacho(String valor){
         edt_fechaPedido.setText(""+fechaEnterg.substring(0, 10));
         //edt_horaPedido.setText(""+fechaEnterg.substring(11, 16));
 
-        edt_observacion1.setText(item.getObservacion());
-        edt_observacion2.setText(item.getObservacion2());
+        ArrayList<String> observacion1=VARIABLES.GetListString(item.getObservacion(), 2);
+        edt_observacion1NombreContacto.setText(observacion1.get(0));
+        edt_observacion1Telefono.setText(observacion1.get(1));
+
+        ArrayList<String> observacion2=VARIABLES. GetListString(item.getObservacion2(), 3);
+        edt_observacion2NombreTrasporte.setText(observacion2.get(0));
+        edt_observacion2DireccionTransporte.setText(observacion2.get(1));
+        edt_observacion2Proyecto.setText(observacion2.get(2));
+
         edt_observacion3.setText(item.getObservacion3());
         edt_observacion4.setText(item.getObservacion4());
 
@@ -1543,6 +1563,7 @@ private  void llenarSpinnerDespacho(String valor){
             edt_diasVigencia.setText(diasVigencia);
         }
     }
+
 
     // Menu
     @Override
@@ -1597,7 +1618,7 @@ private  void llenarSpinnerDespacho(String valor){
                     // dbclass.cambiarEstadoEliminados(Oc_numero);
                     PedidosActivity.this.finish();
                     Intent intent2 = new Intent(PedidosActivity.this,
-                            ReportesActivity.class);
+                            ReportesPedidosActivity.class);
                     intent2.putExtra("ORIGEN", "PEDIDOS");
                     startActivity(intent2);
                     Log.w("Menu Cancelar", "se cancelo");
@@ -1905,8 +1926,10 @@ private void EnvalularMoneda(){
         codigoTransportista		= listaTransportes.get(spn_transportista.getSelectedItemPosition()).getCodigoTransporte();
         codigoAlmacenDespacho	= listaAlmacenes.get(spn_almacenDespacho.getSelectedItemPosition()).getCodigoAlmacen();
         codigoTurno				= listaTurnos.get(spn_turno.getSelectedItemPosition()).getCodTurno();
-        observacion				= edt_observacion1.getText().toString();
-        observacion2			= edt_observacion2.getText().toString();
+        observacion				= edt_observacion1NombreContacto.getText().toString()+VARIABLES.SEPARADOR_OBSERVACION+edt_observacion1Telefono.getText().toString();
+        observacion2			= edt_observacion2NombreTrasporte.getText().toString()
+                +VARIABLES.SEPARADOR_OBSERVACION+edt_observacion2DireccionTransporte.getText().toString()
+                +VARIABLES.SEPARADOR_OBSERVACION+edt_observacion2Proyecto.getText().toString();
         observacion3			= edt_observacion3.getText().toString();
 
         Log.d("GuardarFormularioCabecera", "observacion2:"+observacion2);
@@ -3035,6 +3058,7 @@ private void EnvalularMoneda(){
 
     private void MostrarResumenByTipoProducto(){
         LinearLayout layoutResumentByTipoProducto=findViewById(R.id.layoutResumentByTipoProducto);
+        layoutResumentByTipoProducto.removeAllViews();
         double valorIgv=new PreferenciaConfiguracion(this).getValorIgv();
         ArrayList<ResumenVentaTipoProducto> lista=dbclass.getPedidoResumenByTipoProducto(Oc_numero, valorIgv);
         double sumPesoTotal=0;
@@ -3050,8 +3074,8 @@ private void EnvalularMoneda(){
         }
         ResumenVentaTipoProducto itemRes=new ResumenVentaTipoProducto(
                 "Total", sumPesoTotal,sumSubTotal, sumPrecioKiTotal, sumIgvTotal);
-
         layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900));
+
     }
     private View  GetViewResumenByTipoProducto(ResumenVentaTipoProducto itemRes, int resColor){
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -6739,14 +6763,14 @@ private void EnvalularMoneda(){
                         if (origen.equals("REPORTES")) {
 
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesActivity.class);
+                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosActivity.class);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             //crear_dialogo_otro_pedido();
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesActivity.class);
+                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                         }
@@ -6790,7 +6814,7 @@ private void EnvalularMoneda(){
                 // TODO Auto-generated method stub
                 finish();
 
-                Intent intent2 = new Intent(PedidosActivity.this,ReportesActivity.class);
+                Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
                 intent2.putExtra("ORIGEN", "PEDIDOS");
                 startActivity(intent2);
 
@@ -6824,13 +6848,13 @@ private void EnvalularMoneda(){
                         if (origen.equals("REPORTES")) {
 
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesActivity.class);
+                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesActivity.class);
+                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                             //crear_dialogo_otro_pedido();

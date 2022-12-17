@@ -97,6 +97,11 @@ dependencies {
     implementation 'com.google.code.ksoap2-android:ksoap2-android:3.1.1'
     implementation files('libs/jsonrpc2-base-1.24.jar')
 
+    //CREAR PDF
+    implementation 'com.itextpdf:itext7-core:7.1.8'
+    //LECTO DE PDF
+    implementation 'com.github.barteksc:android-pdf-viewer:3.0.0-beta.4'
+
     //depuración base de datos //modificar via terminal adb forward tcp:8080 tcp:8080
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 

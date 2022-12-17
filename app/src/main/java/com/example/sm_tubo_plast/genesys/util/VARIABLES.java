@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,8 +25,10 @@ public class VARIABLES {
 
     public static final  int ID_ENVIO_FALLIDA=-1;
     public static final  int ID_ENVIO_EXITOSA=-2;
+    public static final  String SEPARADOR_OBSERVACION="_#_";
 
-    public static final  boolean isProduccion=false;
+
+    public static final  boolean isProduccion=true;
     public static final class ConfigDatabase {
 
         private static final String DATABASA_NAME_OLD   ="vacio";
@@ -366,7 +370,17 @@ public class VARIABLES {
             return false;
         }
     }
-
+    public static ArrayList<String> GetListString(String texto, int canRequired){
+        ArrayList<String> list=new ArrayList<>();
+        String[] listaString= texto.split(SEPARADOR_OBSERVACION);
+        Collections.addAll(list, listaString);
+        if(list.size()<canRequired){
+            for (int i = 0; i <canRequired-listaString.length; i++) {
+                list.add("");
+            }
+        }
+        return list;
+    }
 
 }
 

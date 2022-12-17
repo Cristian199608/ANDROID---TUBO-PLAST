@@ -31,6 +31,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.CustomTitleBar;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.google.gson.JsonParseException;
 
 import java.util.ArrayList;
@@ -137,8 +138,7 @@ public class DepositosModificarActivity extends AppCompatActivity implements Vie
         año_act = Integer.parseInt(fecha.substring(6,10));
 
         rb_moneda.setEnabled(false);
-        SharedPreferences prefs =  getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        codven = prefs.getString("codven", "por_defecto");
+        codven = new SessionManager(this).getCodigoVendedor();
 
         Bundle bundle = getIntent().getExtras();
         secuencia=""+bundle.getString("secuencia");

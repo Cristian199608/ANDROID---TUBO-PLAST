@@ -31,6 +31,7 @@ import com.example.sm_tubo_plast.genesys.adapters.Cobranza_LazyAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBCta_Ingresos;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -418,7 +419,9 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
             String  catalog = prefs.getString("catalog", "0");
             String  userid = prefs.getString("userid", "0");
             String  contrasena = prefs.getString("contrasenaid", "0");
-            codigoVendedor= prefs.getString("codven", "0");
+
+            codigoVendedor = new SessionManager(CuentasXCobrarActivity2.this).getCodigoVendedor();
+
 
             try {
                 Log.d("Documento", codigoVendedor+"-"+codcli+"-"+url+"-"+catalog+"-"+userid+"-"+contrasena+"-");

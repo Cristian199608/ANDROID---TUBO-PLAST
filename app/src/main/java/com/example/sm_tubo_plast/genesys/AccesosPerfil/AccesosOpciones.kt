@@ -55,6 +55,7 @@ class AccesosOpciones {
             option.MotivoNoVenta            = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","MotivoNoVenta");
             option.Observacion              = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","Observacion");
             option.BajaDeCliente            = daoRolesAccesosApp.getOpcionPermitido("MenuClientes","BajaDeCliente");
+            option.AutoAsignarClienteCartera= daoRolesAccesosApp.getOpcionPermitido("MenuClientes","AutoAsignarClienteCartera");
             return option;
         }
     }

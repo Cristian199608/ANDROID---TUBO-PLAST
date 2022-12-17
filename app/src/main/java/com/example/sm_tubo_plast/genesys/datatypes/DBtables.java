@@ -833,13 +833,16 @@ public class DBtables {
 		public static final String CODVEN = "codven";
 		public static final String NOMVEN = "nomven";
 		public static final String FK_CODUSER = "coduser";
+		public static final String FLG_MODIFICAPRECIO = "flg_modificaPrecio";
+		public static final String EMAIL = "email";
+		public static final String telefono = "telefono";
+		public static final String text_area = "text_area";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODVEN + " CHAR(6) PRIMARY KEY, " + NOMVEN
 				+ " VARCHAR(100)," + FK_CODUSER + " INTEGER);";
 
-		public static final String FLG_MODIFICAPRECIO = "flg_modificaPrecio";
-		public static final String EMAIL = "email";
+
 
 	}
 

@@ -2,6 +2,7 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -37,9 +38,13 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMotivo_noventa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
@@ -54,13 +59,16 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivityVentana2;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -70,6 +78,7 @@ import java.util.Iterator;
 
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import okhttp3.internal.Util;
 
 @SuppressLint("LongLogTag")
 public class ReportesPedidosActivity extends FragmentActivity {
@@ -98,6 +107,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     String numOc, codven;
     DBMotivo_noventa item;
     DBclasses obj_dbclasses;
+    DAO_ReportePedido dao_reportePedido;
     ArrayList<HashMap<String, String>> pedidos = new ArrayList<HashMap<String, String>>();
     ArrayList<DB_RegistroBonificaciones> registroBonificaciones;
     Gson gson = new Gson();
@@ -113,6 +123,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     private static final int ID_FORZAR = 4;
     private static final int ID_ENVIAR_CORREO = 5;
     private static final int ID_GENERAR_PEDIDO = 6;
+    private static final int ID_GENERAR_PDF = 7;
 
     DecimalFormat formateador;
     ArrayList<HashMap<String, String>> searchResults;
@@ -127,10 +138,14 @@ public class ReportesPedidosActivity extends FragmentActivity {
     ArrayList<DBPedido_Cabecera> lista_pedidos;
     TextView tv_montoTotal_soles, btn_peso, tv_totalPedidos, tv_paqueteDatos,
             tv_montoTotal_dolares;
+    ProgressDialog pDialog;
+
     ConnectionDetector connection;
     int contador = 0;
     public String globalFlag = "";
     String fecha2 = "";
+
+    String TIPO_VISTA = "";
 
     int item_direccion;
     String tipoRegistro;
@@ -141,9 +156,13 @@ public class ReportesPedidosActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reportes_pedidos);
 
+        Bundle bundle = getIntent().getExtras();
+        if (bundle!=null){
+            TIPO_VISTA = bundle.getString("TIPO_VISTA", "GESTION_VISITAS");
+        }
 
-        DAORegistroBonificaciones = new DAO_RegistroBonificaciones(
-                getApplicationContext());
+
+        DAORegistroBonificaciones = new DAO_RegistroBonificaciones(  getApplicationContext());
         obj_dbclasses = new DBclasses(getApplicationContext());
         cd = new ConnectionDetector(ReportesPedidosActivity.this);
 
@@ -159,9 +178,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         Log.d("ALERT - REPORTE - fecha:", fecha2);
 
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        SharedPreferences prefs = getSharedPreferences("MisPreferencias",
-                Context.MODE_PRIVATE);
-        codven = prefs.getString("codven", "por_defecto");
+        codven = new SessionManager(this).getCodigoVendedor();
 
         Log.d("ALERT - REPORTE - cod vend:", codven);
 
@@ -182,8 +199,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
         ActionItem deleteItem = new ActionItem(ID_DELETE, "Eliminar",R.drawable.icon_delete_file_24dp);
         ActionItem anularItem = new ActionItem(ID_ANULAR, "Anular",R.drawable.icon_cancel_file_24dp);
         ActionItem forzarEnvio = new ActionItem(ID_FORZAR, "Forzar Envio",R.drawable.ic_devolucion);
-        ActionItem enviarCorreo = new ActionItem(ID_ENVIAR_CORREO, "Enviar por correo",R.drawable.icon_message_read_24dp);
+        //ActionItem enviarCorreo = new ActionItem(ID_ENVIAR_CORREO, "Enviar por correo",R.drawable.icon_message_read_24dp);
         ActionItem generarPedido = new ActionItem(ID_GENERAR_PEDIDO, "Generar pedido",R.drawable.icon_inspection);
+        ActionItem generarPdf = new ActionItem(ID_GENERAR_PDF, "Generar PDF",R.drawable.ic_pdf_24);
 
         final QuickAction mQuickAction = new QuickAction(this);
         final QuickAction mQuickActionCotizacion = new QuickAction(this);
@@ -192,13 +210,15 @@ public class ReportesPedidosActivity extends FragmentActivity {
         mQuickAction.addActionItem(acceptItem);
         mQuickAction.addActionItem(anularItem);
         //mQuickAction.addActionItem(forzarEnvio);
+        mQuickAction.addActionItem(generarPdf);
 
         mQuickActionCotizacion.addActionItem(modificarItem);
         mQuickActionCotizacion.addActionItem(acceptItem);
         mQuickActionCotizacion.addActionItem(anularItem);
         //mQuickActionCotizacion.addActionItem(forzarEnvio);
-        mQuickActionCotizacion.addActionItem(enviarCorreo);
+        //mQuickActionCotizacion.addActionItem(enviarCorreo);
         mQuickActionCotizacion.addActionItem(generarPedido);
+        mQuickActionCotizacion.addActionItem(generarPdf);
 
 
         // setup the action item click listener
@@ -268,8 +288,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                                 }
                             }else{
                                 if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
-                                    SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-                                    String codven = prefs.getString("codven", "");
+                                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
     
                                     final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
                                     ipedido.putExtra("codigoVendedor", codven);
@@ -298,6 +317,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             dialog_preferencias.show(getSupportFragmentManager(), "dialogPreferencias");
                             dialog_preferencias.setCancelable(false);
 
+                        }else if(actionId == ID_GENERAR_PDF){
+                            GenerarPdfDocument(oc_numero);
                         }
                     }
                 });
@@ -344,8 +365,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                         else if (actionId == ID_DETALLE) {
                             if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
-                                SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-                                String codven = prefs.getString("codven", "");
+                                String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
 
                                 final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
                                 ipedido.putExtra("codigoVendedor", codven);
@@ -384,6 +404,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             DAOPedidoDetalle.ClonarPedido(cabecera);//Se guarda referencia del pedido anterior
                             GlobalFunctions.showCustomToast(ReportesPedidosActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
                             new asyncBuscar().execute("", "");
+                        }else if(actionId == ID_GENERAR_PDF){
+                            GenerarPdfDocument(oc_numero);
                         }
                     }
                 });
@@ -422,6 +444,97 @@ public class ReportesPedidosActivity extends FragmentActivity {
         });
     }
 
+    private void GenerarPdfDocument(String oc_numero) {
+        dao_reportePedido=new DAO_ReportePedido(getApplicationContext());
+        ArrayList<DataCabecera> lista=dao_reportePedido.getCabecera(""+oc_numero);
+        if (lista.size()==0){
+            return;
+        }
+        AlertDialog.Builder elegir = new AlertDialog.Builder(ReportesPedidosActivity.this);
+        elegir.setTitle("¿Interno o Cliente?");
+        elegir.setMessage("Seleccione el tipo de envío");
+        elegir.setCancelable(true);
+        elegir.setPositiveButton("Cliente", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Generate_pdf_by_ocumero( 1, lista.get(0));//1 Cliente
+            }
+        });
+        elegir.setNegativeButton("Interno", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                 Generate_pdf_by_ocumero( 2, lista.get(0));//2 =interno
+            }
+        });
+        elegir.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        elegir.create().show();
+
+    }
+    private void Generate_pdf_by_ocumero( int tipoEnvio, DataCabecera dataCabecera) {
+        ArrayList<ReportePedidoCabeceraDetalle> listaDetalle= dao_reportePedido.getAllDataByCodigo( dataCabecera.getOc_numero());
+
+        pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+        pDialog.setMessage("Generando PDF...");
+        pDialog.setIndeterminate(true);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        new AsyncTask<Void, String, String>(){
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    PDF.createPdf(getApplicationContext(),
+                            dataCabecera.getOc_numero(),
+                            dataCabecera.getTipoRegistro(),
+                            dataCabecera.getRuccli(),
+                            dataCabecera.getCodven(),
+                            dataCabecera.getNomcli(),
+                            dataCabecera.getTelefono(),
+                            dataCabecera.getNomven(),
+                            dataCabecera.getDireccionFiscal(),
+                            dataCabecera.getEmail_cliente(),
+                            dataCabecera.getEmail_vendedor(),
+                            dataCabecera.getDesforpag(),
+                            dataCabecera.getMonto_total(),
+                            dataCabecera.getValor_igv(),
+                            dataCabecera.getSubtotal(),
+                            dataCabecera.getPeso_total(),
+                            dataCabecera.getFecha_oc(),
+                            dataCabecera.getFecha_mxe(),
+                            listaDetalle,
+                            tipoEnvio);
+                    return "Generado";
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+
+            }
+
+            @Override
+            protected void onPostExecute(String unused) {
+                super.onPostExecute(unused);
+                pDialog.dismiss();
+                pDialog=null;
+                if(unused==null){
+                    UtilView.MENSAJE_simple(getApplicationContext(), "Error", "No se ha podido generar el pdf. Vuelva a intentarlo");
+                    return;
+                }
+                Intent intent = new Intent(getApplicationContext(), ViewPdfActivity.class);
+                intent.putExtra("oc_numero", dataCabecera.getOc_numero());
+                startActivity(intent);
+
+            }
+        }.execute();
+
+
+    }
     private void cargarListView() {
         // TODO Auto-generated method stub
 
@@ -520,7 +633,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         } else if (tipo.equalsIgnoreCase("documento")) {
             lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
         } else {
-            lista_pedidos = obj_dbclasses.getPedidosCabecera();
+            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA);
         }
 
         Iterator<DBPedido_Cabecera> it = lista_pedidos.iterator();
@@ -666,7 +779,6 @@ public class ReportesPedidosActivity extends FragmentActivity {
     class asyncEnviarPendientes extends AsyncTask<String, String, String> {
 
         String user, pass;
-        ProgressDialog pDialog;
 
         protected void onPreExecute() {
             // para el progress dialog
@@ -728,6 +840,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             toast.show();
 
             pDialog.dismiss();// ocultamos progess dialog.
+            pDialog=null;
             Log.e("onPostExecute= Enviado", "" + mensaje);
 
             ((ReportesPedidos_Adapter) list.getAdapter())
@@ -1235,9 +1348,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             item_direccion);
                     Log.w("CODIGO_NOVENTA", "" + cod);
 
-                    SharedPreferences prefs = getSharedPreferences(
-                            "MisPreferencias", Context.MODE_PRIVATE);
-                    String codven = prefs.getString("codven", "");
+                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
 
 
 
@@ -1263,9 +1374,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             item_direccion);
                     Log.w("CODIGO_NOVENTA", "" + cod);
 
-                    SharedPreferences prefs = getSharedPreferences(
-                            "MisPreferencias", Context.MODE_PRIVATE);
-                    String codven = prefs.getString("codven", "");
+                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
 
                     final Intent ipedido;
                     if (tipoRegistro.equals(PedidosActivity.TIPO_COTIZACION)) {
@@ -1376,9 +1485,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         int cod = obj_dbclasses.obtenerMotivoxCliente(codcli, item_direccion);
         Log.w("CODIGO_NOVENTA", "" + cod);
 
-        SharedPreferences prefs = getSharedPreferences("MisPreferencias",
-                Context.MODE_PRIVATE);
-        String codven = prefs.getString("codven", "");
+        String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
 
         String vista = obj_dbclasses.obtenerVistaxOrdenCompra(oc_numero);
         Log.d("ReportesPedidosActivity ::updatePedido::", vista);

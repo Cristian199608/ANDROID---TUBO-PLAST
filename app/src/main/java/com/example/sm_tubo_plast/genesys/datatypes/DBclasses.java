@@ -25,7 +25,9 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Politica_precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Producto;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -368,9 +370,8 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public ArrayList<DBClientes> getClientes(String buscar) {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = getDiaConfiguracion();
@@ -466,9 +467,8 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public ArrayList<DB_ZnfProgramacionClientes> getProgramacionxDia() {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = getDiaConfiguracion();
@@ -507,9 +507,8 @@ public class DBclasses extends SQLiteAssetHelper {
 																	String fecha_formateado,
 																	boolean soloAnulados
 																	 ) {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = 0; //getDiaConfiguracion();
@@ -584,9 +583,8 @@ public class DBclasses extends SQLiteAssetHelper {
 
 
 	public ArrayList<DB_ZnfProgramacionClientes> getDemasClientes() {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = getDiaConfiguracion();
@@ -623,9 +621,8 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public ArrayList<HashMap<String, Object>> getDemasClientes2() {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = getDiaConfiguracion();
@@ -2709,9 +2706,7 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public ArrayList<DBClientes> getClientesXRuta() {
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+		String codven = new SessionManager(_context).getCodigoVendedor();
 		String rawQuery;
 
 		int dia = getDiaConfiguracion();
@@ -3262,17 +3257,29 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 	}
 
-	public ArrayList<DBPedido_Cabecera> getPedidosCabecera() {
+	public ArrayList<DBPedido_Cabecera> getPedidosCabecera(String tipo_vista) {
 		eliminarNulos();
 		String rawQuery;
-		SharedPreferences prefs = _context.getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+		String codven = new SessionManager(_context).getCodigoVendedor();
+
+		String addWHere="";
+		if (tipo_vista.equals("PREVENTA")){
+			addWHere="and pc.flag <> 'A' and pc.tipoRegistro IN (" +
+					"'"+ PedidosActivity.TIPO_PEDIDO+ "'," +
+					"'"+ PedidosActivity.TIPO_COTIZACION+ "'" +
+					") ";
+		}else{
+			addWHere="and (cod_noventa ='"+GlobalVar.CODIGO_VISITA_CLIENTE+"') ";
+		}
 
 		rawQuery = "select cod_cli,monto_total,flag, cond_pago, ifnull(nro_letra,0) , cod_noventa, oc_numero, peso_total, fecha_oc, estado, percepcion_total, "+
 					"ifnull((SELECT codigoEquivalente from moneda where codigoMoneda=pc.moneda),''),tipoRegistro, ifnull(pedidoAnterior,''), " +
 					"pc.latitud "+
 					"from pedido_cabecera pc "+
-					"where oc_numero <> 0 and (flag <> 'A' or cod_noventa ='"+GlobalVar.CODIGO_VISITA_CLIENTE+"') and cod_cli !='TPLAST-VISITA' and cod_emp='"+codven+"' order by oc_numero DESC";
+					"where oc_numero <> 0 " +
+				addWHere+" "+
+				"and cod_cli !='TPLAST-VISITA' and cod_emp='"+codven+"' " +
+				"order by oc_numero DESC";
 
 		Log.d("QUERY REPORTE", " :::::> " + rawQuery);
 
@@ -4216,6 +4223,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Vendedor.FK_CODUSER,jsonData.getString("coduser").trim());
 				cv.put(DBtables.Vendedor.FLG_MODIFICAPRECIO, jsonData.getString("flg_modificaPrecio").trim());
 				cv.put(DBtables.Vendedor.EMAIL, jsonData.getString(DBtables.Vendedor.EMAIL).trim());
+				cv.put(DBtables.Vendedor.telefono, jsonData.getString(DBtables.Vendedor.telefono).trim());
+				cv.put(DBtables.Vendedor.text_area, jsonData.getString(DBtables.Vendedor.text_area).trim());
 
 				db.insert(DBtables.Vendedor.TAG, null, cv);
 				Log.i("VENDEDOR",
@@ -9933,9 +9942,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			String nomcli) {
 		String rawQuery;
 
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+		String codven = new SessionManager(_context).getCodigoVendedor();
 
 		// rawQuery =
 		// "select * from pedido_cabecera  where substr(fecha_oc,1,10) >= '"+getFecha()+"'"
@@ -10000,9 +10007,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public ArrayList<DBPedido_Cabecera> getPedidosCabeceraxDocumento(String oc) {
 		String rawQuery;
 
-		SharedPreferences prefs = _context.getSharedPreferences(
-				"MisPreferencias", Context.MODE_PRIVATE);
-		String codven = prefs.getString("codven", "por_defecto");
+		String codven = new SessionManager(_context).getCodigoVendedor();
 
 		// rawQuery =
 		// "select * from pedido_cabecera  where substr(fecha_oc,1,10) >= '"+getFecha()+"'"
@@ -12724,7 +12729,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public boolean RequiereValidacionPorDescuento(String oc_numero) {
 
 		String rawQuery;
-		rawQuery = "select max(descuento * 100/precioLista) from pedido_detalle where  oc_numero='"+ oc_numero + "' ";
+		rawQuery = "select max(descuento) from pedido_detalle where  oc_numero='"+ oc_numero + "' ";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);

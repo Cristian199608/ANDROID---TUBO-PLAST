@@ -22,8 +22,11 @@ import com.example.sm_tubo_plast.databinding.ActivityMenuPrincipalBinding;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportePedidosYContizacionActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
@@ -92,9 +95,12 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         editor_preferencias.putFloat("limiteDescuento", (float) limiteDescuento);
         editor_preferencias.commit();
 
+        SessionManager sessionManager=new SessionManager(this);
+        codven = sessionManager.getCodigoVendedor();
+
         SharedPreferences prefs =  getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         final SharedPreferences preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
-        codven = prefs.getString("codven", "por_defecto");
+
         url = prefs.getString("url", "0");
         catalog = prefs.getString("catalog", "0");
         userid = prefs.getString("userid", "0");
@@ -251,6 +257,18 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             }
         });
 
+        View ly_cotizacionYPedido= window.findViewById(R.id.ly_cotizacionYPedido);
+        ly_cotizacionYPedido.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                final Intent icliente = new Intent(activity, ReportesPedidosActivity.class);
+                icliente.putExtra("TIPO_VISTA","PREVENTA");
+                // ipedido.putExtra("codven",codven);
+                activity.startActivityForResult(icliente, 0);
+            }
+        });
+
         /*View mostrarDepositos= window.findViewById(R.id.ly_deposito);
         mostrarDepositos.setOnClickListener(new View.OnClickListener() {
 
@@ -370,6 +388,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         UtilView.Efectos(this, mostrarReportes, R.color.white);
         UtilView.Efectos(this, mostrarEstadisticas, R.color.white);
         UtilView.Efectos(this, mostrarSincronizar, R.color.white);
+        UtilView.Efectos(this, ly_cotizacionYPedido, R.color.blue_300);
 
     }
 

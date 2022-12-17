@@ -211,19 +211,19 @@
                             android:textSize="15sp"
                             android:textStyle="bold"
                             android:typeface="sans" />
-                        <ImageView
-                            android:id="@+id/ly_agendax"
-                            android:layout_width="match_parent"
-                            android:scaleType="center"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@drawable/ic_menu_cotizaciones"
-                            android:backgroundTint="@color/grey_800"
-                            android:onClick="NOFunciona"
-                            />
 
+
+                        <ImageView
+                            android:id="@+id/ly_cotizacionYPedido"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_menu_cotizaciones"
+                            app:tint="@color/grey_800" />
 
 
                     </LinearLayout>

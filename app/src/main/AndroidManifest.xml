@@ -22,6 +22,15 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".ViewPdfActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReportePedidosYContizacionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AsignacionClienteXVendedorWebActivity"
+            android:exported="false" />
+        <activity
             android:name=".ReportesVentasVendedorActivity"
             android:exported="false" />
         <activity
@@ -200,6 +209,14 @@
             android:name=".genesys.fuerza_ventas.ProductosActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportePedidosYContizacionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ViewPdfActivity"
+            android:theme="@style/AppThemeNewClient"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".genesys.fuerza_ventas.MenuLiquidacionActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -210,24 +227,40 @@
             android:name=".genesys.fuerza_ventas.SincronizarActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".genesys.fuerza_ventas.LoginActivity"
+            android:name=".genesys.fuerza_ventas.AsignacionClienteXVendedorWebActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme2"
-            android:exported="true" >
+            android:theme="@style/AppThemeNewClient" />
+        <activity
+            android:name=".genesys.fuerza_ventas.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity"
-            android:theme="@style/AppThemeNewClient"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNewClient" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
         <receiver android:name=".genesys.service.SampleAlarmReceiver" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.sm_tubo_plast"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

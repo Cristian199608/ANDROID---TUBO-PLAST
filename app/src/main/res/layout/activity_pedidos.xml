@@ -62,6 +62,806 @@
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="5dp" >
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_margin="3dp"
+                        android:fillViewport="true" >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="vertical" >
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="N° de Pedido:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_nroPedido"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:enabled="false"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linear_tipoDocumento"
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Tipo documento:"
+                                    android:textSize="15sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_tipoDocumento"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_factura"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Factura" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_boleta"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:checked="true"
+                                        android:text="Boleta" />
+                                </RadioGroup>
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Moneda:"
+                                    android:textSize="15sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_moneda"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_dolares"
+                                        android:checked="true"
+                                        android:text="Dolares"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_soles"
+                                        android:text="Soles"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RadioGroup>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="1" >
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".5"
+                                    android:gravity="center_vertical" >
+
+                                    <Button
+                                        android:id="@+id/btn_fechaPedido"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:drawableTop="@drawable/fecha_32"
+                                        android:text="Fecha"
+                                        android:textSize="12sp" />
+
+                                    <EditText
+                                        android:id="@+id/edt_fechaPedido"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:editable="false"
+                                        android:hint="Fecha entrega" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight=".5"
+                                    android:gravity="center_vertical" >
+                                    <Spinner
+                                        android:id="@+id/spn_turno_entrega"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_weight="1.5"
+                                        style="@android:style/Widget.Holo.Light.Spinner"
+                                        android:entries="@array/datos_spinner" />
+                                </LinearLayout>
+<!--                                01002018-->
+
+
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/linear_diasVigencia"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Dias de Vigencia:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_diasVigencia"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:inputType="number"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="N° Orden Compra:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_nroOrdenCompra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Punto de Entrega"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_puntoEntrega"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"
+                                    android:prompt="@string/prompt_puntoEntrega"
+                                    android:spinnerMode="dialog" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:clickable="false"
+                                    android:editable="false"
+                                    android:text="Limite Credito"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_limiteCredito"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:editable="false"
+                                    android:text="" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Nombre Contacto:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion1NombreContacto"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:inputType="textCapCharacters"
+                                    android:text="" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Telefono Contacto:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion1Telefono"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:inputType="number"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Dirección fiscal:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_direccionFiscal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:editable="false"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Prioridad:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_prioridad"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Sucursal:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_sucursal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:prompt="@string/prompt_sucursales"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:spinnerMode="dialog" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/linear_docAdicional"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Doc. Adicional"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_docAdicional"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1.5"
+                                    android:editable="false"
+                                    android:focusable="false" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Punto de entrega:"
+                                    android:textSize="15sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Tipo de Despacho"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_tipoDespacho"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Despacho:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_despacho"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/linear_obra"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Obra:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_obra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <CheckBox
+                                    android:id="@+id/chkBox_embalaje"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2"
+                                    android:text="Embalaje"
+                                    android:textSize="14sp" />
+
+                                <CheckBox
+                                    android:id="@+id/chkBox_pedidoAnticipo"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2"
+                                    android:text="Pedido por anticipo"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+
+                                android:visibility="gone"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Transportista:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_transportista"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:id="@+id/linearLayoutNumeroLetras"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Transporte:"
+                                    android:textSize="15sp"
+                                    android:visibility="visible" />
+
+                                <Spinner
+                                    android:id="@+id/spn_numeroletra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner" />
+
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                >
+
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Transporte:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion2NombreTrasporte"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Direccion Transporte"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion2DireccionTransporte"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Proyecto:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion2Proyecto"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Observacion Pedido:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion3"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Almacen Despacho"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_almacenDespacho"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:spinnerMode="dialog" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Condicion de Venta:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spn_condicionVenta"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:entries="@array/datos_spinner" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="Aplica Descuento:"
+                                    android:textSize="15sp" />
+
+                                <RadioGroup
+                                    android:id="@+id/rGroup_aplicaDescuento"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="2.5"
+                                    android:orientation="horizontal" >
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_descuentoSi"
+                                        android:layout_marginLeft="5dp"
+                                        android:text="Si"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                    <RadioButton
+                                        android:id="@+id/rButton_descuentoNo"
+                                        android:layout_marginLeft="5dp"
+                                        android:checked="true"
+                                        android:text="No"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </RadioGroup>
+                            </LinearLayout>
+
+
+
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:id="@+id/linearLayoutObservacion3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Observación 3:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion4"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </ScrollView>
+                </LinearLayout>
                 <RelativeLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
@@ -72,8 +872,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_alignBottom="@+id/view_line1"
-                        android:dividerHeight="2dp" >
-                    </ListView>
+                        android:dividerHeight="2dp"></ListView>
 
                     <!-- ************************************************************** -->
                     <View android:layout_width="fill_parent" android:layout_height="1dp" android:background="@color/grey_700"
@@ -324,714 +1123,9 @@
 
                     </LinearLayout>
 
-                   
+
 
                 </RelativeLayout>
-                <LinearLayout
-                    android:id="@+id/tab1"
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="vertical"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:paddingTop="5dp" >
-
-                    <ScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_margin="3dp"
-                        android:fillViewport="true" >
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="fill_parent"
-                            android:orientation="vertical" >
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="fill_parent"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="N° de Pedido:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_nroPedido"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:enabled="false"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/linear_tipoDocumento"
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Tipo documento:"
-                                    android:textSize="15sp" />
-
-                                <RadioGroup
-                                    android:id="@+id/rGroup_tipoDocumento"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1.5"
-                                    android:orientation="horizontal" >
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_factura"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Factura" />
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_boleta"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:checked="true"
-                                        android:text="Boleta" />
-                                </RadioGroup>
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Moneda:"
-                                    android:textSize="15sp" />
-
-                                <RadioGroup
-                                    android:id="@+id/rGroup_moneda"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1.5"
-                                    android:orientation="horizontal" >
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_dolares"
-                                        android:checked="true"
-                                        android:text="Dolares"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content" />
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_soles"
-                                        android:text="Soles"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content" />
-                                </RadioGroup>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:weightSum="1" >
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight=".5"
-                                    android:gravity="center_vertical" >
-
-                                    <Button
-                                        android:id="@+id/btn_fechaPedido"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:drawableTop="@drawable/fecha_32"
-                                        android:text="Fecha"
-                                        android:textSize="12sp" />
-
-                                    <EditText
-                                        android:id="@+id/edt_fechaPedido"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:editable="false"
-                                        android:hint="Fecha entrega" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:layout_weight=".5"
-                                    android:gravity="center_vertical" >
-                                    <Spinner
-                                        android:id="@+id/spn_turno_entrega"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_weight="1.5"
-                                        style="@android:style/Widget.Holo.Light.Spinner"
-                                        android:entries="@array/datos_spinner" />
-                                </LinearLayout>
-<!--                                01002018-->
-
-
-
-                            </LinearLayout>
-                            <LinearLayout
-                                android:id="@+id/linear_diasVigencia"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Dias de Vigencia:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_diasVigencia"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:inputType="number"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="N° Orden Compra:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_nroOrdenCompra"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:clickable="false"
-                                    android:editable="false"
-                                    android:text="Limite Credito"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_limiteCredito"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:editable="false"
-                                    android:text="" />
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Dirección fiscal:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_direccionFiscal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:editable="false"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Prioridad:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_prioridad"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Sucursal:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_sucursal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:prompt="@string/prompt_sucursales"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:spinnerMode="dialog" />
-                            </LinearLayout>
-                            <LinearLayout
-                                android:id="@+id/linear_docAdicional"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Doc. Adicional"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_docAdicional"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1.5"
-                                    android:editable="false"
-                                    android:focusable="false" />
-                            </LinearLayout>
-
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Punto de entrega:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_puntoEntrega"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:entries="@array/datos_spinner"
-                                    android:prompt="@string/prompt_puntoEntrega"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:spinnerMode="dialog" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Tipo de Despacho"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_tipoDespacho"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Despacho:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_despacho"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/linear_obra"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Obra:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_obra"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingBottom="5dp"
-                                android:paddingTop="5dp" >
-
-                                <CheckBox
-                                    android:id="@+id/chkBox_embalaje"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2"
-                                    android:text="Embalaje"
-                                    android:textSize="14sp" />
-
-                                <CheckBox
-                                    android:id="@+id/chkBox_pedidoAnticipo"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2"
-                                    android:text="Pedido por anticipo"
-                                    android:textSize="14sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Transportista:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_transportista"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Almacen Despacho"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_almacenDespacho"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:entries="@array/datos_spinner"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:spinnerMode="dialog" />
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Condicion de Venta:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_condicionVenta"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="Aplica Descuento:"
-                                    android:textSize="15sp" />
-
-                                <RadioGroup
-                                    android:id="@+id/rGroup_aplicaDescuento"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="2.5"
-                                    android:orientation="horizontal" >
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_descuentoSi"
-                                        android:layout_marginLeft="5dp"
-                                        android:text="Si"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content" />
-
-                                    <RadioButton
-                                        android:id="@+id/rButton_descuentoNo"
-                                        android:layout_marginLeft="5dp"
-                                        android:checked="true"
-                                        android:text="No"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content" />
-                                </RadioGroup>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/linearLayoutNumeroLetras"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:visibility="gone">
-
-
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Número de Letra:"
-                                    android:textSize="15sp"
-                                    android:visibility="visible" />
-
-                                <Spinner
-                                    android:id="@+id/spn_numeroletra"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:entries="@array/datos_spinner" />
-
-                            </LinearLayout>
-
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                 >
-
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Número de Letra:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_observacion1"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Observación 1:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_observacion2"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Observación 2:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_observacion3"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:background="@color/grey_200"
-                                android:id="@+id/linearLayoutObservacion3"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:visibility="gone">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Observación 3:"
-                                    android:textSize="15sp" />
-
-                                <EditText
-                                    android:id="@+id/edt_observacion4"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:text="" />
-                            </LinearLayout>
-
-                        </LinearLayout>
-                    </ScrollView>
-                </LinearLayout>
-
 
             </FrameLayout>
         </LinearLayout>

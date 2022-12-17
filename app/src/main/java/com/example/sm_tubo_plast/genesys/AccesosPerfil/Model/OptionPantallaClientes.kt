@@ -13,22 +13,7 @@ class OptionPantallaClientes {
     var MotivoNoVenta: Boolean=false;
     var Observacion: Boolean=false;
     var BajaDeCliente: Boolean=false;
-
-    private var _password: String="false";
-    var codigoNivel: String
-        get() = _password.capitalize();
-        set(valor) {
-            _password=valor;
-        }
-
-    var passwordx: Boolean? = null
-            get() {
-                return field;
-            }
-            set(value) {
-                Log.i("OPT", "SET VALUE")
-                field=value
-            }
+    var AutoAsignarClienteCartera: Boolean=false;
 
 
 }

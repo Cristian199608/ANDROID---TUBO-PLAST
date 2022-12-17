@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+  >
+
+    <LinearLayout
+        android:id="@+id/CABECERA"
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OC NUMERO : "
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/OC_NUMERO"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOM CLI : "
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/NOM_CLI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/VER_DETALLES"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_marginEnd="2dp"
+                android:layout_height="wrap_content"
+                android:text="VER DETALLES"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+            <Button
+                android:id="@+id/btnViewPdf"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_marginStart="2dp"
+                android:layout_height="wrap_content"
+                android:text="PDF"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1.5dp"
+        android:layout_below="@+id/CABECERA"
+        android:background="@color/grey_200" />
+</RelativeLayout>

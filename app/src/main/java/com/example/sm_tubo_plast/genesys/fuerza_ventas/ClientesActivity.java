@@ -176,6 +176,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     TextView tv_cantidadGeneral, tv_cantidad_filtrado, tv_fecha_filtrado_de, tvClientesAnulados;
     CheckBox check_programada,check_visitado;
+    Button txtAsignacionCliente;
     Dialog customDialog = null;
 
     SharedPreferences prefs;
@@ -228,6 +229,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         tvClientesAnulados = (TextView) findViewById(R.id.tvClientesAnulados);
         check_programada =  findViewById(R.id.check_programada);
         check_visitado =  findViewById(R.id.check_visitado);
+        txtAsignacionCliente =  findViewById(R.id.txtAsignacionCliente);
 
         check_programada.setVisibility(View.GONE);
         check_visitado.setVisibility(View.GONE);
@@ -360,7 +362,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         mQuickAction2.addActionItem(motivoBajaOrAlta);
 
         AdministrarAccesos(mQuickAction, mQuickAction2);
-        AdministrarAccesos(mQuickAction, mQuickAction2);
 
 
         // ///////////////////Acciones para mQuickAction///////////////////////
@@ -486,7 +487,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 		});
 		*/
 
-
+        txtAsignacionCliente.setOnClickListener(v -> {
+            startActivity(new Intent(ClientesActivity.this, AsignacionClienteXVendedorWebActivity.class));
+        });
 
 
     }
@@ -495,7 +498,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         accesosOpciones= new AccesosOpciones.PantallaClientes(this);
         OptionPantallaClientes opciones=accesosOpciones.option();
         try {
-            opciones.setPasswordx(false);
+
             if (!opciones.getVerInformacionCliente()){
                 if (quikAction1.getActionItemById(ID_INFO)!=null)  quikAction1.remove(ID_INFO);
                 if (quikAction2.getActionItemById(ID_INFO)!=null)   quikAction2.remove(ID_INFO);
@@ -536,6 +539,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 if (quikAction1.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction1.remove(ID_BAJA_ClIENTE);
                 if (quikAction2.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction2.remove(ID_BAJA_ClIENTE);
             }
+            if (!opciones.getAutoAsignarClienteCartera()) {
+                txtAsignacionCliente.setVisibility(View.GONE);
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }

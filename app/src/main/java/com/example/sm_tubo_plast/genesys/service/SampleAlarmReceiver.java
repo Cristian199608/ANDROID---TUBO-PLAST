@@ -13,6 +13,8 @@ import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PosicionVendedor;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 
 import java.util.Calendar;
 
@@ -36,9 +38,8 @@ public class SampleAlarmReceiver extends BroadcastReceiver {
     	
     	if(intent.getExtras().get("com.genesys.fuerzaventas.requestCode").equals("principal")){
     		Log.i("PRINCIPAL", "llamado");
-    		
-    		SharedPreferences prefs =  context.getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);	
-			String codven = prefs.getString("codven", "por_defecto");
+
+            String codven = new SessionManager(context).getCodigoVendedor();
     		
     		ConnectionDetector cd = new ConnectionDetector(context);
     		DBSync_soap_manager sm = new DBSync_soap_manager(context);
