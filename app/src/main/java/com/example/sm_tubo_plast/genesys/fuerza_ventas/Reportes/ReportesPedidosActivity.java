@@ -95,6 +95,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
     public static final String KEY_MONEDA = "moneda";
     public static final String KEY_NOVENTA = "KEY_NOVENTA";
 
+    public static final String PREVENTA = "PREVENTA";
+    public static final String GESTION_VISITAS = "GESTION_VISITAS";
+
     public String numfactura;
     public String saldo = "0";
     String total = "0";
@@ -158,7 +161,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle!=null){
-            TIPO_VISTA = bundle.getString("TIPO_VISTA", "GESTION_VISITAS");
+            TIPO_VISTA = bundle.getString("TIPO_VISTA", ""+GESTION_VISITAS);
         }
 
 
@@ -222,8 +225,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
 
         // setup the action item click listener
-        mQuickAction
-                .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+        mQuickAction  .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
 
                     @Override
                     public void onItemClick(ActionItem item) {
@@ -415,10 +417,14 @@ public class ReportesPedidosActivity extends FragmentActivity {
         list.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+
+
                 mSelectedRow = position; // set the selected row
-
-
-
+                codcli = pedidos.get(mSelectedRow).get(KEY_CODCLI).trim().toString();
+                if (obj_dbclasses.getClientexCodigo(codcli)==null) {
+                    UtilView.MENSAJE_simple(ReportesPedidosActivity.this, "Error", "Cliente no encontrado");
+                    return;
+                }
                 String numoc = ((TextView) view.findViewById(R.id.rpt_pedido_tv_oc_numero)).getText().toString();
                 String nomc = ((TextView) view.findViewById(R.id.rpt_pedido_tv_cliente)).getText().toString();
                 String tipo = ((TextView) view.findViewById(R.id.tv_tipoRegistro)).getText().toString();
@@ -437,7 +443,6 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 oc_numero = numoc;
                 Log.w("OC_NUMERO", oc_numero);
                 nomcli = nomc;
-                codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
                 item_direccion = obj_dbclasses.obtenerSitioXocnumero(oc_numero);
 
             }

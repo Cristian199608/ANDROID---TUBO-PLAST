@@ -12,8 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofilClient {
     private static Retrofit retrofit;
     public static Retrofit getRetrofitInstanceSERVIDOR() {
-//        String BASE_URL="http://190.187.25.123:4390/ws_control_acceso_app/";
-        String BASE_URL="http://192.168.0.55/ws_control_acceso_app/";
+        String BASE_URL="http://190.187.25.123:4390/ws_control_acceso_app/";
+//        String BASE_URL="http://192.168.0.55/ws_control_acceso_app/";
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -27,7 +27,7 @@ public class RetrofilClient {
                 .addConverterFactory(GsonConverterFactory
                  .create(gson)).client(okHttpClient)
                 .build();
-        //
+
         return retrofit;
     }
 }

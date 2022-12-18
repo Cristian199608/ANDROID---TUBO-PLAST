@@ -263,7 +263,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             @Override
             public void onClick(View arg0) {
                 final Intent icliente = new Intent(activity, ReportesPedidosActivity.class);
-                icliente.putExtra("TIPO_VISTA","PREVENTA");
+                icliente.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                 // ipedido.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }

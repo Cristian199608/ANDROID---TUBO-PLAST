@@ -1,12 +1,11 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas
 
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.webkit.*
+import androidx.appcompat.app.AppCompatActivity
 import com.example.sm_tubo_plast.R
 import com.example.sm_tubo_plast.databinding.ActivityAsignacionClienteXvendedorWebBinding
-import com.example.sm_tubo_plast.databinding.ActivityReportesVentasVendedorBinding
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.web.WebAppAsgnacionClienteInterface
 import com.example.sm_tubo_plast.genesys.session.SessionManager
 import com.example.sm_tubo_plast.genesys.util.GlobalVar
 
@@ -32,6 +31,8 @@ class AsignacionClienteXVendedorWebActivity : AppCompatActivity() {
             resources.getColor(R.color.s4)
         )
         binding.myWebVew.webChromeClient = WebChromeClient()
+        binding.myWebVew.addJavascriptInterface( WebAppAsgnacionClienteInterface(this),"Android") ;
+
         binding.myWebVew.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, progress: Int) {
                 binding.swipeRefreshLayout.setRefreshing(true)
@@ -40,17 +41,11 @@ class AsignacionClienteXVendedorWebActivity : AppCompatActivity() {
                 }
             }
         }
-
         binding.swipeRefreshLayout.isEnabled = false;
     }
 
     override fun onBackPressed() {
-        if (binding.myWebVew.canGoBack()) {
-            binding.myWebVew.goBack();
-
-        }else{
-            super.onBackPressed()
-        }
-
+        binding.myWebVew.loadUrl("javascript:FinalizarVentanaAsignacionCliente()")
     }
+
 }

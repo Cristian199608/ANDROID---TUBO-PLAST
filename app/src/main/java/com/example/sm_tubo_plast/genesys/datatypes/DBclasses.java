@@ -446,11 +446,11 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
-		DBClientes dbc = new DBClientes();
+		DBClientes dbc = null;
 		cur.moveToFirst();
 
 		while (!cur.isAfterLast()) {
-
+			dbc=new DBClientes();
 			dbc.setCodcli(cur.getString(0));
 			dbc.setNomcli(cur.getString(1));
 			dbc.setRuccli(cur.getString(2));
@@ -13071,7 +13071,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv) {
 		String rawQuery;
 		rawQuery = "SELECT " +
-				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, sum(precio_neto)/sum(cantidad) as pk,\n" +
+				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, sum(precio_neto)/sum(peso_bruto) as pk,\n" +
 				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
 				"select  \n" +
 				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +

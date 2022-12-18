@@ -22,6 +22,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
         this.context = context;
     }
 
+    @SuppressLint("Range")
     public ArrayList<ReportePedidoCabeceraDetalle> getAllDataByCodigo(String oc_num)
     {
         try
@@ -42,10 +43,11 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "PC.fecha_mxe,  P.codpro, PD.cantidad, " +
                                 "PD.unidad_medida, P.despro, " +
                                 "PC.moneda, PD.precio_bruto, " +
-                                "PD.precio_neto, PD.descuento," +
+                                "PD.precio_neto, PD.porcentaje_desc," +
                                 "V.telefono, V.text_area, " +
                                 "PC.observacion, PC.observacion2, " +
-                                "PC.observacion3 " +
+                                "PC.observacion3," +
+                                "PD.peso_bruto " +
                                 "FROM " +
                                 "pedido_cabecera PC " +
                                 "CROSS JOIN " +
@@ -111,6 +113,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         String observacion = objCursor.getString(27);
                         String observacion2 = objCursor.getString(28);
                         String observacion3 = objCursor.getString(29);
+                        double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
 
                         objDbPedidoCabeceraDetalleArrayList.add(
                                 new ReportePedidoCabeceraDetalle(
@@ -143,7 +146,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                         text_area,
                                         observacion,
                                         observacion2,
-                                        observacion3
+                                        observacion3,
+                                        pesoTotalProducto
                                 ));
                     }
                     return objDbPedidoCabeceraDetalleArrayList;

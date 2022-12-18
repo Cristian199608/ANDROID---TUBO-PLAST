@@ -83,7 +83,6 @@ public class ViewPdfActivity extends AppCompatActivity {
             }else {
                 dir.delete();
             }
-            Toast.makeText(this, "Archivo ELiminado", Toast.LENGTH_SHORT).show();
         }catch (Exception e){
             Toast.makeText(this, "No se ha podido eliminar archivos para la distribuciòn", Toast.LENGTH_SHORT).show();
         }

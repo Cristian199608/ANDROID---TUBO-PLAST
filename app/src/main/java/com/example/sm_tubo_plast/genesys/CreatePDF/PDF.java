@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
@@ -31,7 +32,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class PDF {
-
+    public static  int ENVIO_A_CLIENTE = 1;
+    public static  int ENVIO_A_INTERNO = 2;
+    private static  int TAMANIO_ANCHO = 550;
     public static void createPdf(Context context, String oc_numero,String tipoRegistro, String ruccli, String codven, String nomcli,
                                  String telefono, String nomven, String direccionFiscal,
                                  String email_cliente, String email_vendedor,
@@ -41,8 +44,7 @@ public class PDF {
                                  ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles, int tipo_de_envio) throws FileNotFoundException
     {
 
-        int ENVIO_A_CLIENTE = 1;
-        int ENVIO_A_INTERNO = 2;
+
 
         String pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         File file = new File(pdfPath,  oc_numero + ".pdf");
@@ -83,7 +85,7 @@ public class PDF {
          * TABLE N° 1
          */
         float columnWidth[] = {300,50,300};
-        Table table = new Table(columnWidth);
+        Table table = new Table(columnWidth).setWidth(TAMANIO_ANCHO);
 
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -109,9 +111,10 @@ public class PDF {
         /***
          * TABLE N° 2
          */
+
+
         float columnWidth1[] = {130, 150, 90, 100, 100, 130};
         Table table1 = new Table(columnWidth1);
-
         //TABLE 2 ----- 01
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("RUC CLIENTE: ").setFontSize(7f)));
         table1.addCell(new Cell().add(new Paragraph(ruccli).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
@@ -141,6 +144,8 @@ public class PDF {
          */
         float columnWidth2[] = {140, 438, 124, 140};
         Table table2 = new Table(columnWidth2);
+        //table2.setFixedLayout();
+        Log.i("PDF CREATE", "WITHS "+table2.getWidth());
 
         //TABLE 3 ----- 01
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DIRECCION").setFontSize(7f)));
@@ -159,6 +164,7 @@ public class PDF {
         table2.addCell(new Cell().setBorder(Border.NO_BORDER));
         table2.addCell(new Cell().setBorder(Border.NO_BORDER));
         table2.addCell(new Cell().setBorder(Border.NO_BORDER));
+
 
         /***
          * SPLIT
@@ -237,7 +243,7 @@ public class PDF {
         Table item;
         if (tipo_de_envio == ENVIO_A_CLIENTE)
         {
-            float columnWidthItems[] = {20, 100, 80, 80, 320, 70, 100};
+            float columnWidthItems[] = {20, 110, 70, 80, 320, 70, 100};
             Table tableItems = new Table(columnWidthItems);
 
             //TABLE ITEMS ----- 01
@@ -289,6 +295,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
+
             for (int i = 0; i < dataPedidoCabeceraDetalles.size(); i++)
             {
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(i + 1)).setFontSize(7f)));
@@ -298,7 +305,8 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
                 String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+                String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto());
+                tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
@@ -324,7 +332,7 @@ public class PDF {
         /***
          * OBSERVACIONES
          */
-        float[] columnWidthObservaciones = {195, 320, 149, 255};
+        float[] columnWidthObservaciones = {130, 385, 149, 255};
         Table tableObservaciones = new Table(columnWidthObservaciones);
         float[] columnWidthData = {510, 140, 250};
         Table tableData = new Table(columnWidthData);
@@ -353,6 +361,10 @@ public class PDF {
 
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
+        if (tipo_de_envio == ENVIO_A_INTERNO){
+            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(monto_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        }
 
         /***
          * BANCO
@@ -399,6 +411,7 @@ public class PDF {
         document.add(table);
         document.add(table1);
         document.add(table2);
+        Log.i("PDF CREATE", "WITHS 2 "+table2.getWidth());
         document.add(table3);
         document.add(table6);
         document.add(item);
@@ -411,7 +424,7 @@ public class PDF {
                 "LOS PRODUCTOS SOBRANTES (O SALDOS) QUE SE ENVIARÁN POR AGENCIA").setFontSize(7f));
         document.add(new Paragraph("2. LA MERCADERIA VIAJA POR CUENTA Y RIESGO DEL CLIENTE, NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES").setFontSize(7f));
         document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(7f));
-        document.add(new Paragraph("www.tuboplast.com | 01 326-1146 | Anexo 127 - 130").setTextAlignment(TextAlignment.CENTER));
+        document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130").setTextAlignment(TextAlignment.CENTER));
         document.close();
     }
 

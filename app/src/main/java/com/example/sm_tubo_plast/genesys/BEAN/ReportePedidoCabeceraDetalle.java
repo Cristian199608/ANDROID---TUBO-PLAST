@@ -25,6 +25,7 @@ public class ReportePedidoCabeceraDetalle {
     private String moneda;
     private String precio_bruto;
     private String precio_neto;
+    private double pesoTotalProducto;
     private String porcentaje_desc;
     private String telefono_vendedor;
     private String text_area;
@@ -42,7 +43,7 @@ public class ReportePedidoCabeceraDetalle {
                                      String moneda, String precio_bruto, String precio_neto,
                                      String porcentaje_desc, String telefono_vendedor,
                                      String text_area, String observacion, String observacion2,
-                                     String observacion3) {
+                                     String observacion3,double pesoTotalProducto) {
         this.oc_numero = oc_numero;
         this.ruccli = ruccli;
         this.codven = codven;
@@ -73,6 +74,7 @@ public class ReportePedidoCabeceraDetalle {
         this.observacion = observacion;
         this.observacion2 = observacion2;
         this.observacion3 = observacion3;
+        this.pesoTotalProducto = pesoTotalProducto;
     }
 
 
@@ -314,5 +316,13 @@ public class ReportePedidoCabeceraDetalle {
 
     public void setPrecio_neto(String precio_neto) {
         this.precio_neto = precio_neto;
+    }
+
+    public double getPesoTotalProducto() {
+        return pesoTotalProducto;
+    }
+
+    public void setPesoTotalProducto(double pesoTotalProducto) {
+        this.pesoTotalProducto = pesoTotalProducto;
     }
 }

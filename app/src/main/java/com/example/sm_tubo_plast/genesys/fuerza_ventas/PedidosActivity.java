@@ -1617,8 +1617,8 @@ private  void llenarSpinnerDespacho(String valor){
                 } else {
                     // dbclass.cambiarEstadoEliminados(Oc_numero);
                     PedidosActivity.this.finish();
-                    Intent intent2 = new Intent(PedidosActivity.this,
-                            ReportesPedidosActivity.class);
+                    Intent intent2 = new Intent(PedidosActivity.this,  ReportesPedidosActivity.class);
+                    intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                     intent2.putExtra("ORIGEN", "PEDIDOS");
                     startActivity(intent2);
                     Log.w("Menu Cancelar", "se cancelo");
@@ -6764,6 +6764,7 @@ private void EnvalularMoneda(){
 
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosActivity.class);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
@@ -6771,6 +6772,7 @@ private void EnvalularMoneda(){
                             //crear_dialogo_otro_pedido();
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                         }
@@ -6815,6 +6817,7 @@ private void EnvalularMoneda(){
                 finish();
 
                 Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
+                intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                 intent2.putExtra("ORIGEN", "PEDIDOS");
                 startActivity(intent2);
 
@@ -6849,12 +6852,14 @@ private void EnvalularMoneda(){
 
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                             //crear_dialogo_otro_pedido();

@@ -18,4 +18,18 @@ public class FormateadorNumero {
         }*/
         return numeroFormatter;
     }
+
+    public static String formatter2decimal(double numero){
+        DecimalFormat formateador = new DecimalFormat("#,###.##");
+        String numeroFormatter = formateador.format(numero);
+//        String[] numbers=numeroFormatter.split(".");
+       /* if (numbers.length==1){
+            numeroFormatter=numeroFormatter+".d00";
+        }else{
+            if (numbers[0].length()!=2) {
+                numeroFormatter=numeroFormatter+"d0";
+            }
+        }*/
+        return numeroFormatter;
+    }
 }
