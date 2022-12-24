@@ -9,7 +9,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -62,6 +61,7 @@ import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -78,7 +78,6 @@ import java.util.Iterator;
 
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import okhttp3.internal.Util;
 
 @SuppressLint("LongLogTag")
 public class ReportesPedidosActivity extends FragmentActivity {
@@ -95,8 +94,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
     public static final String KEY_MONEDA = "moneda";
     public static final String KEY_NOVENTA = "KEY_NOVENTA";
 
-    public static final String PREVENTA = "PREVENTA";
-    public static final String GESTION_VISITAS = "GESTION_VISITAS";
+    public static final String DATOS_PREVENTA = "PREVENTA";
+    public static final String DATOS_GESTION_VISITAS = "GESTION_VISITAS";
 
     public String numfactura;
     public String saldo = "0";
@@ -141,6 +140,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
     ArrayList<DBPedido_Cabecera> lista_pedidos;
     TextView tv_montoTotal_soles, btn_peso, tv_totalPedidos, tv_paqueteDatos,
             tv_montoTotal_dolares;
+    EditText etBuscarVendedorResumen;
+    ImageView imgBuscarDatos;
     ProgressDialog pDialog;
 
     ConnectionDetector connection;
@@ -161,7 +162,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle!=null){
-            TIPO_VISTA = bundle.getString("TIPO_VISTA", ""+GESTION_VISITAS);
+            TIPO_VISTA = bundle.getString("TIPO_VISTA", ""+ DATOS_GESTION_VISITAS);
         }
 
 
@@ -176,6 +177,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
         lista_pedidos = new ArrayList<DBPedido_Cabecera>();
         tv_paqueteDatos = (TextView) findViewById(R.id.tv_paqueteDatos);
         tv_montoTotal_dolares = (TextView) findViewById(R.id.rpt_pedidos_tvTotalDolares);
+        etBuscarVendedorResumen = (EditText) findViewById(R.id.etBuscarVendedorResumen);
+        imgBuscarDatos =  findViewById(R.id.imgBuscarDatos);
         fecha2 = obj_dbclasses.getFecha2();
 
         Log.d("ALERT - REPORTE - fecha:", fecha2);
@@ -190,12 +193,18 @@ public class ReportesPedidosActivity extends FragmentActivity {
         formateador = GlobalFunctions.formateador();
 
         // cargarPedidos("","");
-        new asyncBuscar().execute("", "");
+
 
         tv_totalPedidos.setText("Cantidad:" + contador);
-        cargarListView();
 
         connection = new ConnectionDetector(getApplicationContext());
+
+        cargarListView();
+        imgBuscarDatos.setOnClickListener(v -> {
+            new asyncBuscar().execute("", "");
+
+        });
+        imgBuscarDatos.performClick();
 
         ActionItem modificarItem = new ActionItem(ID_MODIFICAR, "Modificar",R.drawable.icon_edit_file_24dp);
         ActionItem acceptItem = new ActionItem(ID_DETALLE, "Ver Detalle",R.drawable.icon_show_file_24dp);
@@ -213,7 +222,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
         mQuickAction.addActionItem(acceptItem);
         mQuickAction.addActionItem(anularItem);
         //mQuickAction.addActionItem(forzarEnvio);
-        mQuickAction.addActionItem(generarPdf);
+        if (TIPO_VISTA.equals(DATOS_PREVENTA)) {
+            mQuickAction.addActionItem(generarPdf);
+        }
 
         mQuickActionCotizacion.addActionItem(modificarItem);
         mQuickActionCotizacion.addActionItem(acceptItem);
@@ -221,8 +232,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
         //mQuickActionCotizacion.addActionItem(forzarEnvio);
         //mQuickActionCotizacion.addActionItem(enviarCorreo);
         mQuickActionCotizacion.addActionItem(generarPedido);
-        mQuickActionCotizacion.addActionItem(generarPdf);
-
+        if (TIPO_VISTA.equals(DATOS_PREVENTA)) {
+            mQuickActionCotizacion.addActionItem(generarPdf);
+        }
 
         // setup the action item click listener
         mQuickAction  .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
@@ -489,11 +501,14 @@ public class ReportesPedidosActivity extends FragmentActivity {
         pDialog.setCancelable(false);
         pDialog.show();
 
+        String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero()+".pdf";
+//        String nombreArchivo=dataCabecera.getOc_numero()+".pdf";
         new AsyncTask<Void, String, String>(){
             @Override
             protected String doInBackground(Void... voids) {
                 try {
                     PDF.createPdf(getApplicationContext(),
+                            nombreArchivo,
                             dataCabecera.getOc_numero(),
                             dataCabecera.getTipoRegistro(),
                             dataCabecera.getRuccli(),
@@ -511,6 +526,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             dataCabecera.getPeso_total(),
                             dataCabecera.getFecha_oc(),
                             dataCabecera.getFecha_mxe(),
+                            dataCabecera,
                             listaDetalle,
                             tipoEnvio);
                     return "Generado";
@@ -533,6 +549,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 }
                 Intent intent = new Intent(getApplicationContext(), ViewPdfActivity.class);
                 intent.putExtra("oc_numero", dataCabecera.getOc_numero());
+                intent.putExtra("nombreArchivo", nombreArchivo);
                 startActivity(intent);
 
             }
@@ -543,12 +560,12 @@ public class ReportesPedidosActivity extends FragmentActivity {
     private void cargarListView() {
         // TODO Auto-generated method stub
 
-        LayoutInflater inflater = LayoutInflater.from(this);
+        /*LayoutInflater inflater = LayoutInflater.from(this);
         View emptyView = inflater
                 .inflate(R.layout.list_empty_view_unused, null);
         emptyView.setVisibility(View.GONE);
         ((ViewGroup) list.getParent()).addView(emptyView);
-        list.setEmptyView(emptyView);
+        list.setEmptyView(emptyView);*/
 
         adapter = new ReportesPedidos_Adapter(getApplicationContext(),R.layout.item_reporte_pedido, pedidos);
 
@@ -562,9 +579,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
             tv_totalPedidos.setVisibility(View.INVISIBLE);
 
         } else {
-            ((ViewGroup) list.getParent()).removeView(emptyView);
+           // ((ViewGroup) list.getParent()).removeView(emptyView);
             tv_totalPedidos.setText("Cantidad: " + contador);
-            emptyView.setVisibility(View.GONE);
+           // emptyView.setVisibility(View.GONE);
             tv_montoTotal_soles.setText("Total(S/.) "
                     + formateador.format(redondear(montoTotal_soles)));
             tv_montoTotal_dolares.setText("Total($.) "
@@ -638,7 +655,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         } else if (tipo.equalsIgnoreCase("documento")) {
             lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
         } else {
-            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA);
+            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA, etBuscarVendedorResumen.getText().toString());
         }
 
         Iterator<DBPedido_Cabecera> it = lista_pedidos.iterator();
@@ -649,7 +666,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
 
             HashMap<String, String> map = new HashMap<String, String>();
-            String nombre_cliente= obj_dbclasses.obtenerNomcliXCodigo(cta.getCod_cli());
+            String nombre_cliente= cta.getCliente().getNombre();
             //nombre_cliente=nombre_cliente.replace("TPLAST-VISITA", "VISITA CREADO DESDE SIDIGE");
             map.put(KEY_NOMCLIENTE,"" + (nombre_cliente.length()==0?"RUC: "+cta.getCod_cli():nombre_cliente));
             map.put(KEY_CODCLI,"" + cta.getCod_cli());
@@ -1744,6 +1761,9 @@ public class ReportesPedidosActivity extends FragmentActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
+            if (pedidos.size()==0){
+                UtilViewSnackBar.SnackBarWarning(ReportesPedidosActivity.this, list, "No hay datos para mostrar");
+            }
 
         }
 

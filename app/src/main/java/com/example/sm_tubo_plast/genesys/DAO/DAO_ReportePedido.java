@@ -194,7 +194,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "V.telefono as telefonoVendedor, V.text_area, " +
                     "PC.observacion, PC.observacion2, " +
                     "PC.observacion3," +
-                    "PC.tipoRegistro " +
+                    "PC.tipoRegistro," +
+                    "PC.diasVigencia " +
                     "FROM " +
                     "pedido_cabecera PC " +
                     "CROSS JOIN " +
@@ -255,6 +256,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     cabecera.setObservacion2(objCursor.getString(objCursor.getColumnIndex("observacion2")));
                     cabecera.setObservacion3(objCursor.getString(objCursor.getColumnIndex("observacion3")));
                     cabecera.setTipoRegistro(objCursor.getString(objCursor.getColumnIndex("tipoRegistro")));
+                    cabecera.setDiasVigencia(objCursor.getInt(objCursor.getColumnIndex("diasVigencia")));
                     objDbPedidoCabeceraArrayList.add(cabecera);
 
                 }

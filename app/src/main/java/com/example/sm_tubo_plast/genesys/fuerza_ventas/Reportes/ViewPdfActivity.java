@@ -30,11 +30,12 @@ public class ViewPdfActivity extends AppCompatActivity {
         Intent ii = getIntent();
         Bundle b = ii.getExtras();
         String num = (String) b.get("oc_numero");
+        String nombreArchivo = (String) b.get("nombreArchivo");
 
         pdfView = findViewById(R.id.pdfview);
 
         //bundle recibir la ruta exacta del documento
-        pacthPDF = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/" + num + ".pdf";
+        pacthPDF = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/" + nombreArchivo + "";
 
         pdfView.fromFile(new File(pacthPDF))
                 .enableSwipe(true)

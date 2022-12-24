@@ -31,8 +31,8 @@ public class VARIABLES {
     public static final  boolean isProduccion=true;
     public static final class ConfigDatabase {
 
-        private static final String DATABASA_NAME_OLD   ="vacio";
-        private static final String DATABASA_NAME       ="fuerzaventas";
+        private static final String DATABASA_NAME_OLD   ="fuerzaventas";
+        private static final String DATABASA_NAME       ="fuerzaventas_v1";
         private static final  int DATABASA_VERSION      =1;
 
 
@@ -357,6 +357,12 @@ public class VARIABLES {
         return  fecha+(nroDia*_1DiaMilesegundos);
     }
 
+    public static String getStringFormaterThreeDecimal(double numero)
+    {
+       DecimalFormat formater = new DecimalFormat("#,##0.000");
+       return  formater.format(numero);
+    }
+
     public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
     public static      DecimalFormat formater_one_decimal = new DecimalFormat("#,##0.0");
 
@@ -369,6 +375,10 @@ public class VARIABLES {
             e.printStackTrace();
             return false;
         }
+    }
+    public static  String InvertirFechaCustom(String fecha, String patronOld, String patronNew){
+        String[] fechas= fecha.split(patronOld);
+        return fechas[2]+patronNew+fechas[1]+patronNew+fechas[0];
     }
     public static ArrayList<String> GetListString(String texto, int canRequired){
         ArrayList<String> list=new ArrayList<>();

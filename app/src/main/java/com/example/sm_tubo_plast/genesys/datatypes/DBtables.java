@@ -521,7 +521,7 @@ public class DBtables {
 		public static final String ITEM = "item";
 		public static final String PRECIO_LISTA = "precioLista";
 		public static final String DESCUENTO = "descuento";
-		public static final String PROCENTAJE_DESC = "porcentaje_desc";
+		public static final String PORCENTAJE_DESC = "porcentaje_desc";
 		public static final String LOTE = "lote";
 		
 		public static final String MOTIVO_DEVOLUCION = "motivoDevolucion";

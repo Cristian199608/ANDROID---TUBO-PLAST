@@ -1,5 +1,7 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
+
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
@@ -66,6 +68,8 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String diasVigencia;
 	private String pedidoAnterior;
 	private String CodTurno;
+
+	Cliente cliente;
 			
 	
 
@@ -807,4 +811,11 @@ public class DBPedido_Cabecera implements KvmSerializable {
 		this.docAdicional = docAdicional;
 	}
 
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 }

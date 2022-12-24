@@ -25,6 +25,7 @@ public class DataCabecera {
     String observacion2;
     String observacion3;
     String tipoRegistro;
+    int diasVigencia;
 
     public String getOc_numero() {
         return oc_numero;
@@ -216,5 +217,13 @@ public class DataCabecera {
 
     public void setTipoRegistro(String tipoRegistro) {
         this.tipoRegistro = tipoRegistro;
+    }
+
+    public int getDiasVigencia() {
+        return diasVigencia;
+    }
+
+    public void setDiasVigencia(int diasVigencia) {
+        this.diasVigencia = diasVigencia;
     }
 }

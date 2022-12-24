@@ -6,6 +6,7 @@ public class Producto {
 	private String unidadMedida;
 	private String tipoProducto;
 	private String color;
+	private double peso;
 	private double precio_base;
 
 	public String getCodigo() {
@@ -37,6 +38,14 @@ public class Producto {
 	}
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public double getPeso() {
+		return peso;
+	}
+
+	public void setPeso(double peso) {
+		this.peso = peso;
 	}
 
 	public double getPrecio_base() {

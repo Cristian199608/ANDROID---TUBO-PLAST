@@ -3,7 +3,6 @@ package com.example.sm_tubo_plast.genesys.datatypes;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +10,7 @@ import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
@@ -3257,7 +3257,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 	}
 
-	public ArrayList<DBPedido_Cabecera> getPedidosCabecera(String tipo_vista) {
+	public ArrayList<DBPedido_Cabecera> getPedidosCabecera(String tipo_vista, String txtbuscar) {
 		eliminarNulos();
 		String rawQuery;
 		String codven = new SessionManager(_context).getCodigoVendedor();
@@ -3269,17 +3269,27 @@ public class DBclasses extends SQLiteAssetHelper {
 					"'"+ PedidosActivity.TIPO_COTIZACION+ "'" +
 					") ";
 		}else{
-			addWHere="and (cod_noventa ='"+GlobalVar.CODIGO_VISITA_CLIENTE+"') ";
+			addWHere="and (pc.cod_noventa ='"+GlobalVar.CODIGO_VISITA_CLIENTE+"') ";
 		}
 
-		rawQuery = "select cod_cli,monto_total,flag, cond_pago, ifnull(nro_letra,0) , cod_noventa, oc_numero, peso_total, fecha_oc, estado, percepcion_total, "+
-					"ifnull((SELECT codigoEquivalente from moneda where codigoMoneda=pc.moneda),''),tipoRegistro, ifnull(pedidoAnterior,''), " +
-					"pc.latitud "+
-					"from pedido_cabecera pc "+
-					"where oc_numero <> 0 " +
+		if (txtbuscar.length()>0){
+			txtbuscar="%"+txtbuscar.replace(" ", "%")+"%";
+			addWHere+="and c.nomcli like '"+txtbuscar+"' ";
+
+		}
+
+		rawQuery = "select pc.cod_cli,pc.monto_total,pc.flag, pc.cond_pago, ifnull(pc.nro_letra,0) , " +
+					"pc.cod_noventa, pc.oc_numero, pc.peso_total, pc.fecha_oc, pc.estado, pc.percepcion_total, "+
+					"ifnull((SELECT codigoEquivalente from moneda where codigoMoneda=pc.moneda),'')," +
+					"pc.tipoRegistro, ifnull(pc.pedidoAnterior,''), " +
+					"pc.latitud," +
+					"ifnull(c.nomcli, '') AS nomcli "+
+					"from pedido_cabecera pc left join "+
+					"cliente c on c.codcli= pc.cod_cli "+
+					"where pc.oc_numero <> 0 " +
 				addWHere+" "+
-				"and cod_cli !='TPLAST-VISITA' and cod_emp='"+codven+"' " +
-				"order by oc_numero DESC";
+				"and pc.cod_cli !='TPLAST-VISITA' and pc.cod_emp='"+codven+"' " +
+				"order by pc.oc_numero DESC";
 
 		Log.d("QUERY REPORTE", " :::::> " + rawQuery);
 
@@ -3306,6 +3316,10 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbpedido.setTipoRegistro(cur.getString(12));
 			dbpedido.setPedidoAnterior(cur.getString(13));
 			dbpedido.setLatitud(cur.getString(cur.getColumnIndex("latitud")));
+				Cliente cliente =new Cliente();
+				cliente.setCodigoCliente(dbpedido.getCod_cli());
+				cliente.setNombre(cur.getString(cur.getColumnIndex("nomcli")));
+			dbpedido.setCliente(cliente);
 
 			lista_pedidos.add(dbpedido);
 			cur.moveToNext();
@@ -5431,7 +5445,7 @@ public class DBclasses extends SQLiteAssetHelper {
 						cv2.put(DBtables.Pedido_detalle.ITEM, j);
 						cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
 						cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
-						cv2.put(DBtables.Pedido_detalle.PROCENTAJE_DESC, jsonData_det.getString("porcentaje_desc").trim());
+						cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getString("porcentaje_desc").trim());
 						cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
 
 						cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
@@ -6219,6 +6233,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setFecha_oc(cur.getString(6));
 			dbpedido.setFecha_mxe(cur.getString(7));
 			dbpedido.setCond_pago(cur.getString(8));
+			//dbpedido.setCod_cli(cur.getString(9));
 			dbpedido.setCod_cli(cur.getString(cur.getColumnIndex("ruccli2")));
 			dbpedido.setCod_emp(cur.getString(10));
 			dbpedido.setEstado(cur.getString(11));
@@ -6232,7 +6247,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setLongitud(cur.getString(19));
 			dbpedido.setCodigo_familiar(cur.getString(20));
 			dbpedido.setTotalSujetoPercepcion(cur.getString(22));
-			
+
 			dbpedido.setNumeroOrdenCompra(""+cur.getString(24));
 			dbpedido.setCodigoPrioridad(""+cur.getString(25));
 			dbpedido.setCodigoSucursal(""+cur.getString(26));
@@ -6250,12 +6265,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setCodigoObra(cur.getString(38));
 			dbpedido.setFlagDespacho(cur.getString(39));
 			dbpedido.setDocAdicional(cur.getString(40));
-			dbpedido.setSubtotal(cur.getString(41));			
+			dbpedido.setSubtotal(cur.getString(41));
 			dbpedido.setTipoDocumento(cur.getString(42));
-			
+
 			dbpedido.setTipoRegistro(cur.getString(43));
 			dbpedido.setDiasVigencia(cur.getString(44));
-			if(cur.getString(45)==null){
+			if (cur.getString(45)==null){
 				dbpedido.setPedidoAnterior("");
 			}else{
 				dbpedido.setPedidoAnterior(cur.getString(45));
@@ -6263,33 +6278,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setCodTurno(cur.getString(46));
 			dbpedido.setNroletra(cur.getString(47));
 			dbpedido.setObservacion4(cur.getString(48));
-			
-			
-			/*
-			Log.e("NumeroOrdenCompra", ""+cur.getString(24));
-			Log.e("CodigoPrioridad", ""+cur.getString(25));
-			Log.e("CodigoSucursal", ""+cur.getString(26));
-			Log.e("CodigoPuntoEntrega", ""+cur.getString(27));
-			Log.e("CodigoTipoDespacho", ""+cur.getString(28));
-			Log.e("FlagEmbalaje", ""+cur.getString(29));
-			Log.e("FlagPedido_Anticipo", ""+cur.getString(30));
-			Log.e("CodigoTransportista", ""+cur.getString(31));
-			Log.e("CodigoAlmacen", ""+cur.getString(32));
-			Log.e("tObservacion2", ""+cur.getString(33));
-			Log.e("tObservacion3", ""+cur.getString(34));
-			Log.e("ObservacionDescuento", ""+cur.getString(35));
-			Log.e("ObservacionTipoProducto", ""+cur.getString(36));
-			Log.e("setFlagDescuento", ""+cur.getString(37));
-			Log.e("setCodigoObra", ""+cur.getString(38));
-			Log.e("setFlagDespacho", ""+cur.getString(39));
-			Log.e("setDocAdicional",""+cur.getString(40));
-			Log.e("setSubtotal",""+cur.getString(41));
-			*/
-			Log.e("MONTO TOTAL", cur.getString(2));
-			Log.e("TURNO ENV", cur.getString(46)+"");
-			Log.e("Observacion 3", cur.getString(48)+"");
-			Log.e("AGREGANDO A LA LISTA JSON", gson.toJson(dbpedido));
-			
+
 			lista_pedidos.add(dbpedido);
 			cur.moveToNext();
 		}
@@ -10014,13 +10003,14 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		// + " group by cod_cli";
 		// rawQuery =
 		// "select  cod_cli,  SUM(monto_total), flag, cond_pago, cod_noventa from pedido_cabecera   group by cod_cli";
-		rawQuery = "select  cod_cli,  monto_total, flag, cond_pago, cod_noventa, oc_numero, peso_total, estado, percepcion_total, " +
-				"pedido_cabecera.latitud from pedido_cabecera "
-				+ "    where oc_numero<>0  and flag <> 'A' and cod_emp='"
+		rawQuery = "select  pc.cod_cli,  pc.monto_total, pc.flag, pc.cond_pago, pc.cod_noventa, " +
+				"pc.oc_numero, pc.peso_total, pc.estado, pc.percepcion_total, " +
+				"pc.latitud from pedido_cabecera pc"
+				+ "where pc.oc_numero<>0  and pc.flag <> 'A' and pc.cod_emp='"
 				+ codven
-				+ "' and pedido_cabecera.oc_numero like '%"
+				+ "' and pc.oc_numero like '%"
 				+ oc
-				+ "' order by oc_numero DESC";
+				+ "' order by pc.oc_numero DESC";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);

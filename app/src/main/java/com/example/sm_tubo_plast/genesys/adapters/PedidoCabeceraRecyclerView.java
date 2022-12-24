@@ -109,9 +109,11 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
     }
 
     private void Generate_pdf_by_ocumero(View itemView, int tipoEnvio, DataCabecera dataCabecera) {
+        String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero();
         try {
             ArrayList<ReportePedidoCabeceraDetalle> listaDetalle=mydbClass.getAllDataByCodigo( dataCabecera.getOc_numero());
             PDF.createPdf(itemView.getContext(),
+                    nombreArchivo,
                     dataCabecera.getOc_numero(),
                     dataCabecera.getTipoRegistro(),
                     dataCabecera.getRuccli(),
@@ -129,6 +131,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
                     dataCabecera.getPeso_total(),
                     dataCabecera.getFecha_oc(),
                     dataCabecera.getFecha_mxe(),
+                    null,
                     listaDetalle,
                     tipoEnvio);
         } catch (FileNotFoundException e) {
@@ -137,6 +140,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
 
         Intent intent = new Intent(itemView.getContext(), ViewPdfActivity.class);
         intent.putExtra("oc_numero", dataCabecera.getOc_numero());
+        intent.putExtra("nombreArchivo", nombreArchivo);
         itemView.getContext().startActivity(intent);
     }
 

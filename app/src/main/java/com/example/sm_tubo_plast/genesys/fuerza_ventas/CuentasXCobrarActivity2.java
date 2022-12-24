@@ -330,7 +330,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
             }
         });
 
-        inputSearch_documento.setHint("Buscar por docuemento, fecha emision o fecha vencimiento");
+        inputSearch_documento.setHint("Buscar por documento, fecha emision o fecha vencimiento");
         new ACG_EditText(this, inputSearch_documento).OnListen(texto ->{
             lista_cta_ingresos_result.clear();
                 for (int x = 0; x < lista_cta_ingresos_original.size(); x++) {

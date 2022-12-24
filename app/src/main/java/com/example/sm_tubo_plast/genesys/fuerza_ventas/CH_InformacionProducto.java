@@ -28,6 +28,7 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -46,7 +47,8 @@ public class CH_InformacionProducto extends AppCompatActivity {
     Producto producto;
 
     EditText edt_codigo,edt_descripcion,edt_unidadMedida;
-    TextView tv_totalStockConfirmar, tv_totalStockDisponible, edt_precioLista;
+    TextView tv_totalStockConfirmar, tv_totalStockDisponible, edt_precioLista,
+            edtPesoUnitario;
     ListView lv_consultaStock;
 
     DBSync_soap_manager soap_manager;
@@ -79,6 +81,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
         tv_totalStockConfirmar = (TextView) findViewById(R.id.tv_totalStockConfirmar);
         tv_totalStockDisponible = (TextView) findViewById(R.id.tv_totalStockDisponible);
         edt_precioLista = (TextView) findViewById(R.id.edt_precioLista);
+        edtPesoUnitario = (TextView) findViewById(R.id.edtPesoUnitario);
         //------------------------------------------
 
         Bundle bundle = getIntent().getExtras();
@@ -90,6 +93,7 @@ public class CH_InformacionProducto extends AppCompatActivity {
             edt_descripcion.setText(""+producto.getDescripcion());
             edt_unidadMedida.setText(""+producto.getUnidadMedida());
             edt_precioLista.setText(""+producto.getPrecio_base());
+            edtPesoUnitario.setText(""+ VARIABLES.getStringFormaterThreeDecimal(producto.getPeso()));
             if (!producto.getColor().equals("")) {
                 edt_codigo.setTextColor(Color.parseColor(producto.getColor()));
             }

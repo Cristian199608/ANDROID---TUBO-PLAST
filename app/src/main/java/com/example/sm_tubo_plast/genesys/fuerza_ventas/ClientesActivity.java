@@ -326,7 +326,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem observacion = new ActionItem(ID_OBSERVACION, "Observacion", R.drawable.alert);
         //ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
-        ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Localización", R.drawable.ic_ubicacion_grey);
+        ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización", R.drawable.ic_ubicacion_grey);
         ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_ClIENTE, "Baja de Cliente", R.drawable.icon_stop_24dp);
 
         final QuickAction mQuickAction = new QuickAction(this);

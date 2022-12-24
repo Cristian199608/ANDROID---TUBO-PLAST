@@ -57,6 +57,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBPolitica_Precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
@@ -150,7 +151,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     DAO_Producto DAOProducto;
 
     String descuentoAplicado = "0";
-    String PRECIO_BASE = "";
+    String PRECIO_BASE = "0";
     String PRECIO_LISTA = "0";
     String afecto_igv="0";
 
@@ -330,7 +331,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                     try {
                         double porcentaje=Double.parseDouble(edt_descuento.getText().toString());
                         if (porcentaje>=0 && porcentaje<=100){
-                            ConsultarProductoDemo();
+                            ConsultarProductoPrecios();
                         }else{
                             edt_descuento.setText("0");
                             edt_descuento.setError("Ingrese un número de 1 a 100");
@@ -344,7 +345,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
                 }else{
-                    ConsultarProductoDemo();
+                    ConsultarProductoPrecios();
                 }
             }
         });
@@ -415,7 +416,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         btn_consultarProducto.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConsultarProductoDemo();//solo demo
+                ConsultarProductoPrecios();//solo demo
             }
 
 
@@ -691,7 +692,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     }
 
 
-    private void ConsultarProductoDemo() {
+    private void ConsultarProductoPrecios() {
+
+        if (codprod.length()==0) return;
 
         DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.0000");
 
@@ -1004,6 +1007,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         // prueba codUnimed
                         String desunimed 	= spnUndMedidas.getSelectedItem().toString();
                         String descripcion 	= edtBusqueda.getText().toString().trim();
+                        if(Double.parseDouble(PRECIO_LISTA)<=0){
+                            UtilViewSnackBar.SnackBarDanger(this, edtBusqueda, "Producto sin precio");
+                            break;
+                        }
                         String precioLista 	=PRECIO_LISTA;
                         double porcentaje_desc 	=edt_descuento.getText().toString().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
                         //String descuento 	= edt_descuento.getText().toString().trim();

@@ -87,7 +87,6 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
 import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
@@ -109,7 +108,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
@@ -1618,7 +1616,7 @@ private  void llenarSpinnerDespacho(String valor){
                     // dbclass.cambiarEstadoEliminados(Oc_numero);
                     PedidosActivity.this.finish();
                     Intent intent2 = new Intent(PedidosActivity.this,  ReportesPedidosActivity.class);
-                    intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                    intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                     intent2.putExtra("ORIGEN", "PEDIDOS");
                     startActivity(intent2);
                     Log.w("Menu Cancelar", "se cancelo");
@@ -6764,7 +6762,7 @@ private void EnvalularMoneda(){
 
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
@@ -6772,7 +6770,7 @@ private void EnvalularMoneda(){
                             //crear_dialogo_otro_pedido();
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                         }
@@ -6817,7 +6815,7 @@ private void EnvalularMoneda(){
                 finish();
 
                 Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                 intent2.putExtra("ORIGEN", "PEDIDOS");
                 startActivity(intent2);
 
@@ -6852,14 +6850,14 @@ private void EnvalularMoneda(){
 
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             finish();
                             Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.PREVENTA);
+                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                             //crear_dialogo_otro_pedido();

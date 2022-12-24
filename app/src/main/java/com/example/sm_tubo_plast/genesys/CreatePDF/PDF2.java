@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -31,26 +30,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
-public class PDF {
+public class PDF2 {
     public static  int ENVIO_A_CLIENTE = 1;
     public static  int ENVIO_A_INTERNO = 2;
     public static void createPdf(Context context,
-                                 String nombreArchivo,
-                                 String oc_numero,String tipoRegistro, String ruccli, String codven, String nomcli,
+                                 String oc_numero, String tipoRegistro, String ruccli, String codven, String nomcli,
                                  String telefono, String nomven, String direccionFiscal,
                                  String email_cliente, String email_vendedor,
                                  String desforpag, String monto_total,
                                  String valor_igv, String sub_total, String peso_total,
                                  String fecha_oc, String fecha_mxe,
-                                 DataCabecera dataCabecera,
                                  ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles, int tipo_de_envio) throws FileNotFoundException
     {
 
 
 
         String pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-        File file = new File(pdfPath,  nombreArchivo);
+        File file = new File(pdfPath,  oc_numero + ".pdf");
         OutputStream outputStream = new FileOutputStream(file);
 
         PdfWriter writer = new PdfWriter(file);
@@ -69,9 +65,9 @@ public class PDF {
         /***
          * Formatter
          */
-        String subtotalFormateado = FormateadorNumero.formatter2decimal(sub_total);
-        String igvFormateado = FormateadorNumero.formatter2decimal(valor_igv);
-        String total_netoFormateado = FormateadorNumero.formatter2decimal(monto_total);
+        String subtotal = FormateadorNumero.formatter2decimal(sub_total);
+        String igv = FormateadorNumero.formatter2decimal(valor_igv);
+        String total_neto = FormateadorNumero.formatter2decimal(monto_total);
 
         /***
          * PRINCIPAL IMAGE
@@ -145,7 +141,7 @@ public class PDF {
         /***
          * TABLE N° 3
          */
-        float columnWidth2[] = {147, 420, 123, 158};
+        float columnWidth2[] = {141, 426, 123, 152};
         Table table2 = new Table(columnWidth2);
         //table2.setFixedLayout();
         Log.i("PDF CREATE", "WITHS "+table2.getWidth());
@@ -184,7 +180,7 @@ public class PDF {
         Table table3 = new Table(columnWidth3);
 
         //TABLE 3 ----- 01
-        table3.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TRANSPORTE / AGENCIA: ").setFontSize(7f)));
+        table3.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TRANPORTE / AGENCIA: ").setFontSize(7f)));
         table3.addCell(new Cell().add(new Paragraph(ob1).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
 
         //TABLE 3 ----- 02
@@ -215,7 +211,7 @@ public class PDF {
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FECHA ENTREGA").setFontSize(7f)));
         table6.addCell(new Cell().add(new Paragraph(fecha_mxe).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("VALIDEZ OFERTA").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDiasVigencia()+" DÍAS").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6.addCell(new Cell().add(new Paragraph("3 DÍAS").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         table6.addCell(new Cell().setBorder(Border.NO_BORDER));
         table6.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -308,8 +304,8 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
                 String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto());
-                tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+                //String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getSubtotal())/dataPedidoCabeceraDetalles.get(i).getPesoTotal_Producto());
+                tableItems.addCell(new Cell().add(new Paragraph("precioKilo").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
@@ -335,7 +331,7 @@ public class PDF {
         /***
          * OBSERVACIONES
          */
-        float[] columnWidthObservaciones = {139, 457, 145, 150};
+        float[] columnWidthObservaciones = {139, 457, 149, 147};
         Table tableObservaciones = new Table(columnWidthObservaciones);
         float[] columnWidthData = {590, 140, 145};
         Table tableData = new Table(columnWidthData);
@@ -344,29 +340,29 @@ public class PDF {
         tableObservaciones.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("Observaciones:").setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(7f)));
         tableObservaciones.addCell(new Cell());
         tableObservaciones.addCell(new Cell().add(new Paragraph("Sub Total").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + subtotalFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + subtotal).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 01
         tableData.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getObservacion3()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("IGV").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableData.addCell(new Cell().add(new Paragraph(moneda + igvFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph(moneda + igv).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 02
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("TOTAL").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableData.addCell(new Cell().add(new Paragraph(moneda + total_netoFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph(moneda + total_neto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 03
         String pa = FormateadorNumero.formatter2decimal(peso_total);
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("Peso Aprox.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableData.addCell(new Cell().add(new Paragraph("KG " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph("KG. " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
         if (tipo_de_envio == ENVIO_A_INTERNO){
-            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igvFormateado)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(sub_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(monto_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 
         /***

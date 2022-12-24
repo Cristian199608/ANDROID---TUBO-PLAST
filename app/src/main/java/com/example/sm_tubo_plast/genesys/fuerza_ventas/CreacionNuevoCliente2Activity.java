@@ -47,8 +47,8 @@ CreacionNuevoCliente2Activity extends AppCompatActivity {
         String rucEmpresa=dBclasses.getRuc();
         String servicioWeb=dBclasses.getServicioCreacionCliente();
 
-
         myWebVew.setWebViewClient(new WebViewClient());
+
         if (servicioWeb.length()>0){
 //        myWebVew.loadUrl("http://192.168.0.43/newclient/cn.php?emp="+rucEmpresa);
 //        myWebVew.loadUrl("http://190.187.25.122/newclient/cn.php?emp="+rucEmpresa);

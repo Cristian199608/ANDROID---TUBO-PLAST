@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.Producto;
+import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -45,8 +46,9 @@ public class DAO_Producto extends SQLiteAssetHelper {
     
     public Producto getInformacionProducto(String codigoProducto){
     	String rawQuery = 
-    			"SELECT codpro,despro,desunimed, ifnull(descripcion,''), ifnull(color,''), p._precio_base "+
-    			"FROM producto p "+
+    			"SELECT codpro,despro,desunimed, ifnull(descripcion,''), ifnull(color,''), " +
+						"p._precio_base, p.peso "+
+    			"FROM "+ DBtables.Producto.TAG +" p "+
     			"INNER JOIN unidad_medida u on p.codunimed = u.codunimed "+
     			"LEFT JOIN tipoProducto tp on p.tipoProducto = tp.codigoTipo "+
     			"WHERE codpro like '"+codigoProducto+"'";
@@ -65,6 +67,7 @@ public class DAO_Producto extends SQLiteAssetHelper {
 				producto.setTipoProducto(cursor.getString(3));
 				producto.setColor(cursor.getString(4));				
 				producto.setPrecio_base(cursor.getDouble(cursor.getColumnIndex("_precio_base")));
+				producto.setPeso(cursor.getDouble(cursor.getColumnIndex("peso")));
 			} while (cursor.moveToNext());
 
 		}		

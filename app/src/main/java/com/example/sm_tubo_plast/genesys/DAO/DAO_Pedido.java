@@ -172,6 +172,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			item.setPrecioLista(cur.getString(16));
 			item.setDescuento(cur.getString(17));
 			item.setLote(cur.getString(18));
+			item.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
 			lista.add(item);
 			Log.d(TAG,"getPedidoDetalle: "+oc_numero+" cip "+item.getCip());			
 			cur.moveToNext();			
@@ -272,6 +273,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_detalle.ITEM, item.getItem());
 			Nreg.put(DBtables.Pedido_detalle.PRECIO_LISTA, item.getPrecioLista());
 			Nreg.put(DBtables.Pedido_detalle.DESCUENTO, item.getDescuento());
+			Nreg.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, item.getPorcentaje_desc());
 			Nreg.put(DBtables.Pedido_detalle.LOTE, item.getLote());
 			
 			db.insert(DBtables.Pedido_detalle.TAG, null, Nreg);

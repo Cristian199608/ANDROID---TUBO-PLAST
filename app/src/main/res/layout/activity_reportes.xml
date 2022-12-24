@@ -42,10 +42,12 @@
             <TextView
                 android:id="@+id/textViewADesc"
                 android:layout_width="wrap_content"
+                android:padding="5dp"
+                android:textColor="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/ic_background_tabinfotext"
-                android:text="Pedidos del día"
+                android:text="Visitas"
                 android:textAppearance="?android:attr/textAppearanceSmall"/>
         </LinearLayout>
         <FrameLayout

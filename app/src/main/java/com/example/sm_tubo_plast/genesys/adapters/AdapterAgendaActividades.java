@@ -145,8 +145,14 @@ public class AdapterAgendaActividades extends RecyclerView.Adapter<AdapterAgenda
         MenuItem menu_visitar=menus.findItem(R.id.menu_visitar);
         MenuItem menuAnular=menus.findItem(R.id.menu_anular_visita);
         MenuItem menu_reprogramar=menus.findItem(R.id.menu_reprogramar);
+
+        String fechaConfiguracion=dBclasses.getFecha2();
+        menu_editar_visita.setEnabled(false);
         if (finalIsPlanificada){//planificado
-            if (visita.getFecha_planificada().contains(VARIABLES.GET_FECHA_ACTUAL_STRING())){
+
+            String fechaPlanificada=VARIABLES.InvertirFechaCustom(visita.getFecha_planificada().substring(0, 10), "-", "/");
+
+            if (fechaPlanificada.contains(fechaConfiguracion)){
                 if(visita.getOc_numero_visitado().length()>0){
                     menu_editar_visita.setEnabled(true);
                     menu_visitar.setEnabled(false);
@@ -162,7 +168,12 @@ public class AdapterAgendaActividades extends RecyclerView.Adapter<AdapterAgenda
 
         }else{//esta visitado
             if (DAO_San_Visitas.isVisitado_la_planificacion(dBclasses.getReadableDatabase(), visita.getOc_numero_visitar())){
-                menu_editar_visita.setEnabled(true);
+
+                //visita.getFecha_Ejecutada() yyyy-mm-dd
+                String fechaViista=VARIABLES.InvertirFechaCustom(visita.getFecha_Ejecutada(), "-", "/");
+                if (fechaConfiguracion.equals(fechaViista)) {
+                    menu_editar_visita.setEnabled(true);
+                }
                 menu_visitar.setEnabled(false);
                 menu_reprogramar.setEnabled(false);
             }
