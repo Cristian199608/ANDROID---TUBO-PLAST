@@ -141,8 +141,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private static final int ID_VISITA_CLIENTE = 9;
     private static final int ID_PROGRAMACION_VISITA_CLIENTE = 10;
     private static final int ID_LOCALIZACION = 11;
-    private static final int ID_BAJA_ClIENTE = 12;
-    private static final int ID_ALTA_ClIENTE = 13;
+    private static final int ID_BAJA_OR_ALTA_ClIENTE = 12;
 
 
     Boolean isInternetPresent = false;
@@ -211,9 +210,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ORIGEN = "" + bundle.getString("ORIGEN");
         myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
 
-        if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
-            myFAB.setVisibility(View.GONE);
-        }
+
 
         dia = obj_dbclasses.getDiaConfiguracion();
         Fecha = obj_dbclasses.getFecha2();
@@ -239,6 +236,11 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         swipeRefreshLayout.setEnabled(false);
         tv_fecha_filtrado_de.setVisibility(View.GONE);
         tvClientesAnulados.setVisibility(View.GONE);
+
+        if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
+            myFAB.setVisibility(View.GONE);
+            txtAsignacionCliente.setVisibility(View.GONE);
+        }
 
         myFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,7 +329,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         //ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
         ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización", R.drawable.ic_ubicacion_grey);
-        ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_ClIENTE, "Baja de Cliente", R.drawable.icon_stop_24dp);
+        ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_OR_ALTA_ClIENTE, "Baja/Alta de Cliente", R.drawable.icon_man_24dp);
 
         final QuickAction mQuickAction = new QuickAction(this);
         final QuickAction mQuickAction2 = new QuickAction(this);
@@ -536,8 +538,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 if (quikAction2.getActionItemById(ID_LOCALIZACION)!=null) quikAction2.remove(ID_LOCALIZACION);
             }
             if (!opciones.getBajaDeCliente()){
-                if (quikAction1.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction1.remove(ID_BAJA_ClIENTE);
-                if (quikAction2.getActionItemById(ID_BAJA_ClIENTE)!=null) quikAction2.remove(ID_BAJA_ClIENTE);
+                if (quikAction1.getActionItemById(ID_BAJA_OR_ALTA_ClIENTE)!=null) quikAction1.remove(ID_BAJA_OR_ALTA_ClIENTE);
+                if (quikAction2.getActionItemById(ID_BAJA_OR_ALTA_ClIENTE)!=null) quikAction2.remove(ID_BAJA_OR_ALTA_ClIENTE);
             }
             if (!opciones.getAutoAsignarClienteCartera()) {
                 txtAsignacionCliente.setVisibility(View.GONE);
@@ -1614,31 +1616,29 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             i.putExtra("codigoVendedor", codven);
             startActivity(i);
             finish();
-        } else if (actionId == ID_BAJA_ClIENTE) {
-            if (obj_dbclasses.VerificarCtasXCobrar(codcli).size()>0){
-                UtilViewMensaje.MENSAJE_simple(this, "DEUDA", "No se puede dar de baja al cliente, ya que mantiene deuda");
-            }else{
-                String mensaje="¿Estas seguro de solicitar la baja de este cliente?";
-
-                AlertDialog.Builder dialogo = new AlertDialog.Builder(ClientesActivity.this);
-                dialogo.setMessage(mensaje);
-                dialogo.setPositiveButton("SI",
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mostrarDialog_motivo_BAJA_ALTA(ID_BAJA_ClIENTE);
-                            }
-                        });
-                dialogo.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                dialogo.create();
-                dialogo.show();
+        } else if (actionId == ID_BAJA_OR_ALTA_ClIENTE) {
+            String mensaje="";
+            String estado_cliente="0";
+            if (searchResults.get(mSelectedRow).get("estado_cli").toString().equals("1")) {
+                mensaje="¿Estas seguro de solicitar la baja de este cliente?";
+                estado_cliente="0";
+                if (obj_dbclasses.VerificarCtasXCobrar(codcli).size()>0){
+                    UtilViewMensaje.MENSAJE_simple(this, "DEUDA", "No se puede dar de baja al cliente, ya que mantiene deuda");
+                    return;
+                }
             }
+            else{
+                mensaje="¿Estas seguro de solicitar la alta de este cliente?";
+                estado_cliente="1";
+
+            }
+            AlertDialog.Builder dialogo = new AlertDialog.Builder(ClientesActivity.this);
+            dialogo.setMessage(mensaje);
+            String finalEstado_cliente = estado_cliente;
+            dialogo.setPositiveButton("SI", (dialog, which) -> mostrarDialog_motivo_BAJA_ALTA(finalEstado_cliente));
+            dialogo.setNegativeButton("No", (dialogInterface, i) -> {});
+            dialogo.create();
+            dialogo.show();
 
         }else if (actionId == ID_COTIZACION) {
             final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
@@ -1818,23 +1818,19 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     }
 
-    private void mostrarDialog_motivo_BAJA_ALTA(int id) {
+    private void mostrarDialog_motivo_BAJA_ALTA(String estado_cliente) {
 
 
             String mensaje="";
-            String estado="";
             String titulo="";
-            if (id==ID_BAJA_ClIENTE){
+            if (estado_cliente.equals("0")){
                 mensaje="Se procederá a enviar la solicitud de baja. ¿Confirmar?";
-                estado="0";
                 titulo="INDIQUE EL MOTIVO DE LA BAJA";
             }
-            else if(id==ID_ALTA_ClIENTE){
+            else if(estado_cliente.equals("1")){
                 mensaje="Se procederá a enviar la solicitud de alta. ¿Confirmar?";
-                estado="1";
                 titulo="INDIQUE EL MOTIVO DE LA ALTA";
-
-            }
+            }else return;
 
             customDialog = new Dialog(this);
             customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1898,7 +1894,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 }
             });
             final String finalMensaje = mensaje;
-            final String finalEstado = estado;
             btnAceptar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
@@ -1925,7 +1920,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                                         super.onPreExecute();
                                         cliente_estado=new Cliente_estado();
                                         cliente_estado.setCodcli(codcli);
-                                        cliente_estado.setEstado(finalEstado);
+                                        cliente_estado.setEstado(estado_cliente);
                                         cliente_estado.setCodven(codven);
                                         cliente_estado.setFec_server(obj_dbclasses.getFecha2());
                                         cliente_estado.setMotivo(et_bodyMotivoBaja_alta.getEditText().getText().toString());
@@ -1972,8 +1967,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                                                         customDialog.dismiss();
                                                         MENSAJES( "Su petición ha sido completado correctamente", 0, true, 0);
 //                                                new cargarClientes().execute("");
-                                                        searchResults.get(mSelectedRow).put("estado_cli", cliente_estado.getEstado());
-                                                        searchResults.get(mSelectedRow).put("motivoBajaCliente", cliente_estado.getMotivo());
+                                                        searchResults.remove(mSelectedRow);
                                                         adapter.notifyDataSetChanged();
                                                     }else MENSAJES( "Su petición ha sido enviada sin embargo, no se ha recuperado la data.\nDebe sincronizar para recuperar.", 0, false, 0);
                                                 }else  MENSAJES( "Lo sentimos, su petición no se ha completado", 0, false, 0);

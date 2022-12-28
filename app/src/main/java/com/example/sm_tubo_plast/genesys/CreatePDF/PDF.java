@@ -365,7 +365,7 @@ public class PDF {
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
         if (tipo_de_envio == ENVIO_A_INTERNO){
-            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igvFormateado)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
             tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(sub_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 

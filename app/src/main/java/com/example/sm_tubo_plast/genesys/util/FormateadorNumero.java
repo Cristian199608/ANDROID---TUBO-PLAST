@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 public class FormateadorNumero {
 
     public static String formatter2decimal(String numero){
-        DecimalFormat formateador = new DecimalFormat("#,###.##");
+        DecimalFormat formateador = new DecimalFormat("#,##0.00");
         double total = Double.parseDouble(numero);
         String numeroFormatter = formateador.format(total);
 //        String[] numbers=numeroFormatter.split(".");
@@ -20,7 +20,7 @@ public class FormateadorNumero {
     }
 
     public static String formatter2decimal(double numero){
-        DecimalFormat formateador = new DecimalFormat("#,###.##");
+        DecimalFormat formateador = new DecimalFormat("#,##0.00");
         String numeroFormatter = formateador.format(numero);
 //        String[] numbers=numeroFormatter.split(".");
        /* if (numbers.length==1){
