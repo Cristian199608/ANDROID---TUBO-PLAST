@@ -6654,7 +6654,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
 		Soapenvelope.dotNet=true;
 		Soapenvelope.setOutputSoapObject(Request);
-		HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+		HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService, 60000);
 		transporte.call("http://tempuri.org/"+_METHOD_NAME, Soapenvelope);
 		SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
 

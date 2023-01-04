@@ -1121,7 +1121,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 clave_manual=params[2];
 
             }
-
+            String NombreMetodo = "";
             String error = "0";
 
             if (origen.equals("LOGIN")) {
@@ -1241,6 +1241,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                     } catch (Exception e) {
                         e.printStackTrace();
                         error = "configuracion";
+                        NombreMetodo=e.getMessage();
                         return error;
                     }
 
@@ -1255,6 +1256,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
 
                         int valor = Integer.parseInt(tablas[i].toString());
+                        if (error.equalsIgnoreCase("1")) {
+                            break;
+                        }
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1270,6 +1274,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                 try {//soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("10");
+                                    NombreMetodo=valor+") Sync_tabla_turno";
                                     soap_manager.Sync_tabla_turno(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("15");
                                     //SERVER 212
@@ -1291,6 +1296,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                                 pDialog.setMessage(mensaje);
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_clientexVendedor";
                                         int lista_tamanio=soap_manager.Sync_tabla_clientexVendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1323,6 +1329,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") getTBcliente_estado";
                                         int lista_tamanio=soap_manager.getTBcliente_estado(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1354,6 +1361,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_cliente_contacto_vendedor";
                                         int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1385,6 +1393,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                                 pDialog.setMessage(mensaje);
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_ZnfProgramacionClientes";
                                         int lista_tamanio=soap_manager.Sync_tabla_ZnfProgramacionClientes(codven, servidorBD, nombreBD,usuarioBD, contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
@@ -1416,6 +1425,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_cliente_contacto_vendedor";
                                         int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1451,6 +1461,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_transporte";
                                         int lista_tamanio=soap_manager.Sync_tabla_transporte(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
@@ -1483,8 +1494,8 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_lugarEntrega";
                                         int lista_tamanio=soap_manager.Sync_tabla_lugarEntrega(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD,  start, paginacion);
-
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1515,6 +1526,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });//15151
+                                        NombreMetodo=valor+") Sync_tabla_direccion_cliente";
                                         int lista_tamanio=soap_manager.Sync_tabla_direccion_cliente(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,   start, paginacion);
 
 
@@ -1528,6 +1540,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     publishProgress("100");
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    NombreMetodo+=" -> "+e.getMessage();
                                     error = "1";
                                 }
 
@@ -1536,22 +1549,29 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                 try {
 
                                     publishProgress("1");
+                                    NombreMetodo=valor+") Sync_tabla_motivo_noventa";
                                     soap_manager.Sync_tabla_motivo_noventa(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("25");
+                                    NombreMetodo=valor+") Sync_tabla_Zona";
                                     soap_manager.Sync_tabla_Zona(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("30");
+                                    NombreMetodo=valor+") Sync_tabla_Zona";
                                     soap_manager.Sync_tabla_Zona_XY(codven,servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("35");
+                                    NombreMetodo=valor+") Sync_tabla_Ruta";
                                     soap_manager.Sync_tabla_Ruta(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
 
-
+                                    NombreMetodo=valor+") Sync_tabla_almacenes";
                                     soap_manager.Sync_tabla_almacenes(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("76");
+                                    NombreMetodo=valor+") Sync_tabla_formasPago";
                                     soap_manager.Sync_tabla_formasPago(codven,servidorBD, nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("79");
+                                    NombreMetodo=valor+") Sync_tabla_moneda";
                                     soap_manager.Sync_tabla_moneda(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("81");
+                                    NombreMetodo=valor+") SyncTablaSanOpciones";
                                     soap_manager.SyncTablaSanOpciones(servidorBD, nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("84");
 
@@ -1570,6 +1590,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });//15151
+                                        NombreMetodo=valor+") Sync_tabla_ObjPedido";
                                         int lista_tamanio=soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
                                         lista_tamanio=0;
 
@@ -1587,15 +1608,19 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                     publishProgress("90");
                                     //soap_manager.Sync_tabla_CuotaVendedor(codven,	servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    NombreMetodo=valor+") Sync_tabla_motivo";
                                     soap_manager.Sync_tabla_motivo(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("94");
+                                    NombreMetodo=valor+") Sync_tabla_expectativa";
                                     soap_manager.Sync_tabla_expectativa(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("96");
+                                    NombreMetodo=valor+") Sync_tabla_RegistroBonificacionesPendientes";
                                     soap_manager.Sync_tabla_RegistroBonificacionesPendientes(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("99");
                                     publishProgress("100");
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    NombreMetodo+=" -> "+e.getMessage();
                                     error = "1";
                                 }
 
@@ -1606,29 +1631,41 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                 try {
                                     publishProgress("1");
                                     //SERVER .212
+                                    NombreMetodo=valor+") Sync_tabla_producto";
                                     soap_manager.Sync_tabla_producto(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("10");
+                                    NombreMetodo=valor+") Sync_tabla_grupoProducto";
                                     soap_manager.Sync_tabla_grupoProducto(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("20");
+                                    NombreMetodo=valor+") Sync_tabla_tipoProducto";
                                     soap_manager.Sync_tabla_tipoProducto(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("22");
+                                    NombreMetodo=valor+") Sync_tabla_mta_kardex";
                                     soap_manager.Sync_tabla_mta_kardex(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("25");
+                                    NombreMetodo=valor+") Sync_tabla_promocion_clientes";
                                     soap_manager.Sync_tabla_promocion_clientes(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("32");
+                                    NombreMetodo=valor+") Sync_tabla_promocion_vendedor";
                                     soap_manager.Sync_tabla_promocion_vendedor(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("40");
+                                    NombreMetodo=valor+") Sync_tabla_promocion_ubigeo";
                                     soap_manager.Sync_tabla_promocion_ubigeo(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     //soap_manager.Sync_tabla_promocion_politica(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
+                                    NombreMetodo=valor+") Sync_tabla_PromocionDetalle";
                                     soap_manager.Sync_tabla_PromocionDetalle(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("50");
+                                    NombreMetodo=valor+") Sync_tabla_familia";
                                     soap_manager.Sync_tabla_familia(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("55");
+                                    NombreMetodo=valor+") Sync_tabla_sub_familia";
                                     soap_manager.Sync_tabla_sub_familia(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("60");
+                                    NombreMetodo=valor+") Sync_tabla_unidad_medida";
                                     soap_manager.Sync_tabla_unidad_medida(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("62");
+                                    NombreMetodo=valor+") Sync_tabla_productoNoDescuento";
                                     soap_manager.Sync_tabla_productoNoDescuento(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("75");
                                     //SERVER .212
@@ -1654,6 +1691,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                             }
                                         });
+                                        NombreMetodo=valor+") Sync_tabla_politica_cliente";
                                         int lista_tamanio=soap_manager.Sync_tabla_politica_cliente(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
 
 
@@ -1670,44 +1708,54 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     //soap_manager.Sync_tabla_politica_precio1(servidorBD_ERP, nombreBD_ERP, usuarioBD_ERP, contrasenaBD_ERP);
 //                                    publishProgress("75");
                                     //SERVER .212
+                                    NombreMetodo=valor+") Sync_tabla_politica_precio2";
                                     soap_manager.Sync_tabla_politica_precio2(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("95");
                                     //soap_manager.Sync_tabla_politica_vendedor(servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    NombreMetodo=valor+") Sync_Bonificacion_Colores";
                                     soap_manager.Sync_Bonificacion_Colores(servidorBD, nombreBD, usuarioBD,contrasenaBD);
 
                                     publishProgress("100");
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    NombreMetodo+=" -> "+e.getMessage();
                                     error = "1";
+
                                 }
-
                                 break;
-
                             case 3:
 
                                 try {
                                     publishProgress("1");
-
-                                    soap_manager.Sync_tabla_formasPago(codven,
-                                            servidorBD, nombreBD, usuarioBD,
+                                    NombreMetodo=valor+") Sync_tabla_formasPago";
+                                    soap_manager.Sync_tabla_formasPago(
+                                            codven,
+                                            servidorBD,
+                                            nombreBD,
+                                            usuarioBD,
                                             contrasenaBD);
-                                    publishProgress("19");
 
+                                    publishProgress("19");
+                                    NombreMetodo=valor+") Sync_tabla_cta_ingresos_resumen";
                                     soap_manager.Sync_tabla_cta_ingresos_resumen(codven,
                                             servidorBD, nombreBD, usuarioBD,
                                             contrasenaBD);
                                     publishProgress("25");
 
+                                    NombreMetodo=valor+") Sync_tabla_banco";
                                     soap_manager.Sync_tabla_banco(servidorBD,
                                             nombreBD, usuarioBD, contrasenaBD);
 
                                     publishProgress("75");
+                                    NombreMetodo=valor+") Sync_tabla_Nro_letras";
                                     soap_manager.Sync_tabla_Nro_letras("10008728084", codven);
 
                                     publishProgress("90");
+                                    NombreMetodo=valor+") Sync_tabla_ctas_xbanco";
                                     soap_manager.Sync_tabla_ctas_xbanco(servidorBD,
                                             nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("100");
+                                    NombreMetodo=valor+") Sync_tabla_ingresos";
                                     soap_manager.Sync_tabla_ingresos(codven,
                                             servidorBD, nombreBD, usuarioBD,
                                             contrasenaBD);
@@ -1715,6 +1763,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    NombreMetodo+=" -> "+e.getMessage();
                                     error = "1";
                                 }
 
@@ -1734,11 +1783,12 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                     if (error.equals("0")) {
                         descp = "OK";
+                        descp = descp + " " + modulos_seleccionados;
                     } else {
                         descp = "ERROR";
+                        descp = descp + " " + modulos_seleccionados+" : "+NombreMetodo;
                     }
 
-                    descp = descp + " " + modulos_seleccionados;
 
                     try {
                         soap_manager.actualizarLogSincro(codven, datetime,

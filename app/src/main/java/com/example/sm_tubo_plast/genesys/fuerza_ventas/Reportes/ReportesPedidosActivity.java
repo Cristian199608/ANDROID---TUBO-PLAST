@@ -560,28 +560,30 @@ public class ReportesPedidosActivity extends FragmentActivity {
     private void cargarListView() {
         // TODO Auto-generated method stub
 
-        /*LayoutInflater inflater = LayoutInflater.from(this);
-        View emptyView = inflater
-                .inflate(R.layout.list_empty_view_unused, null);
-        emptyView.setVisibility(View.GONE);
-        ((ViewGroup) list.getParent()).addView(emptyView);
-        list.setEmptyView(emptyView);*/
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View emptyView = inflater .inflate(R.layout.list_empty_view_unused, null);
+       // emptyView.setVisibility(View.GONE);
+        emptyView.setPadding(50,150,50,50);
+        ///((ViewGroup) list.getParent()).addView(emptyView);
+        emptyView.setClickable(false);
+       list.setEmptyView(emptyView);//necesario
 
         adapter = new ReportesPedidos_Adapter(getApplicationContext(),R.layout.item_reporte_pedido, pedidos);
-
+//((ReportesPedidos_Adapter) list.getAdapter()).notifyDataSetChanged();
         // adapter_pedido=new ReportesPedidosAdapter(this, pedidos);
         list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
-        if (pedidos.isEmpty()) {
+        if (pedidos.size()==0) {
             btn_peso.setVisibility(View.INVISIBLE);
             tv_montoTotal_soles.setVisibility(View.INVISIBLE);
             tv_montoTotal_dolares.setVisibility(View.INVISIBLE);
             tv_totalPedidos.setVisibility(View.INVISIBLE);
 
         } else {
-           // ((ViewGroup) list.getParent()).removeView(emptyView);
+            //list.getEmptyView().setVisibility(View.GONE);
+            //list.getEmptyView().setVisibility(View.GONE);
             tv_totalPedidos.setText("Cantidad: " + contador);
-           // emptyView.setVisibility(View.GONE);
             tv_montoTotal_soles.setText("Total(S/.) "
                     + formateador.format(redondear(montoTotal_soles)));
             tv_montoTotal_dolares.setText("Total($.) "
@@ -1735,7 +1737,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             pDialog = new ProgressDialog(ReportesPedidosActivity.this);
             pDialog.setMessage("Buscando....");
             pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
+            pDialog.setCancelable(false);
             pDialog.show();
         }
 
@@ -1756,13 +1758,14 @@ public class ReportesPedidosActivity extends FragmentActivity {
         }
 
         protected void onPostExecute(String result) {
-            ((ReportesPedidos_Adapter) list.getAdapter()).notifyDataSetChanged();
+
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
             if (pedidos.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosActivity.this, list, "No hay datos para mostrar");
+                Toast.makeText(ReportesPedidosActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
             }
 
         }

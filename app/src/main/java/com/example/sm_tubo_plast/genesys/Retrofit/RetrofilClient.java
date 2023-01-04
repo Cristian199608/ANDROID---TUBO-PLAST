@@ -14,7 +14,7 @@ public class RetrofilClient {
     public static Retrofit getRetrofitInstanceSERVIDOR() {
         String BASE_URL="http://190.187.25.123:4390/ws_control_acceso_app/";
 //        String BASE_URL="http://192.168.0.55/ws_control_acceso_app/";
-//
+
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
