@@ -56,11 +56,11 @@ public class WS_San_Visitas {
                 try {
                     ConnectionDetector cd = new ConnectionDetector(activity);
 
-                    if (cd.hasActiveInternetConnection(activity)) {
+                   // if (cd.hasActiveInternetConnection(activity)) {
                         return soap_manager.actualizarObjPedido_directo(oc_numero);
-                    }else{
-                        return "error_1";
-                    }
+                    //}else{
+                     //   return "error_1";
+                    //}
                 } catch (Exception e) {
                     e.printStackTrace();
                     return "error@"+e.getMessage();

@@ -4132,7 +4132,7 @@ private void EnvalularMoneda(){
             String valor = "";
 
 
-            if (cd.hasActiveInternetConnection(getApplicationContext())) {
+            if (1==1/*cd.hasActiveInternetConnection(getApplicationContext())*/) {
 
                 try {
                     valor = soap_manager.actualizarObjPedido_directo(Oc_numero);
