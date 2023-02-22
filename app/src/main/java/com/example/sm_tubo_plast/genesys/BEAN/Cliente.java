@@ -20,7 +20,8 @@ public class Cliente {
 	private String email;
 	private DB_DireccionClientes db_direccionClientes;
 	private String rubro_cliente;
-	
+	private String codven_asginados;
+
 	public String getCodigoCliente() {
 		return codigoCliente;
 	}
@@ -132,5 +133,13 @@ public class Cliente {
 
 	public void setTipo_cliente(String tipo_cliente) {
 		this.tipo_cliente = tipo_cliente;
+	}
+
+	public String getCodven_asginados() {
+		return codven_asginados;
+	}
+
+	public void setCodven_asginados(String codven_asginados) {
+		this.codven_asginados = codven_asginados;
 	}
 }

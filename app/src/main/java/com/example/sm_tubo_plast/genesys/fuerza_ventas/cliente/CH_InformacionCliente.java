@@ -35,7 +35,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
 
     EditText tv_ruc,tv_sector, tv_rubro,tv_razonSocial,tv_direccionFiscal,tv_tipo_cliente,tv_telefono,
             tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito,tv_unidadNegocio,tv_monedaFacturacion;
-    EditText tv_direccion_sucursal, tv_telefono_sucursal,
+    EditText tv_direccion_sucursal, tv_telefono_sucursal, tvVendedoresAsignados,
             tvFechaNacimiento, tvDNI, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
     Spinner spn_direccion, SpinnerContacto;
 
@@ -74,6 +74,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         tvDNI = findViewById(R.id.tvDNI);
         tv_email_contacto = findViewById(R.id.tv_email_contacto);
         tv_telefono_contacto = findViewById(R.id.tv_telefono_contacto);
+        tvVendedoresAsignados = findViewById(R.id.tvVendedoresAsignados);
         tv_celular = findViewById(R.id.tv_celular);
         SpinnerContacto = findViewById(R.id.SpinnerContacto);
         //------------------------------------------
@@ -99,6 +100,14 @@ public class CH_InformacionCliente extends AppCompatActivity {
 
             tv_rubro.setText(dBclasses.getRegistrosGeneralesMovilByCodigo(cliente.getRubro_cliente(), "Sin valor"));
             tv_tipo_cliente.setText(dBclasses.getRegistrosGeneralesMovilByCodigo(cliente.getTipo_cliente(), "Sin valor"));
+
+            String []spliCodvens=cliente.getCodven_asginados().split(",");
+            StringBuilder vendedores= new StringBuilder();
+            for (int i = 0; i < spliCodvens.length; i++) {
+                if (vendedores.toString().length()>0) vendedores.append("\n");
+                vendedores.append(i + 1).append(") ").append(dBclasses.getVendedorByCodven(spliCodvens[i]));
+            }
+            tvVendedoresAsignados.setText(vendedores.toString());
 
             GestionarSucursales();
         }

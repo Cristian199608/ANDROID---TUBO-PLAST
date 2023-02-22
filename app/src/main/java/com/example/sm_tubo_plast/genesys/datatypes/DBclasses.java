@@ -194,7 +194,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	public  String getVendedorByCodven(String codVen) {
 
-		String vendedor_name="";
+		String vendedor_name=""+codVen;
 		String rawQuery; //SELECT nomven from vendedor  WHERE codven='000110'
 		//rawQuery = "SELECT vendedor.nomven from vendedor  WHERE vendedor.codven= 000110";
 
@@ -988,7 +988,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "				
@@ -1010,7 +1011,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1045,6 +1047,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setCodProveedor(cursor.getString(9));
 				productos[i].setAfecto(cursor.getString(10));
 				productos[i].setEstado(cursor.getString(11));
+				productos[i].setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
 				i++;
 				Log.i("DBclasses ::getProductosXcliente::",
 						"CodProd: " + cursor.getString(1) + "\nDescripcion: "
@@ -1057,9 +1060,102 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		return productos;
 	}
-	
-	
-	
+
+
+	public ItemProducto[] getProductosXclienteYdescrip_comercial(String codigoCliente,
+											   String descripcion) {
+
+		int sec_politica = getSecPoliticaConfiguracion();
+
+		String rawQuery;
+
+		rawQuery = "select * from "
+				+ "("
+				+ "select politica_precio2.secuencia,"
+				+ "producto.codpro,"
+				+ "producto.despro,"
+				+ "politica_precio2.prepro,"
+				+ "politica_precio2.prepro_unidad,"
+				+ "producto.percepcion,"
+				+ "producto.factor_conversion,"
+				+ "producto.peso,"
+				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
+				+ "producto.cod_rapido, "
+				+ "producto.afecto, "
+				+ "producto.estado,"
+				+"producto.desc_comercial "
+				+ "from producto "
+				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
+				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+				+ "where " // politica_precio2.secuencia=0 and "
+				+ " producto.desc_comercial like '%"
+				+ descripcion
+				+ "%' "
+				+
+
+				"union all select "
+				+ "politica_precio2.secuencia,"
+				+ "producto.codpro,"
+				+ "producto.despro,"
+				+ "politica_precio2.prepro,"
+				+ "politica_precio2.prepro_unidad,"
+				+ "producto.percepcion,"
+				+ "producto.factor_conversion,"
+				+ "producto.peso,"
+				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
+				+ "producto.cod_rapido, "
+				+ "producto.afecto, "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
+				+ "from producto "
+				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
+				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+				+ "where politica_precio2.secuencia=(select ifnull((select sec_politica from politica_cliente where codcli='"
+				+ codigoCliente
+				+ "'),'"
+				+ sec_politica
+				+ "')) "
+				+ "and producto.desc_comercial like '%" + descripcion + "%' " + ") " +
+
+				"group by codpro order by despro";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery(rawQuery, null);
+
+		ItemProducto[] productos = new ItemProducto[cursor.getCount()];
+
+		if (cursor.moveToFirst()) {
+			int i = 0;
+			do {
+
+				productos[i] = new ItemProducto();
+				productos[i].setSec_politica(cursor.getString(0));
+				productos[i].setCodprod(cursor.getString(1));
+				productos[i].setDescripcion(cursor.getString(2));
+				productos[i].setPrecio(cursor.getDouble(3));
+				productos[i].setPrecioUnidad(cursor.getDouble(4));
+				productos[i].setPercepcion(cursor.getDouble(5));
+				productos[i].setFact_conv(cursor.getInt(6));
+				productos[i].setPeso(cursor.getDouble(7));
+				productos[i].setStock(cursor.getInt(8));
+				productos[i].setCodProveedor(cursor.getString(9));
+				productos[i].setAfecto(cursor.getString(10));
+				productos[i].setEstado(cursor.getString(11));
+				productos[i].setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
+				i++;
+				Log.i("DBclasses ::getProductosXcliente::",
+						"CodProd: " + cursor.getString(1) + "\nDescripcion: "
+								+ cursor.getString(2) + "\nPercepcion: "
+								+ cursor.getDouble(5));
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		db.close();
+
+		return productos;
+	}
+
+
 	public ItemProducto[] getProductosXcliente_codpro(String codigoCliente,
 			String codigoProducto) {
 
@@ -1083,7 +1179,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1105,7 +1202,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1143,6 +1241,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setCodProveedor(""+cursor.getString(9));
 				productos[i].setAfecto(cursor.getString(10));
 				productos[i].setEstado(cursor.getString(11));
+				productos[i].setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
 				i++;
 				Log.i("DBclasses ::getProductosXcliente::",
 						"CodProd: " + cursor.getString(1) + 
@@ -1186,7 +1285,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1208,7 +1308,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "ifnull(mta_kardex.stock-mta_kardex.xtemp,0) as stock,"
 				+ "producto.cod_rapido, "
 				+ "producto.afecto, "
-				+ "producto.estado "
+				+ "producto.estado,"
+				+ "producto.desc_comercial "
 				+ "from producto "
 				+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1243,6 +1344,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setCodProveedor(cursor.getString(9));
 				productos[i].setAfecto(cursor.getString(10));
 				productos[i].setEstado(cursor.getString(11));
+				productos[i].setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
 				i++;
 
 				Log.i("DBclasses ::getProductosXProveedor::",
@@ -3776,6 +3878,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cliente.UNIDAD_NEGOCIO,	jsonData.getString(DBtables.Cliente.UNIDAD_NEGOCIO).trim());
 				cv.put(DBtables.Cliente.RUBRO_CLIENTE,	jsonData.getString(DBtables.Cliente.RUBRO_CLIENTE).trim());
 				cv.put(DBtables.Cliente.DISPONIBLE_CREDITO,	jsonData.getString(DBtables.Cliente.DISPONIBLE_CREDITO).trim());
+				cv.put(DBtables.Cliente.codven_asginados,	jsonData.getString(DBtables.Cliente.codven_asginados).trim());
 
 
 				db.insert(DBtables.Cliente.TAG, null, cv);
@@ -4404,6 +4507,8 @@ public class DBclasses extends SQLiteAssetHelper {
 
 				cv.put(DBtables.Producto.TIPO_PRODUCTO,jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim());
 				cv.put(DBtables.Producto._PRECIO_BASE,jsonData.getDouble(DBtables.Producto._PRECIO_BASE));
+				cv.put(DBtables.Producto.desc_comercial,jsonData.getString(Producto.desc_comercial).trim());
+
 
 				db.insert(DBtables.Producto.TAG, null, cv);
 				Log.i("PRODUCTO",
@@ -5445,7 +5550,8 @@ public class DBclasses extends SQLiteAssetHelper {
 						cv2.put(DBtables.Pedido_detalle.ITEM, j);
 						cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
 						cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
-						cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getString("porcentaje_desc").trim());
+						cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getDouble("porcentaje_desc"));
+						cv2.put(DBtables.Pedido_detalle.porcentaje_desc_add, jsonData_det.getDouble("porcentaje_desc_add"));
 						cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
 
 						cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
@@ -7052,6 +7158,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				dbdetalle.setSerieDevolucion(cur.getString(26));
 				dbdetalle.setNumeroDevolucion(cur.getString(27));
 				dbdetalle.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
+				dbdetalle.setPorcentaje_desc_add(cur.getDouble(cur.getColumnIndex("porcentaje_desc_add")));
 				Log.d(TAG, "setPrecio_bruto:"+cur.getString(3));
 				Log.d(TAG, "setPrecio_neto:"+cur.getString(4));
 				lista.add(dbdetalle);

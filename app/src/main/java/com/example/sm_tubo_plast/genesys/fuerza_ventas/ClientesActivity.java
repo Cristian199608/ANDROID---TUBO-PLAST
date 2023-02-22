@@ -1661,11 +1661,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             double lat=__lat,lng=__lng, altitud=__altitud;
 
 
-            if(estadoLocalizacion.equals("V")){
-                Toast toast2 =  Toast.makeText(getApplicationContext(),  "La geolocalización de este cliente esta validada y no se podra modificar.", Toast.LENGTH_SHORT);
-                toast2.show();
-            }else{
-                Log.d("La posición actual es :", lat + "-" + lng + "-" + codcli + "-" + codSucursal);
                 flagTipoEnvio= "S";
 
                 View alertLayout = inflater.inflate(R.layout.dialog_geolocalizar, null);
@@ -1707,25 +1702,35 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 ///builder.setTitle("Importante");
                 builder.setIcon(R.drawable.warning);
                 builder.setView(alertLayout);
-                builder.setCancelable(true)
-                        .setPositiveButton("Enviar al servidor", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                builder.setCancelable(true);
+                builder.setPositiveButton("Enviar al servidor", null);
+                builder.setNegativeButton("Local", null);
+                builder.setNeutralButton("cancelar", null);
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    positiveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
                                 String itemDireccion="";
                                 int secuenciaGiro=0;
                                 if (!direcciones.isEmpty()) {
                                     itemDireccion = direcciones.get(spn_direccion.getSelectedItemPosition()).getItem();
                                 }
 
-
-
                                 obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng, altitud);
 
                                 new asyncEnviarGeolocalizacionCliente().execute();
                                 //dialog.dismiss();
                             }
-                        })
-                        .setNegativeButton("Local", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                        });
+            negativeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
                                 String itemDireccion="";
                                 int secuenciaGiro=0;
                                 if (!direcciones.isEmpty()) {
@@ -1740,7 +1745,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                                 adapter.notifyDataSetChanged();
                                 dialog.dismiss();
                             }
-                        }).setNeutralButton("Cancelar", null);
+                        });
 
                 btnVerMapsSinGeo.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1756,12 +1761,22 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         try {
+
                             String estado = obj_dbclasses.getEstadoDireccionCliente(codcli, direcciones.get(i).getItem());
                             double altitud_actual = direcciones.get(i).getAltitud();
 
-                            if (estado.equals("P")) {//Pendiente de localizar
-                                estado="Atención esta dirreción está pendiente por localizar.\nSe guardarán los siguientes datos:";
-                            }else estado="Se guardarán los siguientes datos:";
+                            if(estado.equals("V")) {
+                                estado= "La geolocalización de este cliente esta validada y no se podra modificar.";
+                                positiveButton.setEnabled(false);
+                                negativeButton.setEnabled(false);
+                            }else {
+                                positiveButton.setEnabled(true);
+                                negativeButton.setEnabled(true);
+                                if (estado.equals("P")) {//Pendiente de localizar
+                                    estado="Atención esta dirreción está pendiente por localizar.\nSe guardarán los siguientes datos:";
+                                }else estado="Se guardarán los siguientes datos:";
+                            }
+
                             tv1.setText(estado);
 
                             tv_localizacionActual.setText(Double.parseDouble(direcciones.get(i).getLatitud())+", "+Double.parseDouble(direcciones.get(i).getLongitud()));
@@ -1790,12 +1805,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         }
                     }
                 });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-
-
 
         }
         else {

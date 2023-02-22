@@ -51,6 +51,7 @@ public class DBtables {
 		public static final String UNIDAD_NEGOCIO = "DescUnidNeg";
 		public static final String RUBRO_CLIENTE = "rubro_cliente";
 		public static final String DISPONIBLE_CREDITO = "disponible_credito";
+		public static final String codven_asginados = "codven_asginados";
 
 		 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
@@ -522,6 +523,7 @@ public class DBtables {
 		public static final String PRECIO_LISTA = "precioLista";
 		public static final String DESCUENTO = "descuento";
 		public static final String PORCENTAJE_DESC = "porcentaje_desc";
+		public static final String porcentaje_desc_add = "porcentaje_desc_add";
 		public static final String LOTE = "lote";
 		
 		public static final String MOTIVO_DEVOLUCION = "motivoDevolucion";
@@ -641,6 +643,7 @@ public class DBtables {
 		
 		public static final String TIPO_PRODUCTO = "tipoProducto";
 		public static final String _PRECIO_BASE = "_precio_base";
+		public static final String desc_comercial = "desc_comercial";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO

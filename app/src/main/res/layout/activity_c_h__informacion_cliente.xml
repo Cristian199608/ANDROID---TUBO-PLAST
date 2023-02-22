@@ -284,9 +284,26 @@
                     android:editable="false"/>
             </LinearLayout>
 
-
-
         </LinearLayout>
+
+        <TextView
+
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:text="&#xf007; Vendedores Asignados"/>
+        <EditText
+
+            android:id="@+id/tvVendedoresAsignados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/blue_grey_500"
+            android:focusable="false"
+            android:inputType="textMultiLine"
+        />
 
         <TextView
             android:visibility="gone"

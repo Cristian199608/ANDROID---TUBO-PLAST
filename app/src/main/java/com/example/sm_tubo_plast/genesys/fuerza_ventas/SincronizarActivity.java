@@ -48,6 +48,7 @@ import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -1200,7 +1201,12 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         });
 
 
-                        if (clave_manual!=null){
+                        if(!VARIABLES.isProduccion || VARIABLES.isProduccion_prueba ){
+                            controlAcceso=new BEAN_ControlAccesso();
+                            controlAcceso.setEstado("S");
+                            controlAcceso.setMensjae("");
+                        }
+                        else if (clave_manual!=null){
                             if (clave_manual.length()>0) {
                                 controlAcceso=new BEAN_ControlAccesso();
                                 controlAcceso.setEstado("S");

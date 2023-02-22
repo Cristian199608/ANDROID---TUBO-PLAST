@@ -289,7 +289,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
     			"CASE WHEN monedaDocumento='A' THEN 'Ambas Monedas' WHEN monedaDocumento='E' THEN 'Moneda Extranjera' WHEN monedaDocumento='N' THEN 'Moneda Nacional' ELSE '' END," +
 				" email, rubro_cliente, " +
 				"disponible_credito," +
-				"tipo_cliente "+
+				"tipo_cliente," +
+						"codven_asginados "+
     			"FROM cliente "+
     			"WHERE codcli like '"+codigoCliente+"'";
 		Log.i(TAG, rawQuery);
@@ -316,6 +317,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				cliente.setEmail(cursor.getString(cursor.getColumnIndex("email")));
 				cliente.setDisponible_credido(""+cursor.getDouble(cursor.getColumnIndex("disponible_credito")));
 				cliente.setRubro_cliente(cursor.getString(cursor.getColumnIndex("rubro_cliente")));
+				cliente.setCodven_asginados(cursor.getString(cursor.getColumnIndex("codven_asginados")));
 			} while (cursor.moveToNext());
 
 		}		

@@ -185,7 +185,7 @@ public class DBSync_soap_manager {
 		
 		String SOAP_ACTION= "http://tempuri.org/obtenerVendedores_json";
 		String METHOD_NAME="obtenerVendedores_json";
-		
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 		Request.addProperty("url", url); 
 		Request.addProperty("catalog", catalog); 

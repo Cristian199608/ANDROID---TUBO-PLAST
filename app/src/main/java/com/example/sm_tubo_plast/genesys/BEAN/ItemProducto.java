@@ -4,6 +4,7 @@ public class ItemProducto {
 	
 	private String Codprod;
 	private String Descripcion;
+	private String desc_comercial;
 	private double Precio;
 	private double precio_base;
 	private double PrecioUnidad;
@@ -203,5 +204,13 @@ public class ItemProducto {
 
 	public void setPorcentaje_desc(double porcentaje_desc) {
 		this.porcentaje_desc = porcentaje_desc;
+	}
+
+	public String getDesc_comercial() {
+		return desc_comercial;
+	}
+
+	public void setDesc_comercial(String desc_comercial) {
+		this.desc_comercial = desc_comercial;
 	}
 }
