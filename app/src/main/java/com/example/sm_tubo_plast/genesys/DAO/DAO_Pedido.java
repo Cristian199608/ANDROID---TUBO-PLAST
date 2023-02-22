@@ -170,8 +170,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			item.setAgrup_promo(cur.getInt(14));
 			item.setItem(cur.getInt(15));
 			item.setPrecioLista(cur.getString(16));
-			item.setDescuento(cur.getString(17));
-			item.setLote(cur.getString(18));
+			item.setLote(cur.getString(17));
+			item.setDescuento(cur.getString(18));
 			item.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
 			lista.add(item);
 			Log.d(TAG,"getPedidoDetalle: "+oc_numero+" cip "+item.getCip());			

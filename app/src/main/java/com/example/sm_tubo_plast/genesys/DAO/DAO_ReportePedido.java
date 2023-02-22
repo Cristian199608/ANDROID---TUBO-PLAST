@@ -43,11 +43,13 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "PC.fecha_mxe,  P.codpro, PD.cantidad, " +
                                 "PD.unidad_medida, P.despro, " +
                                 "PC.moneda, PD.precio_bruto, " +
-                                "PD.precio_neto, PD.porcentaje_desc," +
+                                "PD.precio_neto, " +
+                                "ifnull(PD.porcentaje_desc, 0) as porcentaje_desc," +
                                 "V.telefono, V.text_area, " +
                                 "PC.observacion, PC.observacion2, " +
                                 "PC.observacion3," +
-                                "PD.peso_bruto " +
+                                "PD.peso_bruto," +
+                                "ifnull(PD.porcentaje_desc_add, 0) as porcentaje_desc_add " +
                                 "FROM " +
                                 "pedido_cabecera PC " +
                                 "CROSS JOIN " +
@@ -114,6 +116,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         String observacion2 = objCursor.getString(28);
                         String observacion3 = objCursor.getString(29);
                         double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
+                        double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_add"));
 
                         objDbPedidoCabeceraDetalleArrayList.add(
                                 new ReportePedidoCabeceraDetalle(
@@ -142,6 +145,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                         precio_bruto,
                                         precio_neto,
                                         porcentaje_desc,
+                                        porcentaje_desc_extra,
                                         telefono_vendedor,
                                         text_area,
                                         observacion,

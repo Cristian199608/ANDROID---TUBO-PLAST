@@ -284,7 +284,7 @@ public class PDF {
         }
         else if (tipo_de_envio == ENVIO_A_INTERNO)
         {
-            float columnWidthItems[] = {20, 105, 75, 40, 340, 70, 50, 50, 100};
+            float columnWidthItems[] = {20, 105, 75, 40, 340, 70, 50, 50,50, 100};
             Table tableItems = new Table(columnWidthItems);
 
             //TABLE ITEMS ----- 01
@@ -296,6 +296,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PRECIO UNITARIO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+            tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n EXTRA %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
 
@@ -311,6 +312,7 @@ public class PDF {
                 String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto());
                 tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
+                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc_extra())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }

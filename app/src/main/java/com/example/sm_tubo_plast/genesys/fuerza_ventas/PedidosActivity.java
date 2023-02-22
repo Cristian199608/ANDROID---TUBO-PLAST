@@ -3634,6 +3634,7 @@ private void EnvalularMoneda(){
                     final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
                     final String precioLista= data.getStringExtra("precioLista");
                     final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
+                    final double porcentaje_desc_adicional= data.getDoubleExtra("porcentaje_desc_adicional", 0);
 
 
                     final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
@@ -3695,6 +3696,7 @@ private void EnvalularMoneda(){
                             itemDetalle.setPrecioLista(""+precioLista);
                             itemDetalle.setDescuento(""+descuento);
                             itemDetalle.setPorcentaje_desc(porcentaje_desc);
+                            itemDetalle.setPorcentaje_desc_add(porcentaje_desc_adicional);
                             //itemDetalle.setCod_politica(sec_politica);
                             //Campos usados para devoluciones
                             itemDetalle.setLote("");
@@ -5776,7 +5778,7 @@ private void EnvalularMoneda(){
 
             descuento	+= (producto[i].getPrecioLista() - producto[i].getPrecio())*producto[i].getCantidad();
             Log.d("DESCUENTO", producto[i].getPrecioLista() + " - " + producto[i].getPrecio()+ " * " + producto[i].getCantidad());
-            descuentoPercent +=  producto[i].getDescuento();
+            descuentoPercent += 0;
 
             if (producto[i].getPercepcionPedido() != 0) {
                 totalSujetoPercepcion = totalSujetoPercepcion+ (producto[i].getSubtotal()*(1+valorIGV));

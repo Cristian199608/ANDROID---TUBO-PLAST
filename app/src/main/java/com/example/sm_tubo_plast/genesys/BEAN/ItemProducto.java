@@ -28,6 +28,7 @@ public class ItemProducto {
 	private double precioLista;
 	private double descuento;	
 	private double porcentaje_desc;
+	private double porcentaje_desc_extra;
 	private String estado;//Discontinuo
 
 	private String grupo;
@@ -212,5 +213,13 @@ public class ItemProducto {
 
 	public void setDesc_comercial(String desc_comercial) {
 		this.desc_comercial = desc_comercial;
+	}
+
+	public double getPorcentaje_desc_extra() {
+		return porcentaje_desc_extra;
+	}
+
+	public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
+		this.porcentaje_desc_extra = porcentaje_desc_extra;
 	}
 }

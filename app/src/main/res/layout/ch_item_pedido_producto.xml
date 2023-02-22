@@ -173,7 +173,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Descuento:"
+                android:text="Desc:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
@@ -181,7 +181,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="0%"
+                android:text="0% y 0%"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>
@@ -286,7 +286,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Descuento:"
+                android:text="Desc:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView

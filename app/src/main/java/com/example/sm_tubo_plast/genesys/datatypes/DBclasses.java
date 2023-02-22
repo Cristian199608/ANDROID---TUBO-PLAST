@@ -1708,6 +1708,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("precioLista", item.getPrecioLista());
 			Nreg.put("descuento", item.getDescuento());
 			Nreg.put("porcentaje_desc", item.getPorcentaje_desc());
+			Nreg.put("porcentaje_desc_add", item.getPorcentaje_desc_add());
 			Nreg.put("lote", item.getLote());
 			
 			Nreg.put("motivoDevolucion", item.getMotivoDevolucion());
@@ -2482,6 +2483,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "producto.sub_familia, "
 				+ "producto.afecto, "
 				+ "pedido_detalle.porcentaje_desc, "
+				+ "pedido_detalle.porcentaje_desc_add, "
 				+ "producto._precio_base "
 				+ "from "+ Pedido_detalle.TAG+" "
 				+ "inner join "+ Producto.TAG+" "
@@ -2526,6 +2528,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setSubfamilia(cursor.getString(19));
 				productos[i].setAfecto(cursor.getString(20));
 				productos[i].setPorcentaje_desc(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc")));
+				productos[i].setPorcentaje_desc_extra(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc_add")));
 				productos[i].setPrecio_base(cursor.getDouble(cursor.getColumnIndex("_precio_base")));
 
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Item "+i+"  "+productos[i].getItem());
@@ -7146,8 +7149,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				dbdetalle.setItem_promo(Integer.parseInt(cur.getString(13)));
 				dbdetalle.setAgrup_promo(Integer.parseInt(cur.getString(14)));
 				dbdetalle.setPrecioLista(cur.getString(16));
-				dbdetalle.setDescuento(cur.getString(17));
-				dbdetalle.setLote(""+cur.getString(18));
+				dbdetalle.setLote(""+cur.getString(17));
+				dbdetalle.setDescuento(cur.getString(18));
 				dbdetalle.setMotivoDevolucion(cur.getString(19));
 				dbdetalle.setExpectativa(cur.getString(20));
 				dbdetalle.setEnvase(cur.getString(21));

@@ -27,6 +27,7 @@ public class ReportePedidoCabeceraDetalle {
     private String precio_neto;
     private double pesoTotalProducto;
     private String porcentaje_desc;
+    private double porcentaje_desc_extra;
     private String telefono_vendedor;
     private String text_area;
     private String observacion;
@@ -41,7 +42,7 @@ public class ReportePedidoCabeceraDetalle {
                                      String fecha_oc, String fecha_mxe, String codpro,
                                      int cantidad, String unidad_medida, String despro,
                                      String moneda, String precio_bruto, String precio_neto,
-                                     String porcentaje_desc, String telefono_vendedor,
+                                     String porcentaje_desc, double porcentaje_desc_extra, String telefono_vendedor,
                                      String text_area, String observacion, String observacion2,
                                      String observacion3,double pesoTotalProducto) {
         this.oc_numero = oc_numero;
@@ -69,6 +70,7 @@ public class ReportePedidoCabeceraDetalle {
         this.precio_bruto = precio_bruto;
         this.precio_neto = precio_neto;
         this.porcentaje_desc = porcentaje_desc;
+        this.porcentaje_desc_extra = porcentaje_desc_extra;
         this.telefono_vendedor = telefono_vendedor;
         this.text_area = text_area;
         this.observacion = observacion;
@@ -324,5 +326,13 @@ public class ReportePedidoCabeceraDetalle {
 
     public void setPesoTotalProducto(double pesoTotalProducto) {
         this.pesoTotalProducto = pesoTotalProducto;
+    }
+
+    public double getPorcentaje_desc_extra() {
+        return porcentaje_desc_extra;
+    }
+
+    public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
+        this.porcentaje_desc_extra = porcentaje_desc_extra;
     }
 }

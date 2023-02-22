@@ -361,82 +361,99 @@
                         android:paddingTop="5dp"
                         android:paddingBottom="5dp"
                         android:background="@color/blue_grey_100"
-                        android:orientation="horizontal" >
+                        android:orientation="vertical" >
 
                         <LinearLayout
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:orientation="vertical" >
-
-                            <TextView
+                            android:layout_weight="1"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:background="@color/blue_grey_100"
+                            android:orientation="horizontal" >
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:textColor="@color/grey_800"
-                                android:text="Dscto. PVP:"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.5"
+                                android:orientation="vertical" >
 
-                            <TextView
-                                android:id="@+id/tv_descuentoPVP"
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:textColor="@color/grey_800"
+                                    android:text="Dscto. PVP:"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_descuentoPVP"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="xxxxxx.xx"
+                                    android:textColor="@color/grey_900"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="xxxxxx.xx"
-                                android:textColor="@color/grey_900"
-                                android:textStyle="bold" />
+                                android:layout_weight="0.5"
+                                android:orientation="vertical" >
+
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:textColor="@color/grey_800"
+                                    android:text="Precio sin IGV:"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_precioSinIGV"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="xxxxxx.xx"
+                                    android:textColor="@color/grey_900"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="0.5"
+                                android:orientation="vertical" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:textColor="@color/grey_800"
+                                    android:text="Precio inc. IGV:"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tv_precioIncIGV"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="xxxxxx.xx"
+                                    android:textColor="@color/grey_900"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
                         </LinearLayout>
-
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/tvTotalVenta"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:orientation="vertical" >
-
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:textColor="@color/grey_800"
-                                android:text="Precio sin IGV:"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tv_precioSinIGV"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="xxxxxx.xx"
-                                android:textColor="@color/grey_900"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                            android:orientation="vertical" >
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:textColor="@color/grey_800"
-                                android:text="Precio inc. IGV:"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tv_precioIncIGV"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="xxxxxx.xx"
-                                android:textColor="@color/grey_900"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-
+                            android:gravity="end"
+                            android:text="TOTAL S/. xxx.xx"
+                            android:textColor="@color/grey_900"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </TableRow>
             </TableLayout>

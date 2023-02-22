@@ -21,10 +21,10 @@ class ReportePedidosYContizacionActivity : AppCompatActivity() {
         showDataFinal()
     }
     fun showDataFinal() {
-        objDbPedidoCabecera = mydbClass?.getCabecera("")
-        val dbPedidoCabecera = PedidoCabeceraRecyclerView(mydbClass, objDbPedidoCabecera)
-        recyclerView!!.hasFixedSize()
-        recyclerView!!.layoutManager = LinearLayoutManager(this)
-        recyclerView!!.adapter = dbPedidoCabecera
+//        objDbPedidoCabecera = mydbClass?.getCabecera("")
+//        val dbPedidoCabecera = PedidoCabeceraRecyclerView(mydbClass, objDbPedidoCabecera)
+//        recyclerView!!.hasFixedSize()
+//        recyclerView!!.layoutManager = LinearLayoutManager(this)
+//        recyclerView!!.adapter = dbPedidoCabecera
     }
 }
