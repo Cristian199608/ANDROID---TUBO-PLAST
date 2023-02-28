@@ -107,8 +107,9 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			reg.put(DBtables.Pedido_cabecera.NRO_ORDEN_COMPRA, cabecera.getNumeroOrdenCompra());
 			//reg.put(DBtables.Pedido_cabecera.CODIGO_TURNO_ENTREGA, cabecera.getCodigoTurnoEntrega());
 			reg.put(DBtables.Pedido_cabecera.CODIGO_PRIORIDAD, cabecera.getCodigoPrioridad());
+			reg.put(DBtables.Pedido_cabecera.CODIGO_SUCURSAL, cabecera.getCodigoSucursal());
 			reg.put(DBtables.Pedido_cabecera.CODIGO_PUNTO_ENTREGA, cabecera.getCodigoPuntoEntrega());
-			reg.put(DBtables.Pedido_cabecera.CODIGO_TIPO_DESPACHO, cabecera.getCodigoTipoDespacho());			
+			reg.put(DBtables.Pedido_cabecera.CODIGO_TIPO_DESPACHO, cabecera.getCodigoTipoDespacho());
 			reg.put(DBtables.Pedido_cabecera.CODIGO_OBRA, cabecera.getCodigoObra());
 			reg.put(DBtables.Pedido_cabecera.FLAG_DESPACHO, cabecera.getFlagDespacho());
 			reg.put(DBtables.Pedido_cabecera.FLAG_EMBALAJE, cabecera.getFlagEmbalaje());

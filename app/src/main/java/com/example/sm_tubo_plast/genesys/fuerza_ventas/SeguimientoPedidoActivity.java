@@ -3,9 +3,6 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,44 +14,42 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDFSeguimientoOp;
 import com.example.sm_tubo_plast.genesys.adapters.AdapterViewSeguimientoOp;
 import com.example.sm_tubo_plast.genesys.adapters.AdapterViewSeguimientoOpDetalle;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.MyAlertDialogFragment;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ViewPdfActivity;
 import com.example.sm_tubo_plast.genesys.service.WS_SeguimientoOP;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
-import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
-import com.example.sm_tubo_plast.genesys.util.UtilView;
+import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class SeguimientoPedidoActivity extends AppCompatActivity {
     public static final String TAG = "SeguimientoPedidoActivity";
-    private static final int PETICION_SEGUIMIENTO_PEDIDO_CLIENTE = 10;
+
     String codven="", codcliSeleccionado;
     ImageButton ib_seleccionar_cliente, ib_numero_pedido,ib_buscar_op;
-    TextView txtNombresCliente;
+    TextView txtNombresCliente, tvVerPdf;
     EditText inputSearch_documento, edtOrdenCompra, edtNroPedido;
     RecyclerView recyclerView;
     Button btnMostrarOcultarResumen;
 
     ViewSeguimientoPedido viewSeguimientoPedido=null;
+    ArrayList<ViewSeguimientoPedidoDetalle> listaDetalleOps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +71,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.recyclerView);
         btnMostrarOcultarResumen=findViewById(R.id.btnMostrarOcultarResumen);
         inputSearch_documento=findViewById(R.id.inputSearch_documento);
+        tvVerPdf=findViewById(R.id.tvVerPdf);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 
@@ -84,13 +80,38 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             Intent intent=new Intent(this, ClientesActivity.class);
             intent.putExtra("codven", codven);
             intent.putExtra("ORIGEN", TAG);
-            startActivityForResult(intent , PETICION_SEGUIMIENTO_PEDIDO_CLIENTE);
+            intent.putExtra("REQUEST_TYPPE", ClientesActivity.REQUEST_SELECCION_CLIENTE);
+            startActivityForResult(intent , ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE);
         });
         ib_buscar_op.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewSeguimientoPedido=null;
                 BuscarOpervidor();
+            }
+        });
+
+        tvVerPdf.setOnClickListener(v -> {
+            if(listaDetalleOps==null){
+                UtilViewSnackBar.SnackBarDanger(this, v, "No hay dato.");
+                return;
+            }
+            if(viewSeguimientoPedido==null){
+                UtilViewMensaje.MENSAJE_simple(this,
+                        "Falta datos de resumen",
+                        "Toque en el boton "+btnMostrarOcultarResumen.getText().toString().toUpperCase()
+                                +" para obtener los datos de resumen. Despues intente generar el pdf");
+                return;
+            }
+
+            try {
+                String nombreArchivo=""+viewSeguimientoPedido.getCoddoc()+"-"+viewSeguimientoPedido.getNum_op()+".pdf";
+                new PDFSeguimientoOp().createPDFCabeceraDetalle(nombreArchivo, viewSeguimientoPedido,  listaDetalleOps);
+                Intent i = new Intent(this, ViewPdfActivity.class);
+                i.putExtra("nombreArchivo", nombreArchivo);
+                startActivity(i);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -111,7 +132,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode==PETICION_SEGUIMIENTO_PEDIDO_CLIENTE){
+            if (requestCode== ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE){
                 codcliSeleccionado 	= data.getStringExtra("codcli");
                 String nomcli 	= data.getStringExtra("nomcli");
                 txtNombresCliente.setText(nomcli);
@@ -151,6 +172,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             UtilViewSnackBar.SnackBarWarning(this,view, "Seleccione un cliente válido");
             return;
         }
+
         dialogo.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialogo.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogo.setContentView(R.layout.dialogo_orden_compra_pedido);
@@ -193,6 +215,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             WS_SeguimientoOP ws_seguimientoOP=new WS_SeguimientoOP(this);
             if (viewSeguimientoPedido!=null && reqestNumero_op.length()>0){
                 ws_seguimientoOP.setDataCargada(viewSeguimientoPedido);
+
             }
             ws_seguimientoOP.GetOrdenCompraPedido(codcliSeleccionado, _edtOrdenCompra.getText().toString(), txtFechaDesde.getHint().toString(),
                     txtFechaHasta.getHint().toString(), ""+reqestNumero_op, new WS_SeguimientoOP.MyListener() {
@@ -200,6 +223,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                 public void Reult(boolean valor, ArrayList<ViewSeguimientoPedido> data) {
                     ArrayList<ViewSeguimientoPedido> dataMov=new ArrayList<>();
                     dataMov.addAll(data);
+                    edtBuscarResultado.setHint("Buscar resultados ("+dataMov.size()+" OP's)");
                     AdapterViewSeguimientoOp adapterViewSeguimientoOp=new AdapterViewSeguimientoOp(SeguimientoPedidoActivity.this,  dataMov,null);
                     recyclerView.setAdapter(adapterViewSeguimientoOp);
                     new ACG_EditText(SeguimientoPedidoActivity.this, edtBuscarResultado).OnListen(texto -> {
@@ -217,7 +241,9 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                     });
                     if (reqestNumero_op.length()>0 && dataMov.size()>0 ){
                         viewSeguimientoPedido=dataMov.get(0);
-                    }
+
+                    }else listaDetalleOps=null;
+
                     adapterViewSeguimientoOp.setOnClickListenerOP(v1 -> {
                         if (reqestNumero_op.length()>0){
                             dialogo.dismiss();
@@ -271,6 +297,12 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         ws_seguimientoOP.GetPedidoOP(edtNroPedido.getText().toString(), new WS_SeguimientoOP.MyListenerDetalle() {
             @Override
             public void ReultDetalle(boolean valor, ArrayList<ViewSeguimientoPedidoDetalle> dataDet) {
+                if(viewSeguimientoPedido!=null){
+                    if (!viewSeguimientoPedido.getNum_op().equals(edtNroPedido.getText().toString())) {
+                        viewSeguimientoPedido=null;
+                    }
+                }
+                listaDetalleOps=dataDet;
                 if (dataDet.size()>0){
                     recyclerView.setVisibility(View.VISIBLE);
                     txtNombresCliente.setText(""+dataDet.get(0).getNombres());

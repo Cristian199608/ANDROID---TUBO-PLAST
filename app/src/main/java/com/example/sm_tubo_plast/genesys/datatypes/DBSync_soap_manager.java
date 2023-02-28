@@ -16,6 +16,8 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoCabeceraRespose;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
@@ -5141,6 +5143,104 @@ public int Sync_tabla_ObjPedido(String codven, String url, String catalog, Strin
 
  }
 
+	public int get_tabla_ObjPedidoOnLine(String codven,
+										 String url, String catalog, String user, String contrasena,
+										 String texto_buscar,
+										 String campo_buscar,
+										 int start, int paginacion) throws Exception{
+
+		String SOAP_ACTION= "http://tempuri.org/obtenerObjpedidoOnLine_json";
+		String METHOD_NAME="obtenerObjpedidoOnLine_json";
+		long beforecall;
+
+		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
+		Request.addProperty("codven", codven);
+		Request.addProperty("url", url);
+		Request.addProperty("catalog", catalog);
+		Request.addProperty("user", user);
+		Request.addProperty("password", contrasena);
+		Request.addProperty("texto_buscar", texto_buscar);
+		Request.addProperty("campo_buscar", campo_buscar);
+		Request.addProperty("start", start);
+		Request.addProperty("paginacion", paginacion);
+
+		SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet=true;
+		Soapenvelope.setOutputSoapObject(Request);
+
+		HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService, 60000);
+
+		beforecall = System.currentTimeMillis();
+
+		try{
+			transporte.call(SOAP_ACTION, Soapenvelope);
+
+			Log.d("OBJ_PEDIDO","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+
+			SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
+			Log.d("OBJ_PEDIDO",""+result.toString());
+			JSONArray jsonstring = new JSONArray(result.toString());
+
+
+			Log.d("OBJ_PEDIDO", "SINCRONIZADA");
+			return 0;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.e("OBJ_PEDIDO", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+}
+
+	public ArrayList<PedidoCabeceraRespose> SyncTBPedidoCabeceraRespose(String codven,
+																		String texto_buscar,
+																		String campo_buscar,
+																		int start, int paginacion) throws Exception{
+		String S_TAG="SyncTBPedidoCabeceraRespose";
+		try{
+
+			String _METHOD_NAME="obtenerObjpedidoOnLine_json";
+
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+ codven);
+			propiedad.add("texto_buscar"+__PARTIR___+ texto_buscar);
+			propiedad.add("campo_buscar"+__PARTIR___+ campo_buscar);
+			propiedad.add("start"+__PARTIR___+ start);
+			propiedad.add("paginacion"+__PARTIR___+ paginacion);
+
+			String jsonstring = AddRequestHeader(new ArrayList<>(), _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<PedidoCabeceraRespose>>() {}.getType();
+			final ArrayList<PedidoCabeceraRespose> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			return  lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
+	public ArrayList<PedidoDetalleRespose> SyncTBPedidoDetalleRespose(String coddoc, String numdoc) throws Exception{
+		String S_TAG="obtenerTBPedidoDetalleByCodigo_json";
+		try{
+
+			String _METHOD_NAME="obtenerTBPedidoDetalleByCodigo_json";
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+ coddoc);
+			propiedad.add("coddoc"+__PARTIR___+ coddoc);
+			propiedad.add("numdoc"+__PARTIR___+ numdoc);
+
+			String jsonstring = AddRequestHeader(new ArrayList<>(), _METHOD_NAME);
+			final Type malla = new TypeToken<ArrayList<PedidoDetalleRespose>>() {}.getType();
+			final ArrayList<PedidoDetalleRespose> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			return lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
 
 public void actualizarLogSincro(String codven, String fec_ini, String fec_device, String descp) throws Exception{   	
    	
@@ -5162,7 +5262,7 @@ public void actualizarLogSincro(String codven, String fec_ini, String fec_device
     	if(GlobalVar.id_servicio == GlobalVar.INTERNET){    		
     		request.addProperty("cadena",cadena);
         	request.addProperty("server", url); 
-    		request.addProperty("database", catalog); 
+    		request.addProperty("database", catalog);
     		request.addProperty("uid", user); 
     		request.addProperty("password", contrasena);
     		Log.i("ENVIO LOG_SINCRO","TOMANDO DATOS DE SERVIDOR PRINCIPAL, server: "+url);    		

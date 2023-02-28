@@ -49,7 +49,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "PC.observacion, PC.observacion2, " +
                                 "PC.observacion3," +
                                 "PD.peso_bruto," +
-                                "ifnull(PD.porcentaje_desc_add, 0) as porcentaje_desc_add " +
+                                "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra " +
                                 "FROM " +
                                 "pedido_cabecera PC " +
                                 "CROSS JOIN " +
@@ -116,7 +116,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         String observacion2 = objCursor.getString(28);
                         String observacion3 = objCursor.getString(29);
                         double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
-                        double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_add"));
+                        double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
 
                         objDbPedidoCabeceraDetalleArrayList.add(
                                 new ReportePedidoCabeceraDetalle(
@@ -188,7 +188,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
             String sql="SELECT PC.oc_numero, C.ruccli, " +
                     "V.codven, C.nomcli, " +
                     "C.telefono as telefonoCliente, V.nomven, " +
-                    "C.direccionFiscal, C.email as emailCliente, " +
+                    "dc.direccion, C.email as emailCliente, " +
                     "V.email as emailVendedor, T.descripcion, " +
                     "FP.desforpag, PC.monto_total, " +
                     "PC.valor_igv, PC.subTotal as subtotal, " +
@@ -205,6 +205,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "CROSS JOIN " +
                     "cliente C " +
                     "CROSS JOIN " +
+                    "direccion_cliente dc " +
+                    "CROSS JOIN " +
                     "vendedor V " +
                     "CROSS JOIN " +
                     "transporte T " +
@@ -214,6 +216,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "PC.oc_numero like '%" + oc_num + "%' " +
                     "AND " +
                     "PC.cod_cli = C.codcli " +
+                    "AND PC.codigoSucursal =  dc.item and c.codcli=dc.codcli " +
                     "AND " +
                     "V.codven = PC.cod_emp " +
                     "AND " +
@@ -242,7 +245,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     cabecera.setCodven(objCursor.getString(objCursor.getColumnIndex("codven")));
                     cabecera.setTelefono(objCursor.getString(objCursor.getColumnIndex("telefonoCliente")));
                     cabecera.setNomven(objCursor.getString(objCursor.getColumnIndex("nomven")));
-                    cabecera.setDireccionFiscal(objCursor.getString(objCursor.getColumnIndex("direccionFiscal")));
+                    cabecera.setDireccion(objCursor.getString(objCursor.getColumnIndex("direccion")));
                     cabecera.setEmail_cliente(objCursor.getString(objCursor.getColumnIndex("emailCliente")));
                     cabecera.setEmail_vendedor(objCursor.getString(objCursor.getColumnIndex("emailVendedor")));
                     cabecera.setDescripcion(objCursor.getString(objCursor.getColumnIndex("descripcion")));

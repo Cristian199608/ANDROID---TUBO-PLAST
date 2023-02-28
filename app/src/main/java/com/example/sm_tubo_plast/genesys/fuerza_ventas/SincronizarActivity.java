@@ -1874,9 +1874,10 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 alerta.setPositiveButton("OK", null);
                 alerta.show();
 
-                editor_preferencias = preferencias_configuracion.edit();
-                editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", false);
-                editor_preferencias.commit();
+                //No hacemos cambio cuando no hay conexion al servidor
+//                editor_preferencias = preferencias_configuracion.edit();
+//                editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", false);
+//                editor_preferencias.commit();
 
             } else if (result.equals("3")) {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(

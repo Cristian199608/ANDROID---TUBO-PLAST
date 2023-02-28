@@ -10,15 +10,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,15 +24,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDFCtaIngreso;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
 import com.example.sm_tubo_plast.genesys.adapters.Cobranza_LazyAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBCta_Ingresos;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ViewPdfActivity;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
     TextView txtDeudaSoles, txtDeudaDolares, txtTotalDolaresDocumento, txtTotalSolesDocumento;
     TextView txtObligacionDolares, txtTotalObligacionDolaresDocumento, txtObligacionSoles, txtTotalObligacionSolesDocumento;
     EditText inputSearch_documento;
+    TextView tvVerPdf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +108,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
         txtTotalObligacionDolaresDocumento=findViewById(R.id.txtTotalObligacionDolaresDocumento);
         txtObligacionSoles=findViewById(R.id.txtObligacionSoles);
         txtTotalObligacionSolesDocumento=findViewById(R.id.txtTotalObligacionSolesDocumento);
+        tvVerPdf=findViewById(R.id.tvVerPdf);
 
         obj_dbclasses = new DBclasses(getApplicationContext());
         ctas_cobrar = new ArrayList<HashMap<String, String>>();
@@ -134,7 +137,25 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
 
 
 
+        tvVerPdf.setOnClickListener(v -> {
+            ArrayList<CTA_INGRESOSPDF> cti;
+            cti = obj_dbclasses.getCTA_INGRESOSPDF(codcli);
+            String max_fecha = obj_dbclasses.getMaxDate(codcli);
+            String min_fecha = obj_dbclasses.getMinDate(codcli);
+            try {
+                tvVerPdf.setText("Generando...");
+                String nombreArchivo="Cuenta Cte "+nomcli+".pdf";
+                new PDFCtaIngreso().createCredit(nombreArchivo, cti, max_fecha, min_fecha);
+                tvVerPdf.setText(" Ver");
+                Intent i = new Intent(this, ViewPdfActivity.class);
+                i.putExtra("nombreArchivo", nombreArchivo);
+                startActivity(i);
 
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        });
 
         ActionItem addItem = new ActionItem(ID_PAGAR, "Amortizar",(R.drawable.pagar));
 		/*ActionItem acceptItem = new ActionItem(ID_DETALLE, "Ver Detalle",

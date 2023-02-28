@@ -1,27 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     >
 
-    <EditText android:id="@+id/inputSearch_documento"
-        android:layout_margin="5dp"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:id="@+id/layour_cabecera"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Buscar Clientes"
-        android:lines="1"
-        android:maxLines="1"
-        android:background="@drawable/edittext_rounded_corners6"
-        android:drawableEnd="@drawable/ic_search_grey"
-        android:inputType="textVisiblePassword"/>
+        android:orientation="horizontal"
+        >
+        <EditText
+            android:id="@+id/inputSearch_documento"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:drawableEnd="@drawable/ic_search_grey"
+            android:hint="Buscar Clientes"
+            android:inputType="textVisiblePassword"
+            android:lines="1"
+            android:maxLines="1" />
+
+        <TextView
+            android:id="@+id/tvVerPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Ver"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:drawableStart="@drawable/ic_pdf_24" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/lv_ctas_cobrar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="#b5b5b5"
-        android:layout_below="@+id/inputSearch_documento"
+        android:layout_below="@+id/layour_cabecera"
         android:layout_above="@+id/layoutFoote"
         android:dividerHeight="1dp"
         android:listSelector="@drawable/list_selector" />
@@ -257,4 +278,6 @@
 
 
     </LinearLayout>
+
+
 </RelativeLayout>

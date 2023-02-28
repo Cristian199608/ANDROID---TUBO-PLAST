@@ -38,13 +38,15 @@ public class PDF {
     public static void createPdf(Context context,
                                  String nombreArchivo,
                                  String oc_numero,String tipoRegistro, String ruccli, String codven, String nomcli,
-                                 String telefono, String nomven, String direccionFiscal,
+                                 String telefono, String nomven, String direccion,
                                  String email_cliente, String email_vendedor,
                                  String desforpag, String monto_total,
                                  String valor_igv, String sub_total, String peso_total,
                                  String fecha_oc, String fecha_mxe,
                                  DataCabecera dataCabecera,
-                                 ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles, int tipo_de_envio) throws FileNotFoundException
+                                 ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles,
+                                 double tasaCambioSolesToDolar,
+                                 int tipo_de_envio) throws FileNotFoundException
     {
 
 
@@ -152,7 +154,7 @@ public class PDF {
 
         //TABLE 3 ----- 01
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DIRECCION").setFontSize(7f)));
-        table2.addCell(new Cell().add(new Paragraph(direccionFiscal).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        table2.addCell(new Cell().add(new Paragraph(direccion).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("AREA").setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
         table2.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getText_area()).setTextAlignment(TextAlignment.CENTER).setFontSize(6f)));
 
@@ -227,16 +229,19 @@ public class PDF {
          */
 
         String moneda;
+        double tipoCambio=-1;
         String observaciones;
 
         if (dataPedidoCabeceraDetalles.get(0).getMoneda().equals("1"))
         {
             moneda = "S/. ";
+            tipoCambio=tasaCambioSolesToDolar;
             observaciones = "Precio Expresado en MN SOLES S/. ";
         }
         else
         {
             moneda = "US$ ";
+            tipoCambio=1;
             observaciones = "Precio Expresado en DÓLARES AMERICANOS US$ ";
         }
 
@@ -294,7 +299,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("UM").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESCRIPCION").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PRECIO UNITARIO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-            tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+            tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK ($)").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n EXTRA %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
@@ -309,7 +314,7 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
                 String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto());
+                String precioKilo = FormateadorNumero.formatter2decimal((Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto())/tipoCambio);
                 tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc_extra())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
@@ -367,8 +372,9 @@ public class PDF {
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
         if (tipo_de_envio == ENVIO_A_INTERNO){
-            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(sub_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            double pkDolar=Double.parseDouble(sub_total)/Double.parseDouble(peso_total)/tipoCambio;
+            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv $)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 
         /***

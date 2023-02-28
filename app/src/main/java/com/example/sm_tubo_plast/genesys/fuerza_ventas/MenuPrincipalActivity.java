@@ -23,7 +23,7 @@ import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionMenuPrinicipal;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
@@ -261,8 +261,8 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                final Intent icliente = new Intent(activity, ReportesPedidosActivity.class);
-                icliente.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                final Intent icliente = new Intent(activity, ReportesPedidosCotizacionYVisitaActivity.class);
+                icliente.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                 // ipedido.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }

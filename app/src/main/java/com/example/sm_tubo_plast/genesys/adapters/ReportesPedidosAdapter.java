@@ -9,7 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,11 +57,11 @@ public class ReportesPedidosAdapter extends BaseAdapter {
         song = data.get(position);
         
         // Setting all values in listview
-        nomcliente.setText(song.get(ReportesPedidosActivity.KEY_NOMCLIENTE));
-        tipopago.setText(song.get(ReportesPedidosActivity.KEY_TIPOPAGO));
-        total.setText(song.get(ReportesPedidosActivity.KEY_TOTAL));
-        numoc.setText(song.get(ReportesPedidosActivity.KEY_NUMOC));
-        estado.setText(song.get(ReportesPedidosActivity.KEY_ESTADO));
+        nomcliente.setText(song.get(ReportesPedidosCotizacionYVisitaActivity.KEY_NOMCLIENTE));
+        tipopago.setText(song.get(ReportesPedidosCotizacionYVisitaActivity.KEY_TIPOPAGO));
+        total.setText(song.get(ReportesPedidosCotizacionYVisitaActivity.KEY_TOTAL));
+        numoc.setText(song.get(ReportesPedidosCotizacionYVisitaActivity.KEY_NUMOC));
+        estado.setText(song.get(ReportesPedidosCotizacionYVisitaActivity.KEY_ESTADO));
         return vi;
     }
 }

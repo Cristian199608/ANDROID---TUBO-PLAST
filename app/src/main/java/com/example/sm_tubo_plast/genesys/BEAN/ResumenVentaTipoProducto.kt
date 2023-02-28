@@ -4,6 +4,6 @@ data class ResumenVentaTipoProducto (
     var tipoProducto:String,
     var pesoTotal:Double,
     var sutTotal:Double,
-    var pk:Double,
+    var pkDolar:Double,
     var igvTotal:Double,
 )

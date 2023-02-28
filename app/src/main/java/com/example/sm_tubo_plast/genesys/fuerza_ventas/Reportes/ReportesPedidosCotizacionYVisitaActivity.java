@@ -25,8 +25,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.RadioGroup;
@@ -34,7 +36,10 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
@@ -53,12 +58,14 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.CH_DevolucionesActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.ClientesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_enviarCotizacion;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivityVentana2;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
+import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
@@ -80,7 +87,7 @@ import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
 @SuppressLint("LongLogTag")
-public class ReportesPedidosActivity extends FragmentActivity {
+public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     public static final String TAG  = "ReportesPedidosActivity";
     public static final String KEY_TOTAL = "total";
@@ -144,6 +151,13 @@ public class ReportesPedidosActivity extends FragmentActivity {
     ImageView imgBuscarDatos;
     ProgressDialog pDialog;
 
+    LinearLayout layoutBuscarPedidoCoti;
+    RecyclerView recyclerViewDatosOnLine;
+    ImageView ib_seleccionar_cliente;
+    String codcliSeleccionado;
+    TextView txtNombresCliente, txtFechaDesde, txtFechaHasta;
+    CheckBox chkBuscarEnLinea;
+
     ConnectionDetector connection;
     int contador = 0;
     public String globalFlag = "";
@@ -158,17 +172,20 @@ public class ReportesPedidosActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reportes_pedidos);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle!=null){
             TIPO_VISTA = bundle.getString("TIPO_VISTA", ""+ DATOS_GESTION_VISITAS);
         }
-
+        if (TIPO_VISTA.equals(DATOS_PREVENTA)){
+            setContentView(R.layout.activity_reportes_pedidos_y_cotizacion);
+        }else{
+            setContentView(R.layout.activity_reportes_visitas);
+        }
 
         DAORegistroBonificaciones = new DAO_RegistroBonificaciones(  getApplicationContext());
         obj_dbclasses = new DBclasses(getApplicationContext());
-        cd = new ConnectionDetector(ReportesPedidosActivity.this);
+        cd = new ConnectionDetector(ReportesPedidosCotizacionYVisitaActivity.this);
 
         tv_montoTotal_soles = (TextView) findViewById(R.id.rpt_pedidos_txtTotal);
         btn_peso = (TextView) findViewById(R.id.rpt_pedidos_txtTotal_peso);
@@ -179,6 +196,20 @@ public class ReportesPedidosActivity extends FragmentActivity {
         tv_montoTotal_dolares = (TextView) findViewById(R.id.rpt_pedidos_tvTotalDolares);
         etBuscarVendedorResumen = (EditText) findViewById(R.id.etBuscarVendedorResumen);
         imgBuscarDatos =  findViewById(R.id.imgBuscarDatos);
+
+        if (TIPO_VISTA.equals(DATOS_PREVENTA)){
+            chkBuscarEnLinea =  findViewById(R.id.chkBuscarEnLinea);
+            layoutBuscarPedidoCoti =  findViewById(R.id.layoutBuscarPedidoCoti);
+            ib_seleccionar_cliente =  findViewById(R.id.ib_seleccionar_cliente);
+            txtNombresCliente =  findViewById(R.id.txtNombresCliente);
+            txtFechaDesde =  findViewById(R.id.txtFechaDesde);
+            txtFechaHasta =  findViewById(R.id.txtFechaHasta);
+            recyclerViewDatosOnLine =  findViewById(R.id.recyclerViewDatosOnLine);
+
+            recyclerViewDatosOnLine.setLayoutManager(new LinearLayoutManager(this));
+            layoutBuscarPedidoCoti.setVisibility(View.GONE);
+        }
+
         fecha2 = obj_dbclasses.getFecha2();
 
         Log.d("ALERT - REPORTE - fecha:", fecha2);
@@ -201,6 +232,11 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         cargarListView();
         imgBuscarDatos.setOnClickListener(v -> {
+            if (chkBuscarEnLinea!=null) {
+                if (chkBuscarEnLinea.isChecked()) {
+                    return;
+                }
+            }
             new asyncBuscar().execute("", "");
 
         });
@@ -257,7 +293,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                             int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
                             if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
-                                UtilViewMensaje.MENSAJE_simple(ReportesPedidosActivity.this, "Modificar?",
+                                UtilViewMensaje.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Modificar?",
                                         "Para modificar, dirijase desde el menu principal, AGENDA-> seleccione la actividad" );
                                 return;
                             }
@@ -287,7 +323,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
                             if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
                                 if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, GestionVisita3Activity.VISITA_PLANIFICADA).size()>0) {
-                                    Intent intent=new Intent(ReportesPedidosActivity.this, GestionVisita3Activity.class);
+                                    Intent intent=new Intent(ReportesPedidosCotizacionYVisitaActivity.this, GestionVisita3Activity.class);
                                     intent.putExtra("ID_RRHH", "-1");
                                     intent.putExtra("CODIGO_CRM", "");
                                     intent.putExtra("NOMBRE_INSTI", "");
@@ -298,11 +334,11 @@ public class ReportesPedidosActivity extends FragmentActivity {
                                     intent.putExtra("ORIGEN", TAG);
                                     startActivity(intent);
                                 }else{
-                                    Toast.makeText(ReportesPedidosActivity.this, "Ninguna acción", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "Ninguna acción", Toast.LENGTH_SHORT).show();
                                 }
                             }else{
                                 if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
-                                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
+                                    String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
     
                                     final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
                                     ipedido.putExtra("codigoVendedor", codven);
@@ -379,7 +415,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                         else if (actionId == ID_DETALLE) {
                             if (obj_dbclasses.getTipoRegistro(oc_numero).equals("DEVOLUCION")) {
-                                String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
+                                String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
 
                                 final Intent ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
                                 ipedido.putExtra("codigoVendedor", codven);
@@ -416,7 +452,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             cabecera.setTipoRegistro(PedidosActivity.TIPO_PEDIDO);//Se indica que se guardar como pedido
                             DAO_Pedido DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
                             DAOPedidoDetalle.ClonarPedido(cabecera);//Se guarda referencia del pedido anterior
-                            GlobalFunctions.showCustomToast(ReportesPedidosActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
+                            GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
                             new asyncBuscar().execute("", "");
                         }else if(actionId == ID_GENERAR_PDF){
                             GenerarPdfDocument(oc_numero);
@@ -424,6 +460,8 @@ public class ReportesPedidosActivity extends FragmentActivity {
                     }
                 });
 
+
+        configEventsCotizacionesYPedido();
 
 
         list.setOnItemClickListener(new OnItemClickListener() {
@@ -434,7 +472,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 mSelectedRow = position; // set the selected row
                 codcli = pedidos.get(mSelectedRow).get(KEY_CODCLI).trim().toString();
                 if (obj_dbclasses.getClientexCodigo(codcli)==null) {
-                    UtilView.MENSAJE_simple(ReportesPedidosActivity.this, "Error", "Cliente no encontrado");
+                    UtilView.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Error", "Cliente no encontrado");
                     return;
                 }
                 String numoc = ((TextView) view.findViewById(R.id.rpt_pedido_tv_oc_numero)).getText().toString();
@@ -460,15 +498,53 @@ public class ReportesPedidosActivity extends FragmentActivity {
             }
         });
     }
+    private void configEventsCotizacionesYPedido(){
 
+        if (!TIPO_VISTA.equals(DATOS_PREVENTA)){
+            return;
+        }
+        chkBuscarEnLinea.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            layoutBuscarPedidoCoti.setVisibility(isChecked?View.VISIBLE:View.GONE);
+        });
+        if (ib_seleccionar_cliente!=null) {
+            ib_seleccionar_cliente.setOnClickListener(v -> {
+                Intent intent=new Intent(this, ClientesActivity.class);
+                intent.putExtra("codven", codven);
+                intent.putExtra("ORIGEN", TAG);
+                intent.putExtra("REQUEST_TYPPE", ClientesActivity.REQUEST_SELECCION_CLIENTE);
+                startActivityForResult(intent, ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE);
+            });
+        }
+        String fecha=VARIABLES.GET_FECHA_ACTUAL_STRING_dd_mm_yyy();
+        txtFechaDesde.setText("de: "+fecha);
+        txtFechaDesde.setHint(fecha);
+        CustomDateTimePicker.requestDialog(this, "de: ", txtFechaDesde);
+
+        String fechaHasta=VARIABLES.GET_FECHA_ACTUAL_STRING_dd_mm_yyy();
+        txtFechaHasta.setText("a: "+fechaHasta);
+        txtFechaHasta.setHint(fechaHasta);
+        CustomDateTimePicker.requestDialog(this, "de ", txtFechaHasta);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode== ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE){
+                codcliSeleccionado 	= data.getStringExtra("codcli");
+                String nomcli 	= data.getStringExtra("nomcli");
+                txtNombresCliente.setText(nomcli);
+            }
+        }
+    }
     private void GenerarPdfDocument(String oc_numero) {
         dao_reportePedido=new DAO_ReportePedido(getApplicationContext());
         ArrayList<DataCabecera> lista=dao_reportePedido.getCabecera(""+oc_numero);
         if (lista.size()==0){
             return;
         }
-        AlertDialog.Builder elegir = new AlertDialog.Builder(ReportesPedidosActivity.this);
-        elegir.setTitle("¿Interno o Cliente?");
+        AlertDialog.Builder elegir = new AlertDialog.Builder(ReportesPedidosCotizacionYVisitaActivity.this);
+        elegir.setTitle("Seleccionar");
         elegir.setMessage("Seleccione el tipo de envío");
         elegir.setCancelable(true);
         elegir.setPositiveButton("Cliente", new DialogInterface.OnClickListener() {
@@ -495,12 +571,14 @@ public class ReportesPedidosActivity extends FragmentActivity {
     private void Generate_pdf_by_ocumero( int tipoEnvio, DataCabecera dataCabecera) {
         ArrayList<ReportePedidoCabeceraDetalle> listaDetalle= dao_reportePedido.getAllDataByCodigo( dataCabecera.getOc_numero());
 
-        pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+        pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
         pDialog.setMessage("Generando PDF...");
         pDialog.setIndeterminate(true);
         pDialog.setCancelable(false);
         pDialog.show();
 
+        String tipo_de_cambio  = obj_dbclasses.getCambio("Tipo_cambio");
+        double tasaCambioSolesToDolar  = Double.parseDouble(tipo_de_cambio);
         String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero()+".pdf";
 //        String nombreArchivo=dataCabecera.getOc_numero()+".pdf";
         new AsyncTask<Void, String, String>(){
@@ -516,7 +594,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             dataCabecera.getNomcli(),
                             dataCabecera.getTelefono(),
                             dataCabecera.getNomven(),
-                            dataCabecera.getDireccionFiscal(),
+                            dataCabecera.getDireccion(),
                             dataCabecera.getEmail_cliente(),
                             dataCabecera.getEmail_vendedor(),
                             dataCabecera.getDesforpag(),
@@ -528,6 +606,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             dataCabecera.getFecha_mxe(),
                             dataCabecera,
                             listaDetalle,
+                            tasaCambioSolesToDolar,
                             tipoEnvio);
                     return "Generado";
                 } catch (FileNotFoundException e) {
@@ -806,7 +885,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("enviando pendientes...\n\n"
                     + GlobalVar.urlService);
             pDialog.setIndeterminate(false);
@@ -1015,7 +1094,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         view.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast toast = Toast.makeText(ReportesPedidosActivity.this,"Producto guardado con observación, pues el descuento supera a 3%", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this,"Producto guardado con observación, pues el descuento supera a 3%", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
@@ -1113,7 +1192,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 dialogo.dismiss();
 
                 Builder builder = new Builder(
-                        ReportesPedidosActivity.this);
+                        ReportesPedidosCotizacionYVisitaActivity.this);
                 builder.setTitle("Importante");
                 builder.setMessage("Se guardaran todos los datos");
                 builder.setCancelable(false);
@@ -1163,7 +1242,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Guardando motivo de no venta....");
             pDialog.setIndeterminate(false);
 
@@ -1258,7 +1337,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         protected void onPreExecute() {
             // para el progress dialog
 
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Verificando...");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -1276,7 +1355,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             String ret = "";
 
             DBSync_soap_manager sm = new DBSync_soap_manager(
-                    ReportesPedidosActivity.this);
+                    ReportesPedidosCotizacionYVisitaActivity.this);
 
             if (connection.hasActiveInternetConnection(getApplicationContext())) {
 
@@ -1307,7 +1386,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 // No se pudo verificar asi que no se continua con la accion
                 // seleccionada
                 Builder alerta = new Builder(
-                        ReportesPedidosActivity.this);
+                        ReportesPedidosCotizacionYVisitaActivity.this);
                 alerta.setTitle("Sin conexion al servidor");
                 alerta.setMessage("Por el momento no es posible completar la accion");
                 alerta.setCancelable(false);
@@ -1322,7 +1401,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 // No se pudo verificar asi que no se continua con la accion
                 // seleccionada
                 Builder alerta = new Builder(
-                        ReportesPedidosActivity.this);
+                        ReportesPedidosCotizacionYVisitaActivity.this);
                 alerta.setMessage("Por el momento no es posible completar la accion");
                 alerta.setCancelable(false);
                 alerta.setPositiveButton("OK", null);
@@ -1336,7 +1415,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                         // el pedido ya ha sido transferido y no se puede
                         // modificar
                         Builder alerta = new Builder(
-                                ReportesPedidosActivity.this);
+                                ReportesPedidosCotizacionYVisitaActivity.this);
                         alerta.setTitle("MODIFICAR");
                         alerta.setMessage("El pedido ya ha sido tranferido\nComuniquese con el administrador");
                         alerta.setCancelable(false);
@@ -1353,7 +1432,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                         // el pedido ya ha sido transferido y no se puede
                         // modificar
                         Builder alerta = new Builder(
-                                ReportesPedidosActivity.this);
+                                ReportesPedidosCotizacionYVisitaActivity.this);
                         alerta.setTitle("MODIFICAR");
                         alerta.setMessage("El pedido ya ha sido tranferido\nComuniquese con el administrador");
                         alerta.setCancelable(false);
@@ -1372,7 +1451,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             item_direccion);
                     Log.w("CODIGO_NOVENTA", "" + cod);
 
-                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
+                    String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
 
 
 
@@ -1389,7 +1468,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                     startActivity(ipedido);
                     // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
                     // "I");
-                    ReportesPedidosActivity.this.finish();
+                    ReportesPedidosCotizacionYVisitaActivity.this.finish();
 
                 } else if (tipo.equals("PEDIDO-MODIFICAR")) {
                     String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
@@ -1398,7 +1477,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                             item_direccion);
                     Log.w("CODIGO_NOVENTA", "" + cod);
 
-                    String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
+                    String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
 
                     final Intent ipedido;
                     if (tipoRegistro.equals(PedidosActivity.TIPO_COTIZACION)) {
@@ -1420,7 +1499,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                     startActivity(ipedido);
                     // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
                     // "I");
-                    ReportesPedidosActivity.this.finish();
+                    ReportesPedidosCotizacionYVisitaActivity.this.finish();
 
                 }
 
@@ -1437,7 +1516,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Verificando con Servidor...\n\n"
                     + GlobalVar.urlService);
             pDialog.setIndeterminate(false);
@@ -1509,7 +1588,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
         int cod = obj_dbclasses.obtenerMotivoxCliente(codcli, item_direccion);
         Log.w("CODIGO_NOVENTA", "" + cod);
 
-        String codven = new SessionManager(ReportesPedidosActivity.this).getCodigoVendedor();
+        String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
 
         String vista = obj_dbclasses.obtenerVistaxOrdenCompra(oc_numero);
         Log.d("ReportesPedidosActivity ::updatePedido::", vista);
@@ -1525,7 +1604,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
             startActivity(ipedido);
             // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero, "I");
-            ReportesPedidosActivity.this.finish();
+            ReportesPedidosCotizacionYVisitaActivity.this.finish();
 
         } else if (vista.equals("Vista 2")) {
 
@@ -1540,7 +1619,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
             startActivity(ipedido);
             // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero, "I");
-            ReportesPedidosActivity.this.finish();
+            ReportesPedidosCotizacionYVisitaActivity.this.finish();
 
         } else {
             Toast.makeText(getApplicationContext(),
@@ -1552,7 +1631,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
     public void dialogoEliminarRegistro() {
         final Builder alertDialog = new Builder(
-                ReportesPedidosActivity.this);
+                ReportesPedidosCotizacionYVisitaActivity.this);
         alertDialog.setTitle("Eliminar");
         alertDialog.setMessage("Se eliminará permanentemente");
         alertDialog.setIcon(R.drawable.ic_eliminar);
@@ -1582,7 +1661,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("ELiminando....");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
@@ -1641,7 +1720,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
     String tipofiltro = "cliente";
 
     public void poputMenu(View view){
-        final PopupMenu popupMenu = new PopupMenu(ReportesPedidosActivity.this, view);
+        final PopupMenu popupMenu = new PopupMenu(ReportesPedidosCotizacionYVisitaActivity.this, view);
         popupMenu.getMenuInflater().inflate(R.menu.menu_reportespedidos, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -1649,7 +1728,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_reportespedidos:
 
-                        GlobalFunctions.backupdDatabase(ReportesPedidosActivity.this);
+                        GlobalFunctions.backupdDatabase(ReportesPedidosCotizacionYVisitaActivity.this);
                         new asyncEnviarPendientes().execute("");
                         return true;
                     case R.id.menu_reportespedidos_verificar:
@@ -1665,7 +1744,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
     protected void showCustomDialog() {
 
-        bdialog = new Dialog(ReportesPedidosActivity.this,
+        bdialog = new Dialog(ReportesPedidosCotizacionYVisitaActivity.this,
                 android.R.style.Theme_Translucent);
         bdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -1734,7 +1813,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Buscando....");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -1764,8 +1843,56 @@ public class ReportesPedidosActivity extends FragmentActivity {
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
             if (pedidos.size()==0){
-                UtilViewSnackBar.SnackBarWarning(ReportesPedidosActivity.this, list, "No hay datos para mostrar");
-                Toast.makeText(ReportesPedidosActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
+                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, list, "No hay datos para mostrar");
+                Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+
+
+    }
+
+    class asyncObtenerPedidosOnLine extends AsyncTask<String, String, String> {
+
+        String user, pass;
+        ProgressDialog pDialog;
+        double cantidadDatos;
+
+        protected void onPreExecute() {
+            // para el progress dialog
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
+            pDialog.setMessage("Buscando....");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+            // obtnemos usr y pass
+            String valor = params[0].toString();
+            String valor2 = params[1].toString();
+
+            try {
+                pedidos.clear();
+                cargarPedidos(valor, valor2);
+                cantidadDatos = CalcularPaqueteDatos();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return "E";
+        }
+
+        protected void onPostExecute(String result) {
+
+            cargarListView();
+            pDialog.dismiss();// ocultamos progess dialog.
+            Log.e("onPostExecute= Enviado", "" + result);
+            tv_paqueteDatos.setText(cantidadDatos + " MB");
+            if (pedidos.size()==0){
+                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, list, "No hay datos para mostrar");
+                Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -1782,7 +1909,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Verificando con Servidor...\n\n"
                     + GlobalVar.urlService);
             pDialog.setIndeterminate(false);
@@ -1849,7 +1976,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             }
 
             Builder aviso = new Builder(
-                    ReportesPedidosActivity.this);
+                    ReportesPedidosCotizacionYVisitaActivity.this);
             aviso.setMessage(mensaje + pregunta);
             aviso.setCancelable(false);
             aviso.setPositiveButton("Si",
@@ -1862,12 +1989,12 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
                             //
                             Builder ped_password = new Builder(
-                                    ReportesPedidosActivity.this);
+                                    ReportesPedidosCotizacionYVisitaActivity.this);
                             ped_password.setCancelable(false);
                             ped_password.setMessage("Ingrese su contraseña");
 
                             final EditText txt_password = new EditText(
-                                    ReportesPedidosActivity.this);
+                                    ReportesPedidosCotizacionYVisitaActivity.this);
                             txt_password.setInputType(InputType.TYPE_CLASS_TEXT
                                     | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
@@ -1925,7 +2052,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Enviando...\n\n" + GlobalVar.urlService);
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);
@@ -1986,7 +2113,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
             }
 
             Builder informe = new Builder(
-                    ReportesPedidosActivity.this);
+                    ReportesPedidosCotizacionYVisitaActivity.this);
             informe.setMessage(mensaje);
             informe.setCancelable(false);
             informe.setPositiveButton("Ok",
@@ -2011,7 +2138,7 @@ public class ReportesPedidosActivity extends FragmentActivity {
 
         protected void onPreExecute() {
             // para el progress dialog
-            pDialog = new ProgressDialog(ReportesPedidosActivity.this);
+            pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
             pDialog.setMessage("Validando contraseña...");
             pDialog.setIndeterminate(true);
             pDialog.setCancelable(false);

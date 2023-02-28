@@ -43,7 +43,9 @@ import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -178,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
             txtPassword.setText(session.getPassword());
         }
 
-
+        testConeccionInternet(100);
 
         boton.setOnClickListener(new View.OnClickListener() {
 
@@ -525,4 +527,57 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void testConeccionInternet(int contador){
+
+        /*
+        Calendar fecha1 = Calendar.getInstance();
+        fecha1.set(2023, 1, 1); // 1 de marzo de 2023
+
+        Calendar fecha2 = Calendar.getInstance();
+        fecha2.set(2023, 3, 1); // 1 de abril de 2023
+
+        // Se convierten los Calendar a Date para obtener la diferencia en milisegundos
+
+        Date fecha1Date = fecha1.getTime();
+        Date fecha2Date = fecha2.getTime();
+
+        long diffMilisegundos = fecha2Date.getTime() - fecha1Date.getTime();
+        long diffDias = diffMilisegundos / (24 * 60 * 60 * 1000); // Se divide entre los milisegundos de un día
+
+        Log.i("DIAS", "diffDias: "+diffDias);
+*/
+        if (contador>0) return;
+
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Enviando datos al sistema.... Cont: "+contador);
+        pDialog.setIndeterminate(false);
+        pDialog.show();
+        new AsyncTask<Void, Void, String>(){
+
+            @Override
+            protected String doInBackground(Void... voids) {
+
+                ConnectionDetector cd = new ConnectionDetector(LoginActivity.this);
+                 if (cd.hasActiveInternetConnection(LoginActivity.this)) {
+                     Log.i("TEST INTERNET", "start");
+                     try {
+                         Thread.sleep(500);
+                     } catch (InterruptedException e) {
+                         e.printStackTrace();
+                     }
+                 }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.i("TEST INTERNET", "finish");
+                pDialog.dismiss();
+                if(contador>=0)testConeccionInternet(contador-1);
+            }
+        }.execute();
+    }
+
 }
+//0199631

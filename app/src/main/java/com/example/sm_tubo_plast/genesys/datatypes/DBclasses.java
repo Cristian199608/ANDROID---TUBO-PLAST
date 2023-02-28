@@ -17,6 +17,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
 import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
@@ -1708,7 +1709,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("precioLista", item.getPrecioLista());
 			Nreg.put("descuento", item.getDescuento());
 			Nreg.put("porcentaje_desc", item.getPorcentaje_desc());
-			Nreg.put("porcentaje_desc_add", item.getPorcentaje_desc_add());
+			Nreg.put("porcentaje_desc_extra", item.getPorcentaje_desc_extra());
 			Nreg.put("lote", item.getLote());
 			
 			Nreg.put("motivoDevolucion", item.getMotivoDevolucion());
@@ -2483,7 +2484,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "producto.sub_familia, "
 				+ "producto.afecto, "
 				+ "pedido_detalle.porcentaje_desc, "
-				+ "pedido_detalle.porcentaje_desc_add, "
+				+ "pedido_detalle.porcentaje_desc_extra, "
 				+ "producto._precio_base "
 				+ "from "+ Pedido_detalle.TAG+" "
 				+ "inner join "+ Producto.TAG+" "
@@ -2528,7 +2529,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				productos[i].setSubfamilia(cursor.getString(19));
 				productos[i].setAfecto(cursor.getString(20));
 				productos[i].setPorcentaje_desc(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc")));
-				productos[i].setPorcentaje_desc_extra(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc_add")));
+				productos[i].setPorcentaje_desc_extra(cursor.getDouble(cursor.getColumnIndex("porcentaje_desc_extra")));
 				productos[i].setPrecio_base(cursor.getDouble(cursor.getColumnIndex("_precio_base")));
 
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Item "+i+"  "+productos[i].getItem());
@@ -5554,7 +5555,7 @@ public class DBclasses extends SQLiteAssetHelper {
 						cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
 						cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
 						cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getDouble("porcentaje_desc"));
-						cv2.put(DBtables.Pedido_detalle.porcentaje_desc_add, jsonData_det.getDouble("porcentaje_desc_add"));
+						cv2.put(DBtables.Pedido_detalle.porcentaje_desc_extra, jsonData_det.getDouble("porcentaje_desc_extra"));
 						cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
 
 						cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
@@ -7161,7 +7162,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				dbdetalle.setSerieDevolucion(cur.getString(26));
 				dbdetalle.setNumeroDevolucion(cur.getString(27));
 				dbdetalle.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
-				dbdetalle.setPorcentaje_desc_add(cur.getDouble(cur.getColumnIndex("porcentaje_desc_add")));
+				dbdetalle.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
 				Log.d(TAG, "setPrecio_bruto:"+cur.getString(3));
 				Log.d(TAG, "setPrecio_neto:"+cur.getString(4));
 				lista.add(dbdetalle);
@@ -13168,10 +13169,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		return valor;
 	}
 
-	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv) {
+	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv, double tipoCambio) {
 		String rawQuery;
 		rawQuery = "SELECT " +
-				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, sum(precio_neto)/sum(peso_bruto) as pk,\n" +
+				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, " +
+				" (sum(precio_neto)/sum(peso_bruto)) / "+tipoCambio+" as pk,\n" +
 				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
 				"select  \n" +
 				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
@@ -13219,6 +13221,92 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return valor;
+	}
+
+	public ArrayList<CTA_INGRESOSPDF> getCTA_INGRESOSPDF(String codcli) {
+		String rawQuery = "select " +
+				"ci.serie_doc, " +
+				"ci.numero_factura, " +
+				"ci.feccom,  " +
+				"ci.fecha_despacho, " +
+				"ci.fecha_vencimiento, " +
+				"m.codigoEquivalente, " +
+				"ci.total," +
+				"c.codcli, " +
+				"c.nomcli, " +
+				"ifnull((select " +
+				"_x.saldo " +
+				"from " +
+				"cta_ingresos _x " +
+				"where " +
+				"_x.fecha_vencimiento < date('now') " +
+				"and " +
+				"_x.secuencia = ci.secuencia ), '') as deuda, " +
+				"ifnull((select " +
+				"_x.saldo " +
+				"from " +
+				"cta_ingresos _x " +
+				"where " +
+				"_x.fecha_vencimiento >= date('now') " +
+				"and " +
+				"_x.secuencia = ci.secuencia ), '') as obligacion " +
+				"from " +
+				"cta_ingresos ci " +
+				"inner join " +
+				"moneda m  " +
+				"on " +
+				"m.codigoMoneda = ci.codmon " +
+				"inner join " +
+				"cliente  c " +
+				"on " +
+				"c.codcli = ci.codcli " +
+				"where " +
+				"ci.codcli= '"+codcli+"'";
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		cur.moveToFirst();
+		ArrayList<CTA_INGRESOSPDF> cta_ingresos = new ArrayList<>();
+		while (!cur.isAfterLast())
+		{
+			CTA_INGRESOSPDF cta = new CTA_INGRESOSPDF();
+			cta.setSerie_doc(cur.getString(cur.getColumnIndex("serie_doc")));
+			cta.setNumero_factura(cur.getString(cur.getColumnIndex("numero_factura")));
+			cta.setFeccom(cur.getString(cur.getColumnIndex("feccom")));
+			cta.setFecha_despacho(cur.getString(cur.getColumnIndex("fecha_despacho")));
+			cta.setFecha_vencimiento(cur.getString(cur.getColumnIndex("fecha_vencimiento")));
+			cta.setCodigo_equivalente(cur.getString(cur.getColumnIndex("codigoEquivalente")));
+			cta.setTotal(cur.getString(cur.getColumnIndex("total")));
+			cta.setCodcli(cur.getString(cur.getColumnIndex("codcli")));
+			cta.setNomcli(cur.getString(cur.getColumnIndex("nomcli")));
+			cta.setDeuda(cur.getString(cur.getColumnIndex("deuda")));
+			cta.setObligacion(cur.getString(cur.getColumnIndex("obligacion")));
+			cta_ingresos.add(cta);
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		return cta_ingresos;
+	}
+
+	public String getMaxDate(String codcli) {
+		String rawQuery = "select max(fecha_despacho) as max_fecha from cta_ingresos where codcli= '"+codcli+"'";
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		cur.moveToFirst();
+		@SuppressLint("Range") String max_fecha = cur.getString(cur.getColumnIndex("max_fecha"));
+		cur.close();
+		db.close();
+		return max_fecha;
+	}
+	public String getMinDate(String codcli) {
+		String rawQuery = "select min(fecha_despacho) as min_fecha from cta_ingresos where codcli= '"+codcli+"'";
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		cur.moveToFirst();
+		@SuppressLint("Range") String max_fecha = cur.getString(cur.getColumnIndex("min_fecha"));
+		cur.close();
+		db.close();
+		return max_fecha;
 	}
 }
 

@@ -7,7 +7,7 @@ public class DataCabecera {
     String codven;
     String telefono;
     String nomven;
-    String direccionFiscal;
+    String direccion;
     String email_cliente;
     String email_vendedor;
     String descripcion;
@@ -75,12 +75,12 @@ public class DataCabecera {
         this.nomven = nomven;
     }
 
-    public String getDireccionFiscal() {
-        return direccionFiscal;
+    public String getDireccion() {
+        return direccion;
     }
 
-    public void setDireccionFiscal(String direccionFiscal) {
-        this.direccionFiscal = direccionFiscal;
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public String getEmail_cliente() {

@@ -28,12 +28,13 @@ public class VARIABLES {
     public static final  String SEPARADOR_OBSERVACION="_#_";
 
 
-    public static final  boolean isProduccion=false;
+    public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=false;
     public static final class ConfigDatabase {
 
-        private static final String DATABASA_NAME_OLD   ="fuerzaventas";
-        private static final String DATABASA_NAME       ="fuerzaventas_v1";
+//        private static final String DATABASA_NAME_OLD ="fuerzaventas";
+        private static final String DATABASA_NAME_OLD   ="fuerzaventas_v1";
+        private static final String DATABASA_NAME       ="fuerzaventas_v2";
         private static final  int DATABASA_VERSION      =1;
 
 

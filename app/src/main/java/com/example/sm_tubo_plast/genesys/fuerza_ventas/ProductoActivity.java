@@ -14,10 +14,8 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
 import android.text.Html;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -70,7 +68,6 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 
 @SuppressLint("LongLogTag")
@@ -94,7 +91,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     DBclasses obj_dbclasses;
     TextView tv_nombre_producto;
     ListView lstProductos;
-    EditText txtProducto, edtBusqueda, edtPrecioUnt, edtCantidad, edt_descuento, edtDescuentoAdicional;
+    EditText txtProducto, edtBusqueda, edtPrecioUnt, edtCantidad, edt_descuento, edtDescuentoExtra;
     ProgressDialog pDialog;
     TableLayout tabla_datos;
     Button btnAgregar, btnCancelar, btnPromociones,btn_consultarProducto;
@@ -219,7 +216,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         edtCantidad = (EditText) findViewById(R.id.productolyt_edtCantidad);
         spnUndMedidas = (Spinner) findViewById(R.id.productolyt_spnUndmed);
         edt_descuento = (EditText) findViewById(R.id.edt_descuento);
-        edtDescuentoAdicional = (EditText) findViewById(R.id.edtDescuentoAdicional);
+        edtDescuentoExtra = (EditText) findViewById(R.id.edtDescuentoExtra);
         btn_consultarProducto = (Button) findViewById(R.id.btn_consultarProducto);
         btnBonificaciones = (ImageButton) findViewById(R.id.productolyt_btnBonificacion);
 
@@ -282,7 +279,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
                             edt_descuento.setText("");
                             edt_descuento.setEnabled(false);
-                            edtDescuentoAdicional.setText("");
+                            edtDescuentoExtra.setText("");
                             edtPrecioUnt.setEnabled(false);
                         }else{
                             edtPrecioUnt.setText(PRECIO_BASE);
@@ -294,14 +291,14 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
                             edt_descuento.setText("");
                             edt_descuento.setEnabled(true);
-                            edtDescuentoAdicional.setText("");
+                            edtDescuentoExtra.setText("");
                             edtPrecioUnt.setEnabled(false);
                         }
                     }else{
                         edtPrecioUnt.setText(PRECIO_BASE);
                         //quitar el precio sin IGV con IGV
                         edt_descuento.setText("");
-                        edtDescuentoAdicional.setText("");
+                        edtDescuentoExtra.setText("");
                         tv_precioSinIGV.setText("");
                         tv_precioIncIGV.setText("");
                         edtPrecioUnt.setEnabled(true);
@@ -313,31 +310,31 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         new ACG_EditText(this, edt_descuento).OnListen(texto ->{
             edt_descuento.setError(null);
-            edtDescuentoAdicional.setEnabled(false);
+            edtDescuentoExtra.setEnabled(false);
             if (edt_descuento.getText().toString().trim().length()>0) {
                 try {
                     double porcentaje=Double.parseDouble(edt_descuento.getText().toString());
                     if (porcentaje>=0 && porcentaje<=100){
-                        edtDescuentoAdicional.setEnabled(true);
+                        edtDescuentoExtra.setEnabled(true);
                         ConsultarProductoPrecios();
                     }else{
                         edt_descuento.setText("");
                         edt_descuento.setError("Ingrese un número de 1 a 100");
-                        edtDescuentoAdicional.setText("");
+                        edtDescuentoExtra.setText("");
                     }
                 }catch (Exception e){
                     edt_descuento.setText("");
                     edt_descuento.setError("Ingrese un número válido");
-                    edtDescuentoAdicional.setText("");
+                    edtDescuentoExtra.setText("");
                     e.printStackTrace();
                 }
             }else{
-                edtDescuentoAdicional.setText("");
+                edtDescuentoExtra.setText("");
                 ConsultarProductoPrecios();
             }
         });
 
-        new ACG_EditText(this, edtDescuentoAdicional).OnListen(texto ->{
+        new ACG_EditText(this, edtDescuentoExtra).OnListen(texto ->{
 
             if (texto.length()>0) {
                 try {
@@ -345,12 +342,12 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                     if (porcentaje>=0 && porcentaje<=100){
                         ConsultarProductoPrecios();
                     }else{
-                        edtDescuentoAdicional.setText("");
-                        edtDescuentoAdicional.setError("Ingrese un número de 1 a 100");
+                        edtDescuentoExtra.setText("");
+                        edtDescuentoExtra.setError("Ingrese un número de 1 a 100");
                     }
                 }catch (Exception e){
-                    edtDescuentoAdicional.setText("");
-                    edtDescuentoAdicional.setError("Ingrese un número válido");
+                    edtDescuentoExtra.setText("");
+                    edtDescuentoExtra.setError("Ingrese un número válido");
                     e.printStackTrace();
                 }
             }else{
@@ -575,8 +572,15 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
     private void calcularPrecioTotalVenta() {
         int cantidad=Integer.parseInt(edtCantidad.getText().toString().trim().length()>0?edtCantidad.getText().toString():"0");
-        double precioFinalConIgv=Double.parseDouble(tv_precioIncIGV.getText().toString());
-        tvTotalVenta.setText("TOTAL: "+tv_monedaPrecio.getText().toString()+" "+VARIABLES.formater_thow_decimal.format(precioFinalConIgv*cantidad));
+        double precioFinalSinIgv=0;
+        double precioFinalConIgv=0;
+        if(VARIABLES.IsDouble(tv_precioSinIGV.getText().toString().replace(",", "'"))){
+            precioFinalSinIgv=Double.parseDouble(tv_precioSinIGV.getText().toString());
+        }
+        if(VARIABLES.IsDouble(tv_precioIncIGV.getText().toString().replace(",", "'"))){
+            precioFinalConIgv=Double.parseDouble(tv_precioIncIGV.getText().toString());
+        }
+        tvTotalVenta.setText("SUB TOTAL "+tv_monedaPrecio.getText().toString()+" "+VARIABLES.formater_thow_decimal.format(precioFinalSinIgv*cantidad)+"     TOTAL: "+tv_monedaPrecio.getText().toString()+" "+VARIABLES.formater_thow_decimal.format(precioFinalConIgv*cantidad));
     }
 
     public void ConsultarProducto(){
@@ -764,7 +768,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             edt_descuento.setEnabled(true);
 
             double porcentajeDescuentoManual=edt_descuento.getText().toString().trim().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
-            double porcentajeDescuentoAdicional=edtDescuentoAdicional.getText().toString().trim().length()>0?Double.parseDouble(edtDescuentoAdicional.getText().toString()):0;
+            double porcentajeDescuentoExtra= edtDescuentoExtra.getText().toString().trim().length()>0?Double.parseDouble(edtDescuentoExtra.getText().toString()):0;
 
             double precioOriginal=(politica_precio2.getPrecio_base());
             double precioListaConIgv=(politica_precio2.getPrepo_unidad()*1.18);
@@ -784,22 +788,22 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             double precioVentaPreSinIGV=precioListaSinIgv-descuentoSinIgv;
             double precioVentaPreIncIGV=precioListaConIgv-descuentoConIgv;
 
-            double descuentoSinIgvAdicional=precioVentaPreSinIGV*(porcentajeDescuentoAdicional/100);
-            double descuentoConIgvAdicional=precioVentaPreIncIGV*(porcentajeDescuentoAdicional/100);
+            double descuentoSinIgvExtra=precioVentaPreSinIGV*(porcentajeDescuentoExtra/100);
+            double descuentoConIgvExtra=precioVentaPreIncIGV*(porcentajeDescuentoExtra/100);
 
-            double precioVentaFinalSinIGV=precioVentaPreSinIGV-descuentoSinIgvAdicional;
-            double precioVentaFinalIncIGV=precioVentaPreIncIGV-descuentoConIgvAdicional;
+            double precioVentaFinalSinIGV=precioVentaPreSinIGV-descuentoSinIgvExtra;
+            double precioVentaFinalIncIGV=precioVentaPreIncIGV-descuentoConIgvExtra;
 
-            descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv+descuentoSinIgvAdicional);
+            descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv+descuentoSinIgvExtra);
 
             btn_consultarProducto.setText(sms);
             edtPrecioUnt.setText(""+formaterPrecioourDecimal.format(precioOriginal));//precio original
             tv_precioSinIGV.setText(""+formaterPrecioourDecimal.format(precioVentaPreSinIGV)); //precio sin IGV con descuento
             tv_precioIncIGV.setText(""+formaterPrecioourDecimal.format(precioVentaPreIncIGV));//precio con IGV con descuento
             tv_descuentoPVP.setText((porcentajeDescuentoManual>0.0?"1 ("+porcentajeDescuentoManual+"%)":"")+" "+formaterPrecioourDecimal.format(descuentoSinIgv));
-            if(porcentajeDescuentoAdicional>0){
-                String textDescuentAdicional= "2 (" + porcentajeDescuentoAdicional + "%)" + " " + formaterPrecioourDecimal.format(descuentoSinIgvAdicional);
-                tv_descuentoPVP.setText(tv_descuentoPVP.getText().toString()+"\n"+textDescuentAdicional);
+            if(porcentajeDescuentoExtra>0){
+                String textDescuentExtra= "2 (" + porcentajeDescuentoExtra + "%)" + " " + formaterPrecioourDecimal.format(descuentoSinIgvExtra);
+                tv_descuentoPVP.setText(tv_descuentoPVP.getText().toString()+"\n"+textDescuentExtra);
                 tv_precioSinIGV.setText("\n"+formaterPrecioourDecimal.format(precioVentaFinalSinIGV));
                 tv_precioIncIGV.setText("\n"+formaterPrecioourDecimal.format(precioVentaFinalIncIGV));
             }
@@ -1074,7 +1078,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         }
                         String precioLista 	=PRECIO_LISTA;
                         double porcentaje_desc 	=edt_descuento.getText().toString().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
-                        double porcentaje_desc_adicional 	=edtDescuentoAdicional.getText().toString().length()>0?Double.parseDouble(edtDescuentoAdicional.getText().toString()):0;
+                        double porcentaje_desc_extra 	= edtDescuentoExtra.getText().toString().length()>0?Double.parseDouble(edtDescuentoExtra.getText().toString()):0;
                         //String descuento 	= edt_descuento.getText().toString().trim();
 
                         descuento = descuentoAplicado;
@@ -1106,7 +1110,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         returnIntent.putExtra("precioLista",precioLista);
                         returnIntent.putExtra("descuento",	descuento);
                         returnIntent.putExtra("porcentaje_desc",	porcentaje_desc);
-                        returnIntent.putExtra("porcentaje_desc_adicional",	porcentaje_desc_adicional);
+                        returnIntent.putExtra("porcentaje_desc_extra",	porcentaje_desc_extra);
                         returnIntent.putExtra("precioPercepcion", precioPercepcion);
 
                         if (origen.equals("PEDIDO_MODIFICAR")) {

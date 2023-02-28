@@ -29,7 +29,6 @@ public class ViewPdfActivity extends AppCompatActivity {
 
         Intent ii = getIntent();
         Bundle b = ii.getExtras();
-        String num = (String) b.get("oc_numero");
         String nombreArchivo = (String) b.get("nombreArchivo");
 
         pdfView = findViewById(R.id.pdfview);
@@ -43,6 +42,7 @@ public class ViewPdfActivity extends AppCompatActivity {
                 .enableDoubletap(true)
                 .enableAntialiasing(true)
                 .load();
+
     }
 
     public void FABcompartirPDF(View view)

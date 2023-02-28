@@ -49,21 +49,45 @@
         android:visibility="gone"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <LinearLayout
+        android:id="@+id/layoutProducto_desc_comercial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/producto_info_descripcion"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Desc. Comercial :"
+            android:textColor="@color/black"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvProducto_desc_comercial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="---"
+            android:textColor="#343434"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/producto_text_codpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/producto_info_descripcion"
+        android:layout_below="@+id/layoutProducto_desc_comercial"
         android:layout_alignLeft="@+id/producto_info_descripcion"
         android:text="Codigo:"
-        android:textSize="13sp"
-        android:textColor="#10bcc9"/>
+        android:textColor="#10bcc9"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/producto_info_codpro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/producto_info_descripcion"
+        android:layout_below="@+id/layoutProducto_desc_comercial"
         android:layout_toRightOf="@+id/producto_text_codpro"
         android:layout_marginLeft="5dp"
         android:text="0002"
@@ -98,7 +122,11 @@
         android:layout_toLeftOf="@+id/producto_info_codpro"
         android:layout_toRightOf="@+id/thumbnail"
         android:text="Stock:"
-        android:textColor="#343434"
+        android:textColor="@color/black"
         android:textSize="13sp" />
+
+
+
+
 
 </RelativeLayout>

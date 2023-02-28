@@ -249,6 +249,13 @@
                         android:textColor="@color/white"
                         android:src="@drawable/ic_search_grey"
                         />
+                    <TextView
+                        android:id="@+id/tvVerPdf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" Ver"
+                        android:background="@drawable/edittext_rounded_corners6"
+                        android:drawableStart="@drawable/ic_pdf_24" />
                 </LinearLayout>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"

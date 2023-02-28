@@ -121,7 +121,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
                     dataCabecera.getNomcli(),
                     dataCabecera.getTelefono(),
                     dataCabecera.getNomven(),
-                    dataCabecera.getDireccionFiscal(),
+                    dataCabecera.getDireccion(),
                     dataCabecera.getEmail_cliente(),
                     dataCabecera.getEmail_vendedor(),
                     dataCabecera.getDesforpag(),
@@ -133,6 +133,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
                     dataCabecera.getFecha_mxe(),
                     null,
                     listaDetalle,
+                    -1,
                     tipoEnvio);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

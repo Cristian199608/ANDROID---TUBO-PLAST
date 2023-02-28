@@ -35,6 +35,8 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
 
     String formatFecha="dd-MM-yyyy";
 
+
+
     public CustomDateTimePicker(Activity activity, OnTimeSetListener listener, int mInitialHourOfDay, int mInitialMinute, boolean mIs24HourView,
                                 boolean enabled_hora, boolean HabilitarMinDate) {
 
@@ -200,4 +202,25 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
     public interface OnTimeSetListener {
         String onDateTimeSet(Calendar myCalendar, String fecha_formateado);
     }
+
+
+
+    ////////////////////////////////////////////////////////////////////////
+    public static void requestDialog(Activity activity, String prextext, TextView txtFechaDesde){
+
+        txtFechaDesde.setOnClickListener(v -> {
+            new CustomDateTimePicker(activity, (myCalendar, fecha_formateado) -> {
+                if (fecha_formateado!=null){
+                    txtFechaDesde.setText(prextext+""+fecha_formateado);
+                    txtFechaDesde.setHint(fecha_formateado);
+                } else{
+                    txtFechaDesde.setError("Error Fecha");
+                }
+                return null;
+            }, 0,0, true, false, false).Show();
+
+        });
+    }
+    ////////////////////////////////////////////////////////////////////////
+
 }

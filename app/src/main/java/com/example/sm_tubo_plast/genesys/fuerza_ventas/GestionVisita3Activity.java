@@ -47,18 +47,15 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.CustomView.CrearCliente_Contacto;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
-import com.example.sm_tubo_plast.genesys.hardware.ObtenerLocalizacion2;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.CustomTimPicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
-import com.example.sm_tubo_plast.genesys.util.UtilMensaje;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.dynamic.IFragmentWrapper;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -323,7 +320,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         dBclasses = new DBclasses(this);
 
         HabilitarCambioCantacto(false);
-        if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosActivity.TAG)){
+        if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosCotizacionYVisitaActivity.TAG)){
 
             LISTA_VISITAS= DAO_San_Visitas.GetVisitasByOc_numero(dBclasses, FINAL_OC_NUMERO, TIPO_GESTION);
 
@@ -438,7 +435,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         GetionSwitchProximaVisita();
         String numOc=dBclasses.obtenerMaxNumOc(COD_VEND);
-        if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosActivity.TAG)){
+        if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosCotizacionYVisitaActivity.TAG)){
 
             RecuperarDatos();
             if(TIPO_GESTION.equals(VISITA_PLANIFICADA)) {//es visita

@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.DAO;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,8 +22,9 @@ public class DAO_Producto extends SQLiteAssetHelper {
         this.context = context;
     }
     
-    public ArrayList<Producto> getAllProducts(){
-    	String rawQuery = "SELECT _id, codpro, despro, cod_rapido,ean13 FROM producto order by despro asc";
+    @SuppressLint("Range")
+	public ArrayList<Producto> getAllProducts(){
+    	String rawQuery = "SELECT _id, codpro, despro, cod_rapido,ean13, desc_comercial FROM producto order by despro asc";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -35,6 +37,7 @@ public class DAO_Producto extends SQLiteAssetHelper {
 				producto = new Producto();
 				producto.setCodigo(cursor.getString(1));
 				producto.setDescripcion(cursor.getString(2));		
+				producto.setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
 				lista.add(producto);
 			} while (cursor.moveToNext());
 

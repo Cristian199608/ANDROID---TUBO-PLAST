@@ -8,32 +8,39 @@
     <LinearLayout
         android:id="@+id/layout1"
         android:padding="5dp"
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/edittext_rounded_corners6"
+        android:orientation="vertical"
         >
-        <EditText
-            android:id="@+id/etBuscarVendedorResumen"
-            android:layout_width="0dp"
-            android:layout_weight="5"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:singleLine="true"
-            android:hint="buscar..."
-            android:layout_gravity="center"
-            android:background="@null"
-            />
-        <ImageButton
-            android:id="@+id/imgBuscarDatos"
-            android:layout_gravity="center"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/ic_search_grey"
-            app:tint="@color/grey_900"
-
-            />
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_rounded_corners6"
+            >
+            <EditText
+                android:id="@+id/etBuscarVendedorResumen"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:singleLine="true"
+                android:hint="buscar..."
+                android:layout_gravity="center"
+                android:background="@null"
+                />
+            <ImageButton
+                android:id="@+id/imgBuscarDatos"
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/ic_search_grey"
+                app:tint="@color/grey_900"
+                />
+        </LinearLayout>
     </LinearLayout>
 
     <ListView

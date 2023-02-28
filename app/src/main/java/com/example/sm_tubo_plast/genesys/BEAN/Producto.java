@@ -3,6 +3,7 @@ package com.example.sm_tubo_plast.genesys.BEAN;
 public class Producto {
 	private String codigo;
 	private String descripcion;
+	private String desc_comercial;
 	private String unidadMedida;
 	private String tipoProducto;
 	private String color;
@@ -54,5 +55,13 @@ public class Producto {
 
 	public void setPrecio_base(double precio_base) {
 		this.precio_base = precio_base;
+	}
+
+	public String getDesc_comercial() {
+		return desc_comercial;
+	}
+
+	public void setDesc_comercial(String desc_comercial) {
+		this.desc_comercial = desc_comercial;
 	}
 }

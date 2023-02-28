@@ -317,7 +317,7 @@ public class ReportesActivity extends TabActivity {
 
 
     public void setSearchPOIContent() {
-        search_poi.setContent(new Intent(this,ReportesPedidosActivity.class));
+        search_poi.setContent(new Intent(this, ReportesPedidosCotizacionYVisitaActivity.class));
     }
 
     public void setAddressSpecContent() {

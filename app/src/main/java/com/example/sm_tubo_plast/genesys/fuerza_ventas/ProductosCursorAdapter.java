@@ -37,7 +37,9 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public class ProductosCursorAdapter extends AppCompatActivity {
 
@@ -125,12 +127,18 @@ public class ProductosCursorAdapter extends AppCompatActivity {
                 try {
                     listaBusqueda.clear();
 
+                    String texto=charSequence.toString().replace(" ",".*").toLowerCase();
+                    Pattern pattern = Pattern.compile(".*"+texto+".*");
+
                     for (int x = 0; x < listaProductos.size(); x++) {
                         String codigo = listaProductos.get(x).getCodigo();
                         String descripcion = listaProductos.get(x).getDescripcion();
-                        if ((codigo+""+descripcion).toUpperCase().contains(charSequence.toString().toUpperCase())) {
+                        String desc_comercial = listaProductos.get(x).getDesc_comercial();
+
+                        if (pattern.matcher(codigo+descripcion+desc_comercial.toLowerCase()).matches()) {
                             listaBusqueda.add(listaProductos.get(x));
                         }
+
                     }
                     Log.d("ClientesActivity", "texto cambiado tama�o de la lista: " + listaBusqueda.size());
                     adapter.notifyDataSetChanged();
@@ -426,7 +434,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
         }
 
         private class ViewHolder {
-            TextView nombre, codigo, stock;
+            TextView nombre, codigo, stock, tvProducto_desc_comercial;
         }
 
         ViewHolder viewHolder;
@@ -440,6 +448,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
                 // cache the views
                 viewHolder.nombre = (TextView) convertView.findViewById(R.id.producto_info_descripcion);
                 viewHolder.codigo = (TextView) convertView.findViewById(R.id.producto_info_codpro);
+                viewHolder.tvProducto_desc_comercial = (TextView) convertView.findViewById(R.id.tvProducto_desc_comercial);
                 viewHolder.stock = (TextView) convertView.findViewById(R.id.producto_info_stock);
                 convertView.setTag(viewHolder);
 
@@ -448,8 +457,9 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             }
 
             try {
-                viewHolder.nombre.setText(listaBusqueda.get(position).getDescripcion().toString());
-                viewHolder.codigo.setText(listaBusqueda.get(position).getCodigo().toString());
+                viewHolder.nombre.setText(listaBusqueda.get(position).getDescripcion());
+                viewHolder.tvProducto_desc_comercial.setText(listaBusqueda.get(position).getDesc_comercial().length()>0? listaBusqueda.get(position).getDesc_comercial() :"--");
+                viewHolder.codigo.setText(listaBusqueda.get(position).getCodigo());
 
                 DBMta_Kardex mta_kardex = dao_mtaKardex.GetStockProducto(  listaBusqueda.get(position).getCodigo());
                 if (mta_kardex!=null){

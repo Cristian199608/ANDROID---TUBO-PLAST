@@ -143,7 +143,7 @@
             android:name=".genesys.fuerza_ventas.Reportes.ReportesDepositoActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".genesys.fuerza_ventas.Reportes.ReportesPedidosActivity"
+            android:name=".genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".genesys.fuerza_ventas.Reportes.LiquidacionActivity"

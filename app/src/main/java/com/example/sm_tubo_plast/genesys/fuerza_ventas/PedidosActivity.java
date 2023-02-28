@@ -87,7 +87,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
@@ -1615,8 +1615,8 @@ private  void llenarSpinnerDespacho(String valor){
                 } else {
                     // dbclass.cambiarEstadoEliminados(Oc_numero);
                     PedidosActivity.this.finish();
-                    Intent intent2 = new Intent(PedidosActivity.this,  ReportesPedidosActivity.class);
-                    intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                    Intent intent2 = new Intent(PedidosActivity.this,  ReportesPedidosCotizacionYVisitaActivity.class);
+                    intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                     intent2.putExtra("ORIGEN", "PEDIDOS");
                     startActivity(intent2);
                     Log.w("Menu Cancelar", "se cancelo");
@@ -3058,7 +3058,9 @@ private void EnvalularMoneda(){
         LinearLayout layoutResumentByTipoProducto=findViewById(R.id.layoutResumentByTipoProducto);
         layoutResumentByTipoProducto.removeAllViews();
         double valorIgv=new PreferenciaConfiguracion(this).getValorIgv();
-        ArrayList<ResumenVentaTipoProducto> lista=dbclass.getPedidoResumenByTipoProducto(Oc_numero, valorIgv);
+        double tipoCambio=codigoMoneda.equals(MONEDA_SOLES_IN)?Double.parseDouble(tvTipoCambio.getText().toString()):1;
+        ArrayList<ResumenVentaTipoProducto> lista=dbclass.getPedidoResumenByTipoProducto(Oc_numero, valorIgv, tipoCambio);
+
         double sumPesoTotal=0;
         double sumSubTotal=0;
         double sumPrecioKiTotal=0;
@@ -3066,10 +3068,11 @@ private void EnvalularMoneda(){
         for (ResumenVentaTipoProducto itemRes : lista) {
             sumPesoTotal+=itemRes.getPesoTotal();
             sumSubTotal+=itemRes.getSutTotal();
-            sumPrecioKiTotal+=itemRes.getPk();
+            sumPrecioKiTotal+=itemRes.getPkDolar();
             sumIgvTotal+=itemRes.getIgvTotal();
             layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_800));
         }
+
         ResumenVentaTipoProducto itemRes=new ResumenVentaTipoProducto(
                 "Total", sumPesoTotal,sumSubTotal, sumPrecioKiTotal, sumIgvTotal);
         layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900));
@@ -3088,7 +3091,7 @@ private void EnvalularMoneda(){
         tvTipoProducto.setText(itemRes.getTipoProducto());
         tvPesoTotal.setText(""+ VARIABLES.formater_thow_decimal.format(itemRes.getPesoTotal()));
         tvSubTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()));
-        tvPrecioKilo.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getPk()));
+        tvPrecioKilo.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getPkDolar()));
         tvIgvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getIgvTotal()));
         tvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()+itemRes.getIgvTotal()));
 
@@ -3634,7 +3637,7 @@ private void EnvalularMoneda(){
                     final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
                     final String precioLista= data.getStringExtra("precioLista");
                     final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
-                    final double porcentaje_desc_adicional= data.getDoubleExtra("porcentaje_desc_adicional", 0);
+                    final double porcentaje_desc_extra= data.getDoubleExtra("porcentaje_desc_extra", 0);
 
 
                     final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
@@ -3696,7 +3699,7 @@ private void EnvalularMoneda(){
                             itemDetalle.setPrecioLista(""+precioLista);
                             itemDetalle.setDescuento(""+descuento);
                             itemDetalle.setPorcentaje_desc(porcentaje_desc);
-                            itemDetalle.setPorcentaje_desc_add(porcentaje_desc_adicional);
+                            itemDetalle.setPorcentaje_desc_extra(porcentaje_desc_extra);
                             //itemDetalle.setCod_politica(sec_politica);
                             //Campos usados para devoluciones
                             itemDetalle.setLote("");
@@ -6763,16 +6766,16 @@ private void EnvalularMoneda(){
                         if (origen.equals("REPORTES")) {
 
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosCotizacionYVisitaActivity.class);
+                            intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             //crear_dialogo_otro_pedido();
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosCotizacionYVisitaActivity.class);
+                            intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                         }
@@ -6816,8 +6819,8 @@ private void EnvalularMoneda(){
                 // TODO Auto-generated method stub
                 finish();
 
-                Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosCotizacionYVisitaActivity.class);
+                intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                 intent2.putExtra("ORIGEN", "PEDIDOS");
                 startActivity(intent2);
 
@@ -6851,15 +6854,15 @@ private void EnvalularMoneda(){
                         if (origen.equals("REPORTES")) {
 
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosCotizacionYVisitaActivity.class);
+                            intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
 
                         } else {
                             finish();
-                            Intent intent2 = new Intent(PedidosActivity.this,ReportesPedidosActivity.class);
-                            intent2.putExtra("TIPO_VISTA",ReportesPedidosActivity.DATOS_PREVENTA);
+                            Intent intent2 = new Intent(PedidosActivity.this, ReportesPedidosCotizacionYVisitaActivity.class);
+                            intent2.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                             intent2.putExtra("ORIGEN", "PEDIDOS");
                             startActivity(intent2);
                             //crear_dialogo_otro_pedido();

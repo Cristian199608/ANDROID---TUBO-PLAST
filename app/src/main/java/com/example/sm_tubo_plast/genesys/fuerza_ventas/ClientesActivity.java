@@ -103,6 +103,9 @@ import me.piruin.quickaction.QuickAction;
 public class ClientesActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     public static final String TAG= "ClientesActivity";
+    public static final String REQUEST_SELECCION_CLIENTE = "REQUEST_SELECCION_CLIENTE";
+    public static final int REQUEST_SELECCION_CLIENTE_CODE = 10;
+
     static final String KEY_CODCLI = "codcli"; // parent node
     static final String KEY_CLIENTE = "cliente";
     static final String KEY_RUC = "ruc";
@@ -116,7 +119,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     DBclasses obj_dbclasses;
     DBClientes db_clientes;
-    String nomcli, codven, ORIGEN;
+    String nomcli, codven, ORIGEN, REQUEST_TYPPE;
     /*
 
      */
@@ -208,6 +211,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         Bundle bundle = getIntent().getExtras();
         codven = "" + bundle.getString("codven");
         ORIGEN = "" + bundle.getString("ORIGEN");
+        REQUEST_TYPPE = "" + bundle.getString("REQUEST_TYPPE");
         myFAB = (FloatingActionButton) findViewById(R.id.myFAB);
 
 
@@ -237,7 +241,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         tv_fecha_filtrado_de.setVisibility(View.GONE);
         tvClientesAnulados.setVisibility(View.GONE);
 
-        if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
+        if (REQUEST_TYPPE.equals(REQUEST_SELECCION_CLIENTE)) {
             myFAB.setVisibility(View.GONE);
             txtAsignacionCliente.setVisibility(View.GONE);
         }
@@ -420,7 +424,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 codSucursal = obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
                 estadoLocalizacion = obj_dbclasses.obtenerEstadoSucursalCliente(codcli, codSucursal);
 
-                if (ORIGEN.equals(SeguimientoPedidoActivity.TAG)) {
+                if (REQUEST_TYPPE.equals(REQUEST_SELECCION_CLIENTE)) {
                     Intent returnIntent=new Intent();
                     returnIntent.putExtra("codcli", ""+codcli);
                     returnIntent.putExtra("nomcli", ""+nomcli);

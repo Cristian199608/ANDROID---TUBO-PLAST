@@ -37,7 +37,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 	private String tipoDocumento;
 	private String serieDevolucion;
 	private String numeroDevolucion;
-	private double porcentaje_desc_add;
+	private double porcentaje_desc_extra;
 
 	
 	
@@ -427,11 +427,11 @@ public class DBPedido_Detalle implements KvmSerializable {
 		this.porcentaje_desc = porcentaje_desc;
 	}
 
-	public double getPorcentaje_desc_add() {
-		return porcentaje_desc_add;
+	public double getPorcentaje_desc_extra() {
+		return porcentaje_desc_extra;
 	}
 
-	public void setPorcentaje_desc_add(double porcentaje_desc_add) {
-		this.porcentaje_desc_add = porcentaje_desc_add;
+	public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
+		this.porcentaje_desc_extra = porcentaje_desc_extra;
 	}
 }
