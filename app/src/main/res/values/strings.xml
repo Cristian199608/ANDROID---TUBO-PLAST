@@ -4,8 +4,8 @@
     <!--    <string name="APP_VERSION_CODE">v7.3.9 2022-10-12</string>-->
     <!--    <string name="APP_VERSION_CODE">v7.4.0 2022-12-28</string>-->
     <!--    version en fase prueba-->
-    <string name="APP_VERSION">v7.4.3 2023-02-28</string>
-    <string name="APP_VERSION_CODE">v7.4.3 2023-02-28</string>
+    <string name="APP_VERSION">v7.4.4 2023-06-28</string>
+    <string name="APP_VERSION_CODE">v7.4.4 2023-06-28</string>
     <string name="arrow_lefy">&lt;</string>
     <string name="fa_icon_ruc">&#xf1fe;</string>
     <string name="fa_icon_piechart">&#xf200;</string>
