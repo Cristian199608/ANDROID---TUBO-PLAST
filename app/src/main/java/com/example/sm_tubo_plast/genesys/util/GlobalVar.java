@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.util;
 
+import java.io.File;
 import java.util.Calendar;
 
 public class GlobalVar {
@@ -9,7 +10,11 @@ public class GlobalVar {
 
 	public static final int INTERNET = 1;
 	public static final int LOCAL = 0;
-	
+	public static File RUTA_BACKUP_PRIMERO=null;
+	public static File RUTA_BACKUP_SEGUNDO=null;
+	public static File RUTA_BACKUP_RUTA_SELECTED=null;
+	public static boolean ELIMINAR_ARCHIVOS_PASADOS_60dias =true;
+
 	public static Calendar calendar = Calendar.getInstance();
 	public static String urlService;
  	//public static String nombreService= GlobalFunctions.obtenerNombre(urlService);
@@ -21,6 +26,9 @@ public class GlobalVar {
 	public static boolean servicio_secundario_activo;
 	public static int id_servicio;
 	public static boolean autoActualizacionStock;
+
+	public  static int CODIGO_VISITA_CLIENTE =100;
+
 
 	public static String UrlBase(){
 		String[] partes = direccion_servicio.split("/");
@@ -38,7 +46,22 @@ public class GlobalVar {
 		public static final String TIPO_VISITA ="TIPO VISITA";
 		public static final String TIPO_ACTIVIDD ="TIPO ACTIVIDAD";
 	}
+	public static String CambiarRutaBackup(){
+		if (GlobalVar.RUTA_BACKUP_RUTA_SELECTED==GlobalVar.RUTA_BACKUP_PRIMERO) {
+			GlobalVar.RUTA_BACKUP_RUTA_SELECTED=GlobalVar.RUTA_BACKUP_SEGUNDO;
+			return "Ruta opcion 2";
+		}else {
+			GlobalVar.RUTA_BACKUP_RUTA_SELECTED=GlobalVar.RUTA_BACKUP_PRIMERO;
+			return "Ruta opcion 1";
+		}
+	}
+	public static String GetOpcionRutaBackup(){
+		if (GlobalVar.RUTA_BACKUP_RUTA_SELECTED==GlobalVar.RUTA_BACKUP_PRIMERO) {
+			return "Ruta opcion 1";
+		}else {
+			return "Ruta opcion 2";
+		}
+	}
 
-	public  static int CODIGO_VISITA_CLIENTE =100;
-	
+
 }

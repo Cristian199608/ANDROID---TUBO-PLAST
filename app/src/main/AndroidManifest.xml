@@ -26,6 +26,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".Activity_EnviarBackUp"
+            android:exported="false" />
+        <activity
             android:name=".ViewPdfActivity"
             android:exported="false" />
         <activity
@@ -51,6 +54,10 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
+        <activity
+            android:name=".genesys.fuerza_ventas.Activity_EnviarBackUp"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".genesys.fuerza_ventas.CreacionNuevoCliente2Activity"
             android:theme="@style/AppThemeNewClient" />
@@ -217,9 +224,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".genesys.fuerza_ventas.Reportes.ViewPdfActivity"
-            android:theme="@style/AppThemeNewClient"
-            android:screenOrientation="portrait" />
-
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNewClient" />
         <activity
             android:name=".genesys.fuerza_ventas.MenuLiquidacionActivity"
             android:screenOrientation="portrait" />

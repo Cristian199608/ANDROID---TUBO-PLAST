@@ -30,10 +30,23 @@ public class VARIABLES {
 
     public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=true;
+
+    private static TimeZone GetTimeZone(){
+        return TimeZone.getTimeZone("GMT-05");
+    }
+    public static String convertirFromLongToString(long longFecha) {
+        Date date=new Date();
+        date.setTime(longFecha);
+
+        SimpleDateFormat fechaHora = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+        fechaHora.setTimeZone(GetTimeZone());
+        return fechaHora.format(date);
+    }
+
     public static final class ConfigDatabase {
 
 //        private static final String DATABASA_NAME_OLD ="fuerzaventas";
-        private static final String DATABASA_NAME_OLD   ="fuerzaventas_v1";
+        private static final String DATABASA_NAME_OLD   ="fuerzaventas_v1x";
         private static final String DATABASA_NAME       ="fuerzaventas_v2";
         private static final  int DATABASA_VERSION      =1;
 

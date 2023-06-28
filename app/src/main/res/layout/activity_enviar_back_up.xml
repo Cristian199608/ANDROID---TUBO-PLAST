@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".genesys.fuerza_ventas.Activity_EnviarBackUp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp" >
+
+        <Button
+            android:id="@+id/btn_generarBackUp"
+            android:drawableTop="@drawable/backup_data_48"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/btn_sicronizar"
+            android:textColor="@android:color/white"
+            android:contentDescription="Generar BackUp"
+            android:text="Generar BackUp" />
+
+
+        <Button
+            android:id="@+id/btn_cargarBackUp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/btn_sicronizar"
+            android:contentDescription="Cargar BackUp"
+            android:drawableTop="@drawable/upload_48"
+            android:text="Cargar BackUp"
+            android:textColor="@android:color/white" />
+
+
+        <TextView
+            android:layout_marginTop="25dp"
+            android:id="@+id/txt_ruta"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/textview_box"
+            android:textColor="@android:color/white"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="ruta del archivo" />
+
+
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:text="Indique el inconveniente:" />
+
+        <EditText
+            android:id="@+id/txt_body"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#7B7D7D"
+            android:padding="5dp"
+            android:textColor="@android:color/white"
+            android:lines="4"
+            android:ems="10"/>
+
+        <Button
+            android:layout_marginTop="25dp"
+            android:id="@+id/btn_enviarCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:background="@drawable/hover_btn_blue"
+            android:text="Compartir"/>
+
+    </LinearLayout>
+
+</ScrollView>
+
+

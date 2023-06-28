@@ -612,6 +612,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
         });
 
+
         spn_servicio.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -705,10 +706,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
             @Override
             public void onClick(View v) {
-                //_okkk
-//                Intent intent_backUp = new Intent(SincronizarActivity.this,Activity_EnviarBackUp.class);
-//                startActivity(intent_backUp);
-//                finish();
+                Intent intent_backUp = new Intent(SincronizarActivity.this,Activity_EnviarBackUp.class);
+                startActivity(intent_backUp);
+                finish();
             }
         });
 

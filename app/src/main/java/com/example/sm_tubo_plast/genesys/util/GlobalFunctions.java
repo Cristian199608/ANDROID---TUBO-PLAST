@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Activity_EnviarBackUp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -356,90 +357,89 @@ public class GlobalFunctions {
 	}
 
 
-
-
-	 public static void backupdDatabase(Activity activity){
-		 boolean showMensaje=true;
-		 try {
-			 if (!backupdDatabaseNormal(activity, showMensaje)){
-
-				 File sd = new File(activity.getExternalFilesDir(Environment.DIRECTORY_DCIM), "");
-				 ObtenerArchivosPasadosBackups(activity, sd, "");
-
-
-				 File data = Environment.getDataDirectory();
-				 String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
-				 String sourceDBName = GlobalVar.DATABASE_NAME;
-				 String targetDBName = "saemovilesbkp";
-				 if (sd.canWrite()) {
-					 if (!sd.exists()){
-						 sd.mkdirs();
-					 }
-					 Date now = new Date();
-					 String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
-					 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
-					 String backupDBPath = "" + targetDBName + dateFormat.format(now) + ".db";
-
-					 File currentDB = new File(data, currentDBPath);
-					 File backupDB = new File(sd, backupDBPath);
-
-					 if (showMensaje){
-						 Toast.makeText(activity, "generando backup", Toast.LENGTH_SHORT).show();
-					 }
-					 Log.i("buckaup", "GENERANDO BACKUP");
-					 Log.i("backup","backupDB=" + backupDB.getAbsolutePath());
-					 Log.i("backup","sourceDB=" + currentDB.getAbsolutePath());
-
-					 FileChannel src = new FileInputStream(currentDB).getChannel();
-					 FileChannel dst = new FileOutputStream(backupDB).getChannel();
-
-					 dst.transferFrom(src, 0, src.size());
-
-					 src.close();
-					 dst.close();
-
-					 if (showMensaje){
-						 showCustomToast(activity, "BackUp generado", TOAST_DONE);
-					 }
-
-				 }
-			 }
-
-
-		 } catch (Exception e) {
-			 Log.i("Backup", e.toString());
-			 if (showMensaje){
-				 showCustomToast(activity, "BackUp NO generado", TOAST_ERROR);
-			 }
-		 }
-	 }
-
-	public static boolean backupdDatabaseNormal(Activity activity,boolean showMensaje){
+	public static File backupdDatabase(Activity activity){
+		boolean showMensaje=true;
 		try {
+			File fileCreada=backupdDatabaseNormal(activity, showMensaje);
+			if (fileCreada!=null) return fileCreada;
 
+			File sd = GlobalVar.RUTA_BACKUP_SEGUNDO;
 
+			ObtenerArchivosPasadosBackups(activity, sd, "");
 
-
-			File sd = Environment.getExternalStorageDirectory();
-			String subCarpeta="DCIM";
-
-			ObtenerArchivosPasadosBackups(activity, sd, subCarpeta);
 
 			File data = Environment.getDataDirectory();
 			String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
 			String sourceDBName = GlobalVar.DATABASE_NAME;
-			String targetDBName = "saemovilesbkp";
+			String targetDBName = "saemovil";
 			if (sd.canWrite()) {
 				if (!sd.exists()){
 					sd.mkdirs();
 				}
 				Date now = new Date();
 				String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
-				String backupDBPath = subCarpeta+"/" + targetDBName + dateFormat.format(now) + ".db";
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+				String backupDBPath = "" + targetDBName + dateFormat.format(now) + ".db";
 
 				File currentDB = new File(data, currentDBPath);
 				File backupDB = new File(sd, backupDBPath);
+
+
+				Log.i("buckaup", "GENERANDO BACKUP");
+				Log.i("backup","backupDB=" + backupDB.getAbsolutePath());
+				Log.i("backup","sourceDB=" + currentDB.getAbsolutePath());
+
+				FileChannel src = new FileInputStream(currentDB).getChannel();
+				FileChannel dst = new FileOutputStream(backupDB).getChannel();
+
+				dst.transferFrom(src, 0, src.size());
+
+				src.close();
+				dst.close();
+
+				if (showMensaje){
+					showCustomToast(activity, "BackUp generado", TOAST_DONE);
+				}
+				return sd;
+			}
+
+
+		} catch (Exception e) {
+			Log.i("Backup", e.toString());
+			if (showMensaje){
+				showCustomToast(activity, "BackUp NO generado", TOAST_ERROR);
+			}
+
+		}
+		return null;
+
+	}
+
+	public static File backupdDatabaseNormal(Activity activity,boolean showMensaje){
+		try {
+
+
+
+
+			File sd =GlobalVar.RUTA_BACKUP_PRIMERO;
+			ObtenerArchivosPasadosBackups(activity, sd, "");
+
+			File data = Environment.getDataDirectory();
+			String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
+			String sourceDBName = GlobalVar.DATABASE_NAME;
+			String targetDBName = "saemoviles";
+			if (sd.canWrite()) {
+				if (!sd.exists()){
+					sd.mkdirs();
+				}
+				Date now = new Date();
+				String currentDBPath = "data/" + packageName + "/databases/" + sourceDBName;
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+				String backupDBPath = "" + targetDBName + dateFormat.format(now) + ".db";
+
+				File currentDB = new File(data, currentDBPath);
+				File backupDB = new File(sd, backupDBPath);
+
 
 				if (showMensaje){
 					Toast.makeText(activity, "generando backup", Toast.LENGTH_SHORT).show();
@@ -459,14 +459,13 @@ public class GlobalFunctions {
 				if (showMensaje){
 					showCustomToast(activity, "BackUp generado", TOAST_DONE);
 				}
-				return true;
-			}return false;
+				return sd;
+			}return null;
 		} catch (Exception e) {
 			Log.i("Backup", e.toString());
-			return false;
+			return null;
 		}
 	}
-
 	  //
 
 	private  static void ObtenerArchivosPasadosBackups(Activity activity, File _dir, String child){
@@ -700,4 +699,16 @@ public class GlobalFunctions {
     		toast.setView(view);
     		toast.show();
     	}
+
+	public static void ConfigurarRutasBackup(Activity activity) {
+		File sd = Environment.getExternalStorageDirectory();
+		GlobalVar.RUTA_BACKUP_PRIMERO= new File(sd, "/DCIM");;
+		GlobalVar.RUTA_BACKUP_SEGUNDO= new File(activity.getExternalFilesDir(Environment.DIRECTORY_DCIM), "");
+		GlobalVar.RUTA_BACKUP_RUTA_SELECTED= GlobalVar.RUTA_BACKUP_SEGUNDO;
+	}
+	public static void LimpiarRutasBackup() {
+		GlobalVar.RUTA_BACKUP_PRIMERO= null;
+		GlobalVar.RUTA_BACKUP_SEGUNDO= null;
+		GlobalVar.RUTA_BACKUP_RUTA_SELECTED= null;
+	}
 }
