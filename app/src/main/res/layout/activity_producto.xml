@@ -103,6 +103,16 @@
                 </LinearLayout>
             </LinearLayout>
 
+
+            <Switch
+                android:id="@+id/swForzarAgregarDuplicadoProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Este producto ya fue agregado ¿Desea agregar nuevamente?"
+                android:layout_margin="5dp"
+                android:textColor="@color/red_600"
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

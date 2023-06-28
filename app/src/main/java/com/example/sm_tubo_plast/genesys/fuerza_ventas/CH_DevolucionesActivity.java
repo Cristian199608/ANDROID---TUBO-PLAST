@@ -1162,7 +1162,7 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
                 AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
                 ModelDevolucionProducto prod = (ModelDevolucionProducto) lstProductos.getAdapter().getItem(info.position);
 
-                dbclass.EliminarItemPedido(prod.getCodigoProducto(), Oc_numero);
+                dbclass.EliminarItemPedido(prod.getCodigoProducto(), -1, Oc_numero);
                 mostrarListaProductos("");
                 return true;
 

@@ -38,6 +38,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +59,7 @@ import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -129,6 +131,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     //Switch swt_afecto;
     ToggleButton swt_afecto;
     CheckBox check_precio;
+    Switch swForzarAgregarDuplicadoProduct;
 
     private double descuentoMin = 0.0;
     private double descuentoMax = 0.0;
@@ -238,8 +241,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         tv_monedaPrecio = (TextView)findViewById(R.id.tv_monedaPrecio);
 
         check_precio = (CheckBox) findViewById(R.id.check_precio);
+        swForzarAgregarDuplicadoProduct = (Switch) findViewById(R.id.swForzarAgregarDuplicadoProduct);
         check_precio.setChecked(true);
         check_precio.setClickable(false);
+        swForzarAgregarDuplicadoProduct.setVisibility(View.GONE);
 
         if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
             tv_monedaPrecio.setText("S/.");
@@ -932,6 +937,8 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
+                        swForzarAgregarDuplicadoProduct.setVisibility(View.GONE);
+
 
                         afecto_igv = productos[position].getAfecto();
                         edtBusqueda.setText(productos[position].getDescripcion());
@@ -943,7 +950,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
                         fact_conv 	= productos[position].getFact_conv();
-                        peso 		= Math.round(productos[position].getPeso() * 100) / 100.0;
+                        peso 		= VARIABLES.getDoubleFormaterFourDecimal(productos[position].getPeso());
                         prec_act 	= Math.round(productos[position].getPrecio() * 100) / 100.0;
                         precUnd_act = Math.round(productos[position].getPrecioUnidad() * 100) / 100.0;
                         codigo_act 	= productos[position].getCodprod();
@@ -952,6 +959,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         sec_politica= productos[position].getSec_politica();
                         estado 		= productos[position].getEstado();//Discontinuo
 
+                        if (!obj_dbclasses.isNotRegistradoProducto(oc_numero, codprod.trim())) {
+                            swForzarAgregarDuplicadoProduct.setVisibility(View.VISIBLE);
+                        }
                         if (estado.equals(DISCONTINUO)) {
                             GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_MIDDLE);
                         }
@@ -981,6 +991,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.productolyt_btnAgregar:
+
+                if (swForzarAgregarDuplicadoProduct.getVisibility()== View.VISIBLE) {
+                    if (!swForzarAgregarDuplicadoProduct.isChecked()) {
+                        UtilViewSnackBar.SnackBarDanger(this, swForzarAgregarDuplicadoProduct, "Producto ya fue agregado");
+                        break;
+                    }
+                }
 
                 if (isBonificacion) {
                     if (edtCantidad.getText().toString().matches("")|| (Integer.parseInt(edtCantidad.getText().toString())) == 0) {
@@ -1112,6 +1129,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         returnIntent.putExtra("porcentaje_desc",	porcentaje_desc);
                         returnIntent.putExtra("porcentaje_desc_extra",	porcentaje_desc_extra);
                         returnIntent.putExtra("precioPercepcion", precioPercepcion);
+                        returnIntent.putExtra("forzarAgregarProductDuplicado", swForzarAgregarDuplicadoProduct.isChecked());
 
                         if (origen.equals("PEDIDO_MODIFICAR")) {
                             returnIntent.putExtra("TIPO", "MODIFICAR");

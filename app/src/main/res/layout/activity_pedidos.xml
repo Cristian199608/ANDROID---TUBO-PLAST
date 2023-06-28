@@ -889,33 +889,7 @@
                                     style="@android:style/Widget.Holo.Light.Spinner"
                                     android:entries="@array/datos_spinner" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:id="@+id/linearLayoutNumeroLetras"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:visibility="gone">
 
-
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Transporte:"
-                                    android:textSize="15sp"
-                                    android:visibility="visible" />
-
-                                <Spinner
-                                    android:id="@+id/spn_numeroletra"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    android:entries="@array/datos_spinner" />
-
-                            </LinearLayout>
 
 
                             <LinearLayout
@@ -1098,6 +1072,31 @@
                             </LinearLayout>
 
 
+
+                            <LinearLayout
+                                android:id="@+id/linearLayoutNumeroLetras"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Nro de Letras:"
+                                    android:textSize="15sp"
+                                    android:visibility="visible" />
+
+                                <Spinner
+                                    android:id="@+id/spn_numeroletra"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:entries="@array/datos_spinner" />
+
+                            </LinearLayout>
 
                             <LinearLayout
                                 android:background="@color/grey_200"

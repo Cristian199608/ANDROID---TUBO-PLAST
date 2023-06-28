@@ -713,7 +713,7 @@ public class PedidosActivityVentana2 extends AppCompatActivity {
                 ItemProducto prod = (ItemProducto) lstProductos.getAdapter().getItem(info.position);
 
                 DAOPedidoDetalle.Eliminar_itemPedidoBonificacion(prod.getCodprod(), Oc_numero);
-                dbclass.EliminarItemPedido(prod.getCodprod(), Oc_numero);
+                dbclass.EliminarItemPedido(prod.getCodprod(), prod.getItem(), Oc_numero);
                 dbclass.actualizar_stock_xtemp(0, prod.getCodprod());
 
                 mostrarListaProductos();

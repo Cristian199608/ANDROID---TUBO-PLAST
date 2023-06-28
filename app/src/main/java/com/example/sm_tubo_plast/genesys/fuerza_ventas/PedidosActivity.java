@@ -94,8 +94,10 @@ import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
+import com.example.sm_tubo_plast.genesys.util.Dialog.AlertViewSimpleConEdittext;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaConfiguracion;
+import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.common.ConnectionResult;
@@ -608,13 +610,17 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                                                     if (variablemodificar == 0){
 
                                                         listaNumeroLetra = DAO_registrosGeneralesMovil.getNroLetras();
-                                                        ArrayList<CharSequence> nrletra = new ArrayList<>();
-                                                        for (int i = 0; i < listaNumeroLetra.size(); i++) {
-                                                            nrletra.add(listaNumeroLetra.get(i).getDescripcionNroLetras());
-                                                        }
-                                                        ArrayAdapter<CharSequence> spin_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,nrletra);
-                                                        spin_adapter.setDropDownViewResource(R.layout.spinner_item);
-                                                        spn_numeroletra.setAdapter(spin_adapter);
+                                                        if (listaNumeroLetra.size()>0){
+                                                            ArrayList<CharSequence> nrletra = new ArrayList<>();
+                                                            for (int i = 0; i < listaNumeroLetra.size(); i++) {
+                                                                nrletra.add(listaNumeroLetra.get(i).getDescripcionNroLetras());
+                                                            }
+                                                            ArrayAdapter<CharSequence> spin_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,nrletra);
+                                                            spin_adapter.setDropDownViewResource(R.layout.spinner_item);
+                                                            spn_numeroletra.setAdapter(spin_adapter);
+                                                        }else
+                                                            listaNumeroLetra=null;
+
                                                     }else{
                                                     }
                                                 }
@@ -1970,6 +1976,7 @@ private void EnvalularMoneda(){
 
 
         codigoCondicionVenta 	= listaFormaPago.get(spn_condicionVenta.getSelectedItemPosition()).getCodigoFormaPago();
+
         if(listaNumeroLetra==null){
             Log.i(TAG, "listaNumeroLetra es:: "+listaNumeroLetra);
             codigoLetraCondicionVenta 	= "0";
@@ -2273,7 +2280,7 @@ private void EnvalularMoneda(){
 
                 }
 
-                dbclass.EliminarItemPedido(prod.getCodprod(), Oc_numero);
+                dbclass.EliminarItemPedido(prod.getCodprod(), prod.getItem(), Oc_numero);
 
                 Log.e("", "---------------------------------");
                 Gson gson = new Gson();
@@ -2565,6 +2572,8 @@ private void EnvalularMoneda(){
         switch (acciones) {
 
             case ELIMINAR_PRODUCTO:
+                ItemProducto prod = (ItemProducto) lstProductos.getAdapter().getItem(positionLisView);
+
                 Log.i(TAG," accion_segunId ELIMINAR PRODUCTO, copPro "+codPro);
 
                 /* Lista de bonificaciones afectadas por el producto eliminado */
@@ -2801,7 +2810,7 @@ private void EnvalularMoneda(){
 
                 }
 
-                dbclass.EliminarItemPedido(codPro, Oc_numero);
+                dbclass.EliminarItemPedido(prod.getCodprod(), prod.getItem(), Oc_numero);
 
                 Log.e("", "---------------------------------");
                 Gson gson = new Gson();
@@ -2934,9 +2943,45 @@ private void EnvalularMoneda(){
                 break;
 
             case EDITAR:
-                Log.i(TAG," accion_segunId EDITAR CANTIDAD, copPro "+codPro);
-                GlobalFunctions.showCustomToast(PedidosActivity.this, "Elimine y vuelva a ingresar el producto",
-                        GlobalFunctions.TOAST_WARNING, GlobalFunctions.POSICION_BOTTOM);
+//                Log.i(TAG," accion_segunId EDITAR CANTIDAD, copPro "+codPro);
+//                GlobalFunctions.showCustomToast(PedidosActivity.this, "Elimine y vuelva a ingresar el producto",
+//                        GlobalFunctions.TOAST_WARNING, GlobalFunctions.POSICION_BOTTOM);
+
+                prod = (ItemProducto) lstProductos.getAdapter().getItem(positionLisView);
+                AlertViewSimpleConEdittext alertEditCantidad=new AlertViewSimpleConEdittext(this);
+                alertEditCantidad.titulo="Editar cantidad";
+                alertEditCantidad.mensaje="Editar cantidad para "+prod.getCodprod()+"-"+prod.getDescripcion();
+                alertEditCantidad.hint="Ingrese numero mayor a 0";
+                alertEditCantidad.texto_cargado=""+prod.getCantidad();
+                alertEditCantidad.min_caracteres=1;
+                alertEditCantidad.type_number=true;
+                alertEditCantidad.cancelable=true;
+                alertEditCantidad.start(new AlertViewSimpleConEdittext.Listener() {
+                    @Override
+                    public String resultOK(String newCantida) {
+                        if (newCantida==null)
+                            return null;
+                        boolean isUpdated=dbclass.modificarCantidadItemPedido(Integer.parseInt(newCantida),
+                                prod.getItem(),
+                                prod.getCodprod(),
+                                Oc_numero
+                                );
+                        if (!isUpdated) {
+                            UtilViewMensaje.MENSAJE_simple(PedidosActivity.this, "Error", "No se ha podido actualizar la cantidad");
+                        }else{
+                            UtilViewSnackBar.SnackBarSuccess(PedidosActivity.this, lstProductos,"Actualización correcta");
+                            mostrarListaProductos("");
+                        }
+
+                        return null;
+                    }
+
+                    @Override
+                    public String resultBucle(String s) {
+                        return null;
+                    }
+                });
+
                 break;
 
             case EDITAR_ENTREGA:
@@ -3638,6 +3683,7 @@ private void EnvalularMoneda(){
                     final String precioLista= data.getStringExtra("precioLista");
                     final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
                     final double porcentaje_desc_extra= data.getDoubleExtra("porcentaje_desc_extra", 0);
+                    final boolean forzarAgregarProductDuplicado= data.getBooleanExtra("forzarAgregarProductDuplicado", false);
 
 
                     final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
@@ -3667,19 +3713,11 @@ private void EnvalularMoneda(){
 
 
                     if (org.equals("AGREGAR")) {
-                        //
-                        if (lstProductos.getAdapter() != null) {
-                            PUEDE_AGREGAR = true;
 
-                            for (int i = 0; i < lstProductos.getAdapter().getCount(); i++) {
-                                ItemProducto item = (ItemProducto) lstProductos.getAdapter().getItem(i);
-                                if (codprod.equals(item.getCodprod())) {
-                                    PUEDE_AGREGAR = false;
-                                    Toast.makeText(getApplicationContext(),"producto ya registrado",Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
-                        //
+                        PUEDE_AGREGAR=dbclass.isNotRegistradoProducto(Oc_numero, codprod.trim());
+                        if (!PUEDE_AGREGAR && !forzarAgregarProductDuplicado) {
+                            Toast.makeText(getApplicationContext(),"producto ya registrado",Toast.LENGTH_LONG).show();
+                        }else PUEDE_AGREGAR=true;
 
                         if (PUEDE_AGREGAR) {
 
@@ -7080,7 +7118,7 @@ private void EnvalularMoneda(){
 
                 // Se eliminan los item de pedido con las salidas que han sido
                 // eliminadas en las bonificaciones
-                dbclass.EliminarItemPedido(boni.getSalida(), Oc_numero);
+                dbclass.EliminarItemPedido(boni.getSalida(), -1, Oc_numero);
             }
             /*-----------------------------------------------------------------------------------------------------------------------------------------*/
             Log.v("", "Fin del FOR --> PARA LIMPIAR BONIF");

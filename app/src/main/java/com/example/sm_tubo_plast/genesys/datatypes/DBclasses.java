@@ -2696,11 +2696,74 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 
 	}
+	public boolean modificarCantidadItemPedido(int nCantidad,
+											   int nroItem,
+											   String codprod,
+											   String oc_numero
+												) {
 
-	public void EliminarItemPedido(String codprod, String oc_numero) {
+		String where = "item =? and cip = ? and oc_numero = ?";
+		String[] args = { ""+nroItem, codprod, oc_numero };
 
-		String where = "cip = ? and oc_numero = ?";
-		String[] args = { codprod, oc_numero };
+		try {
+			double peso=getPesoProducto(codprod);
+			double precioUnitario=getPrecioParcialPedidoDetalle(nroItem, codprod, oc_numero);
+			SQLiteDatabase db = getWritableDatabase();
+
+			ContentValues reg = new ContentValues();
+			reg.put("cantidad", nCantidad);
+			reg.put("precio_neto", VARIABLES.getDoubleFormaterFourDecimal(precioUnitario*nCantidad));
+			reg.put("peso_bruto", VARIABLES.getDoubleFormaterFourDecimal(peso*nCantidad));
+			db.update("pedido_detalle", reg, where, args);
+
+			db.close();
+			Log.i("MODIFICAR ITEM DEVOLUCION", "" + nCantidad);
+			return  true;
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public double getPrecioParcialPedidoDetalle(
+											   int nroItem,
+											   String codprod,
+											   String oc_numero)
+	{
+			SQLiteDatabase db=getReadableDatabase();
+
+			String sql="Select precio_bruto from pedido_detalle where oc_numero='"+oc_numero+"' and cip= '"+codprod+"' and item= "+nroItem;
+			Cursor cursor =db.rawQuery(sql,null, null);
+			double precio_bruto=0;
+			if (cursor.moveToNext()) {
+				precio_bruto = cursor.getDouble(0);
+			}
+			cursor.close();
+			return precio_bruto;
+
+	}
+	public double getPesoProducto(
+			String codprod)
+	{
+		SQLiteDatabase db=getReadableDatabase();
+
+		String sql="Select peso from producto where codpro='"+codprod+"' ";
+		Cursor cursor =db.rawQuery(sql,null, null);
+		double peso=0;
+		if (cursor.moveToNext()) {
+			peso = cursor.getDouble(0);
+		}
+		cursor.close();
+		return peso;
+
+	}
+
+
+	public void EliminarItemPedido(String codprod, int item, String oc_numero) {
+
+		String where = "cip = ? and item= ? and oc_numero = ?";// pk(oc_numero, cip, item)
+		String[] args = { codprod, ""+item, oc_numero };
 
 		try {
 
@@ -13307,6 +13370,31 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return max_fecha;
+	}
+
+	public boolean isNotRegistradoProducto(String numoc, String cip) {
+		String S_TAG="getCantidad_produtuctosX_oc_numero:: ";
+		boolean agregar=true;
+		try {
+			String SQL="select * from pedido_detalle where oc_numero='"+numoc+"' and cip = '"+cip+"'";
+			SQLiteDatabase dbRead=getReadableDatabase();
+			Cursor cur=dbRead.rawQuery(SQL, null, null);
+			if (cur.getCount()>0) {
+				agregar=false;
+			}
+			cur.close();
+			dbRead.close();
+		}catch (Exception e){
+			agregar=false;
+			e.printStackTrace();
+		}
+		return  agregar;
+	}
+
+	public void cambiarRutaHttpServicioWeb() {
+		SQLiteDatabase db=getWritableDatabase();
+		db.execSQL("update servidor set TX_SERV_servicioWEB='200.60.7.172/ws_tubo_plast/service.asmx' " +
+				"where TX_SERV_servicioWEB like '%200.60.105.44%'");
 	}
 }
 

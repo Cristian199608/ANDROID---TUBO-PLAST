@@ -239,9 +239,10 @@ public class LoginActivity extends AppCompatActivity {
             txtRuc.setEnabled(false);
 
         }
-
-
-
+  cambiarRutaHttp();
+    }
+    private void cambiarRutaHttp(){
+        dbusuarios.cambiarRutaHttpServicioWeb();
     }
     public void GoSincronizarInicial(View view){
         Intent iconfig = new Intent(getApplicationContext(),

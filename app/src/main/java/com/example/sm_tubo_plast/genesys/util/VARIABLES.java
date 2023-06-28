@@ -29,7 +29,7 @@ public class VARIABLES {
 
 
     public static final  boolean isProduccion=true;
-    public static final  boolean isProduccion_prueba=false;
+    public static final  boolean isProduccion_prueba=true;
     public static final class ConfigDatabase {
 
 //        private static final String DATABASA_NAME_OLD ="fuerzaventas";
@@ -363,6 +363,11 @@ public class VARIABLES {
     {
        DecimalFormat formater = new DecimalFormat("#,##0.000");
        return  formater.format(numero);
+    }
+    public static double getDoubleFormaterFourDecimal(double numero)
+    {
+        DecimalFormat formater = new DecimalFormat("###0.0000");
+        return  Double.parseDouble(formater.format(numero));
     }
 
     public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
