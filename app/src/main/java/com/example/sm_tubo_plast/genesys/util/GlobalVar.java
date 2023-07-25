@@ -7,13 +7,14 @@ public class GlobalVar {
 
 	public static final String PACKAGE_NAME="com.example.sm_tubo_plast";
 	public static final String DATABASE_NAME=VARIABLES.ConfigDatabase.getDatabaseName();
+	public static final String TARGET_DB_NAME="saemovilesbkp";
 
 	public static final int INTERNET = 1;
 	public static final int LOCAL = 0;
 	public static File RUTA_BACKUP_PRIMERO=null;
 	public static File RUTA_BACKUP_SEGUNDO=null;
 	public static File RUTA_BACKUP_RUTA_SELECTED=null;
-	public static boolean ELIMINAR_ARCHIVOS_PASADOS_60dias =true;
+	public static int ELIMINAR_ARCHIVOS_PASADOS_nro_dias =60;
 
 	public static Calendar calendar = Calendar.getInstance();
 	public static String urlService;

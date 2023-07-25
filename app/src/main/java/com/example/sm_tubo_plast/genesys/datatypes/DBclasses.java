@@ -5585,143 +5585,146 @@ public class DBclasses extends SQLiteAssetHelper {
 					//cv.put(DBtables.Pedido_cabecera.NRO_LETRA, 				jsonData.getString(DBtables.Pedido_cabecera.NRO_LETRA).trim());
 					//cv.put(DBtables.Pedido_cabecera.OBSERVACION4, 			jsonData.getString(DBtables.Pedido_cabecera.OBSERVACION4).trim());
 
-					db.insert(DBtables.Pedido_cabecera.TAG, null, cv);
+					long insert=db.insert(DBtables.Pedido_cabecera.TAG, null, cv);
 					Log.d("DBclasses ::syncObjPedido::","**************************************************************");
 					Log.i("syncObjPedido Cab",	"OCNUMERO: " + jsonData.getString("oc_numero").trim());
 
-					/* Insertando detalle del pedido */
-					JSONArray json_detalles = new JSONArray(jsonData.getString("detalles"));
+					if(insert>0){
+						/* Insertando detalle del pedido */
+						JSONArray json_detalles = new JSONArray(jsonData.getString("detalles"));
 
-					for (int j = 0; j < json_detalles.length(); j++) {
+						for (int j = 0; j < json_detalles.length(); j++) {
 
-						JSONObject jsonData_det = json_detalles.getJSONObject(j);
-						ContentValues cv2 = new ContentValues();
+							JSONObject jsonData_det = json_detalles.getJSONObject(j);
+							ContentValues cv2 = new ContentValues();
 
-						cv2.put(DBtables.Pedido_detalle.PK_OC_NUMERO, jsonData_det.getString("oc_numero").trim());
-						cv2.put(DBtables.Pedido_detalle.PK_EAN_ITEM, jsonData_det.getString("ean_item").trim());
-						cv2.put(DBtables.Pedido_detalle.CIP, jsonData_det.getString("cip").trim());
-						cv2.put(DBtables.Pedido_detalle.PRECIO_BRUTO, jsonData_det	.getString("precio_bruto").trim());
-						cv2.put(DBtables.Pedido_detalle.PRECIO_NETO, jsonData_det.getString("precio_neto").trim());
-						cv2.put(DBtables.Pedido_detalle.PERCEPCION, jsonData_det.getString("percepcion").trim());
-						cv2.put(DBtables.Pedido_detalle.CANTIDAD, jsonData_det.getString("cantidad").trim());
-						cv2.put(DBtables.Pedido_detalle.TIPO_PRODUCTO, jsonData_det.getString("tipo_producto").trim());
-						cv2.put(DBtables.Pedido_detalle.UNIDAD_MEDIDA, jsonData_det.getString("unidad_medida").trim());
-						cv2.put(DBtables.Pedido_detalle.PESO_BRUTO, jsonData_det	.getString("peso_bruto").trim());
-						cv2.put(DBtables.Pedido_detalle.FLAG, jsonData_det.getString("flag").trim());
-						cv2.put(DBtables.Pedido_detalle.COD_POLITICA, jsonData_det.getString("cod_politica").trim());
-						cv2.put(DBtables.Pedido_detalle.SEC_PROMO, jsonData_det.getString("sec_promo").trim());
-						cv2.put(DBtables.Pedido_detalle.ITEM_PROMO, jsonData_det.getString("item_promo").trim());
-						cv2.put(DBtables.Pedido_detalle.AGRUP_PROMO, jsonData_det.getString("agrup_promo").trim());
-						//cv2.put(DBtables.Pedido_detalle.ITEM, jsonData_det.getString("item").trim());
-						//item no existe en la tabla detalle pedido, se setea un correlativo
-						cv2.put(DBtables.Pedido_detalle.ITEM, j);
-						cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
-						cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
-						cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getDouble("porcentaje_desc"));
-						cv2.put(DBtables.Pedido_detalle.porcentaje_desc_extra, jsonData_det.getDouble("porcentaje_desc_extra"));
-						cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
+							cv2.put(DBtables.Pedido_detalle.PK_OC_NUMERO, jsonData_det.getString("oc_numero").trim());
+							cv2.put(DBtables.Pedido_detalle.PK_EAN_ITEM, jsonData_det.getString("ean_item").trim());
+							cv2.put(DBtables.Pedido_detalle.CIP, jsonData_det.getString("cip").trim());
+							cv2.put(DBtables.Pedido_detalle.PRECIO_BRUTO, jsonData_det	.getString("precio_bruto").trim());
+							cv2.put(DBtables.Pedido_detalle.PRECIO_NETO, jsonData_det.getString("precio_neto").trim());
+							cv2.put(DBtables.Pedido_detalle.PERCEPCION, jsonData_det.getString("percepcion").trim());
+							cv2.put(DBtables.Pedido_detalle.CANTIDAD, jsonData_det.getString("cantidad").trim());
+							cv2.put(DBtables.Pedido_detalle.TIPO_PRODUCTO, jsonData_det.getString("tipo_producto").trim());
+							cv2.put(DBtables.Pedido_detalle.UNIDAD_MEDIDA, jsonData_det.getString("unidad_medida").trim());
+							cv2.put(DBtables.Pedido_detalle.PESO_BRUTO, jsonData_det	.getString("peso_bruto").trim());
+							cv2.put(DBtables.Pedido_detalle.FLAG, jsonData_det.getString("flag").trim());
+							cv2.put(DBtables.Pedido_detalle.COD_POLITICA, jsonData_det.getString("cod_politica").trim());
+							cv2.put(DBtables.Pedido_detalle.SEC_PROMO, jsonData_det.getString("sec_promo").trim());
+							cv2.put(DBtables.Pedido_detalle.ITEM_PROMO, jsonData_det.getString("item_promo").trim());
+							cv2.put(DBtables.Pedido_detalle.AGRUP_PROMO, jsonData_det.getString("agrup_promo").trim());
+							//cv2.put(DBtables.Pedido_detalle.ITEM, jsonData_det.getString("item").trim());
+							//item no existe en la tabla detalle pedido, se setea un correlativo
+							cv2.put(DBtables.Pedido_detalle.ITEM, j);
+							cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
+							cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
+							cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getDouble("porcentaje_desc"));
+							cv2.put(DBtables.Pedido_detalle.porcentaje_desc_extra, jsonData_det.getDouble("porcentaje_desc_extra"));
+							cv2.put(DBtables.Pedido_detalle.LOTE, jsonData_det.getString("lote").trim());
 
-						cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
-						cv2.put(DBtables.Pedido_detalle.EXPECTATIVA, jsonData_det.getString(DBtables.Pedido_detalle.EXPECTATIVA).trim());
-						cv2.put(DBtables.Pedido_detalle.ENVASE, jsonData_det.getString(DBtables.Pedido_detalle.ENVASE).trim());
-						cv2.put(DBtables.Pedido_detalle.CONTENIDO, jsonData_det.getString(DBtables.Pedido_detalle.CONTENIDO).trim());
-						cv2.put(DBtables.Pedido_detalle.PROCESO, jsonData_det.getString(DBtables.Pedido_detalle.PROCESO).trim());
-						cv2.put(DBtables.Pedido_detalle.OBSERVACION_DEVOL, jsonData_det.getString(DBtables.Pedido_detalle.OBSERVACION_DEVOL).trim());
-						cv2.put(DBtables.Pedido_detalle.TIPO_DOCUMENTO, jsonData_det.getString(DBtables.Pedido_detalle.TIPO_DOCUMENTO).trim());
-						cv2.put(DBtables.Pedido_detalle.SERIE_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.SERIE_DEVOLUCION).trim());
-						cv2.put(DBtables.Pedido_detalle.NUMERO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.NUMERO_DEVOLUCION).trim());
+							cv2.put(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.MOTIVO_DEVOLUCION).trim());
+							cv2.put(DBtables.Pedido_detalle.EXPECTATIVA, jsonData_det.getString(DBtables.Pedido_detalle.EXPECTATIVA).trim());
+							cv2.put(DBtables.Pedido_detalle.ENVASE, jsonData_det.getString(DBtables.Pedido_detalle.ENVASE).trim());
+							cv2.put(DBtables.Pedido_detalle.CONTENIDO, jsonData_det.getString(DBtables.Pedido_detalle.CONTENIDO).trim());
+							cv2.put(DBtables.Pedido_detalle.PROCESO, jsonData_det.getString(DBtables.Pedido_detalle.PROCESO).trim());
+							cv2.put(DBtables.Pedido_detalle.OBSERVACION_DEVOL, jsonData_det.getString(DBtables.Pedido_detalle.OBSERVACION_DEVOL).trim());
+							cv2.put(DBtables.Pedido_detalle.TIPO_DOCUMENTO, jsonData_det.getString(DBtables.Pedido_detalle.TIPO_DOCUMENTO).trim());
+							cv2.put(DBtables.Pedido_detalle.SERIE_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.SERIE_DEVOLUCION).trim());
+							cv2.put(DBtables.Pedido_detalle.NUMERO_DEVOLUCION, jsonData_det.getString(DBtables.Pedido_detalle.NUMERO_DEVOLUCION).trim());
 
-						db.insert(DBtables.Pedido_detalle.TAG, null, cv2);
+							db.insert(DBtables.Pedido_detalle.TAG, null, cv2);
 
-						Log.i("syncObjPedido det", "OCNUMERO: "	+ jsonData_det.getString("oc_numero").trim()	+ " CIP: " + jsonData_det.getString("cip").trim());
-					}
-
-					/*Insertando Registro bonificaciones del pedido*/
-
-					JSONArray json_registroBonificaciones = new JSONArray(jsonData.getString("bonificaciones"));
-					for (int j = 0; j < json_registroBonificaciones.length(); j++) {
-
-						JSONObject jsonData_reg = json_registroBonificaciones.getJSONObject(j);
-						ContentValues cv2 = new ContentValues();
-
-						cv2.put(DBtables.TB_registro_bonificaciones.OC_NUMERO, jsonData_reg.getString("oc_numero"));
-						cv2.put(DBtables.TB_registro_bonificaciones.ITEM, jsonData_reg.getInt("item"));
-						cv2.put(DBtables.TB_registro_bonificaciones.SECUENCIA, jsonData_reg.getInt("secuenciaPromocion"));
-						cv2.put(DBtables.TB_registro_bonificaciones.AGRUPADO, jsonData_reg.getInt("agrupado"));
-						cv2.put(DBtables.TB_registro_bonificaciones.ENTRADA, jsonData_reg.getString("entrada"));
-						cv2.put(DBtables.TB_registro_bonificaciones.TIPO_UNIMED_ENTRADA, jsonData_reg.getInt("tipo_unimed_entrada"));
-						cv2.put(DBtables.TB_registro_bonificaciones.UNIMED_ENTRADA, jsonData_reg.getString("unimedEntrada"));
-						cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTRADA, jsonData_reg.getInt("cantidadEntrada"));
-						cv2.put(DBtables.TB_registro_bonificaciones.MONTO_ENTRADA, jsonData_reg.getString("montoEntrada"));
-						cv2.put(DBtables.TB_registro_bonificaciones.SALIDA, jsonData_reg.getString("salida"));
-						cv2.put(DBtables.TB_registro_bonificaciones.TIPO_UNIMED_SALIDA, jsonData_reg.getInt("tipo_unimed_salida"));
-						cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_SALIDA, jsonData_reg.getInt("cantidadSalida"));
-						cv2.put(DBtables.TB_registro_bonificaciones.ACUMULADO, jsonData_reg.getInt("acumulado"));
-						cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_DISPONIBLE, jsonData_reg.getInt("cantidadDisponible"));
-						cv2.put(DBtables.TB_registro_bonificaciones.MONTO_DISPONIBLE, jsonData_reg.getString("montoDisponible"));
-						cv2.put(DBtables.TB_registro_bonificaciones.FLAG, jsonData_reg.getInt("flagUltimo"));
-
-						cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_REGISTRO, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_REGISTRO));
-						if (jsonData_reg.getInt(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL) == 0) {
-							//Si es cero no se registra y queda como null para no afectar los algoritmos de obtener registro nulo usado
-						}else{
-							cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL));
+							Log.i("syncObjPedido det", "OCNUMERO: "	+ jsonData_det.getString("oc_numero").trim()	+ " CIP: " + jsonData_det.getString("cip").trim());
 						}
-						cv2.put(DBtables.TB_registro_bonificaciones.SALDO_ANTERIOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.SALDO_ANTERIOR));
-						cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTREGADA, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTREGADA));
-						cv2.put(DBtables.TB_registro_bonificaciones.SALDO, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.SALDO));
-						cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR));
-						cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR));
-						cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE));
 
-						db.insert(DBtables.TB_registro_bonificaciones.TAG, null, cv2);
+						/*Insertando Registro bonificaciones del pedido*/
 
-						Log.i("syncObjPedido det", "OCNUMERO: "	+  jsonData_reg.getString("oc_numero").trim()	+ " ENTRADA: " + jsonData_reg.getString("entrada"));
-					}
+						JSONArray json_registroBonificaciones = new JSONArray(jsonData.getString("bonificaciones"));
+						for (int j = 0; j < json_registroBonificaciones.length(); j++) {
 
-					JSONArray json_visitas = new JSONArray(jsonData.getString("san_visitas"));
-					final Type malla = new TypeToken<ArrayList<San_Visitas>>() {}.getType();
-					final ArrayList<San_Visitas> lista = gson.fromJson(json_visitas.toString(), malla);
+							JSONObject jsonData_reg = json_registroBonificaciones.getJSONObject(j);
+							ContentValues cv2 = new ContentValues();
 
-					for (San_Visitas sanVisita:lista){
-						cv = new ContentValues();
-						if (!DAO_San_Visitas.isSan_VisitasByOc_visitadoAndOc_numero_visitar(db, sanVisita.getOc_numero_visitado(), sanVisita.getOc_numero_visitar())) {
-							cv.put(DBtables.San_Visitas.Grupo_Campaña,  sanVisita.getGrupo_Campaña());
-							cv.put(DBtables.San_Visitas.Cod_Promotor,  sanVisita.getCod_Promotor());
-							cv.put(DBtables.San_Visitas.Promotor,  sanVisita.getPromotor());
-							cv.put(DBtables.San_Visitas.Cod_Colegio,  sanVisita.getCod_Colegio());
-							cv.put(DBtables.San_Visitas.descripcion_Colegio,  sanVisita.getDescripcion_Colegio());
-							cv.put(DBtables.San_Visitas.Ejecutivo_Descripcion,  sanVisita.getEjecutivo_Descripcion());
-							cv.put(DBtables.San_Visitas.cargo_Descripción,  sanVisita.getCargo_Descripción());
-							cv.put(DBtables.San_Visitas.Fecha_planificada,  sanVisita.getFecha_planificada());
-							cv.put(DBtables.San_Visitas.Fecha_Ejecutada,  sanVisita.getFecha_Ejecutada());
-							cv.put(DBtables.San_Visitas.Fecha_proxima_visita,   sanVisita.getFecha_proxima_visita());
-							cv.put(DBtables.San_Visitas.Hora_inicio_ejecución,  sanVisita.getHora_inicio_ejecución());
-							cv.put(DBtables.San_Visitas.Hora_Fin_Ejecución,  sanVisita.getHora_Fin_Ejecución());
-							cv.put(DBtables.San_Visitas.fecha_de_modificación,  sanVisita.getFecha_de_modificación());
-							cv.put(DBtables.San_Visitas.Estado,  sanVisita.getEstado());
-							cv.put(DBtables.San_Visitas.Actividad,  sanVisita.getActividad());
-							cv.put(DBtables.San_Visitas.Detalle,  sanVisita.getDetalle());
-							cv.put(DBtables.San_Visitas.Actividad_Proxima,  sanVisita.getActividad_Proxima());
-							cv.put(DBtables.San_Visitas.Detalle_Proximo,  sanVisita.getDetalle_Proximo());
-							cv.put(DBtables.San_Visitas.Comentario_actividad,  sanVisita.getComentario_actividad());
-							cv.put(DBtables.San_Visitas.tipo_visita,  ""+sanVisita.getTipo_visita());
-							cv.put(DBtables.San_Visitas.id_rrhh, sanVisita.getId_rrhh());
-							cv.put(DBtables.San_Visitas.latitud,  ""+sanVisita.getLatitud());
-							cv.put(DBtables.San_Visitas.longitud,  ""+sanVisita.getLongitud());
-							cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia());
-							cv.put(DBtables.San_Visitas.oc_numero_visitado,  ""+sanVisita.getOc_numero_visitado());
-							cv.put(DBtables.San_Visitas.oc_numero_visitar,  ""+sanVisita.getOc_numero_visitar());
-							cv.put(DBtables.San_Visitas.item,  ""+sanVisita.getItem());
-							cv.put(DBtables.San_Visitas.id_contacto,  ""+sanVisita.getId_contacto());
-							cv.put(DBtables.San_Visitas.altitud,  ""+sanVisita.getAltitud());
-							cv.put(DBtables.San_Visitas.descripcion_anulacion,  ""+sanVisita.getDescripcion_anulacion());
+							cv2.put(DBtables.TB_registro_bonificaciones.OC_NUMERO, jsonData_reg.getString("oc_numero"));
+							cv2.put(DBtables.TB_registro_bonificaciones.ITEM, jsonData_reg.getInt("item"));
+							cv2.put(DBtables.TB_registro_bonificaciones.SECUENCIA, jsonData_reg.getInt("secuenciaPromocion"));
+							cv2.put(DBtables.TB_registro_bonificaciones.AGRUPADO, jsonData_reg.getInt("agrupado"));
+							cv2.put(DBtables.TB_registro_bonificaciones.ENTRADA, jsonData_reg.getString("entrada"));
+							cv2.put(DBtables.TB_registro_bonificaciones.TIPO_UNIMED_ENTRADA, jsonData_reg.getInt("tipo_unimed_entrada"));
+							cv2.put(DBtables.TB_registro_bonificaciones.UNIMED_ENTRADA, jsonData_reg.getString("unimedEntrada"));
+							cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTRADA, jsonData_reg.getInt("cantidadEntrada"));
+							cv2.put(DBtables.TB_registro_bonificaciones.MONTO_ENTRADA, jsonData_reg.getString("montoEntrada"));
+							cv2.put(DBtables.TB_registro_bonificaciones.SALIDA, jsonData_reg.getString("salida"));
+							cv2.put(DBtables.TB_registro_bonificaciones.TIPO_UNIMED_SALIDA, jsonData_reg.getInt("tipo_unimed_salida"));
+							cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_SALIDA, jsonData_reg.getInt("cantidadSalida"));
+							cv2.put(DBtables.TB_registro_bonificaciones.ACUMULADO, jsonData_reg.getInt("acumulado"));
+							cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_DISPONIBLE, jsonData_reg.getInt("cantidadDisponible"));
+							cv2.put(DBtables.TB_registro_bonificaciones.MONTO_DISPONIBLE, jsonData_reg.getString("montoDisponible"));
+							cv2.put(DBtables.TB_registro_bonificaciones.FLAG, jsonData_reg.getInt("flagUltimo"));
 
-							long a =db.insert(DBtables.San_Visitas.TAG,null, cv);
+							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_REGISTRO, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_REGISTRO));
+							if (jsonData_reg.getInt(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL) == 0) {
+								//Si es cero no se registra y queda como null para no afectar los algoritmos de obtener registro nulo usado
+							}else{
+								cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CANTIDAD_TOTAL));
+							}
+							cv2.put(DBtables.TB_registro_bonificaciones.SALDO_ANTERIOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.SALDO_ANTERIOR));
+							cv2.put(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTREGADA, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CANTIDAD_ENTREGADA));
+							cv2.put(DBtables.TB_registro_bonificaciones.SALDO, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.SALDO));
+							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR));
+							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR));
+							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE));
+
+							db.insert(DBtables.TB_registro_bonificaciones.TAG, null, cv2);
+
+							Log.i("syncObjPedido det", "OCNUMERO: "	+  jsonData_reg.getString("oc_numero").trim()	+ " ENTRADA: " + jsonData_reg.getString("entrada"));
 						}
-						//Log.d(TAG, STAG+" is insertado "+a);
 
+						JSONArray json_visitas = new JSONArray(jsonData.getString("san_visitas"));
+						final Type malla = new TypeToken<ArrayList<San_Visitas>>() {}.getType();
+						final ArrayList<San_Visitas> lista = gson.fromJson(json_visitas.toString(), malla);
+
+						for (San_Visitas sanVisita:lista){
+							cv = new ContentValues();
+							if (!DAO_San_Visitas.isSan_VisitasByOc_visitadoAndOc_numero_visitar(db, sanVisita.getOc_numero_visitado(), sanVisita.getOc_numero_visitar())) {
+								cv.put(DBtables.San_Visitas.Grupo_Campaña,  sanVisita.getGrupo_Campaña());
+								cv.put(DBtables.San_Visitas.Cod_Promotor,  sanVisita.getCod_Promotor());
+								cv.put(DBtables.San_Visitas.Promotor,  sanVisita.getPromotor());
+								cv.put(DBtables.San_Visitas.Cod_Colegio,  sanVisita.getCod_Colegio());
+								cv.put(DBtables.San_Visitas.descripcion_Colegio,  sanVisita.getDescripcion_Colegio());
+								cv.put(DBtables.San_Visitas.Ejecutivo_Descripcion,  sanVisita.getEjecutivo_Descripcion());
+								cv.put(DBtables.San_Visitas.cargo_Descripción,  sanVisita.getCargo_Descripción());
+								cv.put(DBtables.San_Visitas.Fecha_planificada,  sanVisita.getFecha_planificada());
+								cv.put(DBtables.San_Visitas.Fecha_Ejecutada,  sanVisita.getFecha_Ejecutada());
+								cv.put(DBtables.San_Visitas.Fecha_proxima_visita,   sanVisita.getFecha_proxima_visita());
+								cv.put(DBtables.San_Visitas.Hora_inicio_ejecución,  sanVisita.getHora_inicio_ejecución());
+								cv.put(DBtables.San_Visitas.Hora_Fin_Ejecución,  sanVisita.getHora_Fin_Ejecución());
+								cv.put(DBtables.San_Visitas.fecha_de_modificación,  sanVisita.getFecha_de_modificación());
+								cv.put(DBtables.San_Visitas.Estado,  sanVisita.getEstado());
+								cv.put(DBtables.San_Visitas.Actividad,  sanVisita.getActividad());
+								cv.put(DBtables.San_Visitas.Detalle,  sanVisita.getDetalle());
+								cv.put(DBtables.San_Visitas.Actividad_Proxima,  sanVisita.getActividad_Proxima());
+								cv.put(DBtables.San_Visitas.Detalle_Proximo,  sanVisita.getDetalle_Proximo());
+								cv.put(DBtables.San_Visitas.Comentario_actividad,  sanVisita.getComentario_actividad());
+								cv.put(DBtables.San_Visitas.tipo_visita,  ""+sanVisita.getTipo_visita());
+								cv.put(DBtables.San_Visitas.id_rrhh, sanVisita.getId_rrhh());
+								cv.put(DBtables.San_Visitas.latitud,  ""+sanVisita.getLatitud());
+								cv.put(DBtables.San_Visitas.longitud,  ""+sanVisita.getLongitud());
+								cv.put(DBtables.San_Visitas.distancia,  sanVisita.getDistancia());
+								cv.put(DBtables.San_Visitas.oc_numero_visitado,  ""+sanVisita.getOc_numero_visitado());
+								cv.put(DBtables.San_Visitas.oc_numero_visitar,  ""+sanVisita.getOc_numero_visitar());
+								cv.put(DBtables.San_Visitas.item,  ""+sanVisita.getItem());
+								cv.put(DBtables.San_Visitas.id_contacto,  ""+sanVisita.getId_contacto());
+								cv.put(DBtables.San_Visitas.altitud,  ""+sanVisita.getAltitud());
+								cv.put(DBtables.San_Visitas.descripcion_anulacion,  ""+sanVisita.getDescripcion_anulacion());
+
+								long a =db.insert(DBtables.San_Visitas.TAG,null, cv);
+							}
+							//Log.d(TAG, STAG+" is insertado "+a);
+
+						}
 					}
+
 				}
 
 				
@@ -10712,8 +10715,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 		String where= "(oc_numero_visitado  \n" +
 				"\t\t\t\tnot  in ( select oc_numero from pedido_cabecera where flag = ? and cod_emp = ? )  \n" +
-				"\t\t\t\tand length(oc_numero_visitado)>0) \n" +
-				"\t\t\t\tor ( oc_numero_visitar  not in (select oc_numero from pedido_cabecera where flag = ? and cod_emp = ?) ) \n" ;
+				"\t\t\t\t) \n" +
+				"\t\t\t\tand ( oc_numero_visitar  not in (select oc_numero from pedido_cabecera where flag = ? and cod_emp = ?) ) \n" ;
 
 		String[] args = { "P", codven, "P", codven};
 

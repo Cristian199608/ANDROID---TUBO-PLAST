@@ -45,9 +45,7 @@ import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
-import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
-import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -791,8 +789,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         }
 
                         // Generar backup antes de la sincornizacion
-                        GlobalFunctions.backupdDatabase(SincronizarActivity.this);
-
+                        GlobalFunctions.backupdDatabaseFromExternalView(SincronizarActivity.this);
                         new asynclogin().execute("", "");
 
                     }

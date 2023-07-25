@@ -29,7 +29,7 @@ public class VARIABLES {
 
 
     public static final  boolean isProduccion=true;
-    public static final  boolean isProduccion_prueba=true;
+    public static final  boolean isProduccion_prueba=false;
 
     private static TimeZone GetTimeZone(){
         return TimeZone.getTimeZone("GMT-05");
@@ -176,7 +176,7 @@ public class VARIABLES {
         return fecha;
     }
 
-    public static long convertirFecha_to_long(String string_date)
+    public static long convertirFecha_to_longFromYYYY_MM_DD(String string_date)
     {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -188,6 +188,19 @@ public class VARIABLES {
             return -1;
         }
     }
+    public static long convertirFecha_to_long(String string_date)
+    {
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            Date d = f.parse(string_date);
+            return d.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 
     public static long convertirFechaHora_dd_mm_yyyy__HH_mm_to_long(String string_date)
     {

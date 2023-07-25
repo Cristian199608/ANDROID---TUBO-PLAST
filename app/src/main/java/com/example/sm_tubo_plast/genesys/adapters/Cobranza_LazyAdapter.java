@@ -6,16 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.datatypes.DBCta_Ingresos;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.CuentasXCobrarActivity2;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class Cobranza_LazyAdapter extends BaseAdapter {
@@ -108,7 +105,7 @@ public class Cobranza_LazyAdapter extends BaseAdapter {
         	vi.setBackgroundColor(activity.getResources().getColor(R.color.cyan_100));
         }
 
-        long lonVencimiento=VARIABLES.convertirFecha_to_long(song.getFecha_vencimiento());
+        long lonVencimiento=VARIABLES.convertirFecha_to_longFromYYYY_MM_DD(song.getFecha_vencimiento());
         long lonActual=VARIABLES.GetFechaActua_long();
         if (lonVencimiento>=lonActual){
             txtTipoSaldo.setText("Obligación");

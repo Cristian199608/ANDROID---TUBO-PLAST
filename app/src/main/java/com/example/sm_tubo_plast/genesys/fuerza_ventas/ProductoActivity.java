@@ -1083,7 +1083,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         // if(Double.parseDouble(edtCantidad.getText().toString())<=stock){
                         int cant = Integer.parseInt(edtCantidad.getText().toString());
                         //double precio = Double.parseDouble(edtPrecioUnt.getText().toString());
-                        double precio = Double.parseDouble(tv_precioSinIGV.getText().toString());
+                        double precio = Double.parseDouble(tv_precioSinIGV.getText().toString().replace(",", ""));
                         boolean afectoPercepcion = swt_afecto.isChecked();
                         // precio=Double.parseDouble(edtPrecioUnt.getText().toString());
                         // prueba codUnimed
@@ -1113,7 +1113,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         Log.d("ProductoActivity ::datos de percepcion producto::","Precio "+precio);
 
                         if (afectoPercepcion == true && clienteTienePercepcion == 1) {
-                            precioPercepcion = Double.parseDouble(tv_precioIncIGV.getText().toString()) * clienteValorPercepcion;
+                            precioPercepcion = Double.parseDouble(tv_precioIncIGV.getText().toString().replace(",", "")) * clienteValorPercepcion;
                         }
 
                         Intent returnIntent = new Intent();

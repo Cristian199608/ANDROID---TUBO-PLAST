@@ -346,6 +346,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
                     mostrarSincronizar.performClick();
                 }
             });
+            alerta.setNegativeButton("Omitir", null);
             alerta.show();
         }
         /****************************************************************/

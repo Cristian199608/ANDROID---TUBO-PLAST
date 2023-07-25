@@ -484,7 +484,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
                     map.put("NroUnicoBanco", cta.getNroUnicoBanco());
                     newsList.add(map);*/
 
-                    long lonVencimiento=VARIABLES.convertirFecha_to_long(cta.getFecha_vencimiento());
+                    long lonVencimiento=VARIABLES.convertirFecha_to_longFromYYYY_MM_DD(cta.getFecha_vencimiento());
                     long lonActual=VARIABLES.GetFechaActua_long();
 
                     double _saldo=Double.parseDouble(cta.getSaldo());

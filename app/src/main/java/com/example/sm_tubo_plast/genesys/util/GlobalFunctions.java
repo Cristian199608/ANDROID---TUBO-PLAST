@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Activity_EnviarBackUp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -355,7 +354,12 @@ public class GlobalFunctions {
 		
 		return formateador;
 	}
-
+	//Permite generar backup desde afuera, osea que no viene desde la actividad generar backup
+	public static void backupdDatabaseFromExternalView(Activity activity){
+		ConfigurarRutasBackup(activity);//configurar rutas para generar backup
+		backupdDatabase(activity);//generar
+		LimpiarRutasBackup();// limpiar rutas backup
+	}
 
 	public static File backupdDatabase(Activity activity){
 		boolean showMensaje=true;
@@ -371,7 +375,7 @@ public class GlobalFunctions {
 			File data = Environment.getDataDirectory();
 			String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
 			String sourceDBName = GlobalVar.DATABASE_NAME;
-			String targetDBName = "saemovil";
+			String targetDBName = GlobalVar.TARGET_DB_NAME;
 			if (sd.canWrite()) {
 				if (!sd.exists()){
 					sd.mkdirs();
@@ -427,7 +431,7 @@ public class GlobalFunctions {
 			File data = Environment.getDataDirectory();
 			String packageName  = GlobalVar.PACKAGE_NAME; // Nombre del paquete del proyecto
 			String sourceDBName = GlobalVar.DATABASE_NAME;
-			String targetDBName = "saemoviles";
+			String targetDBName = GlobalVar.TARGET_DB_NAME;
 			if (sd.canWrite()) {
 				if (!sd.exists()){
 					sd.mkdirs();
@@ -494,10 +498,10 @@ public class GlobalFunctions {
 
 			long createdDate =new File(dir.getPath()).lastModified();
 			String name =new File(dir.getPath()).getName();
-			if (name.contains("saemovilesbkp")){
+			if (name.contains("saemovilesbkp") || name.contains("saemovil")){
 				String fecha_actual=VARIABLES.GetFechaActual();//dd/MM/yyyy //uot
 				long fecha_actual_long=VARIABLES.convertirFecha_to_long(fecha_actual);// in dd/MM/yyyy HH:mm:ss
-				long fcreatedDate_more5=VARIABLES.sumarDiasFromFechaLong(createdDate, 30);
+				long fcreatedDate_more5=VARIABLES.sumarDiasFromFechaLong(createdDate, GlobalVar.ELIMINAR_ARCHIVOS_PASADOS_nro_dias);
 				if (fcreatedDate_more5<=fecha_actual_long){
 					dir.delete();
 				}
