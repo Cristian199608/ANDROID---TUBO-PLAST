@@ -3466,7 +3466,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		Cursor cur = db.rawQuery(rawQuery, null);
 		ArrayList<DBPedido_Cabecera> lista_pedidos = new ArrayList<DBPedido_Cabecera>();
 		cur.moveToFirst();
-
+		Log.d("QUERY REPORTE", " :::::> size lista " + cur.getCount());
 		while (!cur.isAfterLast()) {
 
 			DBPedido_Cabecera dbpedido = new DBPedido_Cabecera();			

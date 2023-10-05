@@ -42,14 +42,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraBEAN;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
+import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.adapters.ReportesPedidosCabeceraRecyclerView;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMotivo_noventa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
@@ -57,6 +61,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.domain.IReportePedidoCabecera;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.CH_DevolucionesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.ClientesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_enviarCotizacion;
@@ -64,14 +69,17 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivityVentana2;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.service.WS_Cotizaciones;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
+import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.example.sm_tubo_plast.genesys.util.recyclerView.RecyclerViewCustom;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -118,10 +126,14 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     DBclasses obj_dbclasses;
     DAO_ReportePedido dao_reportePedido;
     ArrayList<HashMap<String, String>> pedidos = new ArrayList<HashMap<String, String>>();
+    ArrayList<IReportePedidoCabecera> IreportecabeceraLista=new ArrayList<>();
+    WS_Cotizaciones ws_cotizaciones=null;
     ArrayList<DB_RegistroBonificaciones> registroBonificaciones;
     Gson gson = new Gson();
     DAO_RegistroBonificaciones DAORegistroBonificaciones;
     ListView list;
+    RecyclerViewCustom myRecyclerViewPedidoCabcera;
+    ReportesPedidosCabeceraRecyclerView adapterRecyclerView;
     // ReportesPedidosAdapter adapter_pedido;
     PedidosActivityVentana2 ob = new PedidosActivityVentana2();
     LayoutInflater inflater;
@@ -147,14 +159,15 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     ArrayList<DBPedido_Cabecera> lista_pedidos;
     TextView tv_montoTotal_soles, btn_peso, tv_totalPedidos, tv_paqueteDatos,
             tv_montoTotal_dolares;
-    EditText etBuscarVendedorResumen;
+    EditText edtBuscarPedidos;
     ImageView imgBuscarDatos;
     ProgressDialog pDialog;
 
     LinearLayout layoutBuscarPedidoCoti;
+    LinearLayout layoutFooter;
     RecyclerView recyclerViewDatosOnLine;
     ImageView ib_seleccionar_cliente;
-    String codcliSeleccionado;
+    String codcliPrincipal="";
     TextView txtNombresCliente, txtFechaDesde, txtFechaHasta;
     CheckBox chkBuscarEnLinea;
 
@@ -168,6 +181,11 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     int item_direccion;
     String tipoRegistro;
     ConnectionDetector cd;
+
+    QuickAction mQuickAction ;
+    QuickAction mQuickActionCotizacion;
+    QuickAction mQuickActionCotizacionOnLine;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,8 +212,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         lista_pedidos = new ArrayList<DBPedido_Cabecera>();
         tv_paqueteDatos = (TextView) findViewById(R.id.tv_paqueteDatos);
         tv_montoTotal_dolares = (TextView) findViewById(R.id.rpt_pedidos_tvTotalDolares);
-        etBuscarVendedorResumen = (EditText) findViewById(R.id.etBuscarVendedorResumen);
+        edtBuscarPedidos = (EditText) findViewById(R.id.edtBuscarPedidos);
         imgBuscarDatos =  findViewById(R.id.imgBuscarDatos);
+        layoutFooter =  findViewById(R.id.layoutFooter);
 
         if (TIPO_VISTA.equals(DATOS_PREVENTA)){
             chkBuscarEnLinea =  findViewById(R.id.chkBuscarEnLinea);
@@ -220,6 +239,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         Log.d("ALERT - REPORTE - cod vend:", codven);
 
         list = (ListView) findViewById(R.id.lv_reportes_pedidos);
+        myRecyclerViewPedidoCabcera = (RecyclerViewCustom) findViewById(R.id.myRecyclerViewPedidoCabcera);
 
         formateador = GlobalFunctions.formateador();
 
@@ -234,10 +254,11 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         imgBuscarDatos.setOnClickListener(v -> {
             if (chkBuscarEnLinea!=null) {
                 if (chkBuscarEnLinea.isChecked()) {
-                    return;
-                }
-            }
-            new asyncBuscar().execute("", "");
+                    ws_cotizaciones=null;
+                    buscarCotizacionesOnline();
+                }else new asyncBuscar().execute("", "");
+            }else new asyncBuscar().execute("", "");
+
 
         });
         imgBuscarDatos.performClick();
@@ -251,8 +272,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         ActionItem generarPedido = new ActionItem(ID_GENERAR_PEDIDO, "Generar pedido",R.drawable.icon_inspection);
         ActionItem generarPdf = new ActionItem(ID_GENERAR_PDF, "Generar PDF",R.drawable.ic_pdf_24);
 
-        final QuickAction mQuickAction = new QuickAction(this);
-        final QuickAction mQuickActionCotizacion = new QuickAction(this);
+        mQuickAction = new QuickAction(this);
+        mQuickActionCotizacion = new QuickAction(this);
+        mQuickActionCotizacionOnLine = new QuickAction(this);
+
 
         mQuickAction.addActionItem(modificarItem);
         mQuickAction.addActionItem(acceptItem);
@@ -271,6 +294,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         if (TIPO_VISTA.equals(DATOS_PREVENTA)) {
             mQuickActionCotizacion.addActionItem(generarPdf);
         }
+
+        mQuickActionCotizacionOnLine.addActionItem(generarPdf);
+
 
         // setup the action item click listener
         mQuickAction  .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
@@ -461,42 +487,109 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 });
 
 
+        mQuickActionCotizacionOnLine
+                .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
+                    @Override
+                    public void onItemClick(ActionItem item) {
+                        int actionId=item.getActionId();
+                        if(actionId == ID_GENERAR_PDF){
+                            ws_cotizaciones.getDataDetalles(oc_numero, (success, dataDetalle) ->{
+                                if(!success){
+                                    UtilView.showCustomToast(
+                                            ReportesPedidosCotizacionYVisitaActivity.this,
+                                            "Error, al obtener los detalles de la cotización. Vuele a intentarlo",
+                                            UtilView.TOAST_ERROR);
+                                    return;
+                                }
+                                if(dataDetalle.size() > 0){
+                                    //metemos los mappers, para cabecera y detalle
+                                    CotizacionCabeceraApi cotizacionCabeceraApi =(CotizacionCabeceraApi) IreportecabeceraLista.get(mSelectedRow);
+                                    DataCabeceraPDF dataCabeceraPDF=cotizacionCabeceraApi.dataApiToObjetDataPDF();
+                                    ArrayList<ReportePedidoDetallePDF> listaDetPDF=new ArrayList<>();
+                                    for (CotizacionDetalleApi cotizacionDetalleApi : dataDetalle) {
+                                        listaDetPDF.add(cotizacionDetalleApi.dataApiToObjetDataDetallePDF());
+                                    }
+
+                                    GenerarPdf(dataCabeceraPDF, listaDetPDF);
+                                }else{
+                                    UtilView.showCustomToast(
+                                            ReportesPedidosCotizacionYVisitaActivity.this,
+                                            "No se puede generar el PDF, no se encontraron detalles",
+                                            UtilView.TOAST_ERROR);
+                                    Toast.makeText(getApplicationContext(), "No se puede generar el PDF, no se encontraron detalles", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    }
+        });
+
         configEventsCotizacionesYPedido();
 
 
         list.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
-
-                mSelectedRow = position; // set the selected row
-                codcli = pedidos.get(mSelectedRow).get(KEY_CODCLI).trim().toString();
-                if (obj_dbclasses.getClientexCodigo(codcli)==null) {
-                    UtilView.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Error", "Cliente no encontrado");
-                    return;
-                }
-                String numoc = ((TextView) view.findViewById(R.id.rpt_pedido_tv_oc_numero)).getText().toString();
-                String nomc = ((TextView) view.findViewById(R.id.rpt_pedido_tv_cliente)).getText().toString();
-                String tipo = ((TextView) view.findViewById(R.id.tv_tipoRegistro)).getText().toString();
-
-                if (tipo.equals("C")) {
-                    tipoRegistro = PedidosActivity.TIPO_COTIZACION;
-                    mQuickActionCotizacion.show(view);
-                }else if (tipo.equals("D")){
-                    tipoRegistro = PedidosActivity.TIPO_DEVOLUCION;
-                    mQuickAction.show(view);
-                }else{
-                    tipoRegistro = PedidosActivity.TIPO_PEDIDO;
-                    mQuickAction.show(view);
-                }
-
-                oc_numero = numoc;
-                Log.w("OC_NUMERO", oc_numero);
-                nomcli = nomc;
-                item_direccion = obj_dbclasses.obtenerSitioXocnumero(oc_numero);
+                onCLikItemListData(position, view);
 
             }
         });
+
+    }
+    private void onCLikItemListData(int position, View view){
+
+        mSelectedRow = position; // set the selected row
+        codcli="";
+        String numoc = "";
+        String nomc ="";
+        String tipo = "";
+        IReportePedidoCabecera  IreporteCabecera = IreportecabeceraLista.get(position);
+        if(IreporteCabecera instanceof  ReportePedidoCabeceraBEAN){
+            ReportePedidoCabeceraBEAN reportePedidoCabeceraBEAN = (ReportePedidoCabeceraBEAN) IreporteCabecera;
+            codcli = reportePedidoCabeceraBEAN.getCodcli();
+            numoc = reportePedidoCabeceraBEAN.getNumoc();
+            nomc = reportePedidoCabeceraBEAN.getNomcli();
+            tipo= reportePedidoCabeceraBEAN.getTipoRegistro();
+
+
+            if (obj_dbclasses.getClientexCodigo(codcli)==null) {
+                UtilView.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Error", "Cliente no encontrado");
+                return;
+            }
+
+            if (tipo.equals("C")) {
+                tipoRegistro = PedidosActivity.TIPO_COTIZACION;
+                mQuickActionCotizacion.show(view);
+            }
+             else if (tipo.equals("D")){
+                tipoRegistro = PedidosActivity.TIPO_DEVOLUCION;
+                mQuickAction.show(view);
+            }else{
+                tipoRegistro = PedidosActivity.TIPO_PEDIDO;
+                mQuickAction.show(view);
+            }
+
+            oc_numero = numoc;
+            Log.w("OC_NUMERO", oc_numero);
+            nomcli = nomc;
+            item_direccion = obj_dbclasses.obtenerSitioXocnumero(oc_numero);
+
+        }
+        else if(IreporteCabecera instanceof  CotizacionCabeceraApi){
+            CotizacionCabeceraApi cotizacionCabeceraApi = (CotizacionCabeceraApi) IreporteCabecera;
+            codcli = cotizacionCabeceraApi.getCodcli();
+            numoc = cotizacionCabeceraApi.getCodigo_pedido();
+            nomc = cotizacionCabeceraApi.getNomcli();
+            tipo= cotizacionCabeceraApi.getTipotipo_registro();
+
+            oc_numero = numoc;
+            Log.w("OC_NUMERO", oc_numero);
+            nomcli = nomc;
+            mQuickActionCotizacionOnLine.show(view);
+        }
+
+
+
     }
     private void configEventsCotizacionesYPedido(){
 
@@ -504,7 +597,28 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             return;
         }
         chkBuscarEnLinea.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            layoutBuscarPedidoCoti.setVisibility(isChecked?View.VISIBLE:View.GONE);
+            if (isChecked) {
+                layoutBuscarPedidoCoti.setVisibility(View.VISIBLE);
+                layoutFooter.setVisibility(View.GONE);
+                edtBuscarPedidos.setText("");
+                edtBuscarPedidos.setHint("COW-000000NNNCP");
+            }else{
+                edtBuscarPedidos.setText("");
+                edtBuscarPedidos.setHint("Buscar...");
+                layoutBuscarPedidoCoti.setVisibility(View.GONE);
+                layoutFooter.setVisibility(View.VISIBLE);
+            }
+            IreportecabeceraLista.clear();
+            if (adapterRecyclerView!=null) {
+                adapterRecyclerView.notifyDataSetChanged();
+            }
+            imgBuscarDatos.performClick();//buscar datos
+
+        });
+        new ACG_EditText(this, edtBuscarPedidos).OnListen(texto->{
+            if (texto.length()>0){
+                layoutBuscarPedidoCoti.setAlpha(0.3f);
+            }else layoutBuscarPedidoCoti.setAlpha(1f);
         });
         if (ib_seleccionar_cliente!=null) {
             ib_seleccionar_cliente.setOnClickListener(v -> {
@@ -515,7 +629,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 startActivityForResult(intent, ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE);
             });
         }
-        String fecha=VARIABLES.GET_FECHA_ACTUAL_STRING_dd_mm_yyy();
+        String fecha=VARIABLES.GET_FECHA_DIA_INICIO_MES_STRING_dd_mm_yyy();
         txtFechaDesde.setText("de: "+fecha);
         txtFechaDesde.setHint(fecha);
         CustomDateTimePicker.requestDialog(this, "de: ", txtFechaDesde);
@@ -531,18 +645,25 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode== ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE){
-                codcliSeleccionado 	= data.getStringExtra("codcli");
+                codcliPrincipal = data.getStringExtra("codcli");
                 String nomcli 	= data.getStringExtra("nomcli");
                 txtNombresCliente.setText(nomcli);
             }
         }
     }
+
     private void GenerarPdfDocument(String oc_numero) {
         dao_reportePedido=new DAO_ReportePedido(getApplicationContext());
-        ArrayList<DataCabecera> lista=dao_reportePedido.getCabecera(""+oc_numero);
+        ArrayList<DataCabeceraPDF> lista=dao_reportePedido.getCabecera(""+oc_numero);
         if (lista.size()==0){
             return;
         }
+        ArrayList<ReportePedidoDetallePDF> listaDetalle= dao_reportePedido.getAllDataByCodigo( oc_numero);
+        GenerarPdf(lista.get(0), listaDetalle);
+    }
+
+    private void GenerarPdf(DataCabeceraPDF dataCab, ArrayList<ReportePedidoDetallePDF> listaDetalle ) {
+
         AlertDialog.Builder elegir = new AlertDialog.Builder(ReportesPedidosCotizacionYVisitaActivity.this);
         elegir.setTitle("Seleccionar");
         elegir.setMessage("Seleccione el tipo de envío");
@@ -550,13 +671,13 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         elegir.setPositiveButton("Cliente", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Generate_pdf_by_ocumero( 1, lista.get(0));//1 Cliente
+                Generate_pdf_by_ocumero( 1, dataCab, listaDetalle);//1 Cliente
             }
         });
         elegir.setNegativeButton("Interno", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                 Generate_pdf_by_ocumero( 2, lista.get(0));//2 =interno
+                 Generate_pdf_by_ocumero( 2, dataCab, listaDetalle);//2 =interno
             }
         });
         elegir.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -568,8 +689,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         elegir.create().show();
 
     }
-    private void Generate_pdf_by_ocumero( int tipoEnvio, DataCabecera dataCabecera) {
-        ArrayList<ReportePedidoCabeceraDetalle> listaDetalle= dao_reportePedido.getAllDataByCodigo( dataCabecera.getOc_numero());
+    private void Generate_pdf_by_ocumero( int tipoEnvio, DataCabeceraPDF dataCabecera, ArrayList<ReportePedidoDetallePDF> listaDetalle) {
+
 
         pDialog = new ProgressDialog(ReportesPedidosCotizacionYVisitaActivity.this);
         pDialog.setMessage("Generando PDF...");
@@ -587,7 +708,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 try {
                     PDF.createPdf(getApplicationContext(),
                             nombreArchivo,
-                            dataCabecera.getOc_numero(),
+                            /*dataCabecera.getOc_numero(),
                             dataCabecera.getTipoRegistro(),
                             dataCabecera.getRuccli(),
                             dataCabecera.getCodven(),
@@ -603,7 +724,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                             dataCabecera.getSubtotal(),
                             dataCabecera.getPeso_total(),
                             dataCabecera.getFecha_oc(),
-                            dataCabecera.getFecha_mxe(),
+                            dataCabecera.getFecha_mxe(),*/
                             dataCabecera,
                             listaDetalle,
                             tasaCambioSolesToDolar,
@@ -647,13 +768,16 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         emptyView.setClickable(false);
        list.setEmptyView(emptyView);//necesario
 
+        adapterRecyclerView= new ReportesPedidosCabeceraRecyclerView(this, obj_dbclasses, IreportecabeceraLista);
+        myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
+
         adapter = new ReportesPedidos_Adapter(getApplicationContext(),R.layout.item_reporte_pedido, pedidos);
 //((ReportesPedidos_Adapter) list.getAdapter()).notifyDataSetChanged();
         // adapter_pedido=new ReportesPedidosAdapter(this, pedidos);
         list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        if (pedidos.size()==0) {
+        if (pedidos.size()==0 && IreportecabeceraLista.size()==0) {
             btn_peso.setVisibility(View.INVISIBLE);
             tv_montoTotal_soles.setVisibility(View.INVISIBLE);
             tv_montoTotal_dolares.setVisibility(View.INVISIBLE);
@@ -674,6 +798,13 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             tv_montoTotal_dolares.setVisibility(View.VISIBLE);
             tv_totalPedidos.setVisibility(View.VISIBLE);
         }
+
+        onListenCLickRecyclerView();
+    }
+    private void onListenCLickRecyclerView(){
+        adapterRecyclerView.setOnClick((position, view)->{
+            onCLikItemListData(position, view);
+        });
     }
 
     public double CalcularPaqueteDatos() {
@@ -725,6 +856,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     public void cargarPedidos(String tipo, String valor) {
         lista_pedidos.clear();
+        IreportecabeceraLista.clear();
         contador = 0;
         peso = 0;
         montoTotal_soles = 0;
@@ -736,7 +868,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         } else if (tipo.equalsIgnoreCase("documento")) {
             lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
         } else {
-            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA, etBuscarVendedorResumen.getText().toString());
+            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA, edtBuscarPedidos.getText().toString());
         }
 
         Iterator<DBPedido_Cabecera> it = lista_pedidos.iterator();
@@ -746,51 +878,58 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             DBPedido_Cabecera cta = (DBPedido_Cabecera) objeto;
 
 
+            ReportePedidoCabeceraBEAN reportePedidoCabeceraBEAN = new ReportePedidoCabeceraBEAN();
             HashMap<String, String> map = new HashMap<String, String>();
             String nombre_cliente= cta.getCliente().getNombre();
             //nombre_cliente=nombre_cliente.replace("TPLAST-VISITA", "VISITA CREADO DESDE SIDIGE");
             map.put(KEY_NOMCLIENTE,"" + (nombre_cliente.length()==0?"RUC: "+cta.getCod_cli():nombre_cliente));
+            reportePedidoCabeceraBEAN.setNomcli((nombre_cliente.length()==0?"RUC: "+cta.getCod_cli():nombre_cliente));
             map.put(KEY_CODCLI,"" + cta.getCod_cli());
+            reportePedidoCabeceraBEAN.setCodcli(cta.getCod_cli());
             map.put(KEY_TIPOPAGO, "" + obtenerCond_Pago(cta.getCond_pago()));
+            reportePedidoCabeceraBEAN.setTipopago(obtenerCond_Pago(cta.getCond_pago()));
 
             if (cta.getCod_noventa() > 0) {
                 map.put(KEY_TOTAL, obj_dbclasses.obtenerMotivoxCodigo(cta.getCod_noventa()));
+                reportePedidoCabeceraBEAN.setTotal(obj_dbclasses.obtenerMotivoxCodigo(cta.getCod_noventa()));
             } else {
                 Log.d("getMonto_total", ">" + cta.getMonto_total());
                 Log.d("getPercepcion_total", ">" + cta.getPercepcion_total());
                 map.put(KEY_TOTAL, formateador.format(Double.parseDouble(cta.getMonto_total())+ Double.parseDouble(cta.getPercepcion_total())));
+                reportePedidoCabeceraBEAN.setTotal(formateador.format(Double.parseDouble(cta.getMonto_total())+ Double.parseDouble(cta.getPercepcion_total())));
             }
 
             map.put(KEY_NUMOC, cta.getOc_numero());
+            reportePedidoCabeceraBEAN.setNumoc(cta.getOc_numero());
             map.put(KEY_ESTADO, cta.getEstado());
+            reportePedidoCabeceraBEAN.setEstado(cta.getEstado());
             map.put(KEY_MENSAJE, cta.getMensaje());
+            reportePedidoCabeceraBEAN.setMensaje(cta.getMensaje());
             map.put(KEY_MONEDA, cta.getMoneda());
+            reportePedidoCabeceraBEAN.setMoneda(cta.getMoneda());
             map.put("flag", cta.getFlag());
+            reportePedidoCabeceraBEAN.setFlag(cta.getFlag());
             map.put("tipoRegistro", cta.getTipoRegistro());
+            reportePedidoCabeceraBEAN.setTipoRegistro(cta.getTipoRegistro());
             map.put("pedidoAnterior", cta.getPedidoAnterior());
+            reportePedidoCabeceraBEAN.setPedidoAnterior(cta.getPedidoAnterior());
             map.put("latitud", cta.getLatitud());
+            reportePedidoCabeceraBEAN.setLatitud(cta.getLatitud());
             map.put(KEY_NOVENTA, ""+cta.getCod_noventa());
+            reportePedidoCabeceraBEAN.setMotivo_noventa(cta.getCod_noventa());
 
-            if (cta.getFlag().equals("P")) {
-                pedidos.add(map);
-                if (cta.getMoneda().equals(PedidosActivity.MONEDA_PEN)) {
-                    montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
-                } else {
-                    montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
-                }
-                peso = peso + Double.parseDouble(cta.getPeso_total());
-                contador = contador + 1;
+
+           // pedidos.add(map);
+            Log.w("fecha_oc", cta.getFecha_oc());
+            IreportecabeceraLista.add(reportePedidoCabeceraBEAN);
+            if (cta.getMoneda().equals(PedidosActivity.MONEDA_PEN)) {
+                montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
             } else {
-                Log.w("fecha_oc", cta.getFecha_oc());
-                pedidos.add(map);
-                if (cta.getMoneda().equals(PedidosActivity.MONEDA_PEN)) {
-                    montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
-                } else {
-                    montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
-                }
-                peso = peso + Double.parseDouble(cta.getPeso_total());
-                contador = contador + 1;
+                montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
             }
+            peso = peso + Double.parseDouble(cta.getPeso_total());
+            contador = contador + 1;
+
         }
 
     }
@@ -1842,7 +1981,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
-            if (pedidos.size()==0){
+            if (pedidos.size()==0 && IreportecabeceraLista.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, list, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
             }
@@ -2170,7 +2309,60 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         }
 
     }
+//d
+    private void buscarCotizacionesOnline(){
+        String codigo_pedido=edtBuscarPedidos.getText().toString();
+        String fecha_desde=txtFechaDesde.getHint().toString();
+        String fecha_hasta=txtFechaHasta.getHint().toString();
 
 
+        //validar campos antes de buscar.
 
+        if(fecha_desde.isEmpty() || fecha_hasta.isEmpty()){
+            UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Debe ingresar las fechas de busqueda", UtilView.TOAST_ERROR);
+            return;
+        }
+
+        if(ws_cotizaciones==null){
+            IreportecabeceraLista.clear();
+            if(adapterRecyclerView!=null){
+                adapterRecyclerView.notifyDataSetChanged();
+            }
+            ws_cotizaciones = new WS_Cotizaciones(ReportesPedidosCotizacionYVisitaActivity.this);
+            adapterRecyclerView=null;
+        }
+        int desde=ws_cotizaciones.desde;
+        int hasta=ws_cotizaciones.desde+ws_cotizaciones.nro_item;
+        ws_cotizaciones.getDataCabeceras(codigo_pedido, codcliPrincipal, fecha_desde, fecha_hasta, desde, hasta, (success, data) -> {
+            if(!success){
+                UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Error, no se pudo obtener los datos de bùsqueda", UtilView.TOAST_ERROR);
+                return;
+            }
+            ws_cotizaciones.desde+=data.size();
+            setAdapterDataCotizacionOnLine(data);
+        });
+    }
+    private void setAdapterDataCotizacionOnLine(ArrayList<CotizacionCabeceraApi> dataLinea){
+
+        IreportecabeceraLista.addAll(dataLinea);
+        if(adapterRecyclerView==null) {
+            adapterRecyclerView = new ReportesPedidosCabeceraRecyclerView(this, obj_dbclasses, IreportecabeceraLista);
+            myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
+            onListenCLickRecyclerView();
+        }
+        else {
+            adapterRecyclerView.notifyDataSetChanged();
+        }
+        if(dataLinea.size()==0 || dataLinea.size()<=ws_cotizaciones.nro_item){
+            adapterRecyclerView.setCallbackLoadMoreData(null);
+            Log.i(TAG, "setAdapterDataCotizacionOnLine REMOVE LOAD size lista new "+dataLinea.size()+". Total size "+IreportecabeceraLista.size());
+            return;
+        }
+        Log.i(TAG, "setAdapterDataCotizacionOnLine size lista new "+dataLinea.size()+". Total size "+IreportecabeceraLista.size());
+        adapterRecyclerView.setCallbackLoadMoreData(()->{
+            adapterRecyclerView.setCallbackLoadMoreData(null);
+            buscarCotizacionesOnline();
+        });
+
+    }
 }

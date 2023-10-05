@@ -7,7 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.itextpdf.io.image.ImageData;
@@ -40,7 +40,7 @@ public class PDF2 {
                                  String desforpag, String monto_total,
                                  String valor_igv, String sub_total, String peso_total,
                                  String fecha_oc, String fecha_mxe,
-                                 ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles, int tipo_de_envio) throws FileNotFoundException
+                                 ArrayList<ReportePedidoDetallePDF> dataPedidoCabeceraDetalles, int tipo_de_envio) throws FileNotFoundException
     {
 
 
@@ -102,7 +102,7 @@ public class PDF2 {
          * SPLIT
          */
 
-        String atencion_telefono = dataPedidoCabeceraDetalles.get(0).getObservacion();
+        String atencion_telefono ="Error de conversion de data";// dataPedidoCabeceraDetalles.get(0).getObservacion();
         ArrayList<String> at_tel = VARIABLES.GetListString(atencion_telefono, 2);
         String at1 = at_tel.get(0);
         String at2 = at_tel.get(1);
@@ -136,7 +136,7 @@ public class PDF2 {
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TELEFONO:").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().add(new Paragraph(at2).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TELEFONO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getTelefono_vendedor()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph("dataPedidoCabeceraDetalles.get(0).getTelefono_vendedor()").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         /***
          * TABLE N° 3
@@ -150,7 +150,7 @@ public class PDF2 {
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DIRECCION").setFontSize(7f)));
         table2.addCell(new Cell().add(new Paragraph(direccionFiscal).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("AREA").setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
-        table2.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getText_area()).setTextAlignment(TextAlignment.CENTER).setFontSize(6f)));
+        table2.addCell(new Cell().add(new Paragraph("dataPedidoCabeceraDetalles.get(0).getText_area()").setTextAlignment(TextAlignment.CENTER).setFontSize(6f)));
 
         //TABLE 3 ----- 02
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("E-MAIL").setFontSize(7f)));
@@ -168,7 +168,7 @@ public class PDF2 {
         /***
          * SPLIT
          */
-        String observaciones2_convertir = dataPedidoCabeceraDetalles.get(0).getObservacion2();
+        String observaciones2_convertir = "Error";//dataPedidoCabeceraDetalles.get(0).getObservacion2();
         ArrayList<String> observacion = VARIABLES.GetListString(observaciones2_convertir, 3);
         String ob1 = observacion.get(0);
         String ob2 = observacion.get(1);
@@ -225,7 +225,7 @@ public class PDF2 {
         String moneda;
         String observaciones;
 
-        if (dataPedidoCabeceraDetalles.get(0).getMoneda().equals("1"))
+        if ("dataPedidoCabeceraDetalles.get(0).getMoneda()".equals("1"))
         {
             moneda = "S/. ";
             observaciones = "Precio Expresado en MN SOLES S/. ";
@@ -343,7 +343,7 @@ public class PDF2 {
         tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + subtotal).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 01
-        tableData.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getObservacion3()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph("dataPedidoCabeceraDetalles.get(0).getObservacion3()").setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("IGV").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph(moneda + igv).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 

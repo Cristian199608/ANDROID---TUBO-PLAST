@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ViewPdfActivity;
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 
 public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabeceraRecyclerView.DbViewHolder>{
 
-    ArrayList<DataCabecera> dataCabeceraArrayList;
+    ArrayList<DataCabeceraPDF> dataCabeceraArrayList;
     DAO_ReportePedido mydbClass;
-    public PedidoCabeceraRecyclerView(DAO_ReportePedido mydbClass, ArrayList<DataCabecera> objDbPedidoCabecera)
+    public PedidoCabeceraRecyclerView(DAO_ReportePedido mydbClass, ArrayList<DataCabeceraPDF> objDbPedidoCabecera)
     {
         this.dataCabeceraArrayList = objDbPedidoCabecera;
         this.mydbClass=mydbClass;
@@ -43,7 +43,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
 
     @Override
     public void onBindViewHolder(@NonNull DbViewHolder holder, int position) {
-        DataCabecera dataCabecera = dataCabeceraArrayList.get(position);
+        DataCabeceraPDF dataCabecera = dataCabeceraArrayList.get(position);
         holder.oc_numero.setText(dataCabecera.getOc_numero());
         holder.nomcli.setText(dataCabecera.getNomcli());
 
@@ -108,13 +108,13 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
         }
     }
 
-    private void Generate_pdf_by_ocumero(View itemView, int tipoEnvio, DataCabecera dataCabecera) {
+    private void Generate_pdf_by_ocumero(View itemView, int tipoEnvio, DataCabeceraPDF dataCabecera) {
         String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero();
         try {
-            ArrayList<ReportePedidoCabeceraDetalle> listaDetalle=mydbClass.getAllDataByCodigo( dataCabecera.getOc_numero());
+            ArrayList<ReportePedidoDetallePDF> listaDetalle=mydbClass.getAllDataByCodigo( dataCabecera.getOc_numero());
             PDF.createPdf(itemView.getContext(),
                     nombreArchivo,
-                    dataCabecera.getOc_numero(),
+                    /*dataCabecera.getOc_numero(),
                     dataCabecera.getTipoRegistro(),
                     dataCabecera.getRuccli(),
                     dataCabecera.getCodven(),
@@ -130,7 +130,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
                     dataCabecera.getSubtotal(),
                     dataCabecera.getPeso_total(),
                     dataCabecera.getFecha_oc(),
-                    dataCabecera.getFecha_mxe(),
+                    dataCabecera.getFecha_mxe(),*/
                     null,
                     listaDetalle,
                     -1,

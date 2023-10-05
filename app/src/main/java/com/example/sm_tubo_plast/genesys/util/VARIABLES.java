@@ -28,7 +28,7 @@ public class VARIABLES {
     public static final  String SEPARADOR_OBSERVACION="_#_";
 
 
-    public static final  boolean isProduccion=true;
+    public static final  boolean isProduccion=false;
     public static final  boolean isProduccion_prueba=false;
 
     private static TimeZone GetTimeZone(){
@@ -324,9 +324,14 @@ public class VARIABLES {
         return fechaHora.format(date);
     }
     public  static String GET_FECHA_ACTUAL_STRING_dd_mm_yyy(){
-
         Date date = new Date();
         SimpleDateFormat fechaHora = new SimpleDateFormat("dd-MM-yyyy");
+        return fechaHora.format(date);
+    }
+    public  static String GET_FECHA_DIA_INICIO_MES_STRING_dd_mm_yyy(){
+        //Devuelve la fecha primer dia del mes actual
+        Date date = new Date();
+        SimpleDateFormat fechaHora = new SimpleDateFormat("01-MM-yyyy");
         return fechaHora.format(date);
     }
     public  static String GET_FECHA_ACTUAL_STRING_dd_mm_yyy(int restarDia){

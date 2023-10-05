@@ -7,8 +7,8 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.itextpdf.io.image.ImageData;
@@ -37,14 +37,15 @@ public class PDF {
     public static  int ENVIO_A_INTERNO = 2;
     public static void createPdf(Context context,
                                  String nombreArchivo,
+                                 /*
                                  String oc_numero,String tipoRegistro, String ruccli, String codven, String nomcli,
                                  String telefono, String nomven, String direccion,
                                  String email_cliente, String email_vendedor,
                                  String desforpag, String monto_total,
                                  String valor_igv, String sub_total, String peso_total,
-                                 String fecha_oc, String fecha_mxe,
-                                 DataCabecera dataCabecera,
-                                 ArrayList<ReportePedidoCabeceraDetalle> dataPedidoCabeceraDetalles,
+                                 String fecha_oc, String fecha_mxe,*/
+                                 DataCabeceraPDF dataCabecera,
+                                 ArrayList<ReportePedidoDetallePDF> dataPedidoCabeceraDetalles,
                                  double tasaCambioSolesToDolar,
                                  int tipo_de_envio) throws FileNotFoundException
     {
@@ -71,9 +72,9 @@ public class PDF {
         /***
          * Formatter
          */
-        String subtotalFormateado = FormateadorNumero.formatter2decimal(sub_total);
-        String igvFormateado = FormateadorNumero.formatter2decimal(valor_igv);
-        String total_netoFormateado = FormateadorNumero.formatter2decimal(monto_total);
+        String subtotalFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getSubtotal());
+        String igvFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getValor_igv());
+        String total_netoFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getMonto_total());
 
         /***
          * PRINCIPAL IMAGE
@@ -96,9 +97,9 @@ public class PDF {
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
 
-        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(""+tipoRegistro).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(""+dataCabecera.getTipoRegistro()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBold().setBackgroundColor(gray).add(new Paragraph("N°").setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(oc_numero).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(dataCabecera.getOc_numero()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
 
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -108,10 +109,10 @@ public class PDF {
          * SPLIT
          */
 
-        String atencion_telefono = dataPedidoCabeceraDetalles.get(0).getObservacion();
+        String atencion_telefono = dataCabecera.getObservacion();
         ArrayList<String> at_tel = VARIABLES.GetListString(atencion_telefono, 2);
-        String at1 = at_tel.get(0);
-        String at2 = at_tel.get(1);
+        String clienteContacto = at_tel.size()>0?at_tel.get(0):"";
+        String clienteTelefono = at_tel.size()>1?at_tel.get(1):"";
 
         /***
          * TABLE N° 2
@@ -122,27 +123,27 @@ public class PDF {
         Table table1 = new Table(columnWidth1);
         //TABLE 2 ----- 01
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("RUC CLIENTE: ").setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(ruccli).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getRuccli()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FECHA: ").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(fecha_oc).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getFecha_oc()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("COD VEND: ").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(codven).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getCodven()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         //TABLE 2 ----- 02
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("RAZON SOCIAL:").setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(nomcli).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getNomcli()).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TELEFONO:").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(telefono).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getTelefono()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("VENDEDOR:").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(nomven).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getNomven()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         //TABLE 2 ----- 03
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("ATENCIÓN:").setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(at1).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(clienteContacto).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TELEFONO:").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(at2).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(clienteTelefono).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TELEFONO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table1.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getTelefono_vendedor()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table1.addCell(new Cell().add(new Paragraph(dataCabecera.getTelefono_vendedor()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         /***
          * TABLE N° 3
@@ -154,15 +155,15 @@ public class PDF {
 
         //TABLE 3 ----- 01
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DIRECCION").setFontSize(7f)));
-        table2.addCell(new Cell().add(new Paragraph(direccion).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        table2.addCell(new Cell().add(new Paragraph(dataCabecera.getDireccion()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("AREA").setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
-        table2.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getText_area()).setTextAlignment(TextAlignment.CENTER).setFontSize(6f)));
+        table2.addCell(new Cell().add(new Paragraph(dataCabecera.getText_area()).setTextAlignment(TextAlignment.CENTER).setFontSize(6f)));
 
         //TABLE 3 ----- 02
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("E-MAIL").setFontSize(7f)));
-        table2.addCell(new Cell().add(new Paragraph(email_cliente).setFontSize(7f)));
+        table2.addCell(new Cell().add(new Paragraph(dataCabecera.getEmail_cliente()).setFontSize(7f)));
         table2.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("E-MAIL").setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
-        table2.addCell(new Cell().add(new Paragraph(email_vendedor).setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
+        table2.addCell(new Cell().add(new Paragraph(dataCabecera.getEmail_vendedor()).setFontSize(7f).setTextAlignment(TextAlignment.CENTER)));
 
         //TABLE 3 ----- 03
         table2.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -174,11 +175,11 @@ public class PDF {
         /***
          * SPLIT
          */
-        String observaciones2_convertir = dataPedidoCabeceraDetalles.get(0).getObservacion2();
+        String observaciones2_convertir =dataCabecera.getObservacion2();
         ArrayList<String> observacion = VARIABLES.GetListString(observaciones2_convertir, 3);
-        String ob1 = observacion.get(0);
-        String ob2 = observacion.get(1);
-        String ob3 = observacion.get(2);
+        String nombreTransporte = observacion.size()>0?observacion.get(0):"";
+        String direccionAgencia = observacion.size()>1?observacion.get(1):"";
+        String nombreProyecto = observacion.size()>2?observacion.get(2):"";
         /***
          * TABLE N° 4
          */
@@ -187,15 +188,15 @@ public class PDF {
 
         //TABLE 3 ----- 01
         table3.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("TRANSPORTE / AGENCIA: ").setFontSize(7f)));
-        table3.addCell(new Cell().add(new Paragraph(ob1).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        table3.addCell(new Cell().add(new Paragraph(nombreTransporte).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
 
         //TABLE 3 ----- 02
         table3.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DIRECCION AGENCIA").setFontSize(7f)));
-        table3.addCell(new Cell().add(new Paragraph(ob2).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        table3.addCell(new Cell().add(new Paragraph(direccionAgencia).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
 
         //TABLE 3 ----- 03
         table3.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PROYECTO").setFontSize(7f)));
-        table3.addCell(new Cell().add(new Paragraph(ob3)).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
+        table3.addCell(new Cell().add(new Paragraph(nombreProyecto)).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
 
         //TABLE 3 ----- 04
         table3.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -209,13 +210,13 @@ public class PDF {
 
         //TABLE 6 ----- 01
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FORMA DE PAGO").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(desforpag).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDesforpag()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PLAZO ENTREGA").setFontSize(7f)));
         table6.addCell(new Cell().add(new Paragraph("48 HRS.").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
         //TABLE 6 ----- 02
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FECHA ENTREGA").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(fecha_mxe).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getFecha_mxe()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("VALIDEZ OFERTA").setFontSize(7f)));
         table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDiasVigencia()+" DÍAS").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
@@ -232,17 +233,23 @@ public class PDF {
         double tipoCambio=-1;
         String observaciones;
 
-        if (dataPedidoCabeceraDetalles.get(0).getMoneda().equals("1"))
+        if (dataCabecera.getMoneda().equals("1"))
         {
             moneda = "S/. ";
             tipoCambio=tasaCambioSolesToDolar;
             observaciones = "Precio Expresado en MN SOLES S/. ";
         }
-        else
+        else if (dataCabecera.getMoneda().equals("2"))
         {
             moneda = "US$ ";
             tipoCambio=1;
             observaciones = "Precio Expresado en DÓLARES AMERICANOS US$ ";
+        }
+        else
+        {
+            moneda = dataCabecera.getMoneda();
+            tipoCambio=1;
+            observaciones = "Precio Expresado en moneda "+dataCabecera.getMoneda();
         }
 
         /***
@@ -265,7 +272,8 @@ public class PDF {
 
             for (int i = 0; i < dataPedidoCabeceraDetalles.size(); i++)
             {
-                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(i + 1)).setFontSize(7f)));
+                String itemDetalle = dataPedidoCabeceraDetalles.get(i).getItem().length()>0?dataPedidoCabeceraDetalles.get(i).getItem(): String.valueOf(i + 1);
+                tableItems.addCell(new Cell().add(new Paragraph(itemDetalle).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getCodpro())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
@@ -307,7 +315,8 @@ public class PDF {
 
             for (int i = 0; i < dataPedidoCabeceraDetalles.size(); i++)
             {
-                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(i + 1)).setFontSize(7f)));
+                String itemDetalle = dataPedidoCabeceraDetalles.get(i).getItem().length()>0?dataPedidoCabeceraDetalles.get(i).getItem(): String.valueOf(i + 1);
+                tableItems.addCell(new Cell().add(new Paragraph(itemDetalle).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getCodpro())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
@@ -354,7 +363,7 @@ public class PDF {
         tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + subtotalFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 01
-        tableData.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(0).getObservacion3()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph(dataCabecera.getObservacion3()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("IGV").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph(moneda + igvFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
@@ -364,7 +373,7 @@ public class PDF {
         tableData.addCell(new Cell().add(new Paragraph(moneda + total_netoFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 03
-        String pa = FormateadorNumero.formatter2decimal(peso_total);
+        String pa = FormateadorNumero.formatter2decimal(dataCabecera.getPeso_total());
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("Peso Aprox.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("KG " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
@@ -372,9 +381,9 @@ public class PDF {
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
         if (tipo_de_envio == ENVIO_A_INTERNO){
-            double pkDolar=Double.parseDouble(sub_total)/Double.parseDouble(peso_total)/tipoCambio;
+            double pkDolar=Double.parseDouble(dataCabecera.getSubtotal())/Double.parseDouble(dataCabecera.getPeso_total())/tipoCambio;
             tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv $)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(" "+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 
         /***

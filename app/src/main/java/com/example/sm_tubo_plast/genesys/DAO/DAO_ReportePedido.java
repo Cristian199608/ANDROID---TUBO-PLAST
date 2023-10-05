@@ -5,8 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.sm_tubo_plast.genesys.BEAN.DataCabecera;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -23,134 +23,61 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
     }
 
     @SuppressLint("Range")
-    public ArrayList<ReportePedidoCabeceraDetalle> getAllDataByCodigo(String oc_num)
+    public ArrayList<ReportePedidoDetallePDF> getAllDataByCodigo(String oc_num)
     {
         try
         {
-            ArrayList<ReportePedidoCabeceraDetalle> objDbPedidoCabeceraDetalleArrayList = new ArrayList<>();
+            ArrayList<ReportePedidoDetallePDF> objDbPedidoCabeceraDetalleArrayList = new ArrayList<>();
             SQLiteDatabase objSqLiteDatabase = getReadableDatabase();
             if (objSqLiteDatabase != null)
             {
                 Cursor objCursor = objSqLiteDatabase.rawQuery(
-                        "SELECT PC.oc_numero, C.ruccli, " +
-                                "V.codven, C.nomcli, " +
-                                "C.telefono, V.nomven, " +
-                                "C.direccionFiscal, C.email, " +
-                                "V.email, T.descripcion, " +
-                                "FP.desforpag, PC.monto_total, " +
-                                "PC.valor_igv, PC.subtotal, " +
-                                "PC.peso_total, PC.fecha_oc, " +
-                                "PC.fecha_mxe,  P.codpro, PD.cantidad, " +
-                                "PD.unidad_medida, P.despro, " +
-                                "PC.moneda, PD.precio_bruto, " +
-                                "PD.precio_neto, " +
+                        "SELECT " +
+                                "PD.oc_numero," +
+                                "PD.cip as codpro, " +
+                                "P.despro, " +
+                                "PD.cantidad, " +
+                                "PD.unidad_medida, " +
+                                "PD.precio_bruto, " +
                                 "ifnull(PD.porcentaje_desc, 0) as porcentaje_desc," +
-                                "V.telefono, V.text_area, " +
-                                "PC.observacion, PC.observacion2, " +
-                                "PC.observacion3," +
                                 "PD.peso_bruto," +
-                                "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra " +
-                                "FROM " +
-                                "pedido_cabecera PC " +
-                                "CROSS JOIN " +
-                                "cliente C " +
-                                "CROSS JOIN " +
-                                "vendedor V " +
-                                "CROSS JOIN " +
-                                "transporte T " +
-                                "CROSS JOIN " +
-                                "forma_pago FP " +
-                                "CROSS JOIN " +
-                                "pedido_detalle PD " +
-                                "CROSS JOIN " +
-                                "producto P " +
+                                "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra, " +
+                                "PD.precio_neto " +
+                                "FROM  pedido_detalle PD " +
+                                "CROSS JOIN  producto P " +
                                 "WHERE " +
-                                "PC.oc_numero = '" + oc_num + "' " +
-                                "AND " +
                                 "PD.oc_numero = '" + oc_num + "' " +
                                 "AND " +
-                                "PD.cip = P.codpro " +
-                                "AND " +
-                                "PC.cod_cli = C.codcli " +
-                                "AND " +
-                                "V.codven = PC.cod_emp " +
-                                "AND " +
-                                "PC.codigoTransportista = T.codigoTransporte " +
-                                "AND " +
-                                "C.codcli = T.codigoCliente " +
-                                "AND " +
-                                "PC.cond_pago = FP.codforpag "
-                                , null);
+                                "PD.cip = P.codpro ",
+                        null);
                 if (objCursor.getCount() != 0)
                 {
                     while (objCursor.moveToNext())
                     {
-                        String oc_numero = objCursor.getString(0);
-                        String ruccli = objCursor.getString(1);
-                        String codven = objCursor.getString(2);
-                        String nomcli = objCursor.getString(3);
-                        String telefono_cliente = objCursor.getString(4);
-                        String nomven = objCursor.getString(5);
-                        String direccionFiscal = objCursor.getString(6);
-                        String email_cliente = objCursor.getString(7);
-                        String email_vendedor = objCursor.getString(8);
-                        String descripcion = objCursor.getString(9);
-                        String desforpag = objCursor.getString(10);
-                        String monto_total = objCursor.getString(11);
-                        String valor_igv = objCursor.getString(12);
-                        String sub_total = objCursor.getString(13);
-                        String peso_total = objCursor.getString(14);
-                        String fecha_oc = objCursor.getString(15);
-                        String fecha_mxe = objCursor.getString(16);
-                        String codpro = objCursor.getString(17);
-                        int cantidad = Integer.parseInt(objCursor.getString(18));
-                        String unidad_medida = objCursor.getString(19);
-                        String despro = objCursor.getString(20);
-                        String moneda = objCursor.getString(21);
-                        String precio_bruto = objCursor.getString(22);
-                        String precio_neto = objCursor.getString(23);
-                        String porcentaje_desc = objCursor.getString(24);
-                        String telefono_vendedor = objCursor.getString(25);
-                        String text_area = objCursor.getString(26);
-                        String observacion = objCursor.getString(27);
-                        String observacion2 = objCursor.getString(28);
-                        String observacion3 = objCursor.getString(29);
+
+                        String oc_numero = objCursor.getString(objCursor.getColumnIndex("oc_numero"));
+                        String codpro = objCursor.getString(objCursor.getColumnIndex("codpro"));
+                        int cantidad = Integer.parseInt(objCursor.getString(objCursor.getColumnIndex("cantidad")));
+                        String unidad_medida = objCursor.getString( objCursor.getColumnIndex("unidad_medida"));
+                        String despro = objCursor.getString(objCursor.getColumnIndex("despro"));
+                        String precio_bruto = objCursor.getString(objCursor.getColumnIndex("precio_bruto"));
+                        String precio_neto = objCursor.getString(objCursor.getColumnIndex("precio_neto"));
                         double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
+                        String porcentaje_desc = objCursor.getString(   objCursor.getColumnIndex("porcentaje_desc"));
                         double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
 
                         objDbPedidoCabeceraDetalleArrayList.add(
-                                new ReportePedidoCabeceraDetalle(
+                                new ReportePedidoDetallePDF(
                                         oc_numero,
-                                        ruccli,
-                                        codven,
-                                        nomcli,
-                                        telefono_cliente,
-                                        nomven,
-                                        direccionFiscal,
-                                        email_cliente,
-                                        email_vendedor,
-                                        descripcion,
-                                        desforpag,
-                                        monto_total,
-                                        valor_igv,
-                                        sub_total,
-                                        peso_total,
-                                        fecha_oc,
-                                        fecha_mxe,
+                                        "",
                                         codpro,
                                         cantidad,
                                         unidad_medida,
                                         despro,
-                                        moneda,
                                         precio_bruto,
                                         precio_neto,
                                         porcentaje_desc,
                                         porcentaje_desc_extra,
-                                        telefono_vendedor,
-                                        text_area,
-                                        observacion,
-                                        observacion2,
-                                        observacion3,
                                         pesoTotalProducto
                                 ));
                     }
@@ -176,11 +103,11 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
     }
 
     @SuppressLint("Range")
-    public ArrayList<DataCabecera> getCabecera(String oc_num)
+    public ArrayList<DataCabeceraPDF> getCabecera(String oc_num)
     {
 
         oc_num=oc_num.replace(" ", "%");
-        ArrayList<DataCabecera> objDbPedidoCabeceraArrayList = new ArrayList<>();
+        ArrayList<DataCabeceraPDF> objDbPedidoCabeceraArrayList = new ArrayList<>();
         SQLiteDatabase objSqLiteDatabase = getReadableDatabase();
         if (objSqLiteDatabase != null)
         {
@@ -235,10 +162,10 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
 
             if (objCursor.getCount() != 0)
             {
-                DataCabecera cabecera;
+                DataCabeceraPDF cabecera;
                 while (objCursor.moveToNext())
                 {
-                    cabecera=new DataCabecera();
+                    cabecera=new DataCabeceraPDF();
                     cabecera.setOc_numero(objCursor.getString(objCursor.getColumnIndex("oc_numero")));
                     cabecera.setNomcli(objCursor.getString(objCursor.getColumnIndex("nomcli")));
                     cabecera.setRuccli(objCursor.getString(objCursor.getColumnIndex("ruccli")));
@@ -248,7 +175,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     cabecera.setDireccion(objCursor.getString(objCursor.getColumnIndex("direccion")));
                     cabecera.setEmail_cliente(objCursor.getString(objCursor.getColumnIndex("emailCliente")));
                     cabecera.setEmail_vendedor(objCursor.getString(objCursor.getColumnIndex("emailVendedor")));
-                    cabecera.setDescripcion(objCursor.getString(objCursor.getColumnIndex("descripcion")));
+                    //cabecera.setDescripcion(objCursor.getString(objCursor.getColumnIndex("descripcion")));
                     cabecera.setDesforpag(objCursor.getString(objCursor.getColumnIndex("desforpag")));
                     cabecera.setMonto_total(objCursor.getString(objCursor.getColumnIndex("monto_total")));
                     cabecera.setValor_igv(objCursor.getString(objCursor.getColumnIndex("valor_igv")));

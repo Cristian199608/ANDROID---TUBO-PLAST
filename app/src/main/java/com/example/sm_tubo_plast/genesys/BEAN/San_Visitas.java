@@ -471,9 +471,6 @@ public class San_Visitas {
         presentacion_producto.setTextoColor(R.color.grey_700);
         presentacion_producto.setPadding(50,2,5,5);
         return presentacion_producto.Generate(valor);
-
-
-
     }
     public void showDialog_ver_tplast(Activity activity, San_Visitas sa, boolean isPlanificada){
 

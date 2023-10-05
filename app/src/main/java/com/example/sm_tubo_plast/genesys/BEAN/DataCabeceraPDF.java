@@ -1,6 +1,6 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
-public class DataCabecera {
+public class DataCabeceraPDF {
     String oc_numero;
     String nomcli;
     String ruccli;
@@ -10,7 +10,7 @@ public class DataCabecera {
     String direccion;
     String email_cliente;
     String email_vendedor;
-    String descripcion;
+    //String descripcion;
     String desforpag;
     String monto_total;
     String valor_igv;
@@ -24,8 +24,10 @@ public class DataCabecera {
     String observacion;
     String observacion2;
     String observacion3;
+
     String tipoRegistro;
     int diasVigencia;
+
 
     public String getOc_numero() {
         return oc_numero;
@@ -97,14 +99,6 @@ public class DataCabecera {
 
     public void setEmail_vendedor(String email_vendedor) {
         this.email_vendedor = email_vendedor;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public String getDesforpag() {
@@ -226,4 +220,5 @@ public class DataCabecera {
     public void setDiasVigencia(int diasVigencia) {
         this.diasVigencia = diasVigencia;
     }
+
 }

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -108,14 +109,7 @@
                 />
 
         </LinearLayout>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_height="wrap_content"
-            android:textColor="@color/red_500"
-            android:textSize="20sp"
-            android:buttonTint="@color/white"
-            android:text="Busqueda en línea no disponible por ahora" />
+
     </LinearLayout>
         <LinearLayout
             android:padding="5dp"
@@ -137,7 +131,7 @@
                 android:text="En linea" />
 
             <EditText
-                android:id="@+id/etBuscarVendedorResumen"
+                android:id="@+id/edtBuscarPedidos"
                 android:layout_width="0dp"
                 android:layout_weight="5"
                 android:layout_height="match_parent"
@@ -162,8 +156,20 @@
         </LinearLayout>
     </LinearLayout>
 
+    <com.example.sm_tubo_plast.genesys.util.recyclerView.RecyclerViewCustom
+        android:layout_above="@+id/layoutFooter"
+        android:layout_below="@+id/layout1"
+        android:id="@+id/myRecyclerViewPedidoCabcera"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|top"
+        tools:listitem="@layout/item_reporte_pedido"
+        />
+
     <ListView
         android:id="@+id/lv_reportes_pedidos"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/layoutFooter"

@@ -10,11 +10,17 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -28,6 +34,10 @@ import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
 public class UtilView {
+    public static final int TOAST_DONE = 0;
+    public static final int TOAST_WARNING = 1;
+    public static final int TOAST_ERROR = 2;
+
 
     public static void Efectos(Context context, View view, int color){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -212,6 +222,42 @@ public class UtilView {
             String resultOK(String s);
             String resultBucle(String s);
         }
+    }
+
+    public static void showCustomToast(Activity activity, String mensaje,int tipo){
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.toast_personalizado, (ViewGroup)activity.findViewById(R.id.toast_personalizado));
+
+        LinearLayout customToast = (LinearLayout) view.findViewById(R.id.toast_personalizado);
+        ImageView icon = (ImageView) view.findViewById(R.id.toast_icon);
+        TextView text = (TextView) view.findViewById(R.id.toast_text);
+
+        text.setText(mensaje);
+        text.setGravity(Gravity.CENTER);
+
+        switch (tipo) {
+            case TOAST_DONE:
+                customToast.setBackgroundResource(R.drawable.toast_done_container);
+                icon.setBackgroundResource(R.drawable.icon_done);
+                break;
+            case TOAST_WARNING:
+                customToast.setBackgroundResource(R.drawable.toast_warning_container);
+                icon.setBackgroundResource(R.drawable.icon_warning);
+                break;
+            case TOAST_ERROR:
+                customToast.setBackgroundResource(R.drawable.toast_wrong_container);
+                icon.setBackgroundResource(R.drawable.icon_error);
+                break;
+            default:
+                break;
+        }
+        text.setTextColor(activity.getResources().getColor(R.color.white));
+
+        Toast toast = new Toast(activity.getApplicationContext());
+        toast.setGravity(Gravity.BOTTOM, 0,15);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(view);
+        toast.show();
     }
 
 

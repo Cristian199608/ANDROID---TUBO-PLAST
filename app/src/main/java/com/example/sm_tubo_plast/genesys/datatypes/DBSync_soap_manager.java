@@ -16,6 +16,8 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
+import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoCabeceraRespose;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
@@ -6918,6 +6920,60 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		}catch(Exception e){
 			e.printStackTrace();
 			Log.i(TAG,S_TAG+"NO SINCRONIZADA: msg "+jsonstring);
+			throw new Exception(e);
+		}
+	}
+
+	public ArrayList<CotizacionCabeceraApi> SyncTBCotizacionCabeceraApi(
+			String codven, String codigo_pedido,
+			String codcli,
+			String fecha_desde,
+			String fecha_hasta,
+            int desde, int hasta
+			) throws Exception{
+		String S_TAG="SyncTBCotizacionCabeceraApi";
+		try{
+
+			String _METHOD_NAME="getTBCotizacionCabeceraApi_json";
+			ArrayList<String> parametros=new ArrayList<>();
+			parametros.add("codven"+__PARTIR___+codven);
+			parametros.add("codigo_pedido"+__PARTIR___+codigo_pedido);
+			parametros.add("codcli"+__PARTIR___+codcli);
+			parametros.add("fecha_desde"+__PARTIR___+fecha_desde);
+			parametros.add("fecha_hasta"+__PARTIR___+fecha_hasta);
+			parametros.add("desde"+__PARTIR___+desde);
+			parametros.add("hasta"+__PARTIR___+hasta);
+
+			String jsonstring = AddRequestHeader(parametros, _METHOD_NAME);
+			Log.i(TAG,S_TAG+":: "+jsonstring);
+			final Type malla = new TypeToken<ArrayList<CotizacionCabeceraApi>>() {}.getType();
+			final ArrayList<CotizacionCabeceraApi> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			return lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
+	public ArrayList<CotizacionDetalleApi>  SyncTBCotizacionDetalleApi(String codven, String codigo_pedido) throws Exception{
+		String S_TAG="SyncTBCotizacionDetalleApi";
+		try{
+			String _METHOD_NAME="getTBCotizacionDetalleApi_json";
+			ArrayList<String> parametros=new ArrayList<>();
+			parametros.add("codven"+__PARTIR___+codven);
+			parametros.add("codigo_pedido"+__PARTIR___+codigo_pedido);
+
+			String jsonstring = AddRequestHeader(parametros, _METHOD_NAME);
+			Log.i(TAG,S_TAG+":: "+jsonstring);
+			final Type malla = new TypeToken<ArrayList<CotizacionDetalleApi>>() {}.getType();
+			final ArrayList<CotizacionDetalleApi> lista = gson.fromJson(jsonstring.toString(), malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			return lista;
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
 			throw new Exception(e);
 		}
 	}
