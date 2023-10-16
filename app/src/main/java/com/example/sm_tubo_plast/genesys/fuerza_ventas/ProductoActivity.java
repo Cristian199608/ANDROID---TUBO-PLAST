@@ -246,7 +246,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         check_precio.setClickable(false);
         swForzarAgregarDuplicadoProduct.setVisibility(View.GONE);
 
-        if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
+        if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             tv_monedaPrecio.setText("S/.");
         }else{
             tv_monedaPrecio.setText("$.");
@@ -763,7 +763,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
         double valor_cambio=1;
-        if (codigoMoneda.equals(PedidosActivity.MONEDA_PEN)) {
+        if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             String tipo_de_cambio  = obj_dbclasses.getCambio("Tipo_cambio");
             valor_cambio  = Double.parseDouble(tipo_de_cambio);
         }

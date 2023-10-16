@@ -65,9 +65,9 @@ public class PDF2 {
         /***
          * Formatter
          */
-        String subtotal = FormateadorNumero.formatter2decimal(sub_total);
-        String igv = FormateadorNumero.formatter2decimal(valor_igv);
-        String total_neto = FormateadorNumero.formatter2decimal(monto_total);
+        String subtotal = FormateadorNumero.formatter3decimal(sub_total);
+        String igv = FormateadorNumero.formatter3decimal(valor_igv);
+        String total_neto = FormateadorNumero.formatter3decimal(monto_total);
 
         /***
          * PRINCIPAL IMAGE
@@ -261,9 +261,9 @@ public class PDF2 {
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
-                String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
+                String precio_bruto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
+                String precio_neto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }
 
@@ -302,12 +302,12 @@ public class PDF2 {
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
-                String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
+                String precio_bruto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 //String precioKilo = FormateadorNumero.formatter2decimal(Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getSubtotal())/dataPedidoCabeceraDetalles.get(i).getPesoTotal_Producto());
                 tableItems.addCell(new Cell().add(new Paragraph("precioKilo").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
-                String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
+                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
+                String precio_neto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }
 
@@ -353,7 +353,7 @@ public class PDF2 {
         tableData.addCell(new Cell().add(new Paragraph(moneda + total_neto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 03
-        String pa = FormateadorNumero.formatter2decimal(peso_total);
+        String pa = FormateadorNumero.formatter3decimal(peso_total);
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("Peso Aprox.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("KG. " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
@@ -362,7 +362,7 @@ public class PDF2 {
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
         if (tipo_de_envio == ENVIO_A_INTERNO){
             tableData.addCell(new Cell().add(new Paragraph("Precio Kilo.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter2decimal(Double.parseDouble(monto_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(moneda +" "+(FormateadorNumero.formatter3decimal(Double.parseDouble(monto_total)/Double.parseDouble(peso_total))) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 
         /***

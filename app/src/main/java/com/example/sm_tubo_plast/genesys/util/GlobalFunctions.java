@@ -576,22 +576,21 @@ public class GlobalFunctions {
     		case TOAST_DONE:
     			customToast.setBackgroundResource(R.drawable.toast_done_container);
     			icon.setBackgroundResource(R.drawable.icon_done);
-    			text.setTextColor(activity.getResources().getColor(R.color.green_500));
     			break;
     		case TOAST_WARNING:
     			customToast.setBackgroundResource(R.drawable.toast_warning_container);
     			icon.setBackgroundResource(R.drawable.icon_warning);
-    			text.setTextColor(activity.getResources().getColor(R.color.orange_500));
     			break;
     		case TOAST_ERROR:
     			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
     			icon.setBackgroundResource(R.drawable.icon_error);
-    			text.setTextColor(activity.getResources().getColor(R.color.red_500));
     			break;
     		default:
     			break;
     		}
-    		
+
+		  text.setTextColor(activity.getResources().getColor(R.color.white));
+
     		Toast toast = new Toast(activity.getApplicationContext());
     		switch (position) {
     		case POSICION_TOP:
@@ -627,22 +626,19 @@ public class GlobalFunctions {
   		case TOAST_DONE:
   			customToast.setBackgroundResource(R.drawable.toast_done_container);
   			icon.setBackgroundResource(R.drawable.icon_done);
-  			text.setTextColor(activity.getResources().getColor(R.color.green_500));
   			break;
   		case TOAST_WARNING:
   			customToast.setBackgroundResource(R.drawable.toast_warning_container);
   			icon.setBackgroundResource(R.drawable.icon_warning);
-  			text.setTextColor(activity.getResources().getColor(R.color.orange_500));
   			break;
   		case TOAST_ERROR:
   			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
   			icon.setBackgroundResource(R.drawable.icon_error);
-  			text.setTextColor(activity.getResources().getColor(R.color.red_500));
   			break;
   		default:
   			break;
   		}
-  		
+		  text.setTextColor(activity.getResources().getColor(R.color.white));
   		Toast toast = new Toast(activity.getApplicationContext());
   		switch (position) {
   		case POSICION_TOP:
@@ -681,22 +677,21 @@ public class GlobalFunctions {
     		case TOAST_DONE:
     			customToast.setBackgroundResource(R.drawable.toast_done_container);
     			icon.setBackgroundResource(R.drawable.icon_done);
-    			text.setTextColor(activity.getResources().getColor(R.color.green_500));    			
     			break;
     		case TOAST_WARNING:
     			customToast.setBackgroundResource(R.drawable.toast_warning_container);
     			icon.setBackgroundResource(R.drawable.icon_warning);
-    			text.setTextColor(activity.getResources().getColor(R.color.orange_500));    			
     			break;
     		case TOAST_ERROR:
     			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
     			icon.setBackgroundResource(R.drawable.icon_error);
-    			text.setTextColor(activity.getResources().getColor(R.color.red_500));    			
     			break;
     		default:
     			break;
     		}
-    		
+
+		  text.setTextColor(activity.getResources().getColor(R.color.white));
+
     		Toast toast = new Toast(activity.getApplicationContext());
     		toast.setGravity(Gravity.BOTTOM, 0,15);
     		toast.setDuration(Toast.LENGTH_LONG);

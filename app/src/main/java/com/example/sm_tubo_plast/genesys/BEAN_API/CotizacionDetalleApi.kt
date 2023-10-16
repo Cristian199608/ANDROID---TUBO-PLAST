@@ -13,6 +13,7 @@ class CotizacionDetalleApi
     var prct_descuento_extra:Double?=null;
     var precio_venta:Double?=null;
     var prct_igv:Int?=null;
+    var sub_total:Double?=null;
     var totart:Double?=null;
     var peso_total:Double?=null
     get() {
@@ -40,7 +41,7 @@ class CotizacionDetalleApi
             unidad_medida = this.unida_medida!!,
             despro = this.descr_producto!!,
             precio_bruto = this.precio_venta.toString(),
-            precio_neto = this.totart.toString(),
+            precio_neto = this.sub_total.toString(),// debe ser sub total
             porcentaje_desc = this.prct_descuento.toString(),
             porcentaje_desc_extra = this.prct_descuento_extra!!.toDouble(),
             pesoTotalProducto = this.peso_total!!

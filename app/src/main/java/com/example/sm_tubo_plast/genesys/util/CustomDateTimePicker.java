@@ -136,6 +136,15 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
         }
     }
 
+    public void setDateInitial(String date){
+
+        long initialData=VARIABLES.convertirFechaH_to_long(date, formatFecha);
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        calendar.setTimeInMillis(initialData);
+        datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+
     public String getFormatFecha() {
         return formatFecha;
     }
@@ -206,18 +215,24 @@ public class CustomDateTimePicker implements  TimePicker.OnTimeChangedListener, 
 
 
     ////////////////////////////////////////////////////////////////////////
-    public static void requestDialog(Activity activity, String prextext, TextView txtFechaDesde){
-
+    public static void requestDialog(Activity activity, String prextext, TextView txtFechaDesde, String initiaDate){
+        final CustomDateTimePicker[] dialoa = {null};
+        String formatDatax="dd-MM-yyyy";
         txtFechaDesde.setOnClickListener(v -> {
-            new CustomDateTimePicker(activity, (myCalendar, fecha_formateado) -> {
-                if (fecha_formateado!=null){
-                    txtFechaDesde.setText(prextext+""+fecha_formateado);
-                    txtFechaDesde.setHint(fecha_formateado);
-                } else{
-                    txtFechaDesde.setError("Error Fecha");
-                }
-                return null;
-            }, 0,0, true, false, false).Show();
+            if(dialoa[0]==null){
+                dialoa[0] = new CustomDateTimePicker(activity, (myCalendar, fecha_formateado) -> {
+                    if (fecha_formateado!=null){
+                        txtFechaDesde.setText(prextext+""+fecha_formateado);
+                        txtFechaDesde.setHint(fecha_formateado);
+                    } else{
+                        txtFechaDesde.setError("Error Fecha");
+                    }
+                    return null;
+                }, 0,0, true, false, false);
+                dialoa[0].setFormatFecha(formatDatax);
+                dialoa[0].setDateInitial(initiaDate);
+            }
+            dialoa[0].Show();
 
         });
     }

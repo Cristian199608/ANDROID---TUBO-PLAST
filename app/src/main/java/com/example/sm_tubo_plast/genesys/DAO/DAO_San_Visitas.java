@@ -526,6 +526,13 @@ public class DAO_San_Visitas {
         San_Visitas visita= lll.size()>0?lll.get(0):null;
         return visita;
     }
+    public  static  San_Visitas getSan_VisitarByOc_numero(DBclasses dBclasses,String Oc_numero){
+        String where1 = "where  "+DBtables.San_Visitas.oc_numero_visitar+" = '"+Oc_numero+"' ";
+
+        ArrayList<San_Visitas> lll= DBSan_Visitas(dBclasses, where1, "");
+        San_Visitas visita= lll.size()>0?lll.get(0):null;
+        return visita;
+    }
 
     public  static  boolean isSan_VisitasByID(SQLiteDatabase _db,int id_visita){
 

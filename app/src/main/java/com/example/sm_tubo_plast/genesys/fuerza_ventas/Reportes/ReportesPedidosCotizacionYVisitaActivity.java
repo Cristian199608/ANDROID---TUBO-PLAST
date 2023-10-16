@@ -9,9 +9,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,10 +45,11 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraBEAN;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
-import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
+
+import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
@@ -125,13 +126,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     DBMotivo_noventa item;
     DBclasses obj_dbclasses;
     DAO_ReportePedido dao_reportePedido;
-    ArrayList<HashMap<String, String>> pedidos = new ArrayList<HashMap<String, String>>();
     ArrayList<IReportePedidoCabecera> IreportecabeceraLista=new ArrayList<>();
     WS_Cotizaciones ws_cotizaciones=null;
     ArrayList<DB_RegistroBonificaciones> registroBonificaciones;
     Gson gson = new Gson();
     DAO_RegistroBonificaciones DAORegistroBonificaciones;
-    ListView list;
+
     RecyclerViewCustom myRecyclerViewPedidoCabcera;
     ReportesPedidosCabeceraRecyclerView adapterRecyclerView;
     // ReportesPedidosAdapter adapter_pedido;
@@ -150,7 +150,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     ArrayList<HashMap<String, String>> searchResults;
     public String oc_numero = "";
     public String cond_pago = "";
-    ReportesPedidos_Adapter adapter;
+    //ReportesPedidos_Adapter adapter;
     private int mSelectedRow = 0;
     int selectedPosition1 = 0;
     public double montoTotal_soles;
@@ -238,7 +238,6 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
         Log.d("ALERT - REPORTE - cod vend:", codven);
 
-        list = (ListView) findViewById(R.id.lv_reportes_pedidos);
         myRecyclerViewPedidoCabcera = (RecyclerViewCustom) findViewById(R.id.myRecyclerViewPedidoCabcera);
 
         formateador = GlobalFunctions.formateador();
@@ -250,18 +249,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
         connection = new ConnectionDetector(getApplicationContext());
 
-        cargarListView();
-        imgBuscarDatos.setOnClickListener(v -> {
-            if (chkBuscarEnLinea!=null) {
-                if (chkBuscarEnLinea.isChecked()) {
-                    ws_cotizaciones=null;
-                    buscarCotizacionesOnline();
-                }else new asyncBuscar().execute("", "");
-            }else new asyncBuscar().execute("", "");
 
-
-        });
-        imgBuscarDatos.performClick();
 
         ActionItem modificarItem = new ActionItem(ID_MODIFICAR, "Modificar",R.drawable.icon_edit_file_24dp);
         ActionItem acceptItem = new ActionItem(ID_DETALLE, "Ver Detalle",R.drawable.icon_show_file_24dp);
@@ -304,11 +292,14 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     @Override
                     public void onItemClick(ActionItem item) {
                         int actionId=item.getActionId();
-                        if (actionId == ID_ANULAR) {
+                        ReportePedidoCabeceraBEAN itemData= getInstancePedidoCabceraLocal();
+                        if(itemData==null) {
+                            return;
+                        }
 
+                        if (actionId == ID_ANULAR) {
                             async_getFlagPedido con = new async_getFlagPedido();
                             con.execute(oc_numero, "MOTIVO");
-
                         }
                         /*
                          * else if(actionId == ID_DELETE){ async_getFlagPedido
@@ -317,7 +308,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                          */
                         else if (actionId == ID_MODIFICAR) {
 
-                            int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
+
+                            int cod_noventa=Integer.parseInt(""+  itemData.getMotivo_noventa());
                             if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
                                 UtilViewMensaje.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Modificar?",
                                         "Para modificar, dirijase desde el menu principal, AGENDA-> seleccione la actividad" );
@@ -346,7 +338,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                         }
 
                         else if (actionId == ID_DETALLE) {
-                            int cod_noventa=Integer.parseInt(""+pedidos.get(mSelectedRow).get(KEY_NOVENTA).toString());
+                            int cod_noventa=Integer.parseInt(""+  itemData.getMotivo_noventa());
                             if (cod_noventa>0 && GlobalVar.CODIGO_VISITA_CLIENTE==cod_noventa){
                                 if (DAO_San_Visitas.GetVisitasByOc_numero(obj_dbclasses, oc_numero, GestionVisita3Activity.VISITA_PLANIFICADA).size()>0) {
                                     Intent intent=new Intent(ReportesPedidosCotizacionYVisitaActivity.this, GestionVisita3Activity.class);
@@ -374,8 +366,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                                     startActivity(ipedido);
     
                                 } else {
-                                    async_getFlagPedido con = new async_getFlagPedido();
-                                    con.execute(oc_numero, "PEDIDO-DETALLE");
+                                    verPedidoDetalle(itemData);
                                 }
                             }
 
@@ -406,6 +397,11 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     @Override
                     public void onItemClick(ActionItem item) {
                         int actionId=item.getActionId();
+
+                        ReportePedidoCabeceraBEAN itemData= getInstancePedidoCabceraLocal();
+                        if(itemData==null) {
+                            return;
+                        }
 
                         if (actionId == ID_ANULAR) {
 
@@ -451,8 +447,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                                 startActivity(ipedido);
 
                             } else {
-                                async_getFlagPedido con = new async_getFlagPedido();
-                                con.execute(oc_numero, "PEDIDO-DETALLE");
+                                verPedidoDetalle(itemData);
                             }
 
 
@@ -493,6 +488,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     public void onItemClick(ActionItem item) {
                         int actionId=item.getActionId();
                         if(actionId == ID_GENERAR_PDF){
+
                             ws_cotizaciones.getDataDetalles(oc_numero, (success, dataDetalle) ->{
                                 if(!success){
                                     UtilView.showCustomToast(
@@ -526,15 +522,26 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
         configEventsCotizacionesYPedido();
 
+        imgBuscarDatos.setOnClickListener(v -> {
+            if (chkBuscarEnLinea!=null) {
+                if (chkBuscarEnLinea.isChecked()) {
+                    ws_cotizaciones=null;
+                    buscarCotizacionesOnline();
+                }else new asyncBuscar().execute("", "");
+            }else new asyncBuscar().execute("", "");
 
-        list.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                onCLikItemListData(position, view);
-
-            }
         });
+        imgBuscarDatos.performClick();
 
+    }
+    private ReportePedidoCabeceraBEAN getInstancePedidoCabceraLocal(){
+        if(!(IreportecabeceraLista.get(mSelectedRow) instanceof ReportePedidoCabeceraBEAN))
+        {
+            UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,
+                    "No se encontro la instancia del pedido",UtilView.TOAST_ERROR);
+            return null;
+        }
+        return (ReportePedidoCabeceraBEAN)IreportecabeceraLista.get(mSelectedRow);
     }
     private void onCLikItemListData(int position, View view){
 
@@ -632,12 +639,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         String fecha=VARIABLES.GET_FECHA_DIA_INICIO_MES_STRING_dd_mm_yyy();
         txtFechaDesde.setText("de: "+fecha);
         txtFechaDesde.setHint(fecha);
-        CustomDateTimePicker.requestDialog(this, "de: ", txtFechaDesde);
+        CustomDateTimePicker.requestDialog(this, "de: ", txtFechaDesde, fecha);
 
         String fechaHasta=VARIABLES.GET_FECHA_ACTUAL_STRING_dd_mm_yyy();
         txtFechaHasta.setText("a: "+fechaHasta);
         txtFechaHasta.setHint(fechaHasta);
-        CustomDateTimePicker.requestDialog(this, "de ", txtFechaHasta);
+        CustomDateTimePicker.requestDialog(this, "de ", txtFechaHasta, fechaHasta);
     }
 
     @Override
@@ -766,18 +773,17 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         emptyView.setPadding(50,150,50,50);
         ///((ViewGroup) list.getParent()).addView(emptyView);
         emptyView.setClickable(false);
-       list.setEmptyView(emptyView);//necesario
 
         adapterRecyclerView= new ReportesPedidosCabeceraRecyclerView(this, obj_dbclasses, IreportecabeceraLista);
         myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
 
-        adapter = new ReportesPedidos_Adapter(getApplicationContext(),R.layout.item_reporte_pedido, pedidos);
+
 //((ReportesPedidos_Adapter) list.getAdapter()).notifyDataSetChanged();
         // adapter_pedido=new ReportesPedidosAdapter(this, pedidos);
-        list.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
-        if (pedidos.size()==0 && IreportecabeceraLista.size()==0) {
+
+
+        if (IreportecabeceraLista.size()==0 && IreportecabeceraLista.size()==0) {
             btn_peso.setVisibility(View.INVISIBLE);
             tv_montoTotal_soles.setVisibility(View.INVISIBLE);
             tv_montoTotal_dolares.setVisibility(View.INVISIBLE);
@@ -868,7 +874,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         } else if (tipo.equalsIgnoreCase("documento")) {
             lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
         } else {
-            lista_pedidos = obj_dbclasses.getPedidosCabecera(TIPO_VISTA, edtBuscarPedidos.getText().toString());
+            lista_pedidos = obj_dbclasses.getPedidosCabecera(
+                    TIPO_VISTA,
+                    edtBuscarPedidos.getText().toString());
         }
 
         Iterator<DBPedido_Cabecera> it = lista_pedidos.iterator();
@@ -922,7 +930,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
            // pedidos.add(map);
             Log.w("fecha_oc", cta.getFecha_oc());
             IreportecabeceraLista.add(reportePedidoCabeceraBEAN);
-            if (cta.getMoneda().equals(PedidosActivity.MONEDA_PEN)) {
+            if (cta.getMoneda().equals(PedidosActivity.MONEDA_SOLES_IN)) {
                 montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
             } else {
                 montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
@@ -1068,7 +1076,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 mensaje = "Sin conexion al servidor";
             }
 
-            pedidos.clear();
+            IreportecabeceraLista.clear();
             cargarPedidos("", "");
 
             return mensaje;
@@ -1085,8 +1093,6 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             pDialog=null;
             Log.e("onPostExecute= Enviado", "" + mensaje);
 
-            ((ReportesPedidos_Adapter) list.getAdapter())
-                    .notifyDataSetChanged();
 
             tv_totalPedidos.setText("Cantidad:" + contador);
 
@@ -1138,90 +1144,90 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             } else
                 viewHolder = (ViewHolder) convertView.getTag();
 
-            if (pedidos.get(position).get("flag").toString().equals("E")) {
-                viewHolder.foto.setBackgroundColor(Color.rgb(46, 178, 0));
-            } else if (pedidos.get(position).get("flag").toString().equals("I")) {
-                viewHolder.foto.setBackgroundColor(Color.rgb(255, 255, 0));
-            } else if (pedidos.get(position).get("flag").toString().equals("P")) {
-                viewHolder.foto.setBackgroundColor(Color.rgb(255, 30, 30));
-                viewHolder.estado.setTextColor(Color.rgb(255, 30, 30));
-            } else if (pedidos.get(position).get("flag").toString().equals("T")) {
-                viewHolder.foto.setBackgroundColor(Color.rgb(75, 0, 130));
-                viewHolder.estado.setTextColor(Color.rgb(75, 0, 130));
-            }
+//            if (IreportecabeceraLista.get(position).get("flag").toString().equals("E")) {
+//                viewHolder.foto.setBackgroundColor(Color.rgb(46, 178, 0));
+//            } else if (IreportecabeceraLista.get(position).get("flag").toString().equals("I")) {
+//                viewHolder.foto.setBackgroundColor(Color.rgb(255, 255, 0));
+//            } else if (IreportecabeceraLista.get(position).get("flag").toString().equals("P")) {
+//                viewHolder.foto.setBackgroundColor(Color.rgb(255, 30, 30));
+//                viewHolder.estado.setTextColor(Color.rgb(255, 30, 30));
+//            } else if (IreportecabeceraLista.get(position).get("flag").toString().equals("T")) {
+//                viewHolder.foto.setBackgroundColor(Color.rgb(75, 0, 130));
+//                viewHolder.estado.setTextColor(Color.rgb(75, 0, 130));
+//            }
+//
+//            String moneda = "" + IreportecabeceraLista.get(position).get("moneda").toString();
+//            if (moneda.equals(PedidosActivity.MONEDA_PEN)) {
+//                viewHolder.moneda.setText("S/.");
+//            } else {
+//                viewHolder.moneda.setText("$.");
+//            }
 
-            String moneda = "" + pedidos.get(position).get("moneda").toString();
-            if (moneda.equals(PedidosActivity.MONEDA_PEN)) {
-                viewHolder.moneda.setText("S/.");
-            } else {
-                viewHolder.moneda.setText("$.");
-            }
-
-            String estado = pedidos.get(position).get("estado").toString();
-            int codnoventa = Integer.parseInt(pedidos.get(position).get(KEY_NOVENTA).toString());
-
-            viewHolder.edtFechavisita.setText("");
-            if (codnoventa==GlobalVar.CODIGO_VISITA_CLIENTE){
-                San_Visitas san=DAO_San_Visitas.getSan_VisitaByOc_numero(obj_dbclasses,  pedidos.get(position).get(KEY_NUMOC).toString());
-
-                if (san!=null) {
-                    viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
-                    viewHolder.edtFechavisita.setTextColor(getResources().getColor(R.color.teal_600));
-                    viewHolder.edtFechavisita.setText("Visitado: "+san.getFecha_Ejecutada());
-                }
-            }
-            else if (estado.equals("A")) {
-                viewHolder.nomcliente.setTextColor(Color.parseColor("#FF0000"));
-                viewHolder.moneda.setText("");
-            } else {
-                viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
-            }
-            viewHolder.nomcliente.setText(pedidos.get(position)
-                    .get("nombrecliente").toString());
-            viewHolder.tipopago.setText(pedidos.get(position).get("tipopago")
-                    .toString());
-            viewHolder.total.setText(pedidos.get(position).get("total")
-                    .toString());
-            viewHolder.numoc.setText(pedidos.get(position).get("numoc").toString());
-            viewHolder.estado.setText(pedidos.get(position).get("mensaje")
-                    .toString());
-            if (pedidos.get(position).get("tipoRegistro").toString().equals(PedidosActivity.TIPO_COTIZACION)) {
-                viewHolder.tv_tipoRegistro.setText("C");
-                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.indigo_500));
-
-                if (pedidos.get(position).get("pedidoAnterior").toString().equals("")) {
-                    viewHolder.labell.setVisibility(View.INVISIBLE);
-                    viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
-                }else{
-                    viewHolder.tv_pedidoAnterior.setText(pedidos.get(position).get("pedidoAnterior").toString());
-                    viewHolder.numoc.setTextColor(getResources().getColor(R.color.indigo_500));
-                }
-
-                convertView.setBackgroundResource(R.drawable.selector_reporte_cotizacion);
-            }else if (pedidos.get(position).get("tipoRegistro").toString().equals(PedidosActivity.TIPO_DEVOLUCION)) {
-                viewHolder.tv_tipoRegistro.setText("D");
-                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.brown_500));
-                viewHolder.labell.setVisibility(View.INVISIBLE);
-                viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
-                convertView.setBackgroundResource(R.drawable.selector_reporte_devolucion);
-            }else{
-                viewHolder.tv_tipoRegistro.setText("P");
-                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.teal_500));
-                viewHolder.labell.setVisibility(View.INVISIBLE);
-                viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
-                convertView.setBackgroundResource(R.drawable.selector_reporte_pedido);
-            }
-            boolean isRequired=obj_dbclasses.RequiereValidacionPorDescuento(pedidos.get(position).get("numoc").toString());
-            viewHolder.imgCampanaYellow.setVisibility(isRequired?View.VISIBLE:View.GONE);
-            if (VARIABLES.IsLatitudValido(pedidos.get(position).get("latitud"))){
-                viewHolder.edtObservacion_pedido.setText("");
-            }else{
-                if (pedidos.get(position).get(KEY_NOVENTA).toString().equals(""+GlobalVar.CODIGO_VISITA_CLIENTE)){
-                    viewHolder.edtObservacion_pedido.setText("");
-                }else{
-                    viewHolder.edtObservacion_pedido.setText("Pedido sin posición");
-                }
-            }
+//            String estado = IreportecabeceraLista.get(position).get("estado").toString();
+//            int codnoventa = Integer.parseInt(IreportecabeceraLista.get(position).get(KEY_NOVENTA).toString());
+//
+//            viewHolder.edtFechavisita.setText("");
+//            if (codnoventa==GlobalVar.CODIGO_VISITA_CLIENTE){
+//                San_Visitas san=DAO_San_Visitas.getSan_VisitaByOc_numero(obj_dbclasses,  IreportecabeceraLista.get(position).get(KEY_NUMOC).toString());
+//
+//                if (san!=null) {
+//                    viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
+//                    viewHolder.edtFechavisita.setTextColor(getResources().getColor(R.color.teal_600));
+//                    viewHolder.edtFechavisita.setText("Visitado: "+san.getFecha_Ejecutada());
+//                }
+//            }
+//            else if (estado.equals("A")) {
+//                viewHolder.nomcliente.setTextColor(Color.parseColor("#FF0000"));
+//                viewHolder.moneda.setText("");
+//            } else {
+//                viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
+//            }
+//            viewHolder.nomcliente.setText(IreportecabeceraLista.get(position)
+//                    .get("nombrecliente").toString());
+//            viewHolder.tipopago.setText(IreportecabeceraLista.get(position).get("tipopago")
+//                    .toString());
+//            viewHolder.total.setText(IreportecabeceraLista.get(position).get("total")
+//                    .toString());
+//            viewHolder.numoc.setText(IreportecabeceraLista.get(position).get("numoc").toString());
+//            viewHolder.estado.setText(IreportecabeceraLista.get(position).get("mensaje")
+//                    .toString());
+//            if (IreportecabeceraLista.get(position).get("tipoRegistro").toString().equals(PedidosActivity.TIPO_COTIZACION)) {
+//                viewHolder.tv_tipoRegistro.setText("C");
+//                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.indigo_500));
+//
+//                if (IreportecabeceraLista.get(position).get("pedidoAnterior").toString().equals("")) {
+//                    viewHolder.labell.setVisibility(View.INVISIBLE);
+//                    viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
+//                }else{
+//                    viewHolder.tv_pedidoAnterior.setText(IreportecabeceraLista.get(position).get("pedidoAnterior").toString());
+//                    viewHolder.numoc.setTextColor(getResources().getColor(R.color.indigo_500));
+//                }
+//
+//                convertView.setBackgroundResource(R.drawable.selector_reporte_cotizacion);
+//            }else if (IreportecabeceraLista.get(position).get("tipoRegistro").toString().equals(PedidosActivity.TIPO_DEVOLUCION)) {
+//                viewHolder.tv_tipoRegistro.setText("D");
+//                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.brown_500));
+//                viewHolder.labell.setVisibility(View.INVISIBLE);
+//                viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
+//                convertView.setBackgroundResource(R.drawable.selector_reporte_devolucion);
+//            }else{
+//                viewHolder.tv_tipoRegistro.setText("P");
+//                viewHolder.tv_tipoRegistro.setBackgroundColor(getResources().getColor(R.color.teal_500));
+//                viewHolder.labell.setVisibility(View.INVISIBLE);
+//                viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
+//                convertView.setBackgroundResource(R.drawable.selector_reporte_pedido);
+//            }
+//            boolean isRequired=obj_dbclasses.RequiereValidacionPorDescuento(IreportecabeceraLista.get(position).get("numoc").toString());
+//            viewHolder.imgCampanaYellow.setVisibility(isRequired?View.VISIBLE:View.GONE);
+//            if (VARIABLES.IsLatitudValido(IreportecabeceraLista.get(position).get("latitud"))){
+//                viewHolder.edtObservacion_pedido.setText("");
+//            }else{
+//                if (IreportecabeceraLista.get(position).get(KEY_NOVENTA).toString().equals(""+GlobalVar.CODIGO_VISITA_CLIENTE)){
+//                    viewHolder.edtObservacion_pedido.setText("");
+//                }else{
+//                    viewHolder.edtObservacion_pedido.setText("Pedido sin posición");
+//                }
+//            }
 
 
             OnClickCustom(viewHolder.imgCampanaYellow);
@@ -1350,10 +1356,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
                                 guardarCabeceraPedido(item.getCod_noventa());
 
-                                pedidos.clear();
+                                IreportecabeceraLista.clear();
                                 cargarPedidos("", "");
-                                ((ReportesPedidos_Adapter) list.getAdapter())
-                                        .notifyDataSetChanged();
+                                adapterRecyclerView.notifyDataSetChanged();
                                 dialogo.dismiss();
                             }
                         });
@@ -1415,7 +1420,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
             }
 
-            pedidos.clear();
+            IreportecabeceraLista.clear();
             cargarPedidos("", "");
 
             return valor;
@@ -1441,8 +1446,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG)
                     .show();
 
-            ((ReportesPedidos_Adapter) list.getAdapter())
-                    .notifyDataSetChanged();
+
             dialogo.dismiss();
 
         }
@@ -1519,6 +1523,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
             pDialog.dismiss();// ocultamos progess dialog.
 
+            ReportePedidoCabeceraBEAN itemData= getInstancePedidoCabceraLocal();
+            if (itemData==null) {
+                return;
+            }
             if (result.equals("error_1")) {
 
                 // Sin conexion al Servidor
@@ -1584,30 +1592,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
                 } else if (tipo.equals("PEDIDO-DETALLE")) {
 
-                    String codcli =pedidos.get(mSelectedRow).get(KEY_CODCLI);
 
-                    int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
-                            item_direccion);
-                    Log.w("CODIGO_NOVENTA", "" + cod);
-
-                    String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
-
-
-
-                    final Intent ipedido = new Intent(
-                            getApplicationContext(), PedidosActivity.class);
-                    ipedido.putExtra("codigoVendedor", codven);
-                    ipedido.putExtra("nombreCliente", nomcli);
-                    ipedido.putExtra("codcli", codcli);
-                    ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
-                    ipedido.putExtra("origen", "REPORTES-PEDIDO");
-                    ipedido.putExtra("OC_NUMERO", oc_numero);
-                    ipedido.putExtra("tipoRegistro", tipoRegistro);
-
-                    startActivity(ipedido);
-                    // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
-                    // "I");
-                    ReportesPedidosCotizacionYVisitaActivity.this.finish();
+                    verPedidoDetalle(itemData);
 
                 } else if (tipo.equals("PEDIDO-MODIFICAR")) {
                     String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
@@ -1630,7 +1616,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
                     ipedido.putExtra("codigoVendedor", codven);
                     ipedido.putExtra("nombreCliente", nomcli);
-                    ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
+                    ipedido.putExtra("codcli", itemData.getCodcli());
                     ipedido.putExtra("origen", "REPORTES-MODIFICAR");
                     ipedido.putExtra("OC_NUMERO", oc_numero);
                     ipedido.putExtra("tipoRegistro", tipoRegistro);
@@ -1645,6 +1631,33 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             }
 
         }
+
+    }
+
+    private void verPedidoDetalle(ReportePedidoCabeceraBEAN itemdata) {
+        String codcli = itemdata.getCodcli();
+
+        int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
+                item_direccion);
+        Log.w("CODIGO_NOVENTA", "" + cod);
+
+        String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
+
+
+
+        final Intent ipedido = new Intent(
+                getApplicationContext(), PedidosActivity.class);
+        ipedido.putExtra("codigoVendedor", codven);
+        ipedido.putExtra("nombreCliente", nomcli);
+        ipedido.putExtra("codcli", codcli);
+        ipedido.putExtra("codcli", itemdata.getCodcli());
+        ipedido.putExtra("origen", "REPORTES-PEDIDO");
+        ipedido.putExtra("OC_NUMERO", oc_numero);
+        ipedido.putExtra("tipoRegistro", tipoRegistro);
+
+        startActivity(ipedido);
+        // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
+        // "I");
 
     }
 
@@ -1686,7 +1699,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 mensaje = "Sin conexion al servidor";
             }
 
-            pedidos.clear();
+            IreportecabeceraLista.clear();
             cargarPedidos("", "");
             return mensaje;
 
@@ -1711,8 +1724,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + mensaje);
 
-            ((ReportesPedidos_Adapter) list.getAdapter())
-                    .notifyDataSetChanged();
+
 
             tv_totalPedidos.setText("Cantidad:" + contador);
 
@@ -1722,6 +1734,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     public void updatePedido() {
 
+        ReportePedidoCabeceraBEAN itemData=getInstancePedidoCabceraLocal();
+        if(itemData==null) return;
         String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
 
         int cod = obj_dbclasses.obtenerMotivoxCliente(codcli, item_direccion);
@@ -1751,8 +1765,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     PedidosActivity.class);
             ipedido.putExtra("codigoVendedor", codven);
             ipedido.putExtra("nombreCliente", nomcli);
-            ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
-            ipedido.putExtra("codcli", pedidos.get(mSelectedRow).get(KEY_CODCLI));
+            ipedido.putExtra("codcli", itemData.getCodcli());
+            ipedido.putExtra("codcli", itemData.getCodcli());
             ipedido.putExtra("origen", "REPORTES");
             ipedido.putExtra("OC_NUMERO", oc_numero);
 
@@ -1839,13 +1853,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
          */
         protected void onPostExecute(String result) {
 
-            pedidos.clear();
+            IreportecabeceraLista.clear();
             cargarPedidos("", "");
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
-            ((ReportesPedidos_Adapter) list.getAdapter())
-                    .notifyDataSetChanged();
+
             tv_totalPedidos.setText("Cantidad:" + contador);
 
         }
@@ -1965,7 +1978,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             String valor2 = params[1].toString();
 
             try {
-                pedidos.clear();
+                IreportecabeceraLista.clear();
                 cargarPedidos(valor, valor2);
                 cantidadDatos = CalcularPaqueteDatos();
             } catch (Exception e) {
@@ -1981,8 +1994,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
-            if (pedidos.size()==0 && IreportecabeceraLista.size()==0){
-                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, list, "No hay datos para mostrar");
+            if (IreportecabeceraLista.size()==0){
+                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
             }
 
@@ -2013,7 +2026,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             String valor2 = params[1].toString();
 
             try {
-                pedidos.clear();
+                IreportecabeceraLista.clear();
                 cargarPedidos(valor, valor2);
                 cantidadDatos = CalcularPaqueteDatos();
             } catch (Exception e) {
@@ -2029,8 +2042,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
             tv_paqueteDatos.setText(cantidadDatos + " MB");
-            if (pedidos.size()==0){
-                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, list, "No hay datos para mostrar");
+            if (IreportecabeceraLista.size()==0){
+                UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
             }
 
@@ -2231,7 +2244,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 ret = "error_1";
             }
 
-            pedidos.clear();
+            IreportecabeceraLista.clear();
             cargarPedidos("", "");
 
             return ret;
@@ -2336,6 +2349,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         ws_cotizaciones.getDataCabeceras(codigo_pedido, codcliPrincipal, fecha_desde, fecha_hasta, desde, hasta, (success, data) -> {
             if(!success){
                 UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Error, no se pudo obtener los datos de bùsqueda", UtilView.TOAST_ERROR);
+                myRecyclerViewPedidoCabcera.setEmptyText("Error, no se pudo obtener los datos de bùsqueda");
                 return;
             }
             ws_cotizaciones.desde+=data.size();
@@ -2355,8 +2369,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         }
         if(dataLinea.size()==0 || dataLinea.size()<=ws_cotizaciones.nro_item){
             adapterRecyclerView.setCallbackLoadMoreData(null);
-            Log.i(TAG, "setAdapterDataCotizacionOnLine REMOVE LOAD size lista new "+dataLinea.size()+". Total size "+IreportecabeceraLista.size());
             return;
+        }
+        if(IreportecabeceraLista.size()==0){
+            myRecyclerViewPedidoCabcera.setEmptyText("No se encontraron datos");
         }
         Log.i(TAG, "setAdapterDataCotizacionOnLine size lista new "+dataLinea.size()+". Total size "+IreportecabeceraLista.size());
         adapterRecyclerView.setCallbackLoadMoreData(()->{

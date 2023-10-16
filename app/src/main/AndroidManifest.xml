@@ -26,6 +26,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".ViewPdfFromHtmlActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity_EnviarBackUp"
             android:exported="false" />
         <activity
@@ -57,7 +60,6 @@
         <activity
             android:name=".genesys.fuerza_ventas.Activity_EnviarBackUp"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".genesys.fuerza_ventas.CreacionNuevoCliente2Activity"
             android:theme="@style/AppThemeNewClient" />
@@ -255,6 +257,11 @@
             android:name=".genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNewClient" />
+
+         <activity
+            android:name=".genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity"
+            android:screenOrientation="portrait"
+             android:theme="@style/AppThemeAgendaNoBar"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

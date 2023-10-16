@@ -67,7 +67,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
 
 
         val moneda = "" + this.xtipmon
-        if (moneda == PedidosActivity.MONEDA_PEN || moneda == "MN") {
+        if (moneda == PedidosActivity.MONEDA_SOLES_IN || moneda == "MN") {
             viewHolder!!.moneda.text = "S/."
         } else {
             viewHolder!!.moneda.text = "$."
@@ -88,7 +88,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
 
         viewHolder!!.imgCampanaYellow.visibility = View.GONE;
         viewHolder!!.edtObservacion_pedido.text = ""
-        viewHolder!!.edtFechavisita.text = "Fecha "+this.fecha_entrega
+        viewHolder!!.edtFechavisita.text = "Fecha "+this.fecha_pedido
 
     }
 

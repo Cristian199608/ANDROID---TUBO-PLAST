@@ -647,7 +647,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         HabilitarCambioCantacto(false);
         UtilView.Efectos(this,et_fecha_proximavisita, R.color.red_200);
         UtilView.Efectos(this,et_comentario_visita, R.color.red_200);
-        UtilView.Efectos(this,et_comentario_visita, R.color.red_200);
+        UtilView.Efectos(this,et_comentario_proxima_visita, R.color.red_200);
 
     }
 

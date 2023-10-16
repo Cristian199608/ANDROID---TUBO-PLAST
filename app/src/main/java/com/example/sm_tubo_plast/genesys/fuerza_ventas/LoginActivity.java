@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.util.Log;
@@ -31,15 +32,19 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -182,6 +187,8 @@ public class LoginActivity extends AppCompatActivity {
 
         testConeccionInternet(100);
 
+
+
         boton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -239,7 +246,21 @@ public class LoginActivity extends AppCompatActivity {
             txtRuc.setEnabled(false);
 
         }
-  cambiarRutaHttp();
+    cambiarRutaHttp();
+
+//
+//        String carpeta_contenedor =getExternalFilesDir(Environment.DIRECTORY_DCIM).toString() + "/"+ VARIABLES.CARPERTA_CONTENEDOR+"/"+VARIABLES.CARPERTA_CONTENEDOR_PDF+"/";
+//        String nombreArchivo="pdfckdnkcnxxdkcn.pdf";
+//        String htmlData= PDF.createHtml(this);
+//
+//        ViewPdfFromHtmlActivity.Companion.startViewPdfFromHtmlActivity(
+//                this,
+//                ""+htmlData,
+//                ""+carpeta_contenedor,
+//                ""+nombreArchivo
+//        );
+
+
     }
     private void cambiarRutaHttp(){
         dbusuarios.cambiarRutaHttpServicioWeb();

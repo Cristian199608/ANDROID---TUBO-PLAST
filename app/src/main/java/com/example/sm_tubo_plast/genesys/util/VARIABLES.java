@@ -28,8 +28,11 @@ public class VARIABLES {
     public static final  String SEPARADOR_OBSERVACION="_#_";
 
 
-    public static final  boolean isProduccion=false;
+    public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=false;
+
+    public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
+    public static String CARPERTA_CONTENEDOR_PDF="PDF";
 
     private static TimeZone GetTimeZone(){
         return TimeZone.getTimeZone("GMT-05");
@@ -210,6 +213,20 @@ public class VARIABLES {
             f.setTimeZone(zona_horaria);
             Date d = f.parse(string_date);
 
+            return d.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static long convertirFechaH_to_long(String string_date, String format)
+    {
+        SimpleDateFormat f = new SimpleDateFormat(format);
+
+        try {
+            f.setTimeZone(zona_horaria);
+            Date d = f.parse(string_date);
             return d.getTime();
         } catch (ParseException e) {
             e.printStackTrace();

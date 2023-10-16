@@ -172,7 +172,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
 
 
         String moneda = "" + this.getMoneda();
-        if (moneda.equals(PedidosActivity.MONEDA_PEN)) {
+        if (moneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             viewHolder.moneda.setText("S/.");
         } else {
             viewHolder.moneda.setText("$.");
@@ -184,11 +184,17 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         viewHolder.edtFechavisita.setText("");
         if (codnoventa== GlobalVar.CODIGO_VISITA_CLIENTE){
             San_Visitas san= DAO_San_Visitas.getSan_VisitaByOc_numero(obj_dbclasses, this.getNumoc());
-
             if (san!=null) {
                 viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
                 viewHolder.edtFechavisita.setTextColor(activity.getResources().getColor(R.color.teal_600));
                 viewHolder.edtFechavisita.setText("Visitado: "+san.getFecha_Ejecutada());
+            }else{
+                san= DAO_San_Visitas.getSan_VisitarByOc_numero(obj_dbclasses, this.getNumoc());
+                if(san!=null) {
+                    viewHolder.nomcliente.setTextColor(Color.parseColor("#040404"));
+                    viewHolder.edtFechavisita.setTextColor(activity.getResources().getColor(R.color.yellow_900));
+                    viewHolder.edtFechavisita.setText("Visitar: "+san.getFecha_Ejecutada());
+                }
             }
         }
         else if (estado.equals("A")) {

@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.CreatePDF;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +10,7 @@ import android.util.Log;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.util.UtilImagen;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.itextpdf.io.image.ImageData;
@@ -72,9 +74,9 @@ public class PDF {
         /***
          * Formatter
          */
-        String subtotalFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getSubtotal());
-        String igvFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getValor_igv());
-        String total_netoFormateado = FormateadorNumero.formatter2decimal(dataCabecera.getMonto_total());
+        String subtotalFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getSubtotal());
+        String igvFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getValor_igv());
+        String total_netoFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getMonto_total());
 
         /***
          * PRINCIPAL IMAGE
@@ -90,7 +92,8 @@ public class PDF {
         /***
          * TABLE N° 1
          */
-        float columnWidth[] = {300,50,300};
+
+        float columnWidth[] = {450F, 100F, 450F};
         Table table = new Table(columnWidth);
 
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -104,6 +107,7 @@ public class PDF {
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
+
 
         /***
          * SPLIT
@@ -278,9 +282,9 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
-                String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
+                String precio_bruto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
+                String precio_neto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }
 
@@ -321,13 +325,13 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(dataPedidoCabeceraDetalles.get(i).getCantidad()))).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getUnidad_medida())).setTextAlignment(TextAlignment.CENTER).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(7f));
-                String precio_bruto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
+                String precio_bruto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                String precioKilo = FormateadorNumero.formatter2decimal((Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto())/tipoCambio);
+                String precioKilo = FormateadorNumero.formatter3decimal((Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto())/tipoCambio);
                 tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
+                tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimalFromString(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc_extra())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
-                String precio_neto = FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
+                String precio_neto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }
 
@@ -373,7 +377,7 @@ public class PDF {
         tableData.addCell(new Cell().add(new Paragraph(moneda + total_netoFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 03
-        String pa = FormateadorNumero.formatter2decimal(dataCabecera.getPeso_total());
+        String pa = FormateadorNumero.formatter2decimalFromString(dataCabecera.getPeso_total());
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("Peso Aprox.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph("KG " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
@@ -383,7 +387,7 @@ public class PDF {
         if (tipo_de_envio == ENVIO_A_INTERNO){
             double pkDolar=Double.parseDouble(dataCabecera.getSubtotal())/Double.parseDouble(dataCabecera.getPeso_total())/tipoCambio;
             tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv $)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(" "+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(""+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         }
 
         /***
@@ -446,6 +450,337 @@ public class PDF {
         document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(7f));
         document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130").setTextAlignment(TextAlignment.CENTER));
         document.close();
+    }
+
+    public  static void createHtml(Context context,
+                                   String nombreArchivo,
+                                   DataCabeceraPDF dataCabecera,
+                                   ArrayList<ReportePedidoDetallePDF> dataPedidoCabeceraDetalles,
+                                   double tasaCambioSolesToDolar,
+                                   int tipo_de_envio
+    ){
+
+    }
+    public  static String createHtml(Activity activity){
+        String tbWidth = "1040px";
+
+        String html="";
+        html+="<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
+                "\t<title> PDF Custom</title>\n" +
+                "\n" +
+                "<style type=\"text/css\">\n" +
+                "\t*{\n" +
+                "    font-family: arial,serif !important;\n" +
+                "    }\n" +
+                "    body{\n" +
+                "\t\twidth: 1040px;\n" +
+                "\t }\n" +
+                "\t .font_secondary_text{\n" +
+                "\t \tfont-size:17px;\n" +
+                "\t }\n" +
+                "\t .font_primary_text{\n" +
+                "\t \tfont-size:20px;\n" +
+                "\t }\n" +
+                "\t .font_terceario_text{\n" +
+                "\t \tfont-size:15px;\n" +
+                "\t }\n" +
+                "\t .contorno{\n" +
+                "\toutline: red solid thin\n" +
+                "\t }\n" +
+                "\t .custom_border {\n" +
+                "\t  border: 2px solid black;\n" +
+                "\t  border-radius: 3px;\n" +
+                "\t}\n" +
+                "\t .upper_case {\n" +
+                "\t  text-transform: uppercase;\n" +
+                "\t}\n" +
+                "\n" +
+                "\t .contorno_black{\n" +
+                "\tborder-radius: 2px, 2px, 2px, 2px;\n" +
+                "\tborder-color: black;\n" +
+                "\t }\n" +
+                "\n" +
+                ".custom_table {\n" +
+                "  font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;\n" +
+                "  border-collapse: collapse;\n" +
+                "  width: 100%;\n" +
+                "}\n" +
+                "\n" +
+                ".custom_table td, .custom_table th {\n" +
+                "  border: 1px solid #929292;\n" +
+                "  padding: 5px;\n" +
+                "  word-break: break-all;\n" +
+                "  font-size:12px;\n" +
+                "}\n" +
+                "\n" +
+                "/*<!--.custom_table tr:nth-child(even){background-color: #f2f2f2;} !-->*/\n" +
+                "\n" +
+                "\n" +
+                ".custom_table th {\n" +
+                "  text-align: left;\n" +
+                "  color: black;\n" +
+                "  font-weight: normal !important;\n" +
+                "}\n" +
+                " \n" +
+                "\n" +
+                ".tb_no_border{\n" +
+                "border: 1px !important;\n" +
+                "pagging-inline:3px;\n" +
+                "}\n" +
+                ".bg_black{\n" +
+                "  background-color: red;\n" +
+                "}\n" +
+                ".bg_yellow{\n" +
+                "  background-color: yellow;\n" +
+                "}\n" +
+                "\n" +
+                "\n" +
+                ".bg_grey{\n" +
+                "  background-color: #c3c0c0;\n" +
+                "}\n" +
+                "\n" +
+                ".bg_tb_title{\n" +
+                "  background-color: #99ccff;\n" +
+                "  color\n" +
+                "}\n" +
+                "\n" +
+                ".text-left{\n" +
+                " text-align:left !important;\n" +
+                " vertical-align: middle;\n" +
+                " align-items:center;\n" +
+                "}\n" +
+                ".text-center{\n" +
+                " text-align:center !important;\n" +
+                " vertical-align: middle;\n" +
+                " align-items:center;\n" +
+                "}\n" +
+                ".text-right{\n" +
+                " text-align:right !important;\n" +
+                " vertical-align: middle;\n" +
+                " align-items:center;\n" +
+                "}\n" +
+                ".text_bold{\n" +
+                "font-weight: bold;\n" +
+                "}\n" +
+                ".wmax{\n" +
+                "\twidth: 100%;\n" +
+                "}\n" +
+                ".m0{\n" +
+                "\tmargin:0px;\n" +
+                "}\n" +
+                "</style>\n" +
+                "\n" +
+                "\n" +
+                "</head>\n" +
+                "<body style=\"width: 1060px;\" >\n" +
+                "\n" +
+                "<div style=\"/*background-color: #00800047;*/ height:500px; \" class=\"wmax text-center;\">\n" +
+                "<p>Aquie abajo imagen</p>" +
+                "<p> otro sin imgane</p>" ;
+        Bitmap logoEmpresa = BitmapFactory.decodeResource(activity.getResources(), R.drawable.logo_v5);
+
+        String base64Image = "data:image/png;base64,"+UtilImagen.getImagenString(logoEmpresa);
+
+// Construye el contenido HTML con la etiqueta <img> que utiliza la cadena Base64
+        String htmlContent = "<img src=\"" + base64Image + "\">";
+
+         html+=htmlContent;
+           html+="   <div style=\"display: flex;\" class=\"wmax text-center bg_yellow text_bold\">\n" +
+                "      <p style=\"flex:1; font-weight: bold;\" class=\"m0\" >TIPO PEDIDO</p>\n" +
+                "      <div style=\"width:30px; padding:10px;\" class=\"m0 bg_grey\">Nº</div>\n" +
+                "      <p style=\"flex:1;\" class=\"m0\">CODIGO PEDIDO0001</p>\n" +
+                "  </div>\n" +
+                "  <table  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "    <tr>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_tb_title\">RUC CLIENTE</th>\n" +
+                "      <td style=\"width:20%;\">20100000000</td>\n" +
+                "      <th style=\"width:12.3%;\"class=\"bg_tb_title\">FECHA</th>\n" +
+                "      <td style=\"width:15.7%;\">10/02/2023 15:36</td>\n" +
+                "      <th style=\"width:12%;\"class=\"bg_tb_title\">COD VEN</th>\n" +
+                "      <td style=\"width:21%;\" >20100000000</td>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "      <th  class=\"bg_tb_title\">RAZON SOCIAL</th>\n" +
+                "      <td >Nombre cliente</td>\n" +
+                "      <th class=\"bg_tb_title\">TELEFONO</th>\n" +
+                "      <td >99999999</td>\n" +
+                "      <th class=\"bg_tb_title\">VENDEDOR</th>\n" +
+                "      <td  >NOMBRE VENDEDOR</td>\n" +
+                "    </tr>\n" +
+                "     <tr>\n" +
+                "      <th  class=\"bg_tb_title\">ATENCION</th>\n" +
+                "      <td >Nombre contacto</td>\n" +
+                "      <th class=\"bg_tb_title\">TELEFONO</th>\n" +
+                "      <td >99999999</td>\n" +
+                "      <th class=\"bg_tb_title\">TELEFONO</th>\n" +
+                "      <td >99999999</td>\n" +
+                "    </tr>\n" +
+                "    \n" +
+                "    \n" +
+                "     <tr>\n" +
+                "      <th  class=\"bg_tb_title\">DIRECION</th>\n" +
+                "      <td  colspan=\"3\" class=\"text-left\">Av direccion 15515</td>\n" +
+                "      <th class=\"bg_tb_title\">AREA</th>\n" +
+                "      <td >Nom area</td>\n" +
+                "    </tr>\n" +
+                "     <tr>\n" +
+                "      <th  class=\"bg_tb_title\">EMAIL</th>\n" +
+                "      <td  colspan=\"3\" class=\"text-left\">@eeemcom</td>\n" +
+                "      <th class=\"bg_tb_title\">EMAIL</th>\n" +
+                "      <td style=\"white-space: normal;  word-break: break-all;\">\n" +
+                "      tuboplastlosrosales@1ddd.demo.com\n" +
+                "    </td> \n" +
+                "    </tr>\n" +
+                "</tbody>\n" +
+                "</table>\n" +
+                "\n" +
+                "<table style=\"margin-top:15px;\"  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "    <tr>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_tb_title\">TRANSPORTE/AGENCIA</th>\n" +
+                "      <td class=\"text-left\" >20100000000</td>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "      <th  class=\"bg_tb_title\">DIRECCION AGENCIA</th>\n" +
+                "      <td class=\"text-left\" >20100000000</td>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "      <th  class=\"bg_tb_title\">PROYECTO</th>\n" +
+                "      <td class=\"text-left\" >20100000000</td>\n" +
+                "    </tr>\n" +
+                "</tbody>\n" +
+                "</table>\n" +
+                "\n" +
+                "<table style=\"margin-top:15px;\"  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "    <tr>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_tb_title\">FORMA PAGO</th>\n" +
+                "      <td style=\"width:20%;\" >FORMA PAGO</td>\n" +
+                "       <th style=\"width:12.3%;\" class=\"bg_tb_title\">FORMA PAGO</th>\n" +
+                "      <td style=\"width:48.7%;\" >FORMA PAGO</td>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_tb_title\">FORMA PAGO</th>\n" +
+                "      <td style=\"width:20%;\" >FORMA PAGO</td>\n" +
+                "      <th style=\"width:12.3%;\" class=\"bg_tb_title\">FORMA PAGO</th>\n" +
+                "      <td style=\"width:48.7%;\" >FORMA PAGO</td>\n" +
+                "    </tr>\n" +
+                "    \n" +
+                "</tbody>\n" +
+                "</table>\n" +
+                "\n" +
+                "  <table  style=\"margin-top:15px;\"  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "    <tr>\n" +
+                "      <th style=\"width:5%;\" class=\"bg_tb_title text-center\">ITEM</th>\n" +
+                "      <th style=\"width:15%;\" class=\"bg_tb_title text-center\">CODIGO</th>\n" +
+                "      <th style=\"width:5%;\" class=\"bg_tb_title text-center\">CANT</th>\n" +
+                "      <th style=\"width:5%;\" class=\"bg_tb_title text-center\">UM</th>\n" +
+                "      <th style=\"width:30%;\"class=\"bg_tb_title text-center\">DESCRIPCION</th>\n" +
+                "      <th style=\"width:7%;\" class=\"bg_tb_title text-center\">PRECIO<br>UNITARIO</th>\n" +
+                "      <th style=\"width:7%;\" class=\"bg_tb_title text-center\">PK ($)</th>\n" +
+                "      <th style=\"width:7%;\" class=\"bg_tb_title text-center\">DESC %</th>\n" +
+                "      <th style=\"width:7%;\" class=\"bg_tb_title text-center\">DESC<br>EXTRA %</th>\n" +
+                "      <th style=\"width:12%;\" class=\"bg_tb_title text-center\">SUB TOTAL</th>\n" +
+                "    </tr>\n" +
+                "    <tr>\n" +
+                "    \t<td class=\"text-right\">ITEM</td>\n" +
+                "        <td>CODIGO</td>\n" +
+                "        <td>CANT</td>\n" +
+                "        <td>UM</td>\n" +
+                "        <td>DESCRIPCION</td>\n" +
+                "        <td class=\"text-right\">PRECIO</td>\n" +
+                "        <td class=\"text-right\">PK ($)</td>\n" +
+                "        <td class=\"text-right\">DESC %</td>\n" +
+                "        <td class=\"text-right\">DEA %</td>\n" +
+                "        <td class=\"text-right\">SUB TOTAL</td>\n" +
+                "    </tr>\n" +
+                "   </tbody>\n" +
+                "</table>\n" +
+                "\n" +
+                " <table  style=\"margin-top:15px;\"  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "    <tr>\n" +
+                "  <td style=\"width:20%;\" class=\"bg_grey text_bold\">OBSERVACIONES</td>\n" +
+                "  <td style=\"width:40%;\" ></td>\n" +
+                "  <td style=\"width:21%;\" class=\"text-right\">Sub Total</td>\n" +
+                "  <td style=\"width:19%;\" class=\"text-right\">US$ 10</td>\n" +
+                "</tr>\n" +
+                " <tr>\n" +
+                "  <td colspan=\"2\" ></td>\n" +
+                "    <td class=\"text-right\">IGV</td>\n" +
+                "    <td class=\"text-right\">US$ 10</td>\n" +
+                "</tr>\n" +
+                " <tr>\n" +
+                "  <td colspan=\"2\" ></td>\n" +
+                "    <td class=\"text-right\">Total</td>\n" +
+                "    <td class=\"text-right\">US$ 10</td>\n" +
+                "</tr>\n" +
+                " <tr>\n" +
+                "  <td colspan=\"2\" ></td>\n" +
+                "    <td class=\"text-right\">Peso Aprox</td>\n" +
+                "    <td class=\"text-right\">US$ 10</td>\n" +
+                "</tr>\n" +
+                " <tr>\n" +
+                "  <td colspan=\"2\" ></td>\n" +
+                "    <td class=\"text-right\">Precio Kilo (sin IGV $)</td>\n" +
+                "    <td class=\"text-right\">US$ 10</td>\n" +
+                "</tr>\n" +
+                "   </tbody>\n" +
+                "</table>  \n" +
+                "\n" +
+                "\n" +
+                "<table  style=\"margin-top:15px;\"  class=\"wmax text-center custom_table\"> \n" +
+                "  <tbody>\n" +
+                "     <tr>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_grey text_bold\">BANCO</th>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_grey text_bold\">CUENTA DOLARES ($)</th>\n" +
+                "      <th style=\"width:20%;\" class=\"bg_grey text_bold\">CUENTA SOLES (S/.)</th>\n" +
+                "      <th style=\"width:14;\" class=\"tb_no_border\"></th>\n" +
+                "      <th style=\"width:26%;\" class=\"bg_grey text_bold\">CONSIDERACIONES</th>\n" +
+                "    </tr>\n" +
+                "     <tr>\n" +
+                "      <td  class=\"text-left \">BANCO</td>\n" +
+                "      <td  class=\"text-left \">CUENTA DOLARES ($)</td>\n" +
+                "      <td  class=\"text-left \">CUENTA SOLES (S/.)</td>\n" +
+                "      <td class=\"tb_no_border\"></td>\n" +
+                "      <td  class=\"text-left \">CONSIDERACIONES</td>\n" +
+                "\t</tr>\n" +
+                "     <tr>\n" +
+                "      <td  class=\"text-left \">BANCO</td>\n" +
+                "      <td  class=\"text-left \">CUENTA DOLARES ($)</td>\n" +
+                "      <td  class=\"text-left \">CUENTA SOLES (S/.)</td>\n" +
+                "      <td class=\"tb_no_border\"></td>\n" +
+                "      <td  class=\"text-left \">CONSIDERACIONES</td>\n" +
+                "\t</tr>\n" +
+                "     <tr>\n" +
+                "      <td  class=\"text-left \">BANCO</td>\n" +
+                "      <td  class=\"text-left \">CUENTA DOLARES ($)</td>\n" +
+                "      <td  class=\"text-left \">CUENTA SOLES (S/.)</td>\n" +
+                "      <td class=\"tb_no_border\"></td>\n" +
+                "      <td  class=\"text-left \">CONSIDERACIONES</td>\n" +
+                "\t</tr>\n" +
+                "   </tbody>\n" +
+                "</table>  \n" +
+                "<h4>OBSERVACIONES EN SUMINISTRO</h4>\n" +
+                "<p style=\"font-size:12px;\">1 OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 1</p>\n" +
+                "<p style=\"font-size:12px;\">1 OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 2</p>\n" +
+                "\n" +
+                "<p style=\"font-size:12px;\">1 OBSERVACION 1OBSERVACION 1OBSERVACION 1OBSERVACION 3</p>\n" +
+                "\n" +
+                "<h3 class=\"text-center\">www.tubo.plast.com</h3>\n" +
+                "\n" +
+                "</div>\n" +
+                "</body>\n" +
+                "</html>\n" +
+                " \n" +
+                "\n";
+        return html;
+
     }
 
 }

@@ -4168,22 +4168,21 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
             case "done":
                 customToast.setBackgroundResource(R.drawable.toast_done_container);
                 icon.setBackgroundResource(R.drawable.icon_done);
-                text.setTextColor(getResources().getColor(R.color.green_500));
+
                 break;
             case "warning":
                 customToast
                         .setBackgroundResource(R.drawable.toast_warning_container);
                 icon.setBackgroundResource(R.drawable.icon_warning);
-                text.setTextColor(getResources().getColor(R.color.orange_500));
                 break;
             case "wrong":
                 customToast.setBackgroundResource(R.drawable.toast_wrong_container);
                 icon.setBackgroundResource(R.drawable.icon_error);
-                text.setTextColor(getResources().getColor(R.color.red_500));
                 break;
             default:
                 break;
         }
+        text.setTextColor(getResources().getColor(R.color.white));
 
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.BOTTOM, 0, 15);

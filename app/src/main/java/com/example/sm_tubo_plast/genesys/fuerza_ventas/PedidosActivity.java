@@ -127,8 +127,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     public String TIPO_REGISTRO = "PEDIDO";
     ArrayList<DB_PromocionDetalle> al_PromocionDetalle = new ArrayList<DB_PromocionDetalle>();
 
-    public static final String MONEDA_PEN = "PEN";
-    public static final String MONEDA_USD = "USD";
+
 
     private static final int Menu_Agregar = 1;
     private static final int Menu_Guardar = 2;
@@ -288,19 +287,20 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private int year, month, day, hour, minute;
     static final int DATE_DIALOG_ID = 999;
     private DatePicker datePicker;
+
+    public static String MONEDA_SOLES_IN			= "1";//PEN
+    public static String MONEDA_DOLARES_IN			= "2";//USD
+
+
     private static final String MONEDA_NACIONAL 	= "N";
     private static final String MONEDA_DOLARES 		= "E";
     private static final String MONEDA_AMBOS 		= "A";
-    //private static final String MONEDA_SOLES_IN	= "1";
-    //private static final String MONEDA_DOLARES_IN	= "2";
     private static final String APLICA_DESCUENTO	= "S";
     private static final String NO_APLICA_DESCUENTO	= "N";
     private static final String FACTURA				= "01";
     private static final String BOLETA				= "02";
     private static final String DESPACHO_INTERNO	= "I";
     private static final String DESPACHO_EXTERNO	= "E";
-    private static String MONEDA_SOLES_IN			= "1";
-    private static String MONEDA_DOLARES_IN			= "2";
 
     ArrayList<RegistroGeneralMovil> listaPrioridades;
     ArrayList<RegistroGeneralMovil> listaTipoDespacho;
@@ -1264,14 +1264,14 @@ private  void llenarSpinnerDespacho(String valor){
             }
         }
 
-        try {
-            ArrayList<String> monedas = DAO_registrosGeneralesMovil.getMoneda();
-            MONEDA_SOLES_IN = monedas.get(0);
-            MONEDA_DOLARES_IN = monedas.get(1);
-        } catch (Exception e) {
-            GlobalFunctions.showCustomToast(PedidosActivity.this, "Sincronice monedas(Vendedores) correctamente", GlobalFunctions.TOAST_ERROR,GlobalFunctions.POSICION_BOTTOM);
-            e.printStackTrace();
-        }
+//        try {
+//            ArrayList<String> monedas = DAO_registrosGeneralesMovil.getMoneda();
+//            MONEDA_SOLES_IN = monedas.get(0);
+//            MONEDA_DOLARES_IN = monedas.get(1);
+//        } catch (Exception e) {
+//            GlobalFunctions.showCustomToast(PedidosActivity.this, "Sincronice monedas(Vendedores) correctamente", GlobalFunctions.TOAST_ERROR,GlobalFunctions.POSICION_BOTTOM);
+//            e.printStackTrace();
+//        }
     }
 
     public void mostrarDatosCliente(String codigoCliente) {
@@ -1866,9 +1866,9 @@ private  void llenarSpinnerDespacho(String valor){
                     }
 
                     if (rButtonSoles.isChecked()) {
-                        codigoMoneda = MONEDA_PEN;
+                        codigoMoneda = MONEDA_SOLES_IN;
                     }else{
-                        codigoMoneda = MONEDA_USD;
+                        codigoMoneda = MONEDA_DOLARES_IN;
                     }
                     fechaEntregaCompleta = edt_fechaPedido.getText().toString();
                     Intent intent = new Intent(PedidosActivity.this,ProductoActivity.class);
@@ -1904,6 +1904,17 @@ private  void llenarSpinnerDespacho(String valor){
         }
     }
 private void EnvalularMoneda(){
+    rGroup_moneda.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (checkedId == rButtonDolares.getId()) {
+                codigoMoneda = MONEDA_DOLARES_IN;
+            }else{
+                codigoMoneda = MONEDA_SOLES_IN;
+            }
+            Log.i(TAG, "rGroup_moneda.setOnCheckedChangeListener:: codigoMoneda: "+codigoMoneda);
+        }
+    });
     if (rButtonDolares.isChecked()) {
         codigoMoneda = MONEDA_DOLARES_IN;
     }else{
@@ -3104,6 +3115,7 @@ private void EnvalularMoneda(){
         layoutResumentByTipoProducto.removeAllViews();
         double valorIgv=new PreferenciaConfiguracion(this).getValorIgv();
         double tipoCambio=codigoMoneda.equals(MONEDA_SOLES_IN)?Double.parseDouble(tvTipoCambio.getText().toString()):1;
+        Log.i(TAG, "MostrarResumenByTipoProducto:: codigoMoneda: "+codigoMoneda+" tipoCambio: "+tipoCambio);
         ArrayList<ResumenVentaTipoProducto> lista=dbclass.getPedidoResumenByTipoProducto(Oc_numero, valorIgv, tipoCambio);
 
         double sumPesoTotal=0;
@@ -7060,23 +7072,20 @@ private void EnvalularMoneda(){
             case "done":
                 customToast.setBackgroundResource(R.drawable.toast_done_container);
                 icon.setBackgroundResource(R.drawable.icon_done);
-                text.setTextColor(getResources().getColor(R.color.green_500));
                 break;
             case "warning":
                 customToast
                         .setBackgroundResource(R.drawable.toast_warning_container);
                 icon.setBackgroundResource(R.drawable.icon_warning);
-                text.setTextColor(getResources().getColor(R.color.orange_500));
                 break;
             case "wrong":
                 customToast.setBackgroundResource(R.drawable.toast_wrong_container);
                 icon.setBackgroundResource(R.drawable.icon_error);
-                text.setTextColor(getResources().getColor(R.color.red_500));
                 break;
             default:
                 break;
         }
-
+        text.setTextColor(getResources().getColor(R.color.white));
         Toast toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.BOTTOM, 0, 15);
         toast.setDuration(Toast.LENGTH_LONG);

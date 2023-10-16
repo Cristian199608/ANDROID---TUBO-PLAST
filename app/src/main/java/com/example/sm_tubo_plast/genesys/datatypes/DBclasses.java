@@ -13239,7 +13239,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		String rawQuery;
 		rawQuery = "SELECT " +
 				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, " +
-				" (sum(precio_neto)/sum(peso_bruto)) / "+tipoCambio+" as pk,\n" +
+				" (sum(precio_neto)/sum(peso_bruto)) / "+tipoCambio+" as pkDolar,\n" +
 				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
 				"select  \n" +
 				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
@@ -13260,7 +13260,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				cur.getString(cur.getColumnIndex("tipoProducto")),
 				cur.getDouble(cur.getColumnIndex("pesoTotal")),
 				cur.getDouble(cur.getColumnIndex("sutTotal")),
-				cur.getDouble(cur.getColumnIndex("pk")),
+				cur.getDouble(cur.getColumnIndex("pkDolar")),
 				cur.getDouble(cur.getColumnIndex("igvTotal"))
 			);
 			lista.add(item);
