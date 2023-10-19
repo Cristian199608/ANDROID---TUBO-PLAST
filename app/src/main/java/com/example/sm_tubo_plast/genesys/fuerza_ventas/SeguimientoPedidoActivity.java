@@ -46,6 +46,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
     TextView txtNombresCliente, tvVerPdf;
     EditText inputSearch_documento, edtOrdenCompra, edtNroPedido;
     RecyclerView recyclerViewDetails;
+    AdapterViewSeguimientoOpDetalle adapterViewSeguimientoOpDetalle;
     Button btnMostrarOcultarResumen;
 
     ViewSeguimientoPedido viewSeguimientoPedido=null;
@@ -132,10 +133,24 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode== ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE){
+                limpiarFormularioAfterChangedCliente();
                 codcliSeleccionado 	= data.getStringExtra("codcli");
                 String nomcli 	= data.getStringExtra("nomcli");
                 txtNombresCliente.setText(nomcli);
             }
+        }
+    }
+    public void limpiarFormularioAfterChangedCliente(){
+        codcliSeleccionado="";
+        txtNombresCliente.setText("");
+        edtOrdenCompra.setText("");
+        edtNroPedido.setText("");
+        inputSearch_documento.setText("");
+        viewSeguimientoPedido=null;
+
+        if (adapterViewSeguimientoOpDetalle!=null) {
+            listaDetalleOps.clear();
+            adapterViewSeguimientoOpDetalle.clearData();
         }
     }
     public void Minimazar_Maximizar(View view){
@@ -325,7 +340,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                     }
                 }
 
-                AdapterViewSeguimientoOpDetalle adapterViewSeguimientoOpDetalle=new AdapterViewSeguimientoOpDetalle(
+                adapterViewSeguimientoOpDetalle=new AdapterViewSeguimientoOpDetalle(
                         SeguimientoPedidoActivity.this, saldoTotal,   dataDinamic,null);
                 recyclerViewDetails.setAdapter(adapterViewSeguimientoOpDetalle);
                 recyclerViewDetails.setVisibility(View.VISIBLE);

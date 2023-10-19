@@ -49,6 +49,12 @@ import java.util.HashMap;
         }
     }
 
+    public void clearData(){
+        data.clear();
+        positionCab.clear();
+        saldoTotal=0;
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

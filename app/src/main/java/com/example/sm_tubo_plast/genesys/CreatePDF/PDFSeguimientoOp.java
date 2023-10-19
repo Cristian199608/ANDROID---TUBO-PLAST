@@ -3,7 +3,6 @@ package com.example.sm_tubo_plast.genesys.CreatePDF;
 
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Environment;
 
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
@@ -110,8 +109,8 @@ public class PDFSeguimientoOp
         cabecera_detalleTable.addCell(new Cell().add(new Paragraph("Monto").setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER));
 
         Table opTable = doOpTable(vspd);
-        Table grTable = doGRTable(vspd);
-        Table grTable2 = doGRTable2(vspd);
+        Table grTable = doGRPTable(vspd);
+        Table grTable2 = doGR02Table(vspd);
 
         /**
          * FIN DE DETALLE
@@ -121,8 +120,8 @@ public class PDFSeguimientoOp
         document.add(secondLineTable);
         document.add(cabecera_detalleTable);
         document.add(opTable);
-        document.add(grTable);
-        document.add(grTable2);
+        if(grTable != null) document.add(grTable);
+        if(grTable2 != null) document.add(grTable2);
         document.close();
 
     }
@@ -150,6 +149,7 @@ public class PDFSeguimientoOp
 
     private Table doOpTable(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
     {
+        String tipo_movimiento = "OP";
         float[] op = {30, 70, 70, 70, 50, 440, 70};
         Table opTable = new Table(op);
 
@@ -166,7 +166,7 @@ public class PDFSeguimientoOp
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            if (vspd.get(i).getMovimiento().equals("OP"))
+            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
             {
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
@@ -183,8 +183,10 @@ public class PDFSeguimientoOp
         return opTable;
     }
 
-    private Table doGRTable(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
+    private Table doGRPTable(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
     {
+        String tipo_movimiento = "GROP";
+
         float[] gr = {30, 70, 70, 70, 50, 440, 70};
         Table grTable = new Table(gr);
 
@@ -194,18 +196,18 @@ public class PDFSeguimientoOp
         String title = null;
         String number = null;
         String fecha = null;
-        String num;
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            num = vspd.get(i).getNumero_op();
-            if (vspd.get(i).getNumero_op().trim().equals(num))
+            if (vspd.get(i).getNumero_op().trim().equals(tipo_movimiento))
             {
                 title = vspd.get(i).getMovimiento();
                 number = vspd.get(i).getNumero_op();
                 fecha = vspd.get(i).getFecha_apertura();
             }
         }
+
+        if(title==null) return null;
 
         grTable.addCell(new Cell().add(new Paragraph(title).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         grTable.addCell(new Cell().add(new Paragraph(number).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
@@ -217,8 +219,7 @@ public class PDFSeguimientoOp
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            num = vspd.get(i).getNumero_op();
-            if (vspd.get(i).getNumero_op().trim().equals(num) && vspd.get(i).getMovimiento().equals("GROP"))
+            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
             {
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
@@ -235,7 +236,7 @@ public class PDFSeguimientoOp
         return grTable;
     }
 
-    private Table doGRTable2(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
+    private Table doGR02Table(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
     {
         float[] gr = {30, 70, 70, 70, 50, 440, 70};
         Table grTable = new Table(gr);
@@ -243,21 +244,22 @@ public class PDFSeguimientoOp
         double saldo;
         double total;
 
+        String tipo_movimiento = "GR02";
         String title = null;
         String number = null;
         String fecha = null;
-        String num;
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            num = vspd.get(i).getNumero_op();
-            if (vspd.get(i).getNumero_op().trim().equals(num) && vspd.get(i).getMovimiento().equals("GR02"))
+            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
             {
                 title = vspd.get(i).getMovimiento();
                 number = vspd.get(i).getNumero_op();
                 fecha = vspd.get(i).getFecha_apertura();
+                break;
             }
         }
+        if(title==null) return null;
 
         grTable.addCell(new Cell().add(new Paragraph(title).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         grTable.addCell(new Cell().add(new Paragraph(number).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
@@ -269,8 +271,7 @@ public class PDFSeguimientoOp
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            num = vspd.get(i).getNumero_op();
-            if (vspd.get(i).getNumero_op().trim().equals(num) && vspd.get(i).getMovimiento().equals("GR02"))
+            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
             {
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
