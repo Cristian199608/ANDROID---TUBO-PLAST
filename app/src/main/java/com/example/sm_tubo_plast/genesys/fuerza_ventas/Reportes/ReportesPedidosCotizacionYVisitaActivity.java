@@ -935,9 +935,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             } else {
                 montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
             }
-            peso = peso + Double.parseDouble(cta.getPeso_total());
-            contador = contador + 1;
-
+            if (cta.getCod_noventa() ==0) {
+                peso = peso + Double.parseDouble(cta.getPeso_total());
+                contador = contador + 1;
+            }
         }
 
     }
@@ -1043,11 +1044,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         protected String doInBackground(String... params) {
             // obtnemos usr y pass
             String mensaje = "";
-            DBSync_soap_manager soap_manager = new DBSync_soap_manager(
-                    getApplicationContext());
+            DBSync_soap_manager soap_manager = new DBSync_soap_manager(  getApplicationContext());
 
-            ConnectionDetector connection = new ConnectionDetector(
-                    getApplicationContext());
+            ConnectionDetector connection = new ConnectionDetector( getApplicationContext());
 
             if (connection.hasActiveInternetConnection(getApplicationContext())) {
 
@@ -1076,26 +1075,19 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 mensaje = "Sin conexion al servidor";
             }
 
-            IreportecabeceraLista.clear();
-            cargarPedidos("", "");
-
             return mensaje;
         }
 
         protected void onPostExecute(String mensaje) {
 
-            Toast toast = Toast.makeText(getApplicationContext(), mensaje,
-                    Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
 
             pDialog.dismiss();// ocultamos progess dialog.
             pDialog=null;
             Log.e("onPostExecute= Enviado", "" + mensaje);
-
-
-            tv_totalPedidos.setText("Cantidad:" + contador);
-
+            refresPedidoOrVisitas();
         }
 
     }
@@ -1345,7 +1337,6 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 builder.setPositiveButton("Enviar al servidor",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialogo1, int id) {
-
                                 new asyncGuardarMotivo().execute("", "");
                             }
 
@@ -1355,11 +1346,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                             public void onClick(DialogInterface dialogo1, int id) {
 
                                 guardarCabeceraPedido(item.getCod_noventa());
-
-                                IreportecabeceraLista.clear();
-                                cargarPedidos("", "");
-                                adapterRecyclerView.notifyDataSetChanged();
+                                refresPedidoOrVisitas();
                                 dialogo.dismiss();
+
                             }
                         });
                 builder.create().show();
@@ -1379,6 +1368,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     }
 
+    private void refresPedidoOrVisitas(){
+        IreportecabeceraLista.clear();
+        cargarPedidos("", "");
+        adapterRecyclerView.notifyDataSetChanged();
+        cargarListView();
+    }
     class asyncGuardarMotivo extends AsyncTask<String, String, String> {
 
         String user, pass;
@@ -1443,12 +1438,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 mensaje = "No se pudo verificar";
             }
 
-            Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG)
-                    .show();
-
-
+            Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_LONG)  .show();
             dialogo.dismiss();
-
+            refresPedidoOrVisitas();
         }
 
     }
@@ -1880,7 +1872,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_reportespedidos:
 
-                        GlobalFunctions.backupdDatabase(ReportesPedidosCotizacionYVisitaActivity.this);
+                        GlobalFunctions.backupdDatabaseFromExternalView(ReportesPedidosCotizacionYVisitaActivity.this);
                         new asyncEnviarPendientes().execute("");
                         return true;
                     case R.id.menu_reportespedidos_verificar:

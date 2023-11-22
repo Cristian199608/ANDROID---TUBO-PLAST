@@ -8,6 +8,7 @@ import android.os.Environment;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
 import com.example.sm_tubo_plast.genesys.CreatePDF.Decimales.GetDecimales;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.SeguimientoPedidoActivity;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -149,11 +150,10 @@ public class PDFSeguimientoOp
 
     private Table doOpTable(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
     {
-        String tipo_movimiento = "OP";
         float[] op = {30, 70, 70, 70, 50, 440, 70};
         Table opTable = new Table(op);
 
-        opTable.addCell(new Cell().add(new Paragraph(vspd.get(0).getMovimiento()).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+        opTable.addCell(new Cell().add(new Paragraph(vspd.get(0).getCodigo_op()).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         opTable.addCell(new Cell().add(new Paragraph(vspd.get(0).getNumero_op()).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         opTable.addCell(new Cell().add(new Paragraph("OPED").setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
         opTable.addCell(new Cell().add(new Paragraph().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
@@ -166,7 +166,7 @@ public class PDFSeguimientoOp
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
+            if (vspd.get(i).getMovimiento().equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_GENERADO))
             {
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
@@ -185,7 +185,6 @@ public class PDFSeguimientoOp
 
     private Table doGRPTable(ArrayList<ViewSeguimientoPedidoDetalle> vspd)
     {
-        String tipo_movimiento = "GROP";
 
         float[] gr = {30, 70, 70, 70, 50, 440, 70};
         Table grTable = new Table(gr);
@@ -199,28 +198,24 @@ public class PDFSeguimientoOp
 
         for (int i = 0; i < vspd.size(); i++)
         {
-            if (vspd.get(i).getNumero_op().trim().equals(tipo_movimiento))
+            if (vspd.get(i).getMovimiento().equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_DEVOLUCION))
             {
-                title = vspd.get(i).getMovimiento();
-                number = vspd.get(i).getNumero_op();
-                fecha = vspd.get(i).getFecha_apertura();
-            }
-        }
+                if (!(vspd.get(i).getCodigo_op().trim().equals(title) && vspd.get(i).getNumero_op().equals(number)))
+                {
+                    title = vspd.get(i).getCodigo_op();
+                    number = vspd.get(i).getNumero_op();
+                    fecha = vspd.get(i).getFecha_apertura();
 
-        if(title==null) return null;
+                    grTable.addCell(new Cell().add(new Paragraph(title).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph(number).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph("OPED").setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph().setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph()).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph(fecha + " " + fecha).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph("").setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBold().setBorder(Border.NO_BORDER));
 
-        grTable.addCell(new Cell().add(new Paragraph(title).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph(number).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph("OPED").setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph().setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph()).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph(fecha + " " + fecha).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph("").setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBold().setBorder(Border.NO_BORDER));
+                }
 
-        for (int i = 0; i < vspd.size(); i++)
-        {
-            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
-            {
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
 
@@ -244,38 +239,27 @@ public class PDFSeguimientoOp
         double saldo;
         double total;
 
-        String tipo_movimiento = "GR02";
-        String title = null;
-        String number = null;
-        String fecha = null;
-
+        String w_fecha = "";
+        String w_coddoc = "";
+        String w_numdoc = "";
         for (int i = 0; i < vspd.size(); i++)
         {
-            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
-            {
-                title = vspd.get(i).getMovimiento();
-                number = vspd.get(i).getNumero_op();
-                fecha = vspd.get(i).getFecha_apertura();
-                break;
-            }
-        }
-        if(title==null) return null;
+            if (vspd.get(i).getMovimiento().equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_ENTREGADO)){
+                if(!(w_coddoc.equals(vspd.get(i).getCodigo_op()) && w_numdoc.equals(vspd.get(i).getNumero_op()))){
+                    w_coddoc=vspd.get(i).getCodigo_op();
+                    w_numdoc=vspd.get(i).getNumero_op();
+                    w_fecha = vspd.get(i).getFecha_apertura();
 
-        grTable.addCell(new Cell().add(new Paragraph(title).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph(number).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph("OPED").setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph().setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph()).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph(fecha + " " + fecha).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        grTable.addCell(new Cell().add(new Paragraph("").setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBold().setBorder(Border.NO_BORDER));
-
-        for (int i = 0; i < vspd.size(); i++)
-        {
-            if (vspd.get(i).getMovimiento().equals(tipo_movimiento))
-            {
+                    grTable.addCell(new Cell().add(new Paragraph(w_coddoc).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph(w_numdoc).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph("OPED").setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph().setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph()).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph(w_fecha + " " + w_fecha).setBold().setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+                    grTable.addCell(new Cell().add(new Paragraph("").setFontSize(8f).setTextAlignment(TextAlignment.CENTER)).setBold().setBorder(Border.NO_BORDER));
+                }
                 saldo = vspd.get(i).getCantidad_comprado() - vspd.get(i).getCantidad_entregado();
                 total = vspd.get(i).getMonto_total() - vspd.get(i).getMonto_saldo();
-
                 grTable.addCell(new Cell().add(new Paragraph(String.valueOf(vspd.get(i).getItem())).setFontSize(8f).setTextAlignment(TextAlignment.LEFT)).setBorder(Border.NO_BORDER));
                 grTable.addCell(new Cell().add(new Paragraph(String.valueOf(vspd.get(i).getCantidad_comprado())).setFontSize(8f).setTextAlignment(TextAlignment.RIGHT)).setBorder(Border.NO_BORDER));
                 grTable.addCell(new Cell().add(new Paragraph(String.valueOf(vspd.get(i).getCantidad_entregado())).setFontSize(8f).setTextAlignment(TextAlignment.RIGHT)).setBorder(Border.NO_BORDER));

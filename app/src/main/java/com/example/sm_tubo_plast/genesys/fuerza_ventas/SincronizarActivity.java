@@ -1150,13 +1150,16 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                 try {
                                     publishProgress("1");
                                     soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
-                                    publishProgress("50");
+                                    publishProgress("4");
                                     soap_manager.Sync_tabla_vendedores(servidorBD,nombreBD, usuarioBD, contrasenaBD);
-                                    publishProgress("75");
+                                    publishProgress("555");
                                     soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD,nombreBD, usuarioBD, contrasenaBD);
+                                    publishProgress("70");
+                                    soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("90");
+
                                     try {
-                                        publishProgress("100");
+                                        publishProgress("95");
                                         controlAcceso=soap_manager.Verificar_control_acceso(""+clave_manual);
                                     }catch (Exception e){
                                         e.printStackTrace();
@@ -1847,6 +1850,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         sms_cuerpo+=".\n\nAVISO:\n"+controlAcceso.getMensjae();
                     }
                 }
+                boolean isActualizado=_helper.VersionAppActualizadoCheck(SincronizarActivity.this);
 
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);

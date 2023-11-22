@@ -7,21 +7,18 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.SeguimientoPedidoActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
  public class AdapterViewSeguimientoOpDetalle extends RecyclerView.Adapter<AdapterViewSeguimientoOpDetalle.ViewHolder> implements View.OnClickListener {
 
@@ -76,9 +73,9 @@ import java.util.HashMap;
         holder.txtSaldo.setText(""+(int)(item.getCantidad_comprado()-item.getCantidad_entregado()));
         holder.txtFechaEntregado.setText("Fecha Ent:\n"+item.getFecha_entrega());
         holder.txtStock.setText("Stock: \n"+(item.getStock_actual()-item.getStock_separado()));
-        holder.txtDetalleMontoCabecera.setText(item.getMoneda()+":"+VARIABLES.formater_one_decimal.format( tipoM.equals("OP")?saldoTotal:item.getMonto_total()));
+        holder.txtDetalleMontoCabecera.setText(item.getMoneda()+":"+VARIABLES.formater_one_decimal.format( tipoM.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_GENERADO)?saldoTotal:item.getMonto_total()));
 
-        holder.txtDetalleCabecera.setText(item.getMovimiento()+" "+item.getNumero_op()+" Rec: "+item.getFecha_apertura());
+        holder.txtDetalleCabecera.setText(item.getCodigo_op()+" "+item.getNumero_op()+" Rec: "+item.getFecha_apertura());
         for (int i = 0; i < positionCab.size(); i++) {
             if ( positionCab.get(i)==position){
                 holder.layoutCabecera.setVisibility(View.VISIBLE);
@@ -96,9 +93,9 @@ import java.util.HashMap;
 
 //        holder.txtSaldo.setText("Saldo: "+VARIABLES.formater_thow_decimal.format(item.getSaldo()));
         if (position %2 == 0) {
-            holder.itemView.setBackgroundColor(activity.getResources().getColor( tipoM.equals("GR02")?R.color.green_100:(tipoM.equals("GROP")?R.color.red_100:R.color.grey_200)));
+            holder.itemView.setBackgroundColor(activity.getResources().getColor( tipoM.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_ENTREGADO) ?R.color.green_100:(tipoM.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_DEVOLUCION)?R.color.red_100:R.color.grey_200)));
         } else {
-            holder.itemView.setBackgroundColor(activity.getResources().getColor(tipoM.equals("GR02")?R.color.green_50:(tipoM.equals("GROP")?R.color.red_50:R.color.white)));
+            holder.itemView.setBackgroundColor(activity.getResources().getColor(tipoM.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_ENTREGADO)?R.color.green_50:(tipoM.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_DEVOLUCION)?R.color.red_50:R.color.white)));
         }
 
     }
@@ -117,7 +114,7 @@ import java.util.HashMap;
     }
 
     private String gestionarMonto(String tipo_movimiento, double valor){
-        if (tipo_movimiento.equals("GR02") || tipo_movimiento.equals("GROP")){
+        if (tipo_movimiento.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_ENTREGADO) || tipo_movimiento.equals(SeguimientoPedidoActivity.SEGUIMIENTO_PEDIDO_DEVOLUCION)){
             return  "";
         }else{
            return  " | "+VARIABLES.formater_thow_decimal.format(valor);

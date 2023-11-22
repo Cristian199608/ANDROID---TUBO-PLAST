@@ -1,13 +1,28 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
+
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
@@ -27,6 +42,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Politica_precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Producto;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.SincronizarActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
@@ -2455,7 +2471,19 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 		// Por terminar, lo mas optimo seria actualizar por el nuero de la fila, pero eso no existe 
 	}
-	
+	public int obtenerCantidadPedidoDetalle(String oc_numero){
+		SQLiteDatabase db = getReadableDatabase();
+		String rawQuery = "select count(*) from Pedido_detalle where oc_numero = '"+oc_numero+"'";
+		Cursor cur = db.rawQuery(rawQuery, null);
+		int cantidad = 0;
+		while (cur.moveToNext()) {
+			cantidad = cur.getInt(0);
+		}
+		cur.close();
+		db.close();
+		return cantidad;
+	}
+
 	public ItemProducto[] obtenerListadoProductos_pedido(String oc_numero) {
 
 		String rawQuery;
@@ -3449,7 +3477,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		rawQuery = "select pc.cod_cli,pc.monto_total,pc.flag, pc.cond_pago, ifnull(pc.nro_letra,0) , " +
 					"pc.cod_noventa, pc.oc_numero, pc.peso_total, pc.fecha_oc, pc.estado, pc.percepcion_total, "+
-					"ifnull((SELECT codigoEquivalente from moneda where codigoMoneda=pc.moneda),'')," +
+					"pc.moneda," +
 					"pc.tipoRegistro, ifnull(pc.pedidoAnterior,''), " +
 					"pc.latitud," +
 					"ifnull(c.nomcli, '') AS nomcli "+
@@ -13399,5 +13427,167 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.execSQL("update servidor set TX_SERV_servicioWEB='200.60.7.172/ws_tubo_plast/service.asmx' " +
 				"where TX_SERV_servicioWEB like '%200.60.105.44%'");
 	}
+	public String getNroVersion(){
+		String valorDef = "(Preguntar al administrador)";
+		return getConfiguracionByName("nro_version_app",valorDef );
+	}
+	public int isVersionSuperior(String cadena_version){
+		String[] arrSplit = cadena_version.split(" ");
+		String[] version =arrSplit[0].replace("v", "").split(".");
+		String nroVersion=version[0]+(version.length>1?version[1]:"0")+ (version.length>2?version[2]:"0");
+		return Integer.parseInt(nroVersion);
+	}
+
+	public boolean isVersionSuperior(final Activity activity){
+
+		boolean isSuperior=false;
+		try{
+			String version_app = activity.getResources().getString(R.string.APP_NRPO_VERSION).trim();
+			String version_actual= getNroVersion();
+			int _version_app=isVersionSuperior(version_app.toLowerCase());
+			int _version_actual=isVersionSuperior(version_actual.toLowerCase());
+			isSuperior=_version_app>_version_actual;
+
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return isSuperior;
+	}
+
+	public int getPreferenciasByName(String name){
+		String rawQuery;
+		rawQuery = "SELECT valor FROM configuracion WHERE nombre like '"+name+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		int estado = 1;
+		cur.moveToFirst();
+		Log.w(TAG+"raw query:",rawQuery);
+		while (!cur.isAfterLast()) {
+			estado = cur.getInt(0);
+			cur.moveToNext();
+		}
+		Log.w(TAG,"Luego del query");
+		Log.w(TAG+":getPreferenciasByName: estado",""+estado);
+		cur.close();
+		db.close();
+		return estado;
+	}
+	public boolean VersionAppActualizadoCheck(final Activity activity){
+		String mensaje="";
+
+		if (!getNroVersion().equalsIgnoreCase(""+activity.getResources().getString(R.string.APP_NRPO_VERSION))
+				&& !isVersionSuperior(activity) ){
+			mensaje="Hay una nueva version disponible para esta aplicación(OTROS).\n\nVersión actual: " + getNroVersion() + "";
+		}
+		if (mensaje.length()>0){
+			int estado=getPreferenciasByName("validar nro_version_app");
+			if (estado==1){
+				mensaje=mensaje.replace("(OTROS)", ", por ello es necesario actualizar");
+			}else mensaje=mensaje.replace("(OTROS)", ", Sin embargo no es necesarió actualizar");
+
+
+			new AlertDialog.Builder(activity)
+					.setCancelable(false)
+					.setIcon(activity.getResources().getDrawable(R.drawable.alert))
+					.setMessage(mensaje)
+					.setPositiveButton("Omitir", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					})
+					.setNegativeButton("Obtener", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							descargarApp(activity);
+						}
+					})
+					.show();
+
+			if (estado==1){
+				return false;
+			}else return true;
+		}else return true;
+	}
+
+	public void descargarApp( final Activity activity){
+		LinearLayout.LayoutParams paramT = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 50);
+		LinearLayout.LayoutParams paramT2 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 10);
+
+		final WebView myWebVew=new WebView(activity);
+		myWebVew.setLayoutParams(paramT);
+
+
+		myWebVew.setWebViewClient(new WebViewClient());
+
+
+		WebSettings webSettings=myWebVew.getSettings();
+		webSettings.setJavaScriptEnabled(true);
+
+		myWebVew.getSettings().setSupportMultipleWindows(true);
+		myWebVew.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+		myWebVew.getSettings().setAllowFileAccess(true);
+		myWebVew.getSettings().setJavaScriptEnabled(true);
+		myWebVew.getSettings().setBuiltInZoomControls(true);
+		myWebVew.getSettings().setDisplayZoomControls(false);
+		myWebVew.getSettings().setLoadWithOverviewMode(true);
+		myWebVew.getSettings().setUseWideViewPort(true);
+		if (Build.VERSION.SDK_INT >= 19) {
+			myWebVew.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+		}
+		else if(Build.VERSION.SDK_INT >=11 && Build.VERSION.SDK_INT < 19) {
+			myWebVew.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		}
+
+
+		myWebVew.loadUrl(getConfiguracionByName("url_apk", "https://www.acgenesys.com")+"?nro_version="+activity.getResources().getString(R.string.APP_NRPO_VERSION));
+		final SwipeRefreshLayout swipe_refresh=new SwipeRefreshLayout(activity);
+		swipe_refresh.setLayoutParams(paramT2);
+		swipe_refresh.setColorSchemeColors(
+				activity.getResources().getColor(R.color.s1),
+				activity.getResources().getColor(R.color.s2),
+				activity.getResources().getColor(R.color.s3),
+				activity.getResources().getColor(R.color.s4)
+		);
+		swipe_refresh.addView(myWebVew);
+		myWebVew.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onProgressChanged(WebView view, int progress) {
+				swipe_refresh.setRefreshing(true);
+				if (progress == 100) {
+					swipe_refresh.setRefreshing(false);
+				}
+			}
+		});
+
+		swipe_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				myWebVew.reload();
+			}
+		});
+		new AlertDialog.Builder(activity)
+				.setCancelable(false)
+
+				.setView(swipe_refresh)
+				.setNegativeButton("Cerrar", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				})
+				.setNeutralButton("Abrir Con Web", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String url=(getConfiguracionByName("url_apk", "https://www.acgenesys.com")+"?nro_version="+activity.getResources().getString(R.string.APP_NRPO_VERSION));;
+						Uri uri=Uri.parse(""+url);
+						Intent intent=new Intent(Intent.ACTION_VIEW, uri);
+						activity.startActivity(intent);
+					}
+				})
+				.show();
+	}
+
 }
 

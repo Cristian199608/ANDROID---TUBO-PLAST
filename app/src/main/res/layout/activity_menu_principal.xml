@@ -21,12 +21,14 @@
 
         <ImageView
             android:id="@+id/iv_inicio"
-            android:src="@drawable/new_logo_saemovil2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:layout_alignParentRight="true"
-            />
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/new_logo_saemovil2" />
 
         <TextView
             android:id="@+id/txt_te"

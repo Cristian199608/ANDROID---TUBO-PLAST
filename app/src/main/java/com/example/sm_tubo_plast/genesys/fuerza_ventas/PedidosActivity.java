@@ -5838,7 +5838,7 @@ private void EnvalularMoneda(){
             }
             dbclass.close();
         }
-        if (productos.size()>0) {
+        if (dbclass.obtenerCantidadPedidoDetalle(Oc_numero) > 0) {
             rButtonSoles.setEnabled(false);
             rButtonDolares.setEnabled(false);
             spn_condicionVenta.setEnabled(false);

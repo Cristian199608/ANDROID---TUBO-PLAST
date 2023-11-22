@@ -37,9 +37,13 @@ import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class SeguimientoPedidoActivity extends AppCompatActivity {
     public static final String TAG = "SeguimientoPedidoActivity";
+    public static final String SEGUIMIENTO_PEDIDO_GENERADO ="OP_GENERADO";
+    public static final String SEGUIMIENTO_PEDIDO_ENTREGADO ="OP_ENTREGADO";
+    public static final String SEGUIMIENTO_PEDIDO_DEVOLUCION ="OP_DEVOLUCION";
 
     String codven="", codcliSeleccionado;
     ImageButton ib_seleccionar_cliente, ib_numero_pedido,ib_buscar_op;
@@ -349,10 +353,11 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                     public void OnChanged(String texto) {
                         dataDinamic.clear();
                         if (texto.length()>0) {
+                            String textoPattern=texto.replace(" ",".*").toLowerCase();
+                            Pattern pattern = Pattern.compile(".*"+textoPattern+".*");
                             for (ViewSeguimientoPedidoDetalle item : dataDet) {
-                                if (item.getProducto().toLowerCase().contains(texto.toLowerCase())){
+                                if (pattern.matcher(item.getProducto().toLowerCase()).matches()) {
                                     dataDinamic.add(item);
-
                                 }
                             }
                         }else{

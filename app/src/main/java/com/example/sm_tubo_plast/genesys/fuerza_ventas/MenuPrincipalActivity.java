@@ -174,7 +174,12 @@ public class MenuPrincipalActivity extends AppCompatActivity {
                     });
             alertDialog.show();
         }
-
+        binding.ivInicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                database.descargarApp(MenuPrincipalActivity.this);
+            }
+        });
 
         onCreateMainMenu(getWindow(),this);
         Window window=getWindow();
@@ -249,10 +254,14 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                final Intent icliente = new Intent(activity,ClientesActivity.class);
-                icliente.putExtra("codven",codven);
-                // ipedido.putExtra("codven",codven);
-                activity.startActivityForResult(icliente, 0);
+
+                boolean actualizado=database.VersionAppActualizadoCheck(MenuPrincipalActivity.this);
+                if (actualizado) {
+                    final Intent icliente = new Intent(activity,ClientesActivity.class);
+                    icliente.putExtra("codven",codven);
+                    // ipedido.putExtra("codven",codven);
+                    activity.startActivityForResult(icliente, 0);
+                }
             }
         });
 

@@ -6793,7 +6793,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	public ArrayList<ViewSeguimientoPedidoDetalle> get_tplast_seguimiento_pedido_detalle_json(String codven, String numero_op ) throws Exception{
 		try{
 
-			String _METHOD_NAME="get_tplast_seguimiento_pedido_detalle_json";
+			String _METHOD_NAME="get_tplast_seguimiento_pedido_detalle_v2_json";
 
 			ArrayList<String> propiedad=new ArrayList<>();
 			propiedad.add("codven"+__PARTIR___+codven);

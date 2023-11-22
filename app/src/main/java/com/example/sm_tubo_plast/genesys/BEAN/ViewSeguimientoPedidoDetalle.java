@@ -4,8 +4,9 @@ public class ViewSeguimientoPedidoDetalle {
 
     private String codcli;
     private String nombres;
-    private String movimiento;
     private String moneda;
+    private String movimiento;
+    private String codigo_op;
     private String numero_op;
     private String fecha_apertura;
     private double monto_total;
@@ -49,6 +50,14 @@ public class ViewSeguimientoPedidoDetalle {
 
     public void setMoneda(String moneda) {
         this.moneda = moneda;
+    }
+
+    public String getCodigo_op() {
+        return codigo_op;
+    }
+
+    public void setCodigo_op(String codigo_op) {
+        this.codigo_op = codigo_op;
     }
 
     public String getNumero_op() {
