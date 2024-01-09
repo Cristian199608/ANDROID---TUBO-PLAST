@@ -342,7 +342,7 @@ public class CH_ClientesDevolucion extends AppCompatActivity {
 
         private class ViewHolder {
 
-            TextView name, ruc, observacion, fecha, monto, direccion;
+            TextView name, ruc, observacion, fecha, direccion;
             ImageView foto;
 
         }
@@ -369,8 +369,7 @@ public class CH_ClientesDevolucion extends AppCompatActivity {
                         .findViewById(R.id.list_item_cliente_observacion);
                 viewHolder.fecha = (TextView) convertView
                         .findViewById(R.id.list_item_cliente_fecha);
-                viewHolder.monto = (TextView) convertView
-                        .findViewById(R.id.list_item_cliente_monto);
+
                 viewHolder.direccion = (TextView) convertView
                         .findViewById(R.id.list_item_direccion);
                 // link the cached views to the convertview
@@ -427,8 +426,7 @@ public class CH_ClientesDevolucion extends AppCompatActivity {
                 // viewHolder.observacion.setText(searchResults.get(position).get("observacion").toString());
                 viewHolder.observacion.setText(obs);
 
-                viewHolder.monto.setText(searchResults.get(position)
-                        .get("monto").toString());
+
                 viewHolder.fecha.setText(searchResults.get(position)
                         .get("fecha").toString());
                 viewHolder.direccion.setText(searchResults.get(position)
@@ -472,7 +470,7 @@ public class CH_ClientesDevolucion extends AppCompatActivity {
 
             try {
 
-                originalValues = obj_dbclasses.getProgramacionxDia2("", 0, 50000, 50, "", false);
+                originalValues = obj_dbclasses.getProgramacionxDia2("", 0, 50000, 50, "", false, null);
                 originalValues.addAll(obj_dbclasses.getDemasClientes2());
 
             }

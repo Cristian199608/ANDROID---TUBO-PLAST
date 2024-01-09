@@ -104,14 +104,6 @@
             </LinearLayout>
 
 
-            <Switch
-                android:id="@+id/swForzarAgregarDuplicadoProduct"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Este producto ya fue agregado ¿Desea agregar nuevamente?"
-                android:layout_margin="5dp"
-                android:textColor="@color/red_600"
-                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -230,21 +222,16 @@
                             android:layout_weight="0.5"
                             android:orientation="vertical" >
 
-                            <TextView
+                            <Button
+                                android:id="@+id/btn_consultarProducto"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="5dp"
-                                android:text="Cantidad:" />
+                                android:layout_marginTop="10dp"
+                                android:textSize="13sp"
+                                android:drawableEnd="@drawable/ic_devolucion"
+                                android:drawableTint="@color/grey_700"
+                                android:text="Precio Lista  0.000" />
 
-                            <EditText
-                                android:id="@+id/productolyt_edtCantidad"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/edittext_background"
-                                android:inputType="number"
-                                android:padding="8dp"
-                                android:imeOptions="actionGo"
-                                android:singleLine="true" />
 
                         </LinearLayout>
 
@@ -270,6 +257,28 @@
                     </LinearLayout>
                 </TableRow>
 
+                <Switch
+                    android:id="@+id/swAgregarComoNuevoProducto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_rounded_corners6"
+                    android:backgroundTint="@color/cyan_100"
+                    android:text="Producto ya registrado, ¿Agregar como nuevo producto? "
+                    android:layout_margin="5dp"
+                    android:textColor="@color/black"
+                    />
+                <Switch
+                    android:id="@+id/swAgregarComoBonificacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_rounded_corners6"
+                    android:backgroundTint="@color/green_200"
+                    android:text="¿Desea agregar como una bonificación con precio 0.0? "
+                    android:layout_margin="5dp"
+                    android:textColor="@color/black"
+                    />
+
+
                 <TableRow
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
@@ -287,10 +296,34 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:orientation="horizontal" >
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:paddingEnd="5dp"
+                            android:orientation="vertical" >
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Cantidad:" />
+
+                            <EditText
+                                android:id="@+id/productolyt_edtCantidad"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/edittext_background"
+                                android:inputType="number"
+                                android:padding="8dp"
+                                android:imeOptions="actionGo"
+                                android:singleLine="true" />
+
+                        </LinearLayout>
 
                     <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_weight="2"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:orientation="vertical" >
 
@@ -309,10 +342,10 @@
                                 android:padding="7dp"
                                 android:singleLine="true"
                                 android:text="" />
-
                         </LinearLayout>
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:orientation="vertical" >
@@ -335,21 +368,6 @@
 
                         </LinearLayout>
                     </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:orientation="vertical" >
-
-                            <Button
-                                android:id="@+id/btn_consultarProducto"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:drawableLeft="@drawable/icon_refresh_32"
-                                android:text="Precio Lista  0.000" />
-
-                        </LinearLayout>
                     </LinearLayout>
                 </TableRow>
 
@@ -414,11 +432,14 @@
 
 
                                 <TextView
+                                    android:id="@+id/tvGetPctDescuentoPorPrecio"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:textColor="@color/grey_800"
-                                    android:text="Precio sin IGV:"
+                                    android:text="P. sin IGV:"
+                                    android:drawableEnd="@drawable/ic_edit_24_grey"
+                                    android:drawableTint="@color/blue_500"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -441,7 +462,7 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center"
                                     android:textColor="@color/grey_800"
-                                    android:text="Precio inc. IGV:"
+                                    android:text="P. inc. IGV:"
                                     android:textStyle="bold" />
 
                                 <TextView

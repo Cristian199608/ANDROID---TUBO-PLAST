@@ -37,12 +37,17 @@
     </item>
     <item android:id="@+id/menu_ver_clientes_inactivos"
         android:title="Ver Clientes Inactivos"
-        android:icon="@drawable/ic_account_grey_24">
+        android:icon="@drawable/ic_account_grey_24"/>
 
-    </item>
-
-
-
+    <item android:id="@+id/menu_dddd_vacio"
+        android:title=""
+        android:icon="@drawable/ic_account_grey_24"/>
+    <item android:id="@+id/menu_ver_clientes_sidige"
+        android:title="Ver Clientes SIDIGE"
+        android:icon="@drawable/ic_account_grey_24"/>
+    <item android:id="@+id/menu_ver_clientes_sammovil"
+        android:title="Ver Clientes SAEMOVIL"
+        android:icon="@drawable/ic_account_grey_24"/>
 
 <!--<item android:id="@+id/clientes_menu_registrados" android:title="Registro Clientes"-->
 <!--      android:icon="@drawable/icon_resumen_48dp"></item>-->

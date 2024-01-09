@@ -341,7 +341,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private static final int ELIMINAR_PRODUCTO = 1;
     private static final int ELIMINAR_ITEM_PROMO = 2;
     private static final int EDITAR_COLOR_BONI = 3;
-    private static final int EDITAR = 4;
+    private static final int EDITAR_CANTIDAD = 4;
+    private static final int EDITAR_PRODUCTO = 7;
     private static final int EDITAR_ENTREGA = 5;
     private static final int EDITAR_ITEM_PROMO = 6;
 
@@ -792,7 +793,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         if (Build.VERSION.SDK_INT >= 24){
             VERSION_ANDROID=VERSION7_A_MAS;
             DIALOGO=FORMA2;
-            ActionItem infoItemEDIT_ENTRA = new ActionItem(EDITAR, "EDITAR \n CANTIDA",R.drawable.icon_ch_edit2_32);
+            ActionItem infoItemEDIT_ENTRA = new ActionItem(EDITAR_CANTIDAD, "EDITAR \n CANTIDA",R.drawable.icon_ch_edit2_32);
+            ActionItem infoItemEDIT_PRODUC = new ActionItem(EDITAR_PRODUCTO, "EDITAR \n PRODUCTO",R.drawable.icon_ch_edit2_32);
             ActionItem infoItemDELET_PRO = new ActionItem(ELIMINAR_PRODUCTO, "ELIMINAR \n PRODUCTO",R.drawable.icon_ch_delete2_32);
             ActionItem infoItem_EDIT_ENTREGA = new ActionItem(EDITAR_ENTREGA, "EDITAR \n ENTREGA",R.drawable.fecha_32);
 
@@ -801,6 +803,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             ActionItem infoItem_ELIMINAR_ITEM_PROMO = new ActionItem(ELIMINAR_ITEM_PROMO, "ELIMINAR PROMOCION",R.drawable.ic_anular);
 
             mQuickAction1.addActionItem(infoItemEDIT_ENTRA);
+            mQuickAction1.addActionItem(infoItemEDIT_PRODUC);
             mQuickAction1.addActionItem(infoItemDELET_PRO);
             mQuickAction1.addActionItem(infoItem_EDIT_ENTREGA);
 
@@ -1852,6 +1855,15 @@ private  void llenarSpinnerDespacho(String valor){
     }
 
     public void agregarProducto(){
+        String rquest_accion=ProductoActivity.REQUEST_ACCION_AGREGAR_PRODUCTO;
+        agregarOrModificarProducto(rquest_accion, new ItemProducto.DataEdit());
+    }
+    public void modificarProducto(ItemProducto __itemProd){
+        ItemProducto.DataEdit itemProd= ItemProducto.DataEdit.getInstance(__itemProd);
+        String rquest_accion=ProductoActivity.REQUEST_ACCION_MODIFICAR_PRODUCTO;
+        agregarOrModificarProducto(rquest_accion,itemProd);
+    }
+    public void agregarOrModificarProducto(String request_accion_producto, ItemProducto.DataEdit productoModificar){
         if (autocomplete.getText().equals("") || codcli.equals("")) {
             autocomplete.setError(Html.fromHtml("<font color='#424242'>Cliente no Valido</font>"));
         }else{
@@ -1872,6 +1884,8 @@ private  void llenarSpinnerDespacho(String valor){
                     }
                     fechaEntregaCompleta = edt_fechaPedido.getText().toString();
                     Intent intent = new Intent(PedidosActivity.this,ProductoActivity.class);
+                    intent.putExtra(ProductoActivity.REQUEST_ACCION_PRODUCTO_KEY,request_accion_producto);
+                    intent.putExtra(ProductoActivity.REQUEST_DATA_PRODUCTO_KEY, productoModificar);
                     intent.putExtra("codcli", codcli);
                     intent.putExtra("codven", codven);
                     intent.putExtra("origen", pedido);
@@ -1903,6 +1917,9 @@ private  void llenarSpinnerDespacho(String valor){
             }
         }
     }
+
+
+
 private void EnvalularMoneda(){
     rGroup_moneda.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
         @Override
@@ -2579,11 +2596,10 @@ private void EnvalularMoneda(){
     }
 
     public void accion_segunId(int acciones, String codPro){
-
+        final ItemProducto prod = (ItemProducto) lstProductos.getAdapter().getItem(positionLisView);
         switch (acciones) {
 
             case ELIMINAR_PRODUCTO:
-                ItemProducto prod = (ItemProducto) lstProductos.getAdapter().getItem(positionLisView);
 
                 Log.i(TAG," accion_segunId ELIMINAR PRODUCTO, copPro "+codPro);
 
@@ -2953,12 +2969,11 @@ private void EnvalularMoneda(){
                 //FIN COLORES
                 break;
 
-            case EDITAR:
+            case EDITAR_CANTIDAD:
 //                Log.i(TAG," accion_segunId EDITAR CANTIDAD, copPro "+codPro);
 //                GlobalFunctions.showCustomToast(PedidosActivity.this, "Elimine y vuelva a ingresar el producto",
 //                        GlobalFunctions.TOAST_WARNING, GlobalFunctions.POSICION_BOTTOM);
 
-                prod = (ItemProducto) lstProductos.getAdapter().getItem(positionLisView);
                 AlertViewSimpleConEdittext alertEditCantidad=new AlertViewSimpleConEdittext(this);
                 alertEditCantidad.titulo="Editar cantidad";
                 alertEditCantidad.mensaje="Editar cantidad para "+prod.getCodprod()+"-"+prod.getDescripcion();
@@ -2993,6 +3008,10 @@ private void EnvalularMoneda(){
                     }
                 });
 
+                break;
+
+            case EDITAR_PRODUCTO:
+                modificarProducto(prod);
                 break;
 
             case EDITAR_ENTREGA:
@@ -3681,9 +3700,10 @@ private void EnvalularMoneda(){
                     //Al mostrar la lista de productos se debe actualizar o agregar el producto pendiente agregado, de otra forma podra ser tomado en cuenta al momento de recalcular bonificaciones
 
                 }else{
-                    String org 				= data.getStringExtra("TIPO");
+                    String requestAccionProducto = data.getStringExtra(ProductoActivity.REQUEST_ACCION_PRODUCTO_KEY);
                     String descripcion 		= data.getStringExtra("descripcion");
                     final String codprod 	= data.getStringExtra("codigoProducto");
+                    final int nro_item 	= data.getIntExtra("item", 0);
                     String desunimed 		= data.getStringExtra("desunimed");
                     String unidad_medida 	= dbclass.obtener_codXdesunimed(codprod,desunimed);
                     double peso 			= data.getDoubleExtra("peso", 0.0);
@@ -3695,7 +3715,7 @@ private void EnvalularMoneda(){
                     final String precioLista= data.getStringExtra("precioLista");
                     final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
                     final double porcentaje_desc_extra= data.getDoubleExtra("porcentaje_desc_extra", 0);
-                    final boolean forzarAgregarProductDuplicado= data.getBooleanExtra("forzarAgregarProductDuplicado", false);
+                    final boolean agregarComoBonificacion= data.getBooleanExtra("agregarComoBonificacion", false);
 
 
                     final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
@@ -3706,7 +3726,7 @@ private void EnvalularMoneda(){
                     String subtotal_peso 	= GlobalFunctions.redondear_toString(peso*cantidad);
                     String percepcionxCantidad = GlobalFunctions.redondear_toString(precioPercepcion * cantidad);
 
-                    Log.d("onActivityResult", "org: "+org);
+                    Log.d("onActivityResult", "org: "+requestAccionProducto);
                     Log.d("onActivityResult", "descripcion: "+descripcion);
                     Log.d("onActivityResult", "codprod: "+codprod);
                     Log.d("onActivityResult", "desunimed"+desunimed);
@@ -3723,64 +3743,59 @@ private void EnvalularMoneda(){
                     Log.d("onActivityResult", "subtotal_peso: "+subtotal_peso);
                     Log.d("onActivityResult", "percepcionxCantidad: "+percepcionxCantidad);
 
-
-                    if (org.equals("AGREGAR")) {
-
-                        PUEDE_AGREGAR=dbclass.isNotRegistradoProducto(Oc_numero, codprod.trim());
-                        if (!PUEDE_AGREGAR && !forzarAgregarProductDuplicado) {
-                            Toast.makeText(getApplicationContext(),"producto ya registrado",Toast.LENGTH_LONG).show();
-                        }else PUEDE_AGREGAR=true;
-
-                        if (PUEDE_AGREGAR) {
-
-                            DBPedido_Detalle itemDetalle = new DBPedido_Detalle();
-                            itemDetalle.setOc_numero(edt_nroPedido.getText().toString());
-                            itemDetalle.setCip(codprod);
-                            itemDetalle.setEan_item("");
-                            itemDetalle.setPrecio_bruto(precio + "");
-                            itemDetalle.setPercepcion(percepcionxCantidad);
-
-                            itemDetalle.setPrecio_neto(subtotal);
-                            itemDetalle.setCantidad(cantidad);
-                            itemDetalle.setTipo_producto("V");
-                            itemDetalle.setUnidad_medida(unidad_medida);
-                            itemDetalle.setPeso_bruto(subtotal_peso);
-                            itemDetalle.setFlag("N");
-                            itemDetalle.setPrecioLista(""+precioLista);
-                            itemDetalle.setDescuento(""+descuento);
-                            itemDetalle.setPorcentaje_desc(porcentaje_desc);
-                            itemDetalle.setPorcentaje_desc_extra(porcentaje_desc_extra);
-                            //itemDetalle.setCod_politica(sec_politica);
-                            //Campos usados para devoluciones
-                            itemDetalle.setLote("");
-                            itemDetalle.setMotivoDevolucion("");
-                            itemDetalle.setExpectativa("");
-                            itemDetalle.setEnvase("");
-                            itemDetalle.setContenido("");
-                            itemDetalle.setProceso("");
-                            itemDetalle.setObservacionDevolucion("");
-                            itemDetalle.setTipoDocumento("");
-                            itemDetalle.setTipoDocumento("");
-                            itemDetalle.setSerieDevolucion("");
-                            itemDetalle.setNumeroDevolucion("");
-
-                            dbclass.AgregarPedidoDetalle(itemDetalle);
-                        }
-                        ObtenerBonificaciones(codprod, descripcion, "agregar");
-                        mostrarListaProductos("");
-
-                    } else {
-                        Log.w("PRECIO - CODIGOPRODUCTO", precio + "-" + codprod);
-                        //dbclass.modificarItempedido(cantidad, peso, precio,codprod, Oc_numero, unidad_medida, "", "N",sec_politica, "" + subtotal, percepcionxCantidad);
-                        Log.w("MODIFICAR DETALLE", "detalle modificado");
-                        // dbclass.actualizar_stock_xtemp(cantidad*fact_conv,
-                        // codprod);
-                        ObtenerBonificaciones(codprod, descripcion, "editar");
-                        mostrarListaProductos("");
+                    String w_codpro_inser= codprod;
+                    if(agregarComoBonificacion){
+                        //Si es bonificacion se debe agregar con el codigo de producto de bonificacion (BONI+CODPROD
+                        w_codpro_inser = DBPedido_Detalle.PREFIX_PRODUCTO_BONIFICACION_MANUAL+codprod;
                     }
+                    if (requestAccionProducto.equals(ProductoActivity.REQUEST_ACCION_MODIFICAR_PRODUCTO)) {
+                        //ELIMAMOS EL ITEM PRODUCTO PARA QUE LUEGO SE CREAR UNO NUEVO
+                        dbclass.EliminarItemPedido(codprod, nro_item, Oc_numero);
+                    }
+
+                    PUEDE_AGREGAR=dbclass.isNotRegistradoProductoEItem(Oc_numero,w_codpro_inser, nro_item);
+
+                    if (!PUEDE_AGREGAR) {
+                        Toast.makeText(getApplicationContext(),"producto ya registrado",Toast.LENGTH_LONG).show();
+                    }else PUEDE_AGREGAR=true;
+
+                    if (PUEDE_AGREGAR) {
+                        DBPedido_Detalle itemDetalle = new DBPedido_Detalle();
+                        itemDetalle.setOc_numero(edt_nroPedido.getText().toString());
+                        itemDetalle.setCip(w_codpro_inser);
+                        itemDetalle.setEan_item("");
+                        itemDetalle.setPrecio_bruto(precio + "");
+                        itemDetalle.setPercepcion(percepcionxCantidad);
+
+                        itemDetalle.setPrecio_neto(subtotal);
+                        itemDetalle.setCantidad(cantidad);
+                        itemDetalle.setTipo_producto("V");
+                        itemDetalle.setUnidad_medida(unidad_medida);
+                        itemDetalle.setPeso_bruto(subtotal_peso);
+                        itemDetalle.setFlag("N");
+                        itemDetalle.setPrecioLista(""+precioLista);
+                        itemDetalle.setDescuento(""+descuento);
+                        itemDetalle.setPorcentaje_desc(porcentaje_desc);
+                        itemDetalle.setPorcentaje_desc_extra(porcentaje_desc_extra);
+                        //itemDetalle.setCod_politica(sec_politica);
+                        //Campos usados para devoluciones
+                        itemDetalle.setLote("");
+                        itemDetalle.setMotivoDevolucion("");
+                        itemDetalle.setExpectativa("");
+                        itemDetalle.setEnvase("");
+                        itemDetalle.setContenido("");
+                        itemDetalle.setProceso("");
+                        itemDetalle.setObservacionDevolucion("");
+                        itemDetalle.setTipoDocumento("");
+                        itemDetalle.setTipoDocumento("");
+                        itemDetalle.setSerieDevolucion("");
+                        itemDetalle.setNumeroDevolucion("");
+
+                        dbclass.AgregarPedidoDetallePrincipal(itemDetalle, nro_item);
+                    }
+                    ObtenerBonificaciones(codprod, descripcion, "agregar");
+                    mostrarListaProductos("");
                 }
-
-
             }
         }
     }

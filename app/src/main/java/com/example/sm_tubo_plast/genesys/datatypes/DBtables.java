@@ -52,6 +52,8 @@ public class DBtables {
 		public static final String RUBRO_CLIENTE = "rubro_cliente";
 		public static final String DISPONIBLE_CREDITO = "disponible_credito";
 		public static final String codven_asginados = "codven_asginados";
+		public static final String sistema = "sistema";
+		public static final String moneda_ultima_compra="moneda_ultima_compra";
 
 		 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG

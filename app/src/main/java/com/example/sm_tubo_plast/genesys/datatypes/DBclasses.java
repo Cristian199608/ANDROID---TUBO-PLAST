@@ -157,10 +157,12 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		String S_TAG="EliminaOldDatabase:: ";
 		try {
-			_context.deleteDatabase(VARIABLES.ConfigDatabase.getDatabaseNameOld());
-			Log.i(TAG, S_TAG+" se ha eliminado el anterior db "+ VARIABLES.ConfigDatabase.getDatabaseNameOld());
+			for (String dbOld : VARIABLES.ConfigDatabase.getDatabaseNameOld()) {
+				_context.deleteDatabase(dbOld);
+				Log.i(TAG, S_TAG+" se ha eliminado el anterior db "+ dbOld);
+			}
 		} catch (Exception e) {
-			Log.e(TAG, S_TAG+"Ohh no se pudo eliminar la base de datos antiguo "+ VARIABLES.ConfigDatabase.getDatabaseNameOld());
+			Log.e(TAG, S_TAG+"Ohh no se pudo eliminar la base de datos antiguo "+ VARIABLES.ConfigDatabase.getDatabaseNameOld().toString());
 			e.printStackTrace();
 		}
 	}
@@ -522,7 +524,8 @@ public class DBclasses extends SQLiteAssetHelper {
 																	int start,
 																	int  end, int bucle,
 																	String fecha_formateado,
-																	boolean soloAnulados
+																	boolean soloAnulados,
+																	String tipo_cliente_valor
 																	 ) {
 
 		String codven = new SessionManager(_context).getCodigoVendedor();
@@ -537,12 +540,18 @@ public class DBclasses extends SQLiteAssetHelper {
 			addwhere="and cliente.stdcli='0' ";
 		}else addwhere="and cliente.stdcli='1' ";
 
+		if (tipo_cliente_valor!=null){
+			addwhere+=" and cliente.sistema='"+tipo_cliente_valor+"' ";
+		}
+
 		rawQuery = "select * from (select distinct(nomcli) as nomcli,ruccli,fecha_compra,monto_compra,cliente.codcli,item_dircli,n_dia,ifnull(observacion,'') as observacion, " +
 				"ifnull((" +
 				"  dc.direccion), 'Sin dirección') as direccion," +
 				"cliente.codcli as codcli," +
 				"cliente.stdcli as estado_cli," +
-				"ifnull(motivo, '') as motivoBajaCliente " +
+				"ifnull(motivo, '') as motivoBajaCliente," +
+				"cliente.sistema, " +
+				"cliente.moneda_ultima_compra " +
 				" from "
 				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
 				+"inner join "+Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
@@ -561,7 +570,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		ArrayList<HashMap<String, Object>> dbcliente = new ArrayList<HashMap<String, Object>>();
 		if (cur.isClosed() && bucle>50){
 			bucle--;
-			return getProgramacionxDia2( txtBusqueda, start, end, bucle, fecha_formateado, soloAnulados);
+			return getProgramacionxDia2( txtBusqueda, start, end, bucle, fecha_formateado, soloAnulados, tipo_cliente_valor);
 		}
 		int coint=cur.getCount();
 		db.close();
@@ -576,6 +585,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbc.put("observacion", cur.getString(7));
 			dbc.put("fecha", cur.getString(2));
 			dbc.put("monto", cur.getString(3));
+			dbc.put("moneda_ultima_compra", cur.getString(cur.getColumnIndex("moneda_ultima_compra")));
 			dbc.put("codigo", cur.getString(4));
 			dbc.put("item_direccion", cur.getInt(5));
 			dbc.put("n_dia", cur.getInt(6));
@@ -588,6 +598,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbc.put("estado_pedido", estado_pedido);
 			dbc.put("estado_cli", cur.getString(cur.getColumnIndex("estado_cli")));
 			dbc.put("motivoBajaCliente", cur.getString(cur.getColumnIndex("motivoBajaCliente")));
+			dbc.put("sistema", cur.getString(cur.getColumnIndex("sistema")));
 
 			dbcliente.add(dbc);
 		}
@@ -1675,36 +1686,48 @@ public class DBclasses extends SQLiteAssetHelper {
 		return sitio;
 	}
 
-	
+
+	public int getNextNroItemPedido(String oc_numero){
+		SQLiteDatabase db = getWritableDatabase();
+
+		String subQuery =
+				"SELECT count(*) FROM pedido_detalle "
+						+ "where item > 0 and oc_numero = '"+oc_numero+"'";
+
+		Cursor curAux = db.rawQuery(subQuery, null);
+		curAux.moveToFirst();
+		int nro_item=0;
+		while (!curAux.isAfterLast()) {
+			Log.d("", "nro item obtenido de la consulta: "+curAux.getInt(0));
+			nro_item = curAux.getInt(0);
+			curAux.moveToNext();
+		}
+		curAux.close();
+		nro_item++;
+		return nro_item;
+	}
 
 	public void AgregarPedidoDetalle(DBPedido_Detalle item) {
 
+		int nro_item=getNextNroItemPedido(item.getOc_numero());
+		AgregarPedidoDetallePrincipal(item, nro_item);
+	}
+
+	public void AgregarPedidoDetallePrincipal(DBPedido_Detalle item, int nro_item) {
+
 		try {
 			SQLiteDatabase db = getWritableDatabase();
-			
-			String subQuery =
-					"SELECT count(*) FROM pedido_detalle "
-					+ "where item > 0 and oc_numero = '"+item.getOc_numero()+"'";
-						
-			Cursor curAux = db.rawQuery(subQuery, null);			
-			curAux.moveToFirst();
-			int nro_item=0;
-			while (!curAux.isAfterLast()) {
-				Log.d("", "nro item obtenido de la consulta: "+curAux.getInt(0));
-				nro_item = curAux.getInt(0);
-				curAux.moveToNext();
-			}
-			curAux.close();
-			nro_item++;
+
+
 			item.setItem(nro_item);
-			
-			
+
+
 			Log.d("BDclasses","Agregando nuevo detalle, con los datos: ");
 			Log.d("BDclasses :AgregarPedidoDetalle:","Oc_numero "+item.getOc_numero());
 			Log.d("BDclasses :AgregarPedidoDetalle:","item "+item.getItem());
 			Log.d("BDclasses :AgregarPedidoDetalle:","codigo "+item.getCip());
 			Log.d("BDclasses :AgregarPedidoDetalle:","secuencia "+item.getSec_promo());
-			
+
 			ContentValues Nreg = new ContentValues();
 			Nreg.put("oc_numero", item.getOc_numero());
 			Nreg.put("ean_item", item.getEan_item());
@@ -1727,7 +1750,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("porcentaje_desc", item.getPorcentaje_desc());
 			Nreg.put("porcentaje_desc_extra", item.getPorcentaje_desc_extra());
 			Nreg.put("lote", item.getLote());
-			
+
 			Nreg.put("motivoDevolucion", item.getMotivoDevolucion());
 			Nreg.put("Expectativa", item.getExpectativa());
 			Nreg.put("Envase", item.getEnvase());
@@ -1737,10 +1760,10 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("tipoDocumento", item.getTipoDocumento());
 			Nreg.put("serieDevolucion", item.getSerieDevolucion());
 			Nreg.put("numeroDevolucion", item.getNumeroDevolucion());
-			
+
 			db.insert("pedido_detalle", null, Nreg);
 			db.close();
-			
+
 			Gson gson = new Gson();
 			Log.e("(DBclasses)AgregarPedidoDetalle","detallePedido: ITEM AGREGADO\n" + gson.toJson(item));
 
@@ -2734,7 +2757,9 @@ public class DBclasses extends SQLiteAssetHelper {
 		String[] args = { ""+nroItem, codprod, oc_numero };
 
 		try {
-			double peso=getPesoProducto(codprod);
+			String codproReal=codprod;
+			if(codproReal.charAt(0)=='B')codproReal=codproReal.substring(1);
+			double peso=getPesoProducto(codproReal);
 			double precioUnitario=getPrecioParcialPedidoDetalle(nroItem, codprod, oc_numero);
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -2789,9 +2814,16 @@ public class DBclasses extends SQLiteAssetHelper {
 
 
 	public void EliminarItemPedido(String codprod, int item, String oc_numero) {
-
-		String where = "cip = ? and item= ? and oc_numero = ?";// pk(oc_numero, cip, item)
-		String[] args = { codprod, ""+item, oc_numero };
+		String where= "";
+		String[] args = null;
+		if(item==-1){
+			where = "cip = ? and oc_numero = ?";// pk(oc_numero, cip)
+			 args = new String[]{codprod, oc_numero};
+		}
+		else {
+			where = "cip = ? and item= ? and oc_numero = ?";// pk(oc_numero, cip, item)
+			args = new String[]{ codprod, ""+item, oc_numero };
+		}
 
 		try {
 
@@ -3974,7 +4006,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cliente.RUBRO_CLIENTE,	jsonData.getString(DBtables.Cliente.RUBRO_CLIENTE).trim());
 				cv.put(DBtables.Cliente.DISPONIBLE_CREDITO,	jsonData.getString(DBtables.Cliente.DISPONIBLE_CREDITO).trim());
 				cv.put(DBtables.Cliente.codven_asginados,	jsonData.getString(DBtables.Cliente.codven_asginados).trim());
-
+				cv.put(DBtables.Cliente.sistema,	jsonData.getString(DBtables.Cliente.sistema).trim());
+				cv.put(DBtables.Cliente.moneda_ultima_compra,	jsonData.getString(DBtables.Cliente.moneda_ultima_compra).trim());
 
 				db.insert(DBtables.Cliente.TAG, null, cv);
 				Log.i("CLIENTE",
@@ -5643,7 +5676,7 @@ public class DBclasses extends SQLiteAssetHelper {
 							cv2.put(DBtables.Pedido_detalle.AGRUP_PROMO, jsonData_det.getString("agrup_promo").trim());
 							//cv2.put(DBtables.Pedido_detalle.ITEM, jsonData_det.getString("item").trim());
 							//item no existe en la tabla detalle pedido, se setea un correlativo
-							cv2.put(DBtables.Pedido_detalle.ITEM, j);
+							cv2.put(DBtables.Pedido_detalle.ITEM, jsonData_det.getInt("item"));
 							cv2.put(DBtables.Pedido_detalle.PRECIO_LISTA, jsonData_det.getString("precioLista").trim());
 							cv2.put(DBtables.Pedido_detalle.DESCUENTO, jsonData_det.getString("descuento").trim());
 							cv2.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, jsonData_det.getDouble("porcentaje_desc"));
@@ -6545,7 +6578,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	}
 
 	// Metodo para el envio de pedido (PedidoActivity)
-	public ArrayList<DB_ObjPedido> getObjPedido_jsons(String oc_numero) {
+	public ArrayList<DB_ObjPedido> 	getObjPedido_jsons(String oc_numero) {
 
 		String rawQuery;
 		String[] args = { oc_numero };
@@ -7231,6 +7264,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				dbdetalle.setOc_numero(cur.getString(0));
 				dbdetalle.setEan_item(cur.getString(1));
 				dbdetalle.setCip(cur.getString(2));
+				dbdetalle.setItem(cur.getInt(cur.getColumnIndex("item")));
 				dbdetalle.setPrecio_bruto(cur.getString(3));
 				dbdetalle.setPrecio_neto(cur.getString(4));
 				dbdetalle.setPercepcion(cur.getString(5));
@@ -13273,7 +13307,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
 				"pd.peso_bruto, pd.precio_neto, pd.cantidad\n" +
 				" from pedido_detalle pd   \n" +
-				"inner join producto p on pd.cip=p.codpro\n" +
+				"inner join producto p on (pd.cip=p.codpro OR ((substr(pd.cip,2,length(pd.cip))) =  p.codpro))\n" +
 				"where pd.oc_numero='"+oc_numero+"'\n" +
 				") res group by tipoProducto " +
 				"order by tipoProducto asc";
@@ -13402,12 +13436,34 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.close();
 		return max_fecha;
 	}
+	public boolean  isRegistradoProducto(String numoc, String cip) {
+		return !isNotRegistradoProducto(numoc, cip);
+	}
 
 	public boolean isNotRegistradoProducto(String numoc, String cip) {
 		String S_TAG="getCantidad_produtuctosX_oc_numero:: ";
 		boolean agregar=true;
 		try {
 			String SQL="select * from pedido_detalle where oc_numero='"+numoc+"' and cip = '"+cip+"'";
+			SQLiteDatabase dbRead=getReadableDatabase();
+			Cursor cur=dbRead.rawQuery(SQL, null, null);
+			if (cur.getCount()>0) {
+				agregar=false;
+			}
+			cur.close();
+			dbRead.close();
+		}catch (Exception e){
+			agregar=false;
+			e.printStackTrace();
+		}
+		return  agregar;
+	}
+	public boolean isNotRegistradoProductoEItem(String numoc, String cip, int item) {
+		String S_TAG="getCantidad_produtuctosX_oc_numero:: ";
+		boolean agregar=true;
+		try {
+			String SQL="select * from pedido_detalle " +
+					"where oc_numero='"+numoc+"' and cip = '"+cip+"' and item= '"+item+"'";
 			SQLiteDatabase dbRead=getReadableDatabase();
 			Cursor cur=dbRead.rawQuery(SQL, null, null);
 			if (cur.getCount()>0) {

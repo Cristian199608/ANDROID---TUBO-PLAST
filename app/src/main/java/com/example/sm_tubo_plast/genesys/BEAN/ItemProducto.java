@@ -1,5 +1,7 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
+import java.io.Serializable;
+
 public class ItemProducto {
 	
 	private String Codprod;
@@ -222,4 +224,67 @@ public class ItemProducto {
 	public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
 		this.porcentaje_desc_extra = porcentaje_desc_extra;
 	}
+
+
+	public static class DataEdit implements Serializable{
+
+		private String Codprod;
+		private int item;
+		private int cantidad;
+		private double porcentaje_desc;
+		private double porcentaje_desc_extra;
+
+		//creamos regla para gestionar datos para modificar
+		public static DataEdit getInstance(ItemProducto itemProducto){
+			DataEdit itemEdit=new DataEdit();
+			itemEdit.setCodprod(itemProducto.getCodprod());
+			itemEdit.setItem(itemProducto.getItem());
+			itemEdit.setCantidad(itemProducto.getCantidad());
+			itemEdit.setPorcentaje_desc(itemProducto.getPorcentaje_desc());
+			itemEdit.setPorcentaje_desc_extra(itemProducto.getPorcentaje_desc_extra());
+			return itemEdit;
+		}
+
+		public String getCodprod() {
+			return Codprod;
+		}
+
+		public void setCodprod(String codprod) {
+			Codprod = codprod;
+		}
+
+		public int getItem() {
+			return item;
+		}
+
+		public void setItem(int item) {
+			this.item = item;
+		}
+
+		public int getCantidad() {
+			return cantidad;
+		}
+
+		public void setCantidad(int cantidad) {
+			this.cantidad = cantidad;
+		}
+
+		public double getPorcentaje_desc() {
+			return porcentaje_desc;
+		}
+
+		public void setPorcentaje_desc(double porcentaje_desc) {
+			this.porcentaje_desc = porcentaje_desc;
+		}
+
+		public double getPorcentaje_desc_extra() {
+			return porcentaje_desc_extra;
+		}
+
+		public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
+			this.porcentaje_desc_extra = porcentaje_desc_extra;
+		}
+	}
+
 }
+

@@ -17,6 +17,7 @@ public  class AlertViewSimpleConEdittext{
     public int min_caracteres=10;
     public boolean cancelable=true;
     public boolean type_number=false;
+    public boolean type_numberDecimal=false;
     public AlertViewSimpleConEdittext(Activity activity) {
         this.activity=activity;
 
@@ -26,6 +27,12 @@ public  class AlertViewSimpleConEdittext{
         if (type_number){
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             editText.setGravity(Gravity.CENTER);
+            min_caracteres=1;
+        }
+        else if (type_numberDecimal){
+            editText.setInputType(InputType.TYPE_CLASS_NUMBER |InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            editText.setGravity(Gravity.CENTER);
+            min_caracteres=1;
         }
 
         if (hint==null) editText.setHint("Ingrese mínimo "+min_caracteres+" caracteres");
@@ -34,6 +41,7 @@ public  class AlertViewSimpleConEdittext{
         }
         if (mensjae_error!=null) editText.setError(mensjae_error);
         if (texto_cargado!=null) editText.setText(texto_cargado);
+        editText.setSelection(editText.getText().length());
 
         AlertDialog.Builder aler=new AlertDialog.Builder(activity);
         if (titulo!=null)aler.setTitle(titulo);

@@ -1850,8 +1850,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         sms_cuerpo+=".\n\nAVISO:\n"+controlAcceso.getMensjae();
                     }
                 }
-                boolean isActualizado=_helper.VersionAppActualizadoCheck(SincronizarActivity.this);
-
+                if(!origen.equals("LOGIN")){
+                    boolean isActualizado=_helper.VersionAppActualizadoCheck(SincronizarActivity.this);
+                }
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
                 alerta.setTitle(sms);

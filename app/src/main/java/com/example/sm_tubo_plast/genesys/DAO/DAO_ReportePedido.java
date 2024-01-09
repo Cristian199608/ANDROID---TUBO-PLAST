@@ -48,7 +48,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "WHERE " +
                                 "PD.oc_numero = '" + oc_num + "' " +
                                 "AND " +
-                                "PD.cip = P.codpro ",
+                                "(PD.cip = P.codpro or substr(PD.cip,2, length(PD.cip) ) = P.codpro) ",
                         null);
                 if (objCursor.getCount() != 0)
                 {

@@ -52,14 +52,15 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.adapters.CH_Adapter_bonificacionesPendientes;
 import com.example.sm_tubo_plast.genesys.adapters.ModelBonificacionPendiente;
+import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPolitica_Precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.util.Dialog.AlertViewSimpleConEdittext;
 import com.example.sm_tubo_plast.genesys.util.EditTex.ACG_EditText;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -70,6 +71,8 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @SuppressLint("LongLogTag")
@@ -84,6 +87,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     public final static String BUSQUEDA_PROVEEDOR = "proveedor";
     public final static String BUSQUEDA_DESCRIPCION_COMERCIAL = "descripcion_comercial";
     public final static String BUSQUEDA_CODIGO = "codigo";
+
+    public final static String REQUEST_ACCION_PRODUCTO_KEY="REQUEST_ACCION_PRODUCTO_KEY";
+    private String REQUEST_ACCION_PRODUCTO_VALUE =null;
+    public final static String REQUEST_ACCION_AGREGAR_PRODUCTO ="REQUEST_ACCION_AGREGAR_PRODUCTO";
+    public final static String REQUEST_ACCION_MODIFICAR_PRODUCTO="REQUEST_ACCION_MODIFICAR_PRODUCTO";
+    public final static String REQUEST_DATA_PRODUCTO_KEY="REQUEST_PRODUCTO_MODIFICAR_KEY";
+    private ItemProducto.DataEdit REQUEST_DATA_PRODUCTO_VALUE=null;
 
     private int clienteTienePercepcion;
     private int clienteTienePercepcionEspecial;
@@ -125,13 +135,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     SharedPreferences preferencias_configuracion;
     SharedPreferences.Editor editor_preferencias;
 
-    TextView tv_precioSinIGV,tv_precioIncIGV, tv_fechaUltimaVenta, tv_precioUltimaVenta,tv_descuentoPVP, tvTotalVenta;
+    TextView tvGetPctDescuentoPorPrecio, tv_precioSinIGV,tv_precioIncIGV, tv_fechaUltimaVenta, tv_precioUltimaVenta,tv_descuentoPVP, tvTotalVenta;
     TextView tv_totalStockConfirmar, tv_totalStockDisponible;
     ListView lv_consultaStock,lv_consultaPrecios;
     //Switch swt_afecto;
     ToggleButton swt_afecto;
     CheckBox check_precio;
-    Switch swForzarAgregarDuplicadoProduct;
+    Switch swAgregarComoNuevoProducto, swAgregarComoBonificacion;
 
     private double descuentoMin = 0.0;
     private double descuentoMax = 0.0;
@@ -162,16 +172,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_producto);
-        database = new DBclasses(getApplicationContext());
-        DAOBonificaciones = new DAO_RegistroBonificaciones(getApplicationContext());
-        DAOProducto		  = new DAO_Producto(getApplicationContext());
-
-        preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
-        obj_dbclasses = new DBclasses(getApplicationContext());
-        valorIGV = preferencias_configuracion.getFloat("valorIGV", 0.0f);
-        descuentoMax = preferencias_configuracion.getFloat("limiteDescuento", 2.0f);
 
         Bundle bundle = getIntent().getExtras();
+        REQUEST_ACCION_PRODUCTO_VALUE = bundle.getString(REQUEST_ACCION_PRODUCTO_KEY, null);
+        REQUEST_DATA_PRODUCTO_VALUE=(ItemProducto.DataEdit) bundle.getSerializable(REQUEST_DATA_PRODUCTO_KEY);
         codcli = "" + bundle.getString("codcli");
         codven = "" + bundle.getString("codven");
         origen = "" + bundle.getString("origen");
@@ -196,6 +200,19 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         Log.d("fechaEntrega",bundle.getString("fechaEntrega"));
         // variables importante para calcular percepcion
 
+        if(REQUEST_ACCION_PRODUCTO_VALUE==null || REQUEST_DATA_PRODUCTO_VALUE==null){
+            Toast.makeText(this, "Uno o mas parametros no recibidos", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        database = new DBclasses(getApplicationContext());
+        DAOBonificaciones = new DAO_RegistroBonificaciones(getApplicationContext());
+        DAOProducto		  = new DAO_Producto(getApplicationContext());
+
+        preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
+        obj_dbclasses = new DBclasses(getApplicationContext());
+        valorIGV = preferencias_configuracion.getFloat("valorIGV", 0.0f);
+        descuentoMax = preferencias_configuracion.getFloat("limiteDescuento", 2.0f);
 
         if (bundle.getString("clienteValorPercepcion") != null) {
             try {
@@ -227,6 +244,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         //swt_afecto = (Switch)findViewById(id.swt_afecto);
         swt_afecto = (ToggleButton)findViewById(R.id.swt_afecto);
         tv_precioSinIGV = (TextView) findViewById(R.id.tv_precioSinIGV);
+        tvGetPctDescuentoPorPrecio = (TextView) findViewById(R.id.tvGetPctDescuentoPorPrecio);
         tv_precioIncIGV = (TextView) findViewById(R.id.tv_precioIncIGV);
         btnAgregar = (Button) findViewById(R.id.productolyt_btnAgregar);
         lv_consultaStock = (ListView) findViewById(R.id.lv_consultaStock);
@@ -241,16 +259,18 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         tv_monedaPrecio = (TextView)findViewById(R.id.tv_monedaPrecio);
 
         check_precio = (CheckBox) findViewById(R.id.check_precio);
-        swForzarAgregarDuplicadoProduct = (Switch) findViewById(R.id.swForzarAgregarDuplicadoProduct);
+        swAgregarComoBonificacion = (Switch) findViewById(R.id.swAgregarComoBonificacion);
+        swAgregarComoNuevoProducto = (Switch) findViewById(R.id.swAgregarComoNuevoProducto);
         check_precio.setChecked(true);
         check_precio.setClickable(false);
-        swForzarAgregarDuplicadoProduct.setVisibility(View.GONE);
+        swAgregarComoNuevoProducto.setVisibility(View.GONE);
 
         if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             tv_monedaPrecio.setText("S/.");
         }else{
             tv_monedaPrecio.setText("$.");
         }
+        gestionarTituloYSubtitulo();
 		/*
 		@SuppressWarnings("deprecation")
 		final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
@@ -402,7 +422,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    BuscarProducto();
+                    preValidarBuscarProducto();
                     return true;
                 } else {
                     return false;
@@ -414,7 +434,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         btnBuscar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                BuscarProducto();
+                preValidarBuscarProducto();
             }
         });
 
@@ -440,7 +460,6 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
         });
-
 
 
         btnCancelar.setOnClickListener(new OnClickListener() {
@@ -554,7 +573,34 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             }
         });
 
+        gestionarTipoFiltro();
+        gestionarEventoSWProductoComoBonificacion();
+        gestionarTvGetPctDescuentoPorPrecio();
+        if(isRequestModifyProducto()){
+            dishabilitarControlesByModificar();
+            asyncBuscarProducto();
+        }
+        ///editText.setSelection(formattedValue.length());
+    }
+    private boolean isRequestModifyProducto(){
+        return REQUEST_ACCION_PRODUCTO_VALUE.equals(REQUEST_ACCION_MODIFICAR_PRODUCTO);
+    }
+    private void dishabilitarControlesByModificar(){
+        rb_filtro.setEnabled(false);
+        rb_filtro.setVisibility(View.GONE);
+        edtBusqueda.setEnabled(false);
+        btn_consultarProducto.setEnabled(false);
+        swAgregarComoBonificacion.setEnabled(false);
+        swAgregarComoBonificacion.setVisibility(View.GONE);
+        swAgregarComoNuevoProducto.setEnabled(false);
+        swAgregarComoNuevoProducto.setVisibility(View.GONE);
+    }
+    private void gestionarTipoFiltro(){
         String preferencia_busquedaProducto = preferencias_configuracion.getString("preferencias_busquedaProducto", BUSQUEDA_DESCRIPCION);
+        if(isRequestModifyProducto()){
+            preferencia_busquedaProducto=BUSQUEDA_CODIGO;
+        }
+
         switch (preferencia_busquedaProducto) {
             case BUSQUEDA_DESCRIPCION:
                 ((RadioButton)rb_filtro.getChildAt(0)).setChecked(true);
@@ -571,10 +617,70 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             default:
                 break;
         }
-
-
     }
 
+    private void gestionarTituloYSubtitulo() {
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle("Formulario producto");
+        if(!isRequestModifyProducto()){
+            btnAgregar.setText("AGREGAR");
+        }
+        else if(isRequestModifyProducto()){
+                btnAgregar.setText("MODIFICAR");
+        }
+        else btnAgregar.setText("??");
+    }
+
+    private void gestionarEventoSWProductoComoBonificacion(){
+        swAgregarComoBonificacion.setOnCheckedChangeListener((vd, isChecked)->{
+            if(isChecked){
+                edt_descuento.setText("100");
+            }else{
+                edt_descuento.setText("");
+            }
+        });
+    }
+    private void gestionarTvGetPctDescuentoPorPrecio() {
+        AtomicReference<AlertViewSimpleConEdittext> dialg=new AtomicReference<>();
+
+        tvGetPctDescuentoPorPrecio.setOnClickListener(v -> {
+            double precioSinIgv=Double.parseDouble(tv_precioSinIGV.getText().toString().replace(",", ""));
+            dialg.set(new AlertViewSimpleConEdittext(this));
+            dialg.get().cancelable = false;
+            dialg.get().type_numberDecimal = true;
+            dialg.get().titulo="Ingrese nuevo precio, Máximo "+tv_monedaPrecio.getText().toString()+" "+PRECIO_LISTA;
+            dialg.get().texto_cargado = String.valueOf(precioSinIgv);
+            dialg.get().start(new AlertViewSimpleConEdittext.Listener() {
+                @Override
+                public String resultOK(String s) {
+                    if(s!=null){
+                        Log.i(TAG, "gestionarTvGetPctDescuentoPorPrecio:: nuevo precio request "+s);
+                        calcularDescuentoEnBaseANuevoPrecio(Double.parseDouble(s));
+                    }
+                    return null;
+                }
+
+                @Override
+                public String resultBucle(String s) {
+                    tvGetPctDescuentoPorPrecio.performClick();
+                    return null;
+                }
+            });
+        });
+
+    }
+    private void calcularDescuentoEnBaseANuevoPrecio(double newPrecioSinIgv){
+        //si PRECIO_LISTA= (100)%
+        //entonces newPrecioSinIgv = x
+        //aplicando la regla de 3
+        double maxDescuento=100.0;
+        double precioLista=Double.parseDouble(PRECIO_LISTA);
+        double pctPrecio=(newPrecioSinIgv*maxDescuento/precioLista);
+        double pctDescuento=GlobalFunctions.redondear_toDouble(maxDescuento-pctPrecio);
+        Log.i(TAG, "calcularDescuentoEnBaseANuevoPrecio:: descuento "+pctDescuento);
+        edt_descuento.setText(String.valueOf(pctDescuento));
+        edtDescuentoExtra.setText("0");
+        //suficiente con setear el descuento, ya que el evento edt_descuento se encarga de calcular el precio
+    }
     private void calcularPrecioTotalVenta() {
         int cantidad=Integer.parseInt(edtCantidad.getText().toString().trim().length()>0?edtCantidad.getText().toString():"0");
         double precioFinalSinIgv=0;
@@ -753,13 +859,19 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     private void ConsultarProductoPrecios() {
 
         if (codprod.length()==0) return;
+        if(swAgregarComoBonificacion.isChecked()){
+            edt_descuento.setEnabled(false);
+            edtDescuentoExtra.setEnabled(false);
+        }else{
+            edt_descuento.setEnabled(true);
+            edtDescuentoExtra.setEnabled(true);
+        }
 
         DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.0000");
 
 
         edtPrecioUnt.setText("0.0");
         tv_precioIncIGV.setText("0.0");
-        edt_descuento.setEnabled(true);
 
 
         double valor_cambio=1;
@@ -770,8 +882,6 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio);
         if(politica_precio2!=null){
-            edt_descuento.setEnabled(true);
-
             double porcentajeDescuentoManual=edt_descuento.getText().toString().trim().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
             double porcentajeDescuentoExtra= edtDescuentoExtra.getText().toString().trim().length()>0?Double.parseDouble(edtDescuentoExtra.getText().toString()):0;
 
@@ -889,19 +999,19 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
 
-    public void BuscarProducto(){
+    public void preValidarBuscarProducto(){
         try {
             if (flag == 0 || flag == 1) {
                 if (edtBusqueda.getText().toString().length() < 3) {
                     edtBusqueda.setError(Html.fromHtml("<font color='#424242'>Ingrese al menos 3 caracteres</font>"));
                 }
                 else {
-                    new async_busqueda().execute();
+                    asyncBuscarProducto();
                 }
             }
             else {
                 //if (Integer.parseInt(edtBusqueda.getText().toString()) / 1 > 0) {
-                    new async_busqueda().execute();
+                    asyncBuscarProducto();
                 //}
             }
         }
@@ -909,8 +1019,11 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             edtBusqueda.setError(Html.fromHtml("<font color='#424242'>Ingrese solo numeros</font>"));
         }
     }
+    private void asyncBuscarProducto(){
+        new async_busqueda().execute();
+    }
 
-    public void BuscarDatosProducto() {
+    public void _buscarDatosProductoDB() {
         if (flag == 0 || flag == 1) {
             String text="%"+edtBusqueda.getText().toString().replace(" ", "%")+"%";
             if (flag == 0)productos = obj_dbclasses.getProductosXcliente(codcli,text);
@@ -918,7 +1031,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }else if (flag == 3) {
             productos = obj_dbclasses.getProductosXProveedor(codcli,edtBusqueda.getText().toString());
         } else {
-            productos = obj_dbclasses.getProductosXcliente_codpro(codcli,edtBusqueda.getText().toString());
+            if(isRequestModifyProducto()){
+                productos = obj_dbclasses.getProductosXcliente_codpro(codcli,REQUEST_DATA_PRODUCTO_VALUE.getCodprod());
+            }
+            else productos = obj_dbclasses.getProductosXcliente_codpro(codcli,edtBusqueda.getText().toString());
 
         }
 
@@ -929,74 +1045,105 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         builder.setTitle("Productos");
 
         ListView lista = new ListView(this);
-
 ///ok**********
-
         builder.setView(lista).setAdapter(
                 new ProductoAdapter(ProductoActivity.this, productos),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
-                        swForzarAgregarDuplicadoProduct.setVisibility(View.GONE);
-
-
-                        afecto_igv = productos[position].getAfecto();
-                        edtBusqueda.setText(productos[position].getDescripcion());
-
-                        String undMedidas[] = obj_dbclasses.getUndmedidas(productos[position].getCodprod());
-                        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getApplicationContext(),R.layout.spinner_item,undMedidas);
-                        adapter.setDropDownViewResource(R.layout.spinner_item);
-                        spnUndMedidas.setAdapter(adapter);
-
-
-                        fact_conv 	= productos[position].getFact_conv();
-                        peso 		= VARIABLES.getDoubleFormaterFourDecimal(productos[position].getPeso());
-                        prec_act 	= Math.round(productos[position].getPrecio() * 100) / 100.0;
-                        precUnd_act = Math.round(productos[position].getPrecioUnidad() * 100) / 100.0;
-                        codigo_act 	= productos[position].getCodprod();
-                        codprod 	= productos[position].getCodprod();
-                        stock 		= productos[position].getStock();
-                        sec_politica= productos[position].getSec_politica();
-                        estado 		= productos[position].getEstado();//Discontinuo
-
-                        if (!obj_dbclasses.isNotRegistradoProducto(oc_numero, codprod.trim())) {
-                            swForzarAgregarDuplicadoProduct.setVisibility(View.VISIBLE);
-                        }
-                        if (estado.equals(DISCONTINUO)) {
-                            GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_MIDDLE);
-                        }
-
-                        swt_afecto.setFocusable(false);
-
-
-
-
-                        if (afecto_igv.equals("0") || afecto_igv.equals("")) {
-                            swt_afecto.setChecked(false);
-                            finalvalorIGV=0;
-                        }else{
-                            swt_afecto.setChecked(true);
-                            finalvalorIGV=valorIGV;
-                        }
-                        edtCantidad.requestFocus();
-                        btn_consultarProducto.performClick();
-
-                        ConsultarProducto();//Consulta el stcok en linea
-
+                        onItemClickListaProducto(position);
                     }
                 });
         builder.create().show();
     }
 
+    private void onItemClickListaProducto(int position) {
+        afecto_igv = productos[position].getAfecto();
+        edtBusqueda.setText(productos[position].getDescripcion());
+
+        String undMedidas[] = obj_dbclasses.getUndmedidas(productos[position].getCodprod());
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(getApplicationContext(),R.layout.spinner_item,undMedidas);
+        adapter.setDropDownViewResource(R.layout.spinner_item);
+        spnUndMedidas.setAdapter(adapter);
+
+
+        fact_conv 	= productos[position].getFact_conv();
+        peso 		= VARIABLES.getDoubleFormaterFourDecimal(productos[position].getPeso());
+        prec_act 	= Math.round(productos[position].getPrecio() * 100) / 100.0;
+        precUnd_act = Math.round(productos[position].getPrecioUnidad() * 100) / 100.0;
+        codigo_act 	= productos[position].getCodprod();
+        codprod 	= productos[position].getCodprod();
+        stock 		= productos[position].getStock();
+        sec_politica= productos[position].getSec_politica();
+        estado 		= productos[position].getEstado();//Discontinuo
+
+
+        if (estado.equals(DISCONTINUO)) {
+            GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_MIDDLE);
+        }
+
+        swt_afecto.setFocusable(false);
+
+
+
+
+        if (afecto_igv.equals("0") || afecto_igv.equals("")) {
+            swt_afecto.setChecked(false);
+            finalvalorIGV=0;
+        }else{
+            swt_afecto.setChecked(true);
+            finalvalorIGV=valorIGV;
+        }
+
+        if(!isRequestModifyProducto()){
+            //verficamos si el producto ya esta registrado
+            if (obj_dbclasses.isRegistradoProducto(oc_numero,codprod)) {
+                swAgregarComoNuevoProducto.setVisibility(View.VISIBLE);
+            }else {
+                swAgregarComoNuevoProducto.setChecked(false);
+                swAgregarComoNuevoProducto.setVisibility(View.GONE);
+            }
+        }
+
+
+
+        edtCantidad.requestFocus();
+        btn_consultarProducto.performClick();
+        ConsultarProducto();//Consulta el stcok en linea
+    }
+
+    private void setDataProductoSiIsModificar(){
+        if(isRequestModifyProducto()){
+            edtCantidad.setText(""+REQUEST_DATA_PRODUCTO_VALUE.getCantidad());
+            edt_descuento.setText(""+REQUEST_DATA_PRODUCTO_VALUE.getPorcentaje_desc());
+            edtDescuentoExtra.setText(""+REQUEST_DATA_PRODUCTO_VALUE.getPorcentaje_desc_extra());
+        }
+    }
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.productolyt_btnAgregar:
 
-                if (swForzarAgregarDuplicadoProduct.getVisibility()== View.VISIBLE) {
-                    if (!swForzarAgregarDuplicadoProduct.isChecked()) {
-                        UtilViewSnackBar.SnackBarDanger(this, swForzarAgregarDuplicadoProduct, "Producto ya fue agregado");
-                        break;
+                String w_codpro_inser= codprod;
+                int nro_item=0;
+                if(swAgregarComoBonificacion.isChecked()){
+                    w_codpro_inser = DBPedido_Detalle.PREFIX_PRODUCTO_BONIFICACION_MANUAL+codprod;
+                }
+                if(isRequestModifyProducto()){//Si es modificacion
+                    nro_item=  REQUEST_DATA_PRODUCTO_VALUE.getItem();
+                }else {//es nuevo producto
+                    if(obj_dbclasses.isRegistradoProducto(oc_numero, w_codpro_inser)  ){
+                        if(!swAgregarComoNuevoProducto.isChecked()){
+                            UtilViewSnackBar.SnackBarDanger(this, swAgregarComoNuevoProducto, "Producto ya fue agregado anteriormente");
+                            break;
+                        }
                     }
+                    nro_item=  obj_dbclasses.getNextNroItemPedido(oc_numero);
+                }
+
+
+                if(spnUndMedidas.getSelectedItemPosition()<0){
+                    UtilViewSnackBar.SnackBarDanger(this, swAgregarComoBonificacion, "Seleccione unidad de medida");
+                    break;
                 }
 
                 if (isBonificacion) {
@@ -1015,6 +1162,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         break;
                     }
 
+
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("busqueda", "BONIFICACION");
                     returnIntent.putExtra("codigoRegistro", codigoRegistro);
@@ -1022,13 +1170,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                     returnIntent.putExtra("saldoUsado", saldoUsado);
                     returnIntent.putExtra("saldoPendiente", saldo);
 
-                    if (origen.equals("PEDIDO_MODIFICAR")) {
-                        returnIntent.putExtra("TIPO", "MODIFICAR");
-                        returnIntent.putExtra("Codigo", codprod);
-                    } else {
-                        returnIntent.putExtra("TIPO", "AGREGAR");
-                        returnIntent.putExtra("codigoProducto", codprod);
-                    }
+                    returnIntent.putExtra("codigoProducto", codprod);
+                    returnIntent.putExtra("item", nro_item);
+                    returnIntent.putExtra(REQUEST_ACCION_PRODUCTO_KEY, REQUEST_ACCION_PRODUCTO_VALUE);
                     setResult(RESULT_OK, returnIntent);
                     finish();
 
@@ -1129,17 +1273,11 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         returnIntent.putExtra("porcentaje_desc",	porcentaje_desc);
                         returnIntent.putExtra("porcentaje_desc_extra",	porcentaje_desc_extra);
                         returnIntent.putExtra("precioPercepcion", precioPercepcion);
-                        returnIntent.putExtra("forzarAgregarProductDuplicado", swForzarAgregarDuplicadoProduct.isChecked());
-
-                        if (origen.equals("PEDIDO_MODIFICAR")) {
-                            returnIntent.putExtra("TIPO", "MODIFICAR");
-                            returnIntent.putExtra("Codigo", codprod);
-                        } else {
-                            returnIntent.putExtra("TIPO", "AGREGAR");
-                            returnIntent.putExtra("codigoProducto", codprod);
-
-                            Log.d("ProductoActivity ::fin return intent::","PrecioPercepcion-> "+precioPercepcion);
-                        }
+                        returnIntent.putExtra("agregarComoBonificacion", swAgregarComoBonificacion.isChecked());
+                        returnIntent.putExtra("codigoProducto", codprod);
+                        returnIntent.putExtra("item", nro_item);
+                        returnIntent.putExtra(REQUEST_ACCION_PRODUCTO_KEY, REQUEST_ACCION_PRODUCTO_VALUE);
+                        Log.d("ProductoActivity ::fin return intent::","PrecioPercepcion-> "+precioPercepcion);
                         setResult(RESULT_OK, returnIntent);
                         finish();
                     } else {
@@ -1254,7 +1392,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         protected String doInBackground(Void... params) {
             // TODO Auto-generated method stub
 
-            BuscarDatosProducto();
+            _buscarDatosProductoDB();
 
             return "ok";
         }
@@ -1264,7 +1402,11 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             pDialog.dismiss();// ocultamos progess dialog.
 
             if (productos.length != 0) {
-                crear_vistaDialogo();
+                if(isRequestModifyProducto()){
+                    onItemClickListaProducto(0);
+                    setDataProductoSiIsModificar();
+                }
+                else crear_vistaDialogo();
             } else {
                 Toast.makeText(getApplicationContext(),
                         "No se encontro Producto", Toast.LENGTH_SHORT).show();

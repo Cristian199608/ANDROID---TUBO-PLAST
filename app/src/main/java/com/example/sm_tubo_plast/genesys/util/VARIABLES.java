@@ -49,16 +49,22 @@ public class VARIABLES {
     public static final class ConfigDatabase {
 
 //        private static final String DATABASA_NAME_OLD ="fuerzaventas";
-        private static final String DATABASA_NAME_OLD   ="fuerzaventas_v1x";
-        private static final String DATABASA_NAME       ="fuerzaventas_v2";
+        private static final String[] DATABASA_NAME_OLD   ={
+                "fuerzaventas_v1x",
+                "fuerzaventas_v2",
+                "fuerzaventas_v2.1",
+        };
+        private static final String DATABASA_NAME       ="fuerzaventas_v2.2";
         private static final  int DATABASA_VERSION      =1;
-
-
-        private static final String DATABASA_NAMEO_OLD_prueba   ="vacio";
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_prueba";
+        //-----------------------------------------------------------------------------------------------
+        private static final String[] DATABASA_NAMEO_OLD_prueba   ={
+                "fuerzaventas_prueba",
+                "fuerzaventas_prueba_v2.1",
+        };
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_prueba_v2.2";
         private static final  int DATABASA_VERSION_prueba       =1;
 
-        public static String getDatabaseNameOld() {
+        public static String[] getDatabaseNameOld() {
             if(isProduccion) return DATABASA_NAME_OLD;
             else return DATABASA_NAMEO_OLD_prueba;
         }

@@ -262,6 +262,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 android:text="xxxxxx.xx"
+                android:textStyle="bold"
+                android:textColor="@color/grey_800"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
@@ -296,7 +298,7 @@
                 android:gravity="left"
                 android:text="xxxxx"
                 android:textStyle="bold"
-                android:textColor="@color/grey_900"
+                android:textColor="@color/red_700"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>

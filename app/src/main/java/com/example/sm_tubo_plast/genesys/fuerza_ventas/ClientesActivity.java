@@ -39,6 +39,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -105,6 +106,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     public static final String TAG= "ClientesActivity";
     public static final String REQUEST_SELECCION_CLIENTE = "REQUEST_SELECCION_CLIENTE";
     public static final int REQUEST_SELECCION_CLIENTE_CODE = 10;
+
+    private static final String TIPO_CLIENTE_SIDIGE ="SIDIGE";
+    private static final String TIPO_CLIENTE_SAEMOVIL ="SAEMOVIL";
+    private String TIPO_CLIENTE_VALOR =null;
 
     static final String KEY_CODCLI = "codcli"; // parent node
     static final String KEY_CLIENTE = "cliente";
@@ -415,7 +420,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                // mMoreIv = (ImageView) view.findViewById(R.id.i_more);
                 ruc = ((TextView) view.findViewById(R.id.tv_ruc)).getText().toString();
                 String nomcli2 = ((TextView) view.findViewById(R.id.tv_cliente)).getText().toString();
-                String dir = ((TextView) view.findViewById(R.id.list_item_direccion)).getText().toString();
+                String dir = ((TextView) view.findViewById(R.id.list_item_direccion)).getHint().toString();
 
                 nomcli = nomcli2;
 
@@ -612,7 +617,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         private class ViewHolder {
 
-            TextView txt_flag_pedido,name, ruc, observacion,itemMotivoBajaCliente, fecha, monto, direccion,item_fecha_visitado, item_fecha_programada;
+            TextView txt_flag_pedido,name, ruc, item_sistema_registrado, list_item_ultima_compra, observacion,itemMotivoBajaCliente,   direccion,item_fecha_visitado, item_fecha_programada;
+            LinearLayout layout_container_ultima_compra;
             ImageView foto;
 
         }
@@ -627,20 +633,19 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 convertView = inflater  .inflate(R.layout.list_item_cliente, null);
                 viewHolder = new ViewHolder();
 
-                // cache the views
+                // cache the views moneda_ultima_compra
 
                 viewHolder.name = (TextView) convertView .findViewById(R.id.tv_cliente);
                 viewHolder.txt_flag_pedido = (TextView) convertView .findViewById(R.id.txt_flag_pedido);
-                viewHolder.ruc = (TextView) convertView
-                        .findViewById(R.id.tv_ruc);
+                viewHolder.ruc = (TextView) convertView .findViewById(R.id.tv_ruc);
+                viewHolder.item_sistema_registrado = (TextView) convertView .findViewById(R.id.item_sistema_registrado);
                 viewHolder.foto = (ImageView) convertView
                         .findViewById(R.id.item_cliente_iv_foto);
                 viewHolder.observacion = (TextView) convertView .findViewById(R.id.list_item_cliente_observacion);
                 viewHolder.itemMotivoBajaCliente = (TextView) convertView .findViewById(R.id.itemMotivoBajaCliente);
-                viewHolder.fecha = (TextView) convertView
-                        .findViewById(R.id.list_item_cliente_fecha);
-                viewHolder.monto = (TextView) convertView
-                        .findViewById(R.id.list_item_cliente_monto);
+                viewHolder.layout_container_ultima_compra = (LinearLayout) convertView  .findViewById(R.id.layout_container_ultima_compra);
+                viewHolder.list_item_ultima_compra = (TextView) convertView  .findViewById(R.id.list_item_ultima_compra);
+
                 viewHolder.direccion = (TextView) convertView.findViewById(R.id.list_item_direccion);
                 viewHolder.item_fecha_visitado = (TextView) convertView.findViewById(R.id.item_fecha_visitado);
                 viewHolder.item_fecha_programada = (TextView) convertView.findViewById(R.id.item_fecha_programada);
@@ -731,13 +736,19 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 // viewHolder.observacion.setText(searchResults.get(position).get("observacion").toString());
                 viewHolder.observacion.setText(obs);
 
+                viewHolder.item_sistema_registrado.setText(searchResults.get(position).get("sistema").toString());
+                if(searchResults.get(position).get("sistema").toString().equals(TIPO_CLIENTE_SIDIGE)){
+                    viewHolder.item_sistema_registrado.setTextColor(getResources().getColor(R.color.blue_600));
+                }else  viewHolder.item_sistema_registrado.setTextColor(getResources().getColor(R.color.grey_700));
 
-                viewHolder.monto.setText(searchResults.get(position)
-                        .get("monto").toString());
-                viewHolder.fecha.setText(searchResults.get(position).get("direccion").toString()+"\n" +
-                                 searchResults.get(position).get("fecha").toString());
-                viewHolder.direccion.setText(searchResults.get(position)
-                        .get("item_direccion").toString());
+                String ultima_compra=searchResults.get(position).get("fecha").toString();
+                viewHolder.layout_container_ultima_compra.setVisibility(ultima_compra.isEmpty()?View.GONE:View.VISIBLE);
+                viewHolder.list_item_ultima_compra.setText(ultima_compra+" " +
+                                 searchResults.get(position).get("moneda_ultima_compra").toString()+" " +
+                                 searchResults.get(position).get("monto").toString()
+                );
+                viewHolder.direccion.setText(searchResults.get(position).get("direccion").toString());
+                viewHolder.direccion.setHint(searchResults.get(position).get("item_direccion").toString());
 
 
                 San_Visitas visitas = DAO_San_Visitas.getSan_VisitasByFecha(
@@ -1023,6 +1034,14 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 ws_cliente_contacto.EnviarCliente_Contacto();
 
             return true;
+            case R.id.menu_ver_clientes_sidige:
+                TIPO_CLIENTE_VALOR=TIPO_CLIENTE_SIDIGE;
+                GestionCargarCliente(0, "");
+            return true;
+            case R.id.menu_ver_clientes_sammovil:
+                TIPO_CLIENTE_VALOR=TIPO_CLIENTE_SAEMOVIL;
+                GestionCargarCliente(0, "");
+                return true;
             case R.id.menu_ver_clientes_inactivos:
                 tvClientesAnulados.setVisibility(View.VISIBLE);
                 tvClientesAnulados.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_top_in));
@@ -1241,7 +1260,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     }
                     String newBusqueda=inputSearch.getText().toString().replace(" ", "%");
                     ArrayList<HashMap<String, Object>>  data = obj_dbclasses.getProgramacionxDia2(
-                            newBusqueda, start, nro_paginacion, 50, fecha_formateada, verClientesAnulados);
+                            newBusqueda, start, nro_paginacion, 50, fecha_formateada, verClientesAnulados, TIPO_CLIENTE_VALOR);
 
                     DAO_Cliente dao_Cliente = new DAO_Cliente(getApplicationContext());
                     int cantidad_total=dao_Cliente.getClienteDirrectionAll();

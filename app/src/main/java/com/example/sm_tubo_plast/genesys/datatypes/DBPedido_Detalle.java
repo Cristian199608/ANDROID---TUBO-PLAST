@@ -6,7 +6,7 @@ import org.ksoap2.serialization.PropertyInfo;
 import java.util.Hashtable;
 
 public class DBPedido_Detalle implements KvmSerializable {
-	
+	public static final String PREFIX_PRODUCTO_BONIFICACION_MANUAL = "B";
 	private String oc_numero;
 	private String ean_item;
 	private String cip;
