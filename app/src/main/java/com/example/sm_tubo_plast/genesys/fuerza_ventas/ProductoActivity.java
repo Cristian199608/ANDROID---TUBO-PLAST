@@ -1140,8 +1140,18 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                     nro_item=  obj_dbclasses.getNextNroItemPedido(oc_numero);
                 }
 
+                if(nro_item<=0) {
+                    UtilViewSnackBar.SnackBarDanger(this, swAgregarComoBonificacion, "Error al obtener numero de item");
+                    break;
+                }
 
-                if(spnUndMedidas.getSelectedItemPosition()<0){
+                int postion = spnUndMedidas.getSelectedItemPosition();
+                if(postion<0){
+                    UtilViewSnackBar.SnackBarDanger(this, swAgregarComoBonificacion, "Seleccione unidad de medida");
+                    break;
+                }
+                String nombrex = spnUndMedidas.getSelectedItem().toString();
+                if(nombrex.trim().isEmpty()){
                     UtilViewSnackBar.SnackBarDanger(this, swAgregarComoBonificacion, "Seleccione unidad de medida");
                     break;
                 }

@@ -135,7 +135,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
                         String descripcion = listaProductos.get(x).getDescripcion();
                         String desc_comercial = listaProductos.get(x).getDesc_comercial();
 
-                        if (pattern.matcher(codigo+descripcion+desc_comercial.toLowerCase()).matches()) {
+                        if (pattern.matcher((codigo+descripcion+desc_comercial).toLowerCase()).matches()) {
                             listaBusqueda.add(listaProductos.get(x));
                         }
 

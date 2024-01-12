@@ -473,6 +473,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         //txtPercepcionTotal = (TextView) findViewById(R.id.pedidolyt_txtPercepcionTotal);
         //txtTotalPedido = (TextView) findViewById(R.id.pedidolyt_txtTotal_pedido);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         inicializarFormulario();
 
 
@@ -1190,14 +1192,18 @@ private  void llenarSpinnerDespacho(String valor){
         spn_turno.setEnabled(flag);
         spn_sucursal.setEnabled(flag);
         spn_puntoEntrega.setEnabled(flag);
-        spn_tipoDespacho.setEnabled(flag);
-        spn_obra.setEnabled(flag);
-        spn_despacho.setEnabled(flag);
+
+        if(TIPO_REGISTRO.equals(TIPO_COTIZACION) && !flag) {//no deshabilitar cuando es cotizacion
+            spn_tipoDespacho.setEnabled(true);
+            spn_despacho.setEnabled(true);
+            spn_obra.setEnabled(true);
+            spn_condicionVenta.setEnabled(true);
+        }
+
         chkBox_embalaje.setEnabled(flag);
         chkBox_pedidoAnticipo.setEnabled(flag);
         spn_transportista.setEnabled(flag);
         spn_almacenDespacho.setEnabled(flag);
-        spn_condicionVenta.setEnabled(flag);
         spn_numeroletra.setEnabled(flag);
         rGroup_aplicaDescuento.setEnabled(flag);
         btn_fechaPedido.setEnabled(flag);
@@ -1416,12 +1422,14 @@ private  void llenarSpinnerDespacho(String valor){
             diasVigencia = cabecera.getDiasVigencia();
             edt_diasVigencia.setText(diasVigencia);
             pedidoAnterior = cabecera.getOc_numero();
+            String fechaOc = cabecera.getFecha_oc();
 
             numOc = dbclass.obtenerMaxNumOc(codven);
             edt_nroPedido.setText(codven + calcularSecuencia(numOc,fecha_configuracion));
             setTitle("Nueva versión de cotización");
 
             cabecera.setOc_numero(edt_nroPedido.getText().toString());
+            cabecera.setFecha_oc(fechaOc);
             cabecera.setPedidoAnterior(pedidoAnterior);
             DAOPedidoDetalle.ClonarPedido(cabecera);//Se guarda referencia del pedido anterior
         }else if (cabecera.getTipoRegistro().equals(TIPO_DEVOLUCION)) {
@@ -1615,6 +1623,10 @@ private  void llenarSpinnerDespacho(String valor){
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+            case android.R.id.home:
+                onBackPressed();
+                return true;
 
             case Menu_Cancelar:
 
@@ -4109,6 +4121,9 @@ private void EnvalularMoneda(){
             if (TIPO_REGISTRO.equals(TIPO_COTIZACION)) {
                 showDialogSalir();
             }else{
+                GlobalFunctions.showCustomToast(
+                        PedidosActivity.this, "Debes guardar los cambios",
+                        GlobalFunctions.TOAST_ERROR);
                 //finish(); Si es un Pedido obligar a guardar cambios
             }
         } else {
@@ -5856,19 +5871,16 @@ private void EnvalularMoneda(){
         if (dbclass.obtenerCantidadPedidoDetalle(Oc_numero) > 0) {
             rButtonSoles.setEnabled(false);
             rButtonDolares.setEnabled(false);
-            spn_condicionVenta.setEnabled(false);
             spn_sucursal.setEnabled(false);
             spn_almacenDespacho.setEnabled(false);
-            spn_tipoDespacho.setEnabled(false);
             rButtonDescuentoSi.setEnabled(false);
             rButtonDescuentoNo.setEnabled(false);
+
         }else{
             rButtonSoles.setEnabled(true);
             rButtonDolares.setEnabled(true);
-            spn_condicionVenta.setEnabled(true);
             spn_sucursal.setEnabled(true);
             spn_almacenDespacho.setEnabled(true);
-            spn_tipoDespacho.setEnabled(false);
             rButtonDescuentoSi.setEnabled(true);
             rButtonDescuentoNo.setEnabled(true);
         }

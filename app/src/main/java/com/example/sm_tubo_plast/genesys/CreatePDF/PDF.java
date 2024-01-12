@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PDF {
     public static  int ENVIO_A_CLIENTE = 1;
@@ -47,12 +48,14 @@ public class PDF {
                                  String valor_igv, String sub_total, String peso_total,
                                  String fecha_oc, String fecha_mxe,*/
                                  DataCabeceraPDF dataCabecera,
-                                 ArrayList<ReportePedidoDetallePDF> dataPedidoCabeceraDetalles,
+                                 ArrayList<ReportePedidoDetallePDF> _dataPedidoCabeceraDetalles,
                                  double tasaCambioSolesToDolar,
                                  int tipo_de_envio) throws FileNotFoundException
     {
 
 
+        //ReportePedidoDetallePDF().
+        List<ReportePedidoDetallePDF> dataPedidoCabeceraDetalles=ReportePedidoDetallePDF.Companion.orderOcNumeroAndItem(_dataPedidoCabeceraDetalles);
 
         String pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         File file = new File(pdfPath,  nombreArchivo);

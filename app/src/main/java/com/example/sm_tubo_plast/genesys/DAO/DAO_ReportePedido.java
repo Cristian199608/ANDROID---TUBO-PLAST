@@ -35,6 +35,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         "SELECT " +
                                 "PD.oc_numero," +
                                 "PD.cip as codpro, " +
+                                "PD.item, " +
                                 "P.despro, " +
                                 "PD.cantidad, " +
                                 "PD.unidad_medida, " +
@@ -57,6 +58,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
 
                         String oc_numero = objCursor.getString(objCursor.getColumnIndex("oc_numero"));
                         String codpro = objCursor.getString(objCursor.getColumnIndex("codpro"));
+                        String item = objCursor.getString(objCursor.getColumnIndex("item"));
                         int cantidad = Integer.parseInt(objCursor.getString(objCursor.getColumnIndex("cantidad")));
                         String unidad_medida = objCursor.getString( objCursor.getColumnIndex("unidad_medida"));
                         String despro = objCursor.getString(objCursor.getColumnIndex("despro"));
@@ -69,7 +71,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         objDbPedidoCabeceraDetalleArrayList.add(
                                 new ReportePedidoDetallePDF(
                                         oc_numero,
-                                        "",
+                                        item,
                                         codpro,
                                         cantidad,
                                         unidad_medida,

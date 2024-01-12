@@ -2544,7 +2544,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "on pedido_detalle.unidad_medida=unidad_medida.codunimed "
 				+ "left join tipoProducto tp on producto.tipoProducto = tp.codigoTipo "
 				+ "where oc_numero='" + oc_numero + "' "
-				+ "and cod_politica <> 'ELIM' " + "order by item desc";
+				+ "and cod_politica <> 'ELIM' " + "order by item asc";
 		
 		Log.d("Dbclasses :obtenerListadProductos_pedido:","___________________________________");
 		Log.d("Dbclasses :obtenerListadProductos_pedido:",rawQuery);
@@ -6449,7 +6449,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		Gson gson = new Gson();
 		String rawQuery;
 
-		rawQuery = "select *, (select c.ruccli from cliente c where codcli=pedido_cabecera.cod_cli) as ruccli2 from pedido_cabecera where flag in('P','I')";
+		rawQuery = "select * from pedido_cabecera where flag in('P','I')";
 
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -6470,8 +6470,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setFecha_oc(cur.getString(6));
 			dbpedido.setFecha_mxe(cur.getString(7));
 			dbpedido.setCond_pago(cur.getString(8));
-			//dbpedido.setCod_cli(cur.getString(9));
-			dbpedido.setCod_cli(cur.getString(cur.getColumnIndex("ruccli2")));
+			dbpedido.setCod_cli(cur.getString(9));
 			dbpedido.setCod_emp(cur.getString(10));
 			dbpedido.setEstado(cur.getString(11));
 			dbpedido.setUsername(cur.getString(12));
@@ -6583,7 +6582,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		String rawQuery;
 		String[] args = { oc_numero };
 
-		rawQuery = "select *, (select c.ruccli from cliente c where codcli=pedido_cabecera.cod_cli) as ruccli2 from pedido_cabecera where oc_numero like ?";
+		rawQuery = "select * from pedido_cabecera where oc_numero like ?";
 		Log.i(TAG+":getObjPedido_json:", rawQuery+"\n "+oc_numero);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -6605,8 +6604,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setFecha_oc(cur.getString(6));
 			dbpedido.setFecha_mxe(cur.getString(7));
 			dbpedido.setCond_pago(cur.getString(8));
-			//dbpedido.setCod_cli(cur.getString(9));
-			dbpedido.setCod_cli(cur.getString(cur.getColumnIndex("ruccli2")));
+			dbpedido.setCod_cli(cur.getString(9));
 			dbpedido.setCod_emp(cur.getString(10));
 			dbpedido.setEstado(cur.getString(11));
 			dbpedido.setUsername(cur.getString(12));
@@ -13489,7 +13487,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	}
 	public int isVersionSuperior(String cadena_version){
 		String[] arrSplit = cadena_version.split(" ");
-		String[] version =arrSplit[0].replace("v", "").split(".");
+		String __v =arrSplit[0].replace("v", "");
+		String[] version =__v.split("\\.");
 		String nroVersion=version[0]+(version.length>1?version[1]:"0")+ (version.length>2?version[2]:"0");
 		return Integer.parseInt(nroVersion);
 	}
@@ -13502,7 +13501,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			String version_actual= getNroVersion();
 			int _version_app=isVersionSuperior(version_app.toLowerCase());
 			int _version_actual=isVersionSuperior(version_actual.toLowerCase());
-			isSuperior=_version_app>_version_actual;
+			isSuperior=_version_app>=_version_actual;
 
 		}catch (Exception e){
 			e.printStackTrace();

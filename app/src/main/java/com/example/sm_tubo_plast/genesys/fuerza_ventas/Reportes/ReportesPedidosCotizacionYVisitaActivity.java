@@ -465,10 +465,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                         } else if(actionId == ID_GENERAR_PEDIDO){
                             DBPedido_Cabecera cabecera = obj_dbclasses.getRegistroPedidoCabecera(oc_numero);
                             String pedidoAnterior = cabecera.getOc_numero();
+                            String fechaOc = cabecera.getFecha_oc();
                             String numOc = obj_dbclasses.obtenerMaxNumOc(codven);
                             String fecha_configuracion = obj_dbclasses.getCambio("Fecha");
                             String nuevoOc_numero = codven + PedidosActivity.calcularSecuencia(numOc,fecha_configuracion);
                             cabecera.setOc_numero(nuevoOc_numero);
+                            cabecera.setFecha_oc(fechaOc);
                             cabecera.setPedidoAnterior(pedidoAnterior);
                             cabecera.setTipoRegistro(PedidosActivity.TIPO_PEDIDO);//Se indica que se guardar como pedido
                             DAO_Pedido DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
@@ -563,12 +565,11 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 UtilView.MENSAJE_simple(ReportesPedidosCotizacionYVisitaActivity.this, "Error", "Cliente no encontrado");
                 return;
             }
-
-            if (tipo.equals("C")) {
-                tipoRegistro = PedidosActivity.TIPO_COTIZACION;
+            tipoRegistro = tipo;
+            if (tipoRegistro.equals(PedidosActivity.TIPO_COTIZACION)) {
                 mQuickActionCotizacion.show(view);
             }
-             else if (tipo.equals("D")){
+             else if (tipoRegistro.equals(PedidosActivity.TIPO_DEVOLUCION)){
                 tipoRegistro = PedidosActivity.TIPO_DEVOLUCION;
                 mQuickAction.show(view);
             }else{
@@ -1588,6 +1589,18 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     verPedidoDetalle(itemData);
 
                 } else if (tipo.equals("PEDIDO-MODIFICAR")) {
+                    if (result.equals("T")) {
+                        // el pedido ya ha sido transferido y no se puede
+                        // modificar
+                        Builder alerta = new Builder(
+                                ReportesPedidosCotizacionYVisitaActivity.this);
+                        alerta.setTitle("MODIFICAR");
+                        alerta.setMessage("El pedido ya ha sido tranferido\nComuniquese con el administrador");
+                        alerta.setCancelable(false);
+                        alerta.setPositiveButton("OK", null);
+                        alerta.show();
+                        return;
+                    }
                     String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
 
                     int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
