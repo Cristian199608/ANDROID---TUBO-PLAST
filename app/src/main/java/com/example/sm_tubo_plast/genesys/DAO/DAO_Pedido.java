@@ -102,8 +102,9 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 
 			ContentValues reg = new ContentValues();
 			reg.put(DBtables.Pedido_cabecera.TIPODOCUMENTO, cabecera.getTipoDocumento());
+			reg.put(DBtables.Pedido_cabecera.COND_PAGO, cabecera.getCond_pago());
 			reg.put(DBtables.Pedido_cabecera.MONEDA, cabecera.getMoneda());
-			reg.put(DBtables.Pedido_cabecera.FECHA_MXE, cabecera.getFecha_mxe());			
+			reg.put(DBtables.Pedido_cabecera.FECHA_MXE, cabecera.getFecha_mxe());
 			reg.put(DBtables.Pedido_cabecera.NRO_ORDEN_COMPRA, cabecera.getNumeroOrdenCompra());
 			//reg.put(DBtables.Pedido_cabecera.CODIGO_TURNO_ENTREGA, cabecera.getCodigoTurnoEntrega());
 			reg.put(DBtables.Pedido_cabecera.CODIGO_PRIORIDAD, cabecera.getCodigoPrioridad());
