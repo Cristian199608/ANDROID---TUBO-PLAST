@@ -59,6 +59,7 @@ import androidx.core.app.ActivityCompat;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
 import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
@@ -3625,7 +3626,17 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
         tv_peso.setText(formaterMoneda.format(peso_total));
         tv_cantidadItems.setText(""+listaProductoDevolucion.size());
-        dbclass.guardarPedidoTotales(peso_total, 0.0, 0.0, 0.0, 0.0, 0.0, Oc_numero);
+        dbclass.guardarPedidoTotales(new PedidoCabeceraRecalcular(
+                Oc_numero,
+                peso_total,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+        ));
 
         if (listaProductoDevolucion.size()>0) {
             GUARDAR_ACTIVO = true;

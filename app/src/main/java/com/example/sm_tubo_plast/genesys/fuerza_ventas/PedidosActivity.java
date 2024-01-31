@@ -61,6 +61,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
 import com.example.sm_tubo_plast.genesys.BEAN.Obra;
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
 import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
@@ -1419,19 +1420,10 @@ private  void llenarSpinnerDespacho(String valor){
     }
     public void cargarDatosDocumento(DBPedido_Cabecera cabecera){
         if (cabecera.getTipoRegistro().equals(TIPO_COTIZACION)) {
+            setTitle("Nueva versión de cotización");
             diasVigencia = cabecera.getDiasVigencia();
             edt_diasVigencia.setText(diasVigencia);
             pedidoAnterior = cabecera.getOc_numero();
-            String fechaOc = cabecera.getFecha_oc();
-
-            numOc = dbclass.obtenerMaxNumOc(codven);
-            edt_nroPedido.setText(codven + calcularSecuencia(numOc,fecha_configuracion));
-            setTitle("Nueva versión de cotización");
-
-            cabecera.setOc_numero(edt_nroPedido.getText().toString());
-            cabecera.setFecha_oc(fechaOc);
-            cabecera.setPedidoAnterior(pedidoAnterior);
-            DAOPedidoDetalle.ClonarPedido(cabecera);//Se guarda referencia del pedido anterior
         }else if (cabecera.getTipoRegistro().equals(TIPO_DEVOLUCION)) {
 
         }else{
@@ -1649,6 +1641,7 @@ private  void llenarSpinnerDespacho(String valor){
                 variablemodificar=0;
                 GuardarFormularioCabecera();
                 guardarCabeceraPedido();
+                recalcularItemPedidoDetalle();
                 if (TIPO_REGISTRO.equals(TIPO_COTIZACION)) {
                     crear_dialogo_guardar_modificar("Se guardará el pedido como una nueva versión");
                 }else{
@@ -1668,6 +1661,7 @@ private  void llenarSpinnerDespacho(String valor){
                 GuardarFormularioCabecera();
                 guardarCabeceraPedido();
                 dbclass.eliminar_item_promo_marcados(Oc_numero);
+                recalcularItemPedidoDetalle();
                 crear_dialogo_guardar_modificar("Se guardarán todos los datos");
 
                 return true;
@@ -1806,6 +1800,9 @@ private  void llenarSpinnerDespacho(String valor){
 
     }
 
+    private  void recalcularItemPedidoDetalle(){
+        dbclass.recalcularItemPedidoDetalle(Oc_numero);
+    }
     public boolean camposValidos(){
 
         nroPedido 		= edt_nroPedido.getText().toString().trim();
@@ -3178,10 +3175,10 @@ private void EnvalularMoneda(){
 
         tvTipoProducto.setText(itemRes.getTipoProducto());
         tvPesoTotal.setText(""+ VARIABLES.formater_thow_decimal.format(itemRes.getPesoTotal()));
-        tvSubTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()));
-        tvPrecioKilo.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getPkDolar()));
-        tvIgvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getIgvTotal()));
-        tvTotal.setText(""+VARIABLES.formater_thow_decimal.format(itemRes.getSutTotal()+itemRes.getIgvTotal()));
+        tvSubTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getSutTotal()));
+        tvPrecioKilo.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getPkDolar()));
+        tvIgvTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getIgvTotal()));
+        tvTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getSutTotal()+itemRes.getIgvTotal()));
 
         tvTipoProducto.setBackgroundColor(getResources().getColor(resColor));
         tvPesoTotal.setBackgroundColor(getResources().getColor(resColor));
@@ -3730,13 +3727,13 @@ private void EnvalularMoneda(){
                     final boolean agregarComoBonificacion= data.getBooleanExtra("agregarComoBonificacion", false);
 
 
-                    final String descuento 	= ""+GlobalFunctions.redondear_toDoubleFourDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
+                    final String descuento 	= ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(data.getStringExtra("descuento"))*cantidad);
 
                     //String sec_politica = data.getStringExtra("sec_politica");
 
-                    String subtotal 		= GlobalFunctions.redondear_toString(precio*cantidad);
-                    String subtotal_peso 	= GlobalFunctions.redondear_toString(peso*cantidad);
-                    String percepcionxCantidad = GlobalFunctions.redondear_toString(precioPercepcion * cantidad);
+                    String subtotal 		= ""+VARIABLES.getDoubleFormaterThreeDecimal(precio*cantidad);
+                    String subtotal_peso 	= ""+VARIABLES.getDoubleFormaterThreeDecimal(peso*cantidad);
+                    String percepcionxCantidad = ""+VARIABLES.getDoubleFormaterThreeDecimal(precioPercepcion * cantidad);
 
                     Log.d("onActivityResult", "org: "+requestAccionProducto);
                     Log.d("onActivityResult", "descripcion: "+descripcion);
@@ -3756,9 +3753,11 @@ private void EnvalularMoneda(){
                     Log.d("onActivityResult", "percepcionxCantidad: "+percepcionxCantidad);
 
                     String w_codpro_inser= codprod;
+                    String tipoProducto = "V";
                     if(agregarComoBonificacion){
                         //Si es bonificacion se debe agregar con el codigo de producto de bonificacion (BONI+CODPROD
                         w_codpro_inser = DBPedido_Detalle.PREFIX_PRODUCTO_BONIFICACION_MANUAL+codprod;
+                        tipoProducto= "C";
                     }
                     if (requestAccionProducto.equals(ProductoActivity.REQUEST_ACCION_MODIFICAR_PRODUCTO)) {
                         //ELIMAMOS EL ITEM PRODUCTO PARA QUE LUEGO SE CREAR UNO NUEVO
@@ -3781,7 +3780,7 @@ private void EnvalularMoneda(){
 
                         itemDetalle.setPrecio_neto(subtotal);
                         itemDetalle.setCantidad(cantidad);
-                        itemDetalle.setTipo_producto("V");
+                        itemDetalle.setTipo_producto(tipoProducto);
                         itemDetalle.setUnidad_medida(unidad_medida);
                         itemDetalle.setPeso_bruto(subtotal_peso);
                         itemDetalle.setFlag("N");
@@ -5928,8 +5927,18 @@ private void EnvalularMoneda(){
         tvPrecioPorKilo.setText(formaterMoneda.format(precioXkilo));
 
         //dbclass.GuardarMontoPesoPercepcion_Pedido(total, percepcion,peso_total, totalSujetoPercepcion, Oc_numero);
-        dbclass.guardarPedidoTotales(peso_total, subtotal, IGV, total, percepcion, totalSujetoPercepcion, Oc_numero);
-
+        PedidoCabeceraRecalcular dataRecalculo=new PedidoCabeceraRecalcular(
+                Oc_numero,
+                peso_total,
+                subtotal,
+                IGV,
+                total,
+                percepcion,
+                totalSujetoPercepcion,
+                descuento,
+                descuentoPercent
+        );
+        dbclass.guardarPedidoTotales(dataRecalculo);
         MostrarResumenByTipoProducto();
     }
 

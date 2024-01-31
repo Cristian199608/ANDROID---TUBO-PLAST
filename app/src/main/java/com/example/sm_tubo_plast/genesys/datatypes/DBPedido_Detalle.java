@@ -1,5 +1,8 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
@@ -433,5 +436,36 @@ public class DBPedido_Detalle implements KvmSerializable {
 
 	public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
 		this.porcentaje_desc_extra = porcentaje_desc_extra;
+	}
+
+	public boolean convertirMonedaTo(String moneda, double tipoCambio){
+		if(moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){
+			convertirMonedaToSoles(tipoCambio);
+			return true;
+		}else if(moneda.equals(PedidosActivity.MONEDA_DOLARES_IN)){
+			convertirMonedaToDolar(tipoCambio);
+			return true;
+		}
+		return false;
+
+	}
+
+	private void convertirMonedaToSoles(double tipoCambio){
+		this.precioLista =""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precioLista) * tipoCambio);
+		this.precio_bruto = ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precio_bruto) * tipoCambio);
+		this.percepcion = ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.percepcion) * tipoCambio);
+		__calcularPreciosXCantidades();
+	}
+	private void convertirMonedaToDolar(double tipoCambio){
+		this.precioLista = ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precioLista) / tipoCambio);
+		this.precio_bruto = ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precio_bruto) / tipoCambio);
+		this.percepcion = ""+VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.percepcion) / tipoCambio);
+		__calcularPreciosXCantidades();
+	}
+	private void __calcularPreciosXCantidades(){
+		double precioNetoLista= VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precioLista) * this.cantidad);
+		double precioNetoVenta = VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precio_bruto) * this.cantidad);
+		this.precio_neto = String.valueOf(precioNetoVenta);
+		this.descuento = ""+VARIABLES.getDoubleFormaterThreeDecimal(precioNetoLista - precioNetoVenta);
 	}
 }

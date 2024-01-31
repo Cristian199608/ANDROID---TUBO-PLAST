@@ -8,6 +8,6 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 public interface IReportePedidoCabecera {
     void setViewByHolder(Activity activity,
                          DBclasses obj_dbclasses,
-                         ReportesPedidosCabeceraRecyclerView.ViewHolder viewHolder,
+                         ReportesPedidosCabeceraRecyclerView.ViewHolderItem viewHolder,
                          int position);
 }

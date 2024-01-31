@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -44,11 +45,13 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
     public static final String SEGUIMIENTO_PEDIDO_GENERADO ="OP_GENERADO";
     public static final String SEGUIMIENTO_PEDIDO_ENTREGADO ="OP_ENTREGADO";
     public static final String SEGUIMIENTO_PEDIDO_DEVOLUCION ="OP_DEVOLUCION";
+    public static final String CODCLI_TODOS ="TODOS";
 
-    String codven="", codcliSeleccionado;
-    ImageButton ib_seleccionar_cliente, ib_numero_pedido,ib_buscar_op;
+    String codven="", codcliSeleccionado=CODCLI_TODOS;
+    ImageButton ib_seleccionar_cliente, ib_limpiar_cliente, ib_numero_pedido,ib_buscar_op;
     TextView txtNombresCliente, tvVerPdf;
     EditText inputSearch_documento, edtOrdenCompra, edtNroPedido;
+    RadioButton rbtnVerTodos, rbtnVerPendientes;
     RecyclerView recyclerViewDetails;
     AdapterViewSeguimientoOpDetalle adapterViewSeguimientoOpDetalle;
     Button btnMostrarOcultarResumen;
@@ -71,11 +74,14 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         edtNroPedido=findViewById(R.id.edtNroPedido);
         txtNombresCliente=findViewById(R.id.txtNombresCliente);
         ib_seleccionar_cliente=findViewById(R.id.ib_seleccionar_cliente);
+        ib_limpiar_cliente=findViewById(R.id.ib_limpiar_cliente);
         ib_numero_pedido=findViewById(R.id.ib_numero_pedido);
         ib_buscar_op=findViewById(R.id.ib_buscar_op);
         recyclerViewDetails =findViewById(R.id.recyclerView);
         btnMostrarOcultarResumen=findViewById(R.id.btnMostrarOcultarResumen);
         inputSearch_documento=findViewById(R.id.inputSearch_documento);
+        rbtnVerTodos=findViewById(R.id.rbtnVerTodos);
+        rbtnVerPendientes=findViewById(R.id.rbtnVerPendientes);
         tvVerPdf=findViewById(R.id.tvVerPdf);
         recyclerViewDetails.setLayoutManager(new LinearLayoutManager(this));
 
@@ -88,6 +94,10 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             intent.putExtra("REQUEST_TYPPE", ClientesActivity.REQUEST_SELECCION_CLIENTE);
             startActivityForResult(intent , ClientesActivity.REQUEST_SELECCION_CLIENTE_CODE);
         });
+        ib_limpiar_cliente.setOnClickListener(v -> {
+            limpiarFormularioAfterChangedCliente();
+        });
+
         ib_buscar_op.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +155,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         }
     }
     public void limpiarFormularioAfterChangedCliente(){
-        codcliSeleccionado="";
+        codcliSeleccionado=CODCLI_TODOS;
         txtNombresCliente.setText("");
         edtOrdenCompra.setText("");
         edtNroPedido.setText("");
@@ -214,7 +224,6 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         TextView txtFechaHasta= dialogo.findViewById(R.id.txtFechaHasta);
         ImageButton ibBuscarOrdenCompra= dialogo.findViewById(R.id.ibBuscarOrdenCompra);
         Button txt_cancelar= dialogo.findViewById(R.id.txt_cancelar);
-        EditText edtBuscarResultado= dialogo.findViewById(R.id.edtBuscarResultado);
         RecyclerView recyclerViewDialog= dialogo.findViewById(R.id.recyclerView);
         recyclerViewDialog.setLayoutManager(new LinearLayoutManager(this));
 
@@ -233,8 +242,26 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             }
         }
 
+
+        WS_SeguimientoOP ws_seguimientoOP=new WS_SeguimientoOP(this);
+        ArrayList<ViewSeguimientoPedido> dataMov=new ArrayList<>();
+        AdapterViewSeguimientoOp adapterViewSeguimientoOp=new AdapterViewSeguimientoOp(SeguimientoPedidoActivity.this,  dataMov,null);
+        recyclerViewDialog.setAdapter(adapterViewSeguimientoOp);
+        //-------------------------------OnClikRecycler view----------------------------------------------------------------
+        adapterViewSeguimientoOp.setOnClickListenerOP(v1 -> {
+            codcliSeleccionado=dataMov.get(v1.getId()).getCodcli();
+            txtNombresCliente.setText(dataMov.get(v1.getId()).getNomcli());
+            viewSeguimientoPedido=dataMov.get(v1.getId());
+            edtNroPedido.setText(dataMov.get(v1.getId()).getNum_op());
+            edtOrdenCompra.setText(dataMov.get(v1.getId()).getOrden_compra());
+            dialogo.dismiss();
+            BuscarOpervidor();
+        });
+
+        //-----------------------------------------------------------------------------------------------
+
+
         ibBuscarOrdenCompra.setOnClickListener(v -> {//0199631, 0198238
-            WS_SeguimientoOP ws_seguimientoOP=new WS_SeguimientoOP(this);
             if (viewSeguimientoPedido!=null && reqestNumero_op.length()>0){
                 if(viewSeguimientoPedido.getNum_op().trim().equals(reqestNumero_op.trim())){
                     ws_seguimientoOP.setDataCargada(viewSeguimientoPedido);
@@ -243,49 +270,73 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                     listaDetalleOps.clear();
                     recyclerViewDetails.setVisibility(View.GONE);
                 }
-
-
             }
-            ws_seguimientoOP.GetOrdenCompraPedido(finalCodcliRequest, _edtOrdenCompra.getText().toString(), txtFechaDesde.getHint().toString(),
-                    txtFechaHasta.getHint().toString(), ""+reqestNumero_op, new WS_SeguimientoOP.MyListener() {
-                @Override
-                public void Reult(boolean valor, ArrayList<ViewSeguimientoPedido> data) {
-                    ArrayList<ViewSeguimientoPedido> dataMov=new ArrayList<>();
-                    dataMov.addAll(data);
-                    edtBuscarResultado.setHint("Buscar resultados ("+dataMov.size()+" OP's)");
-                    AdapterViewSeguimientoOp adapterViewSeguimientoOp=new AdapterViewSeguimientoOp(SeguimientoPedidoActivity.this,  dataMov,null);
-                    recyclerViewDialog.setAdapter(adapterViewSeguimientoOp);
-                    new ACG_EditText(SeguimientoPedidoActivity.this, edtBuscarResultado).OnListen(texto -> {
-                        dataMov.clear();
-                        for (int i = 0; i < data.size(); i++) {
-                            if (data.get(i).getNum_op().toLowerCase().contains(texto.toLowerCase())
-                                    || data.get(i).getNum_op().toLowerCase().contains(texto.toLowerCase())
-                                    || data.get(i).getFecha_rect().toLowerCase().contains(texto.toLowerCase())
-                                    || data.get(i).getOrden_compra().toLowerCase().contains(texto.toLowerCase())
-                            ){
-                                dataMov.add(data.get(i));
-                            }
-                        }
-                        adapterViewSeguimientoOp.notifyDataSetChanged();
-                    });
 
+            String tipoFiltro= rbtnVerTodos.isChecked()?"TODOS":"PENDIENTES";
+            String textOrdenCompra=_edtOrdenCompra.getText().toString();
+            String textFechaDesde= txtFechaDesde.getHint().toString();
+            String textFechaHasta= txtFechaHasta.getHint().toString();
+            String textRequestNumeroOp=""+reqestNumero_op;
 
-                    adapterViewSeguimientoOp.setOnClickListenerOP(v1 -> {
+            ws_seguimientoOP.desde=1;
+            adapterViewSeguimientoOp.clearDataAndReset();
+            startBusquedaOnlineOp(
+                    adapterViewSeguimientoOp,
+                    ws_seguimientoOP,
+                    finalCodcliRequest,
+                    textOrdenCompra,
+                    textFechaDesde,
+                    textFechaHasta,
+                    textRequestNumeroOp,
+                    tipoFiltro);
 
-                        viewSeguimientoPedido=dataMov.get(v1.getId());
-                        edtNroPedido.setText(dataMov.get(v1.getId()).getNum_op());
-                        edtOrdenCompra.setText(dataMov.get(v1.getId()).getOrden_compra());
-                        dialogo.dismiss();
-
-                        BuscarOpervidor();
-                    });
-                }
-            });
         });
         dialogo.create();
         dialogo.show();
 
         ibBuscarOrdenCompra.performClick();
+    }
+    private void startBusquedaOnlineOp(AdapterViewSeguimientoOp adapterViewSeguimientoOp,
+                                        WS_SeguimientoOP ws_seguimientoOP,
+                                       String finalCodcliRequest,
+                                       String textOrdenCompra,
+                                       String textFechaDesde,
+                                       String textFechaHasta,
+                                       String textRequestNumeroOp,
+                                       String tipoFiltro){
+
+        adapterViewSeguimientoOp.addFooterView();
+
+        ws_seguimientoOP.GetOrdenCompraPedido(finalCodcliRequest,
+                textOrdenCompra,
+                textFechaDesde,
+                textFechaHasta,
+                textRequestNumeroOp,
+                tipoFiltro,
+                new WS_SeguimientoOP.MyListener() {
+                    @Override
+                    public void Reult(boolean valor, ArrayList<ViewSeguimientoPedido> _resultData) {
+                        adapterViewSeguimientoOp.addData(_resultData);
+                        ws_seguimientoOP.desde=adapterViewSeguimientoOp.getDataOriginal().size()+1;
+                        adapterViewSeguimientoOp.removeFooterView();
+
+                        if(_resultData.size()==0 || _resultData.size()<= ws_seguimientoOP.nro_item){
+                            return;
+                        }
+                        adapterViewSeguimientoOp.setCallbackLoadMoreData(() -> {
+                            adapterViewSeguimientoOp.setCallbackLoadMoreData(null);
+                            startBusquedaOnlineOp(
+                                    adapterViewSeguimientoOp,
+                                    ws_seguimientoOP,
+                                    finalCodcliRequest,
+                                    textOrdenCompra,
+                                    textFechaDesde,
+                                    textFechaHasta,
+                                    textRequestNumeroOp,
+                                    tipoFiltro);
+                        });
+                    }
+                });
     }
     private void GestionaOnclickFecha(String prextext, TextView txtFechaDesde){
         String fecha="";

@@ -8,8 +8,10 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
+import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -184,7 +186,10 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 	}
 	
 	//Se clona el pedido cuando es una cotizacion para generar una nueva versi�n
-	public void ClonarPedido(DBPedido_Cabecera cabecera) {		
+	public void ClonarPedido(DBPedido_Cabecera cabecera,
+							 boolean convertirMoneda,
+							 double tipocambio,
+							 DBclasses _dbClases) {
 		try {
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -241,11 +246,46 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Log.w(TAG, "ClonarPedido: cabecera clonada");
 			
 			ArrayList<DBPedido_Detalle> listaDetalle = getPedidoDetalle(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
+			double valorIgv=Double.parseDouble( _dbClases.getCambio("IGV"));
+			double peso_total = 0;
+			double subtotal = 0;
+			double totalIGV = 0;
+			double montoTotalDsc = 0;
+			double percepcion = 0;
+			double totalSujetoPercepcion = 0;
+
 			for (int i = 0; i < listaDetalle.size(); i++) {
 				//La lista a clonar aun mantiene el ocnumero del pedido anterior, se debe acambiar por el actual
 				DBPedido_Detalle dbPedido_Detalle = listaDetalle.get(i);
 				dbPedido_Detalle.setOc_numero(cabecera.getOc_numero());
+				if(convertirMoneda){
+					dbPedido_Detalle.convertirMonedaTo(cabecera.getMoneda(), tipocambio);
+				}
+				peso_total += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPeso_bruto()));
+				subtotal += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto()));
+				totalIGV += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto())*valorIgv);
+				montoTotalDsc+=VARIABLES.getDoubleFormaterThreeDecimal(
+						(
+						VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecioLista())*dbPedido_Detalle.getCantidad())
+						)-Double.parseDouble(dbPedido_Detalle.getPrecio_neto())
+				);
+				percepcion += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPercepcion()));
 				ClonarPedidoDetalle(dbPedido_Detalle);
+			}
+			if(convertirMoneda){
+				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(subtotal+totalIGV+percepcion);
+				PedidoCabeceraRecalcular dataRecalculo=new PedidoCabeceraRecalcular(
+						cabecera.getOc_numero(),
+						peso_total,
+						subtotal,
+						totalIGV,
+						montoTotal,
+						percepcion,
+						totalSujetoPercepcion,
+						montoTotalDsc,
+						0
+				);
+				_dbClases.guardarPedidoTotales(dataRecalculo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

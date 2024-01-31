@@ -412,12 +412,22 @@ public class VARIABLES {
         long _1DiaMilesegundos=86400000;
         return  fecha+(nroDia*_1DiaMilesegundos);
     }
-
+    public static double getDoubleFormaterThowDecimal(double numero)
+    {
+        DecimalFormat formater = new DecimalFormat("###0.00");
+        return  Double.parseDouble(formater.format(numero));
+    }
     public static String getStringFormaterThreeDecimal(double numero)
     {
        DecimalFormat formater = new DecimalFormat("#,##0.000");
        return  formater.format(numero);
     }
+    public static double getDoubleFormaterThreeDecimal(double numero)
+    {
+        DecimalFormat formater = new DecimalFormat("###0.000");
+        return  Double.parseDouble(formater.format(numero));
+    }
+
     public static double getDoubleFormaterFourDecimal(double numero)
     {
         DecimalFormat formater = new DecimalFormat("###0.0000");

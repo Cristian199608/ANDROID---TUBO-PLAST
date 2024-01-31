@@ -1,6 +1,8 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
@@ -817,5 +819,33 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+
+	public boolean convertirMonedaFrom(double tipoCambio){
+		if(this.moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){//si actual es soles entonces convertir a dolares
+			convertirMonedaToDolar(tipoCambio);
+			return true;
+		}else if(this.moneda.equals(PedidosActivity.MONEDA_DOLARES_IN)){//
+			convertirMonedaToSoles(tipoCambio);
+			return true;
+		}
+		return false;
+
+	}
+	private void convertirMonedaToSoles(double tipoCambio){
+		this.moneda=PedidosActivity.MONEDA_SOLES_IN;
+		this.monto_total= ""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.monto_total)*tipoCambio);
+		this.percepcion_total=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.percepcion_total)*tipoCambio);
+		this.valor_igv=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.valor_igv)*tipoCambio);
+		this.totalSujetopercepcion=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.totalSujetopercepcion)*tipoCambio);
+		this.subTotal=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.subTotal)*tipoCambio);
+	}
+	private void convertirMonedaToDolar(double tipoCambio){
+		this.moneda=PedidosActivity.MONEDA_DOLARES_IN;
+		this.monto_total= ""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.monto_total)/tipoCambio);
+		this.percepcion_total=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.percepcion_total)/tipoCambio);
+		this.valor_igv=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.valor_igv)/tipoCambio);
+		this.totalSujetopercepcion=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.totalSujetopercepcion)/tipoCambio);
+		this.subTotal=""+VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(this.subTotal)/tipoCambio);
 	}
 }

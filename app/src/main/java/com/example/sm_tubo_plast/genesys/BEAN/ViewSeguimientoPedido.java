@@ -11,6 +11,7 @@ public class ViewSeguimientoPedido {
     private  String fecha_autorizado;
     private  String orden_compra;
     private  String codcli;
+    private  String nomcli;
     private  double monto_total_entregado;
     private  int cant_guias;
     private  String primer_entrega;
@@ -136,5 +137,13 @@ public class ViewSeguimientoPedido {
 
     public void setDias(String dias) {
         this.dias = dias;
+    }
+
+    public String getNomcli() {
+        return nomcli;
+    }
+
+    public void setNomcli(String nomcli) {
+        this.nomcli = nomcli;
     }
 }

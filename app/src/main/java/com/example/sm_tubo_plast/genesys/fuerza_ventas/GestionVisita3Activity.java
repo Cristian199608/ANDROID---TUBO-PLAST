@@ -899,7 +899,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 textoDireccion+="\nEste cliente con la dirección seleccionado aún no esta geolocalizado, por ello no podemos obtener la distancia entre el cliente y tu ubicación";
             }else{
                 Location loca=new Location("");
-                loca.setLatitude(Double.parseDouble(dircli.getLongitud()));
+                loca.setLatitude(Double.parseDouble(dircli.getLatitud()));
                 loca.setLongitude(Double.parseDouble(dircli.getLongitud()));
                 double metros_s_cliente=location.getAltitude()-dircli.getAltitud();
 

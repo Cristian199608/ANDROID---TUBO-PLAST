@@ -87,9 +87,9 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		holder.precioLista.setText(String.valueOf(precioLista));
 		holder.cantidad.setText(String.valueOf(cantidad));
 		holder.tv_subtotal.setText(String.valueOf(subTotal));
-		holder.precioUnitario.setText(VARIABLES.formater_thow_decimal.format( precioUnidad));
+		holder.precioUnitario.setText(VARIABLES.getStringFormaterThreeDecimal( precioUnidad));
 		holder.percepcion.setText(String.valueOf(percepcion));
-		holder.descuento.setText(VARIABLES.formater_thow_decimal.format(descuento));
+		holder.descuento.setText(VARIABLES.getStringFormaterThreeDecimal(descuento));
 		holder.descuento.setVisibility(descuento>0.0?View.VISIBLE:View.GONE);
 		holder.tv_descuentoPorcentaje.setText(""+porcenajeDescuento+"%"+(porcenajeDescuentoExtra>0?" + "+porcenajeDescuentoExtra+"%":""));
 		holder.imgCampanaYellow.setVisibility(porcenajeDescuento>3.00?View.VISIBLE:View.GONE);

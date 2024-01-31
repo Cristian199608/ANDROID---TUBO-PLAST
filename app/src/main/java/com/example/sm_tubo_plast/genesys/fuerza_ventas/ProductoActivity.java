@@ -867,7 +867,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             edtDescuentoExtra.setEnabled(true);
         }
 
-        DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.0000");
+        DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.000");
 
 
         edtPrecioUnt.setText("0.0");

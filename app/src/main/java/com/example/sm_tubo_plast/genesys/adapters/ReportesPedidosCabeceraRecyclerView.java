@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,10 +21,15 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosC
 
 import java.util.ArrayList;
 
-public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<ReportesPedidosCabeceraRecyclerView.ViewHolder> {
+public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int VIEW_TYPE_ITEM = 0;
+    private static final int VIEW_TYPE_FOOTER = 1;
     Activity activity;
     ArrayList<IReportePedidoCabecera> IdataCabceraLista;
     DBclasses dBclasses;
+    boolean enableFooterView = false;
+    View layoutFooter;
 
     MyCallback myCallback;
     MyCallbackLoadMoreData myCallbackLoadMoreData;
@@ -38,6 +44,14 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
         this.dBclasses = dBclasses;
         this.IdataCabceraLista = reportePedidoCabeceraArrayList;
     }
+    public void clearDataAndReset(){
+        this.IdataCabceraLista.clear();
+        myCallbackLoadMoreData=null;
+        if(layoutFooter!=null){
+            layoutFooter.setVisibility(View.GONE);
+        }
+        notifyDataSetChanged();
+    }
     //set onclick interface
     public void setOnClick(MyCallback myCallback){
         this.myCallback=myCallback;
@@ -46,42 +60,58 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
         this.myCallbackLoadMoreData=myCallback;
     }
 
+
     @NonNull
     @Override
-    public ReportesPedidosCabeceraRecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //create view
-        View singleRow = LayoutInflater.from(parent.getContext())  .inflate(R.layout.item_reporte_pedido, parent, false);
-        return new ViewHolder(singleRow);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ReportesPedidosCabeceraRecyclerView.ViewHolder holder, int position) {
-    //get item by position
-
-        IReportePedidoCabecera IitemReporte=   IdataCabceraLista.get(position);
-        IitemReporte.setViewByHolder(activity, dBclasses, holder, position);
-        OnClickCustom(holder.imgCampanaYellow);
-        holder.itemView.setOnClickListener(v ->{
-            if(myCallback!=null){
-                myCallback.onClikItem(position, v);
-            }
-        });
-        if(position+1==IdataCabceraLista.size() && myCallbackLoadMoreData!=null){//cargamos mas datos
-            myCallbackLoadMoreData.onLoad();
+        if(viewType==VIEW_TYPE_ITEM){
+            View singleRow = LayoutInflater.from(parent.getContext())  .inflate(R.layout.item_reporte_pedido, parent, false);
+            return new ViewHolderItem(singleRow);
+        }else{
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.footer_view_progress, parent, false);
+            return new ViewHolderFotter(view);
         }
     }
 
     @Override
-    public int getItemCount() {
-        return IdataCabceraLista.size();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holderType, int position) {
+        if(holderType instanceof ViewHolderItem){
+            ViewHolderItem holder = (ViewHolderItem) holderType;
+            IReportePedidoCabecera IitemReporte=   IdataCabceraLista.get(position);
+            IitemReporte.setViewByHolder(activity, dBclasses, holder, position);
+            OnClickCustom(holder.imgCampanaYellow);
+            holder.itemView.setOnClickListener(v ->{
+                if(myCallback!=null){
+                    myCallback.onClikItem(position, v);
+                }
+            });
+            if(position+1==IdataCabceraLista.size() && myCallbackLoadMoreData!=null){//cargamos mas datos
+                myCallbackLoadMoreData.onLoad();
+            }
+        }else{
+            layoutFooter= ((ViewHolderFotter)holderType).itemView;
+            if(!enableFooterView)removeFooterView();
+        }
+
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemCount() {
+        return IdataCabceraLista.size()+(1);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        // Devuelve el tipo de vista según la posición
+        return (position == IdataCabceraLista.size()) ? VIEW_TYPE_FOOTER : VIEW_TYPE_ITEM;
+    }
+    public static class ViewHolderItem extends RecyclerView.ViewHolder {
         public TextView nomcliente, tipopago, total, numoc, estado, moneda, tv_pedidoAnterior, labell, edtFechavisita, edtObservacion_pedido;
         public ImageView foto;
         public TextView tv_tipoRegistro, imgCampanaYellow;
 
-        public ViewHolder(@NonNull View convertView) {
+        public ViewHolderItem(@NonNull View convertView) {
             super(convertView);
 
             nomcliente = (TextView) convertView.findViewById(R.id.rpt_pedido_tv_cliente);
@@ -100,6 +130,13 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
         }
     }
 
+    public static class ViewHolderFotter extends RecyclerView.ViewHolder {
+
+        public ViewHolderFotter(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
     private void OnClickCustom(View view){
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,5 +146,14 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
                 toast.show();
             }
         });
+    }
+    public void removeFooterView() {
+        enableFooterView=false;
+        if(layoutFooter!=null)layoutFooter.setVisibility(View.GONE);
+    }
+
+    public void addFooterView() {
+        enableFooterView=true;
+        if(layoutFooter!=null)layoutFooter.setVisibility(View.VISIBLE);
     }
 }

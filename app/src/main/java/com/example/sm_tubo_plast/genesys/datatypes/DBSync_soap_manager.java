@@ -6764,11 +6764,15 @@ public int actualizarRegistroBonificaciones() throws Exception{
 
 	}
 
-	public ArrayList<ViewSeguimientoPedido> get_tplast_seguimiento_pedido(String codven, String codcli, String orden_compra,
-																		  String fecha_desde, String fecha_hasta, String numero_op) throws Exception{
-		try{
+	public ArrayList<ViewSeguimientoPedido> get_tplast_seguimiento_pedido(
+			String codven, String codcli, String orden_compra,
+			String fecha_desde, String fecha_hasta, String numero_op,
+			String tipoFiltro,
+			int desde,
+			int hasta) throws Exception{
 
-			String _METHOD_NAME="get_tplast_seguimiento_pedido_json";
+		String _METHOD_NAME="get_tplast_seguimiento_pedido_json";
+		try{
 
 			ArrayList<String> propiedad=new ArrayList<>();
 			propiedad.add("codven"+__PARTIR___+codven);
@@ -6777,15 +6781,18 @@ public int actualizarRegistroBonificaciones() throws Exception{
 			propiedad.add("fecha_desde"+__PARTIR___+fecha_desde);
 			propiedad.add("fecha_hasta"+__PARTIR___+fecha_hasta);
 			propiedad.add("numero_op"+__PARTIR___+numero_op);
+			propiedad.add("tipo_filtro"+__PARTIR___+tipoFiltro);
+			propiedad.add("desde"+__PARTIR___+desde);
+			propiedad.add("hasta"+__PARTIR___+hasta);
 
 			String jsonstring = AddRequestHeader(propiedad, _METHOD_NAME);
 			final Type malla = new TypeToken<ArrayList<ViewSeguimientoPedido>>() {}.getType();
 			final ArrayList<ViewSeguimientoPedido> lista = gson.fromJson(jsonstring.toString(), malla);
-			Log.i("productoNoDescuento","Registros: "+jsonstring.length());
+			Log.i(TAG,_METHOD_NAME+" Registros: "+lista.size());
 			return lista;
 		}catch(Exception e){
 			e.printStackTrace();
-			Log.i("productoNoDescuento", "NO SINCRONIZADA");
+			Log.i(TAG,_METHOD_NAME+"NO SINCRONIZADA");
 			throw new Exception(e);
 		}
 	}

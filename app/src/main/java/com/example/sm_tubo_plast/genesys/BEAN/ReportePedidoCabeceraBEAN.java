@@ -155,7 +155,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
     @Override
     public void setViewByHolder(Activity activity,
                                 DBclasses obj_dbclasses,
-                                ReportesPedidosCabeceraRecyclerView.ViewHolder viewHolder,
+                                ReportesPedidosCabeceraRecyclerView.ViewHolderItem viewHolder,
                                 int position) {
 
         if (this.getFlag().equals("E")) {
@@ -208,18 +208,19 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         viewHolder.total.setText(this.getTotal());
         viewHolder.numoc.setText(this.getNumoc());
         viewHolder.estado.setText(this.getMensaje());
+
+        if (this.getPedidoAnterior().trim().isEmpty()) {
+            viewHolder.labell.setVisibility(View.INVISIBLE);
+            viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
+        }else{
+            viewHolder.labell.setVisibility(View.VISIBLE);
+            viewHolder.tv_pedidoAnterior.setVisibility(View.VISIBLE);
+        }
+        viewHolder.tv_pedidoAnterior.setText(this.getPedidoAnterior().toString());
+
         if (this.getTipoRegistro().equals(PedidosActivity.TIPO_COTIZACION)) {
             viewHolder.tv_tipoRegistro.setText("C");
             viewHolder.tv_tipoRegistro.setBackgroundColor(activity.getResources().getColor(R.color.indigo_500));
-
-            if (this.getPedidoAnterior().equals("")) {
-                viewHolder.labell.setVisibility(View.INVISIBLE);
-                viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
-            }else{
-                viewHolder.tv_pedidoAnterior.setText(this.getPedidoAnterior().toString());
-                viewHolder.numoc.setTextColor(activity.getResources().getColor(R.color.indigo_500));
-            }
-
             viewHolder.itemView.setBackgroundResource(R.drawable.selector_reporte_cotizacion);
         }else if (this.getTipoRegistro().equals(PedidosActivity.TIPO_DEVOLUCION)) {
             viewHolder.tv_tipoRegistro.setText("D");
@@ -230,8 +231,6 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         }else{
             viewHolder.tv_tipoRegistro.setText("P");
             viewHolder.tv_tipoRegistro.setBackgroundColor(activity.getResources().getColor(R.color.teal_500));
-            viewHolder.labell.setVisibility(View.INVISIBLE);
-            viewHolder.tv_pedidoAnterior.setVisibility(View.INVISIBLE);
             viewHolder.itemView.setBackgroundResource(R.drawable.selector_reporte_pedido);
         }
         boolean isRequired=obj_dbclasses.RequiereValidacionPorDescuento(this.getNumoc());

@@ -65,7 +65,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
                             android:textColor="@color/white"
-                            android:hint="Seleccione un cliente ->"
+                            android:hint="Todos o Seleccione un cliente ->"
                             android:singleLine="true"
                             android:text=""/>
                         <ImageButton
@@ -75,11 +75,58 @@
                             android:backgroundTint="@color/teal_A700"
                             android:src="@drawable/ic_tres_puntos_horizontal_grey"
                             />
+                        <ImageButton
+                            android:id="@+id/ib_limpiar_cliente"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/teal_A700"
+                            android:src="@drawable/ic_cancel__grey_24"
+                            android:tint="@color/white"
+                            />
 
                     </LinearLayout>
                 </LinearLayout>
 
-                <LinearLayout
+            <LinearLayout
+                android:id="@+id/layoutTipoFiltro"
+                android:orientation="horizontal"
+                android:weightSum="12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="Ver:"
+                    android:gravity="end"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="15dp"
+                    android:singleLine="true"
+                    android:backgroundTint="@color/white"
+                    android:enabled="false"
+                    />
+
+                <RadioGroup
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_weight="10" >
+                    <RadioButton
+                        android:id="@+id/rbtnVerTodos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="Todos" />
+                    <RadioButton
+                        android:id="@+id/rbtnVerPendientes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pendientes" />
+                </RadioGroup>
+            </LinearLayout>
+            <LinearLayout
                     android:id="@+id/layoutOrdenCompra"
                     android:layout_gravity="center"
                     android:gravity="center"

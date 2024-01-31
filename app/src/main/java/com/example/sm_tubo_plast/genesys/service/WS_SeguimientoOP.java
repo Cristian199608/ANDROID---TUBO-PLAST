@@ -26,6 +26,8 @@ public class WS_SeguimientoOP {
     MyListenerDetalle myListenerDetalle;
     String codven="";
 
+    public int desde=1;
+    final public int nro_item=19;// 0,1...19= 20 items
     ArrayList<ViewSeguimientoPedido> dataPrecargada=new ArrayList<>();
     public WS_SeguimientoOP(Activity activity) {
         this.activity = activity;
@@ -33,15 +35,18 @@ public class WS_SeguimientoOP {
 
     }
 
-    public void GetOrdenCompraPedido(String codcli, String orden_compra, String fecha_desde, String fecha_hasta,  String numero_op, MyListener myListener) {
+    public void GetOrdenCompraPedido(String codcli, String orden_compra, String fecha_desde,
+                                     String fecha_hasta,
+                                     String numero_op,
+                                     String tipoFiltro,
+                                     MyListener myListener) {
         this.myListener=myListener;
 
         ProgressDialog pDialog = new ProgressDialog(this.activity);
         pDialog.setMessage("Obteniendo datos del sistema....");
         pDialog.setIndeterminate(false);
+        if(desde<=1){pDialog.show();}
         pDialog.setCancelable(false);
-
-        pDialog.show();
         DBSync_soap_manager soap_manager = new DBSync_soap_manager(this.activity);
         new AsyncTask<Void, Void, String>() {
             ArrayList<ViewSeguimientoPedido> data= new ArrayList<>();
@@ -59,7 +64,15 @@ public class WS_SeguimientoOP {
                         //DB_Servidor dbServidorSM=new PreferenciaPrincipal(activity).geServerSaemovil();
                         if (cd.isConnectingToInternet()){
                             if (cd.hasActiveInternetConnection(activity)) {
-                                data= soap_manager.get_tplast_seguimiento_pedido(codven, ""+codcli, ""+orden_compra, fecha_desde, fecha_hasta, numero_op);
+                                data= soap_manager.get_tplast_seguimiento_pedido(codven,
+                                        ""+codcli,
+                                        ""+orden_compra,
+                                        fecha_desde,
+                                        fecha_hasta,
+                                        numero_op,
+                                        tipoFiltro,
+                                        desde,
+                                        desde+nro_item);
                                 return "OK";
                             } else {
                                 return "NO_SERVER";

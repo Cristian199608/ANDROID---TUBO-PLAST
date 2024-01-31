@@ -152,22 +152,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".66">
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:padding="2dp"
-                        android:text="P. Datos: "
-                        android:textColor="#FFF" />
-
-                    <TextView
                         android:id="@+id/tv_paqueteDatos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:padding="2dp"
-                        android:text="0 bytes"
+                        android:text="P. Datos: --Mb"
+                        android:textColor="#FFF" />
+
+                    <TextView
+                        android:id="@+id/tv_precioKiloDolar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:padding="2dp"
+                        android:text="P. Kilo ($/.): "
                         android:textColor="#FFF" />
 
                 </LinearLayout>

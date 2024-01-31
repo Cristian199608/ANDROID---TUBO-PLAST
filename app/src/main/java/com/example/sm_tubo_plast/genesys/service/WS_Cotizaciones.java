@@ -46,8 +46,8 @@ public class WS_Cotizaciones {
         pDialog.setMessage(mensaje);
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
+        if(desde<=1)pDialog.show();
 
-        pDialog.show();
         DBSync_soap_manager soap_manager = new DBSync_soap_manager(this.activity);
         new AsyncTask<Void, Void, String>() {
             ArrayList<CotizacionCabeceraApi> data= new ArrayList<>();

@@ -29,6 +29,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
@@ -81,10 +82,8 @@ public class DBclasses extends SQLiteAssetHelper {
 	public DBclasses(Context context) {
 		super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
 		// super(context, "fuerzaventas_backup", null, DATABASE_VERSION);
-
 		_context = context;
 	}
-
 
 	/*
 	 * @Override public void onCreate(SQLiteDatabase db) {
@@ -1691,7 +1690,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		SQLiteDatabase db = getWritableDatabase();
 
 		String subQuery =
-				"SELECT count(*) FROM pedido_detalle "
+				"SELECT max(cast(item as INTEGER)) FROM pedido_detalle "
 						+ "where item > 0 and oc_numero = '"+oc_numero+"'";
 
 		Cursor curAux = db.rawQuery(subQuery, null);
@@ -2913,19 +2912,19 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 	}
 	
-	public void guardarPedidoTotales(double peso_total,double subtotal, double IGV, double total, double percepcion_total,double totalSujetoPercepcion, String oc_numero) {	
+	public void guardarPedidoTotales(PedidoCabeceraRecalcular dataRecalcular) {
 		String where = "oc_numero like ?";
-		String[] args = { oc_numero };
+		String[] args = { dataRecalcular.getOc_numero() };
 
 		try {
 			SQLiteDatabase db = getWritableDatabase();
 			ContentValues valor = new ContentValues();
-			valor.put(DBtables.Pedido_cabecera.SUBTOTAL, subtotal);
-			valor.put(DBtables.Pedido_cabecera.VALOR_IGV, IGV);
-			valor.put(DBtables.Pedido_cabecera.MONTO_TOTAL, total);
-			valor.put(DBtables.Pedido_cabecera.PERCEPCION_TOTAL,percepcion_total);
-			valor.put(DBtables.Pedido_cabecera.PESO_TOTAL, peso_total);
-			valor.put(DBtables.Pedido_cabecera.TOTAL_SUJETO_PERCEPCION,totalSujetoPercepcion);
+			valor.put(DBtables.Pedido_cabecera.SUBTOTAL, dataRecalcular.getSubtotal());
+			valor.put(DBtables.Pedido_cabecera.VALOR_IGV, dataRecalcular.getIGV());
+			valor.put(DBtables.Pedido_cabecera.MONTO_TOTAL, dataRecalcular.getTotal());
+			valor.put(DBtables.Pedido_cabecera.PERCEPCION_TOTAL,dataRecalcular.getPercepcion());
+			valor.put(DBtables.Pedido_cabecera.PESO_TOTAL, dataRecalcular.getPeso_total());
+			valor.put(DBtables.Pedido_cabecera.TOTAL_SUJETO_PERCEPCION,dataRecalcular.getTotalSujetoPercepcion());
 
 			db.update("pedido_cabecera", valor, where, args);
 			db.close();
@@ -3512,7 +3511,8 @@ public class DBclasses extends SQLiteAssetHelper {
 					"pc.moneda," +
 					"pc.tipoRegistro, ifnull(pc.pedidoAnterior,''), " +
 					"pc.latitud," +
-					"ifnull(c.nomcli, '') AS nomcli "+
+					"ifnull(c.nomcli, '') AS nomcli, " +
+					"subTotal as sub_total "+
 					"from pedido_cabecera pc left join "+
 					"cliente c on c.codcli= pc.cod_cli "+
 					"where pc.oc_numero <> 0 " +
@@ -3544,6 +3544,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbpedido.setMoneda(cur.getString(11));
 			dbpedido.setTipoRegistro(cur.getString(12));
 			dbpedido.setPedidoAnterior(cur.getString(13));
+			dbpedido.setSubTotal(cur.getString(cur.getColumnIndex("sub_total")));
 			dbpedido.setLatitud(cur.getString(cur.getColumnIndex("latitud")));
 				Cliente cliente =new Cliente();
 				cliente.setCodigoCliente(dbpedido.getCod_cli());
@@ -13644,5 +13645,23 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				.show();
 	}
 
+	public void recalcularItemPedidoDetalle(String oc_numero) {
+		SQLiteDatabase db = getWritableDatabase();
+		String rawQuery = "SELECT item FROM "+ Pedido_detalle.TAG+" pd where pd.oc_numero='"+oc_numero+"' " +
+				" order by cast(item as INTEGER) ASc ";
+		Cursor cur = db.rawQuery(rawQuery, null);
+		int index=1;
+		while (cur.moveToNext()) {
+			int itemActual=(cur.getInt(0));
+			String where="oc_numero=? and item=?";
+			String[] args = new String[]{oc_numero, ""+itemActual};
+			ContentValues pedidItem = new ContentValues();
+			pedidItem.put("item", index);
+			db.update(Pedido_detalle.TAG, pedidItem, where, args);
+			index++;
+		}
+		cur.close();
+		db.close();
+	}
 }
 

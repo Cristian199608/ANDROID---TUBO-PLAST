@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -49,7 +48,6 @@ import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 
-import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
@@ -145,6 +143,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     private static final int ID_ENVIAR_CORREO = 5;
     private static final int ID_GENERAR_PEDIDO = 6;
     private static final int ID_GENERAR_PDF = 7;
+    private static final int ID_CAMBIAR_MONEDA = 8;
 
     DecimalFormat formateador;
     ArrayList<HashMap<String, String>> searchResults;
@@ -155,9 +154,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     int selectedPosition1 = 0;
     public double montoTotal_soles;
     public double montoTotal_dolares;
+    public double totalPrecioKiloDolar;
     DBPedido_Cabecera itemCabecera;
     ArrayList<DBPedido_Cabecera> lista_pedidos;
-    TextView tv_montoTotal_soles, btn_peso, tv_totalPedidos, tv_paqueteDatos,
+    TextView tv_montoTotal_soles, btn_peso, tv_totalPedidos, tv_precioKiloDolar,
             tv_montoTotal_dolares;
     EditText edtBuscarPedidos;
     ImageView imgBuscarDatos;
@@ -210,7 +210,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         tv_totalPedidos = (TextView) findViewById(R.id.rpt_pedidos_txtTotal_pedidos);
 
         lista_pedidos = new ArrayList<DBPedido_Cabecera>();
-        tv_paqueteDatos = (TextView) findViewById(R.id.tv_paqueteDatos);
+        tv_precioKiloDolar = (TextView) findViewById(R.id.tv_precioKiloDolar);
         tv_montoTotal_dolares = (TextView) findViewById(R.id.rpt_pedidos_tvTotalDolares);
         edtBuscarPedidos = (EditText) findViewById(R.id.edtBuscarPedidos);
         imgBuscarDatos =  findViewById(R.id.imgBuscarDatos);
@@ -252,6 +252,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
         ActionItem modificarItem = new ActionItem(ID_MODIFICAR, "Modificar",R.drawable.icon_edit_file_24dp);
+        ActionItem cambiarMoneda = new ActionItem(ID_CAMBIAR_MONEDA, "Cambiar Moneda",R.drawable.icon_edit_file_24dp);
         ActionItem acceptItem = new ActionItem(ID_DETALLE, "Ver Detalle",R.drawable.icon_show_file_24dp);
         ActionItem deleteItem = new ActionItem(ID_DELETE, "Eliminar",R.drawable.icon_delete_file_24dp);
         ActionItem anularItem = new ActionItem(ID_ANULAR, "Anular",R.drawable.icon_cancel_file_24dp);
@@ -266,6 +267,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
         mQuickAction.addActionItem(modificarItem);
+        mQuickAction.addActionItem(cambiarMoneda);
         mQuickAction.addActionItem(acceptItem);
         mQuickAction.addActionItem(anularItem);
         //mQuickAction.addActionItem(forzarEnvio);
@@ -274,6 +276,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         }
 
         mQuickActionCotizacion.addActionItem(modificarItem);
+        mQuickActionCotizacion.addActionItem(cambiarMoneda);
         mQuickActionCotizacion.addActionItem(acceptItem);
         mQuickActionCotizacion.addActionItem(anularItem);
         //mQuickActionCotizacion.addActionItem(forzarEnvio);
@@ -329,7 +332,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                             }
 
                         }
-
+                        else if(actionId==ID_CAMBIAR_MONEDA){
+                            requestCambiarMoneda(itemData.getTipoRegistro());
+                        }
                         else if (actionId == ID_FORZAR) {
 
                             asyncVerificacion_individual verif = new asyncVerificacion_individual();
@@ -463,20 +468,13 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
                         } else if(actionId == ID_GENERAR_PEDIDO){
-                            DBPedido_Cabecera cabecera = obj_dbclasses.getRegistroPedidoCabecera(oc_numero);
-                            String pedidoAnterior = cabecera.getOc_numero();
-                            String fechaOc = cabecera.getFecha_oc();
-                            String numOc = obj_dbclasses.obtenerMaxNumOc(codven);
-                            String fecha_configuracion = obj_dbclasses.getCambio("Fecha");
-                            String nuevoOc_numero = codven + PedidosActivity.calcularSecuencia(numOc,fecha_configuracion);
-                            cabecera.setOc_numero(nuevoOc_numero);
-                            cabecera.setFecha_oc(fechaOc);
-                            cabecera.setPedidoAnterior(pedidoAnterior);
-                            cabecera.setTipoRegistro(PedidosActivity.TIPO_PEDIDO);//Se indica que se guardar como pedido
-                            DAO_Pedido DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
-                            DAOPedidoDetalle.ClonarPedido(cabecera);//Se guarda referencia del pedido anterior
-                            GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
-                            new asyncBuscar().execute("", "");
+                            String _tipoRegistro = PedidosActivity.TIPO_PEDIDO;
+                            if (clonarPedido(false,_tipoRegistro)!=null) {
+                                new asyncBuscar().execute("", "");
+                            }
+                        }
+                        else if(actionId==ID_CAMBIAR_MONEDA){
+                            requestCambiarMoneda(itemData.getTipoRegistro());
                         }else if(actionId == ID_GENERAR_PDF){
                             GenerarPdfDocument(oc_numero);
                         }
@@ -544,6 +542,17 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             return null;
         }
         return (ReportePedidoCabeceraBEAN)IreportecabeceraLista.get(mSelectedRow);
+    }
+    private void  requestCambiarMoneda(String tipo_registro){
+        new AlertDialog.Builder(ReportesPedidosCotizacionYVisitaActivity.this)
+                .setTitle("Cambio de moneda")
+                .setMessage("Al cambiar la moneda se generarà otro "+tipo_registro+"  ¿Desea cambiar la moneda del pedido?")
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Aceptar", (dialog, which) -> {
+                    async_getFlagPedido con = new async_getFlagPedido();
+                    con.execute(oc_numero, "CAMBIAR-MONEDA");
+                })
+                .show().create();
     }
     private void onCLikItemListData(int position, View view){
 
@@ -789,6 +798,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             tv_montoTotal_soles.setVisibility(View.INVISIBLE);
             tv_montoTotal_dolares.setVisibility(View.INVISIBLE);
             tv_totalPedidos.setVisibility(View.INVISIBLE);
+            tv_precioKiloDolar.setVisibility(View.INVISIBLE);
 
         } else {
             //list.getEmptyView().setVisibility(View.GONE);
@@ -799,7 +809,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             tv_montoTotal_dolares.setText("Total($.) "
                     + formateador.format(redondear(montoTotal_dolares)));
             btn_peso.setText("Peso(Kg) " + formateador.format(redondear(peso)));
-
+            tv_precioKiloDolar.setText(""+VARIABLES.getDoubleFormaterThowDecimal(totalPrecioKiloDolar) );
             btn_peso.setVisibility(View.VISIBLE);
             tv_montoTotal_soles.setVisibility(View.VISIBLE);
             tv_montoTotal_dolares.setVisibility(View.VISIBLE);
@@ -868,6 +878,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         peso = 0;
         montoTotal_soles = 0;
         montoTotal_dolares = 0;
+        double tipoCambio = Double.parseDouble(obj_dbclasses.getCambio("Tipo_cambio"));
+        totalPrecioKiloDolar = 0;
 
         if (tipo.equalsIgnoreCase("cliente")) {
             lista_pedidos = obj_dbclasses
@@ -931,13 +943,18 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
            // pedidos.add(map);
             Log.w("fecha_oc", cta.getFecha_oc());
             IreportecabeceraLista.add(reportePedidoCabeceraBEAN);
-            if (cta.getMoneda().equals(PedidosActivity.MONEDA_SOLES_IN)) {
-                montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
-            } else {
-                montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
-            }
             if (cta.getCod_noventa() ==0) {
-                peso = peso + Double.parseDouble(cta.getPeso_total());
+                double pesoItem= Double.parseDouble(cta.getPeso_total());
+                peso = peso + pesoItem;
+                double tipoCambioPK = 1;
+                if (cta.getMoneda().equals(PedidosActivity.MONEDA_SOLES_IN)) {
+                    montoTotal_soles = montoTotal_soles+ Double.parseDouble(cta.getMonto_total());
+                    tipoCambioPK= tipoCambio;
+                } else {
+                    montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
+                    tipoCambioPK=1;
+                }
+                totalPrecioKiloDolar += (Double.parseDouble(cta.getSubTotal())/ (pesoItem>0?pesoItem:0))/tipoCambioPK;
                 contador = contador + 1;
             }
         }
@@ -1488,6 +1505,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             String ocnumero = params[0].toString();
             tipo = params[1].toString();
 
+            if(tipo.equals("CAMBIAR-MONEDA")){
+                return "ok";
+            }
             String ret = "";
 
             DBSync_soap_manager sm = new DBSync_soap_manager(
@@ -1601,41 +1621,91 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                         alerta.show();
                         return;
                     }
-                    String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
 
-                    int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
-                            item_direccion);
-                    Log.w("CODIGO_NOVENTA", "" + cod);
-
-                    String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
-
-                    final Intent ipedido;
-                    if (tipoRegistro.equals(PedidosActivity.TIPO_COTIZACION)) {
-                        ipedido = new Intent(getApplicationContext(), PedidosActivity.class);
-                    }else if (tipoRegistro.equals(PedidosActivity.TIPO_DEVOLUCION)) {
-                        ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
+                    if (itemData.getTipoRegistro().equals(PedidosActivity.TIPO_COTIZACION)) {
+                        DBPedido_Cabecera newPedido = clonarPedido(false, itemData.getTipoRegistro());
+                        if(newPedido!=null){
+                            startPedidoModificar(newPedido.getOc_numero(), newPedido.getTipoRegistro());
+                        }
                     }else{
-                        ipedido = new Intent(getApplicationContext(), PedidosActivity.class);
+                        startPedidoModificar(itemData.getNumoc(), itemData.getTipoRegistro());
                     }
 
-
-                    ipedido.putExtra("codigoVendedor", codven);
-                    ipedido.putExtra("nombreCliente", nomcli);
-                    ipedido.putExtra("codcli", itemData.getCodcli());
-                    ipedido.putExtra("origen", "REPORTES-MODIFICAR");
-                    ipedido.putExtra("OC_NUMERO", oc_numero);
-                    ipedido.putExtra("tipoRegistro", tipoRegistro);
-
-                    startActivity(ipedido);
-                    // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
-                    // "I");
-                    ReportesPedidosCotizacionYVisitaActivity.this.finish();
-
+                }else if(tipo.equals("CAMBIAR-MONEDA")){
+                    //debemos cambiar la moneda y clonar el pedido
+                    DBPedido_Cabecera newPedido = clonarPedido(true, itemData.getTipoRegistro());
+                    if(newPedido!=null){
+                        if(newPedido.getTipoRegistro().equals(PedidosActivity.TIPO_COTIZACION)) {
+                            startPedidoModificar(newPedido.getOc_numero(), newPedido.getTipoRegistro());
+                        }else{
+                            new asyncBuscar().execute("", "");
+                        }
+                    }
                 }
 
             }
 
         }
+
+    }
+    private void startPedidoModificar(String _oc_numero, String _tipoRegistro){
+        String codcli = obj_dbclasses.obtenerCodigoCliente(nomcli);
+
+        int cod = obj_dbclasses.obtenerMotivoxCliente(codcli,
+                item_direccion);
+        Log.w("CODIGO_NOVENTA", "" + cod);
+
+        String codven = new SessionManager(ReportesPedidosCotizacionYVisitaActivity.this).getCodigoVendedor();
+
+        final Intent ipedido;
+        if (_tipoRegistro.equals(PedidosActivity.TIPO_COTIZACION)) {
+            ipedido = new Intent(getApplicationContext(), PedidosActivity.class);
+        }else if (_tipoRegistro.equals(PedidosActivity.TIPO_DEVOLUCION)) {
+            ipedido = new Intent(getApplicationContext(), CH_DevolucionesActivity.class);
+        }else{
+            ipedido = new Intent(getApplicationContext(), PedidosActivity.class);
+        }
+
+
+        ipedido.putExtra("codigoVendedor", codven);
+        ipedido.putExtra("nombreCliente", nomcli);
+        ipedido.putExtra("codcli", codcli);
+        ipedido.putExtra("origen", "REPORTES-MODIFICAR");
+        ipedido.putExtra("OC_NUMERO", _oc_numero);
+        ipedido.putExtra("tipoRegistro", _tipoRegistro);
+
+        startActivity(ipedido);
+        // obj_dbclasses.actualizarEstadoCabeceraPedido(oc_numero,
+        // "I");
+        ReportesPedidosCotizacionYVisitaActivity.this.finish();
+    }
+
+
+    private DBPedido_Cabecera clonarPedido(boolean cambiarMoneda, String tipoRegistro) {
+
+        DBPedido_Cabecera cabecera = obj_dbclasses.getRegistroPedidoCabecera(oc_numero);
+        double tipocambio =  Double.parseDouble(obj_dbclasses.getCambio("Tipo_cambio"));
+
+        String pedidoAnterior = cabecera.getOc_numero();
+        String fechaOc = cabecera.getFecha_oc();
+        String numOc = obj_dbclasses.obtenerMaxNumOc(codven);
+        String fecha_configuracion = obj_dbclasses.getCambio("Fecha");
+        String nuevoOc_numero = codven + PedidosActivity.calcularSecuencia(numOc,fecha_configuracion);
+        cabecera.setOc_numero(nuevoOc_numero);
+        cabecera.setFecha_oc(fechaOc);
+        cabecera.setPedidoAnterior(pedidoAnterior);
+        cabecera.setTipoRegistro(tipoRegistro);
+        DAO_Pedido DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
+        if(cambiarMoneda){
+            if (!cabecera.convertirMonedaFrom(tipocambio)) {
+                GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Error al realizar la conversiòn de la moneda! "+nuevoOc_numero, GlobalFunctions.TOAST_ERROR);
+                return null;
+            }
+        }
+
+        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses);//Se guarda referencia del pedido anterior
+        GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
+        return cabecera;
 
     }
 
@@ -1732,6 +1802,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
             tv_totalPedidos.setText("Cantidad:" + contador);
+
 
         }
 
@@ -1998,7 +2069,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
-            tv_paqueteDatos.setText(cantidadDatos + " MB");
+            tv_precioKiloDolar.setText("P. Kilo ($/.) \n"+VARIABLES.getDoubleFormaterThowDecimal(totalPrecioKiloDolar) );
             if (IreportecabeceraLista.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
@@ -2046,7 +2117,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
-            tv_paqueteDatos.setText(cantidadDatos + " MB");
+            tv_precioKiloDolar.setText(cantidadDatos + " MB");
             if (IreportecabeceraLista.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
@@ -2340,18 +2411,22 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Debe ingresar las fechas de busqueda", UtilView.TOAST_ERROR);
             return;
         }
-
+        IreportecabeceraLista.clear();
         if(ws_cotizaciones==null){
-            IreportecabeceraLista.clear();
-            if(adapterRecyclerView!=null){
-                adapterRecyclerView.notifyDataSetChanged();
-            }
             ws_cotizaciones = new WS_Cotizaciones(ReportesPedidosCotizacionYVisitaActivity.this);
-            adapterRecyclerView=null;
         }
         int desde=ws_cotizaciones.desde;
         int hasta=ws_cotizaciones.desde+ws_cotizaciones.nro_item;
+
+        if(adapterRecyclerView==null) {
+            adapterRecyclerView = new ReportesPedidosCabeceraRecyclerView(this, obj_dbclasses, IreportecabeceraLista);
+            myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
+            onListenCLickRecyclerView();
+        }
+        adapterRecyclerView.clearDataAndReset();
+        adapterRecyclerView.addFooterView();
         ws_cotizaciones.getDataCabeceras(codigo_pedido, codcliPrincipal, fecha_desde, fecha_hasta, desde, hasta, (success, data) -> {
+            adapterRecyclerView.removeFooterView();
             if(!success){
                 UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Error, no se pudo obtener los datos de bùsqueda", UtilView.TOAST_ERROR);
                 myRecyclerViewPedidoCabcera.setEmptyText("Error, no se pudo obtener los datos de bùsqueda");
@@ -2364,14 +2439,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     private void setAdapterDataCotizacionOnLine(ArrayList<CotizacionCabeceraApi> dataLinea){
 
         IreportecabeceraLista.addAll(dataLinea);
-        if(adapterRecyclerView==null) {
-            adapterRecyclerView = new ReportesPedidosCabeceraRecyclerView(this, obj_dbclasses, IreportecabeceraLista);
-            myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
-            onListenCLickRecyclerView();
-        }
-        else {
-            adapterRecyclerView.notifyDataSetChanged();
-        }
+        adapterRecyclerView.notifyDataSetChanged();
+
         if(dataLinea.size()==0 || dataLinea.size()<=ws_cotizaciones.nro_item){
             adapterRecyclerView.setCallbackLoadMoreData(null);
             return;

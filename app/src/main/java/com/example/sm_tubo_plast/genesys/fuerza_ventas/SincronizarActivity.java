@@ -1179,7 +1179,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
             } else {
                 /* SINCRONIZACION DESDE LA APP, TABLAS */
-                if (cd.hasActiveInternetConnection(getApplicationContext())) {
+                if (cd.isConnectingToInternet()) {
 
                     String datetime = "";
 
@@ -1221,26 +1221,31 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                         }
                         else if (controlAcceso.getEstado().equals("S")){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    pDialog.setMessage("Sincronizando configuracion");
-                                }
-                            });
-                            publishProgress("10");
-                            soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("20");
-                            soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("30");
-                            soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("60");
-                            soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
-                            publishProgress("90");
-                            soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD, nombreBD, usuarioBD, contrasenaBD);
-                            AsignarPreferenciaCodigoNivel(_helper, SincronizarActivity.this);
+                            if (cd.hasActiveInternetConnection(getApplicationContext())) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pDialog.setMessage("Sincronizando configuracion");
+                                    }
+                                });
+                                publishProgress("10");
+                                soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
+                                publishProgress("20");
+                                soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
+                                publishProgress("30");
+                                soap_manager.Sync_tabla_usuarios(servidorBD,nombreBD, usuarioBD, contrasenaBD);
+                                publishProgress("60");
+                                soap_manager.Sync_tabla_registrosGeneralesMovil(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                                publishProgress("90");
+                                soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD, nombreBD, usuarioBD, contrasenaBD);
+                                AsignarPreferenciaCodigoNivel(_helper, SincronizarActivity.this);
+                            }else{
+                                error = "sin_servicio";
+                                return error;
+                            }
+
                         }else{
                             error = "sin_servicio";
-
                             return error;
                         }
 

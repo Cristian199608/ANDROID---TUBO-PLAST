@@ -59,7 +59,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
     override fun setViewByHolder(
         activity: Activity?,
         obj_dbclasses: DBclasses?,
-        viewHolder: ReportesPedidosCabeceraRecyclerView.ViewHolder?,
+        viewHolder: ReportesPedidosCabeceraRecyclerView.ViewHolderItem?,
         position: Int
     ) {
 
