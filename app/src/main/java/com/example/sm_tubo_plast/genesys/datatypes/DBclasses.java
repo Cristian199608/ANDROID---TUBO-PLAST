@@ -7189,6 +7189,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				item.setLatitud(cur.getString(18));
 				item.setLongitud(cur.getString(19));
 				item.setCodigo_familiar(cur.getString(20));
+				item.setTipoRegistro(cur.getString(cur.getColumnIndex("tipoRegistro")));
 
 				Log.w("GetPedidoCabecera_x_Flag",
 						"codfmiliar:" + cur.getString(19));

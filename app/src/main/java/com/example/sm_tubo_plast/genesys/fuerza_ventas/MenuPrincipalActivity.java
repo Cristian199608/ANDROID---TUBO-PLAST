@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.crashlitics.domain.CrashlyticsUseCases;
 import com.example.sm_tubo_plast.databinding.ActivityMenuPrincipalBinding;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionMenuPrinicipal;
@@ -110,6 +111,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         String vendedor_name=database.getVendedorByCodven(codven);
         tv_welcomeUser.setText("Bienvenido "+ vendedor_name);
 
+        configurarDatosVendedorParaCrashlytics(codven, vendedor_name);
         GlobalVar.servicio_principal_activo = prefs.getBoolean("servicio_principal_activo", true);
         GlobalVar.servicio_secundario_activo = prefs.getBoolean("servicio_secundario_activo", true);
 
@@ -306,6 +308,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
+
                 final Intent isincronizar = new Intent(activity,SincronizarActivity.class);
                 // ipedido.putExtra("codven",codven);
                 isincronizar.putExtra("ORIGEN", "MENU");
@@ -485,5 +488,10 @@ public class MenuPrincipalActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    private void configurarDatosVendedorParaCrashlytics(String codven, String vendedor_name) {
+        CrashlyticsUseCases crashlyticsUseCases=new CrashlyticsUseCases();
+        crashlyticsUseCases.setConfigVendedorDataUseCase(codven,vendedor_name);
     }
 }

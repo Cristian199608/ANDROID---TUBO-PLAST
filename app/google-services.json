@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1085069629123",
+    "project_id": "app-tuboplast",
+    "storage_bucket": "app-tuboplast.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085069629123:android:2b704d67ef99c64c307476",
+        "android_client_info": {
+          "package_name": "com.example.sm_tubo_plast"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU-W3LcPrDyCqBBLQ623ZoAjofbRfj5mI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

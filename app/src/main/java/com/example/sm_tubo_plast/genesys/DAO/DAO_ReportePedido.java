@@ -84,6 +84,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                         pesoTotalProducto
                                 ));
                     }
+                    objCursor.close();
                     return objDbPedidoCabeceraDetalleArrayList;
                 }
                 else

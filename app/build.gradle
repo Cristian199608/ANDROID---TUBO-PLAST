@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 android {
     compileSdkVersion 33
@@ -86,11 +88,10 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     //fin
 
-    //RXJAVA
-//    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-//    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
-//    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-//    FIN RX
+    //FIREBASE
+    implementation 'com.google.firebase:firebase-crashlytics:17.4.1'
+    implementation 'com.google.firebase:firebase-analytics:18.0.3'
+
 
     //    implementation 'sopa'
     implementation 'com.google.code.ksoap2-android:ksoap2-android:3.1.1'
@@ -106,3 +107,5 @@ dependencies {
 
 
 }
+apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.firebase.crashlytics'

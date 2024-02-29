@@ -200,7 +200,23 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
 		db.close();
 		return lista;
 	}
-    
+
+    public String getDescrCondicionVentaByCod(String codformaPago){
+        String rawQuery;
+        //rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta
+        rawQuery = "SELECT * from forma_pago where flagTipo = '"+FORMA_PAGO+"' and codforpag = '"+codformaPago+"'";// CV -> CondicionVenta
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cur = db.rawQuery(rawQuery, null);
+
+        String formaPago="CV "+codformaPago;
+        if (cur.moveToNext()) {
+            codformaPago=cur.getString(1);
+        }
+        Log.w(TAG,"getDescrCondicionVentaByCod  :"+(codformaPago));
+        cur.close();
+        db.close();
+        return codformaPago;
+    }
     
     public ArrayList<Nro_Letras> getNroLetras(){
 		String rawQuery;		

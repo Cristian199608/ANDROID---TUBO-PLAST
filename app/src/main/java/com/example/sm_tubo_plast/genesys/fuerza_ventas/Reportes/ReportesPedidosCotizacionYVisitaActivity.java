@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.crashlitics.domain.CrashlyticsUseCases;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraBEAN;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
@@ -50,6 +51,7 @@ import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistrosGeneralesMovil;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ReportesPedidosCabeceraRecyclerView;
@@ -79,6 +81,7 @@ import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.example.sm_tubo_plast.genesys.util.recyclerView.RecyclerViewCustom;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -124,6 +127,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     DBMotivo_noventa item;
     DBclasses obj_dbclasses;
     DAO_ReportePedido dao_reportePedido;
+    DAO_RegistrosGeneralesMovil dao_registrosGeneralesMovil;
+
     ArrayList<IReportePedidoCabecera> IreportecabeceraLista=new ArrayList<>();
     WS_Cotizaciones ws_cotizaciones=null;
     ArrayList<DB_RegistroBonificaciones> registroBonificaciones;
@@ -203,8 +208,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
         DAORegistroBonificaciones = new DAO_RegistroBonificaciones(  getApplicationContext());
         obj_dbclasses = new DBclasses(getApplicationContext());
+        dao_registrosGeneralesMovil = new DAO_RegistrosGeneralesMovil(getApplicationContext());
         cd = new ConnectionDetector(ReportesPedidosCotizacionYVisitaActivity.this);
-
         tv_montoTotal_soles = (TextView) findViewById(R.id.rpt_pedidos_txtTotal);
         btn_peso = (TextView) findViewById(R.id.rpt_pedidos_txtTotal_peso);
         tv_totalPedidos = (TextView) findViewById(R.id.rpt_pedidos_txtTotal_pedidos);
@@ -748,6 +753,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                             tipoEnvio);
                     return "Generado";
                 } catch (FileNotFoundException e) {
+                    //aqui quiero enviar un error
                     e.printStackTrace();
                     return null;
                 }
@@ -908,6 +914,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             map.put(KEY_CODCLI,"" + cta.getCod_cli());
             reportePedidoCabeceraBEAN.setCodcli(cta.getCod_cli());
             map.put(KEY_TIPOPAGO, "" + obtenerCond_Pago(cta.getCond_pago()));
+
             reportePedidoCabeceraBEAN.setTipopago(obtenerCond_Pago(cta.getCond_pago()));
 
             if (cta.getCod_noventa() > 0) {
@@ -1000,15 +1007,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     }
 
     public String obtenerCond_Pago(String cond) {
-        String cond_pag = "";
-        if (cond.equals("01")) {
-            cond_pag = "Contado";
-        } else if (cond.equals("02")) {
-            cond_pag = "Credito";
-        } else if (cond.equals("07")) {
-            cond_pag = "Transferencia";
-        } else
-            cond_pag = "";
+        String cond_pag=dao_registrosGeneralesMovil.getDescrCondicionVentaByCod(cond);
+
         return cond_pag;
     }
 
@@ -2069,7 +2069,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
-            tv_precioKiloDolar.setText("P. Kilo ($/.) \n"+VARIABLES.getDoubleFormaterThowDecimal(totalPrecioKiloDolar) );
+            tv_precioKiloDolar.setText("P. Kilo ($) \n"+VARIABLES.getDoubleFormaterThowDecimal(totalPrecioKiloDolar) );
             if (IreportecabeceraLista.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();
@@ -2117,7 +2117,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             cargarListView();
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute= Enviado", "" + result);
-            tv_precioKiloDolar.setText(cantidadDatos + " MB");
+            //tv_precioKiloDolar.setText(cantidadDatos + " MB");
             if (IreportecabeceraLista.size()==0){
                 UtilViewSnackBar.SnackBarWarning(ReportesPedidosCotizacionYVisitaActivity.this, myRecyclerViewPedidoCabcera, "No hay datos para mostrar");
                 Toast.makeText(ReportesPedidosCotizacionYVisitaActivity.this, "No hay datos para mostrar", Toast.LENGTH_SHORT).show();

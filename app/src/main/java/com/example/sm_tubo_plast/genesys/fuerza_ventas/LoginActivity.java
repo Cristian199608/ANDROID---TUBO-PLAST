@@ -107,6 +107,9 @@ public class LoginActivity extends AppCompatActivity {
 //        startActivity(intent);
 
 
+
+
+
         dbusuarios = new DBclasses(LoginActivity.this);
         dbusuarios.EliminaOldDatabase();
 
