@@ -2411,9 +2411,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             UtilView.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this,"Debe ingresar las fechas de busqueda", UtilView.TOAST_ERROR);
             return;
         }
-        IreportecabeceraLista.clear();
         if(ws_cotizaciones==null){
             ws_cotizaciones = new WS_Cotizaciones(ReportesPedidosCotizacionYVisitaActivity.this);
+            IreportecabeceraLista.clear();
+            if(adapterRecyclerView!=null) adapterRecyclerView.clearDataAndReset();
         }
         int desde=ws_cotizaciones.desde;
         int hasta=ws_cotizaciones.desde+ws_cotizaciones.nro_item;
@@ -2423,7 +2424,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             myRecyclerViewPedidoCabcera.setAdapter(adapterRecyclerView);
             onListenCLickRecyclerView();
         }
-        adapterRecyclerView.clearDataAndReset();
+
         adapterRecyclerView.addFooterView();
         ws_cotizaciones.getDataCabeceras(codigo_pedido, codcliPrincipal, fecha_desde, fecha_hasta, desde, hasta, (success, data) -> {
             adapterRecyclerView.removeFooterView();
