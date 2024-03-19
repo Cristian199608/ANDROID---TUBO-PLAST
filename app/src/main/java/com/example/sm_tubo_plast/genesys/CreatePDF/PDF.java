@@ -451,7 +451,7 @@ public class PDF {
                 "LOS PRODUCTOS SOBRANTES (O SALDOS) QUE SE ENVIARÁN POR AGENCIA").setFontSize(7f));
         document.add(new Paragraph("2. LA MERCADERIA VIAJA POR CUENTA Y RIESGO DEL CLIENTE, NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES").setFontSize(7f));
         document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(7f));
-        document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130").setTextAlignment(TextAlignment.CENTER));
+        document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130 - 111").setTextAlignment(TextAlignment.CENTER));
         document.close();
     }
 

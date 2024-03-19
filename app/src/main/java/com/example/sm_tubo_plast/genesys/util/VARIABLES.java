@@ -29,7 +29,7 @@ public class VARIABLES {
 
 
     public static final  boolean isProduccion=true;
-    public static final  boolean isProduccion_prueba=true;
+    public static final  boolean isProduccion_prueba=false;
 
     public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
     public static String CARPERTA_CONTENEDOR_PDF="PDF";

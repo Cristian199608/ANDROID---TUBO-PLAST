@@ -369,7 +369,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 						"inner JOIN "+ DBtables.Direccion_cliente.TAG +" d ON c.codcli = d.codcli "+
 						"WHERE d.latitud!=0 and (c.nomcli like '"+texto_buscar+"' "+
 						"or d.telefono like '"+texto_buscar+"' "+
-						"or d.direccion like '"+texto_buscar+"') ";
+						"or d.direccion like '"+texto_buscar+"')" +
+						"and c.stdcli='1' ";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -383,7 +384,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				" from "
 				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
 				+"inner join "+ DBtables.Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
-				+"   ";
+				+"where cliente.stdcli='1'    ";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);

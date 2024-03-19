@@ -533,11 +533,14 @@ public class DBclasses extends SQLiteAssetHelper {
 		int dia = 0; //getDiaConfiguracion();
 		String addwhere="";
 		if (fecha_formateado.length()>0){
-			addwhere="and cliente.codcli in (select sv.id_rrhh from "+DBtables.San_Visitas.TAG+" sv where Fecha_planificada like '"+fecha_formateado+"%' or Fecha_Ejecutada like '"+fecha_formateado+"%' ) ";
+			addwhere=" and (" +
+					"'"+fecha_formateado+"' in  (select  strftime('%Y-%m-%d',max(datetime(sv.Fecha_Ejecutada)) ) from SAN_VISITAS sv where sv.id_rrhh=cliente.codcli) "+
+					" or '"+fecha_formateado+"' in  (select  strftime('%Y-%m-%d',max(datetime(sv.Fecha_planificada)) ) from SAN_VISITAS sv where sv.id_rrhh=cliente.codcli) " +
+					") ";
 		}
 		if (soloAnulados){
-			addwhere="and cliente.stdcli='0' ";
-		}else addwhere="and cliente.stdcli='1' ";
+			addwhere+=" and cliente.stdcli='0' ";
+		}else addwhere+=" and cliente.stdcli='1' ";
 
 		if (tipo_cliente_valor!=null){
 			addwhere+=" and cliente.sistema='"+tipo_cliente_valor+"' ";
