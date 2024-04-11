@@ -68,6 +68,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -868,7 +869,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }
 
         DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.000");
-
+        formaterPrecioourDecimal.setRoundingMode(RoundingMode.HALF_UP);
 
         edtPrecioUnt.setText("0.0");
         tv_precioIncIGV.setText("0.0");
@@ -894,7 +895,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             if (porcentajeDescuentoSitema>0.0){
                 sms="Precio Lista con \n"+(porcentajeDescuentoSitema+porcentajeDescuentoManual)+"% dsc a "+formaterPrecioourDecimal.format(precioListaSinIgv);
             }
-            PRECIO_LISTA=VARIABLES.ParseDecimalFour(precioListaSinIgv);
+            PRECIO_LISTA=VARIABLES.ParseDecimalThree(precioListaSinIgv);
 
 
             double descuentoConIgv=precioListaConIgv*(porcentajeDescuentoManual/100);
@@ -909,7 +910,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             double precioVentaFinalSinIGV=precioVentaPreSinIGV-descuentoSinIgvExtra;
             double precioVentaFinalIncIGV=precioVentaPreIncIGV-descuentoConIgvExtra;
 
-            descuentoAplicado= VARIABLES.ParseDecimalFour(descuentoSinIgv+descuentoSinIgvExtra);
+            descuentoAplicado= VARIABLES.ParseDecimalThree(descuentoSinIgv+descuentoSinIgvExtra);
 
             btn_consultarProducto.setText(sms);
             edtPrecioUnt.setText(""+formaterPrecioourDecimal.format(precioOriginal));//precio original

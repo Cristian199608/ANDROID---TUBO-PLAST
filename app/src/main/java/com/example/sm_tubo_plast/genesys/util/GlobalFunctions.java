@@ -329,6 +329,13 @@ public class GlobalFunctions {
 		big = big.setScale(2, RoundingMode.HALF_UP);
 		return Double.parseDouble(String.valueOf(big));
 	}
+
+	public static double redondear_toTrhee(double decimal){
+		String r = String.valueOf(decimal);
+		BigDecimal big = new BigDecimal(r);
+		big = big.setScale(3, RoundingMode.HALF_UP);
+		return Double.parseDouble(String.valueOf(big));
+	}
 	public static double redondear_toDoubleFourDecimal(double decimal){
 		String r = String.valueOf(decimal);
 		BigDecimal big = new BigDecimal(r);

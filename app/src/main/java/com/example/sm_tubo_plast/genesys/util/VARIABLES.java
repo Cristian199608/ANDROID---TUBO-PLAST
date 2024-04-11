@@ -9,6 +9,7 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -127,6 +128,12 @@ public class VARIABLES {
         DecimalFormat df = new DecimalFormat("#.0000");
         return df.format(numero);
     }
+
+    public static String ParseDecimalThree(double numero){
+        DecimalFormat df = new DecimalFormat("#.000");
+        return df.format(numero);
+    }
+
     public static String ParseDecimalTwo(double numero){
         DecimalFormat df = new DecimalFormat("#.00");
         return df.format(numero);
@@ -415,22 +422,26 @@ public class VARIABLES {
     public static double getDoubleFormaterThowDecimal(double numero)
     {
         DecimalFormat formater = new DecimalFormat("###0.00");
+        formater.setRoundingMode(RoundingMode.HALF_UP);
         return  Double.parseDouble(formater.format(numero));
     }
     public static String getStringFormaterThreeDecimal(double numero)
     {
        DecimalFormat formater = new DecimalFormat("#,##0.000");
+        formater.setRoundingMode(RoundingMode.HALF_UP);
        return  formater.format(numero);
     }
     public static double getDoubleFormaterThreeDecimal(double numero)
     {
         DecimalFormat formater = new DecimalFormat("###0.000");
+        formater.setRoundingMode(RoundingMode.HALF_UP);
         return  Double.parseDouble(formater.format(numero));
     }
 
     public static double getDoubleFormaterFourDecimal(double numero)
     {
         DecimalFormat formater = new DecimalFormat("###0.0000");
+        formater.setRoundingMode(RoundingMode.HALF_UP);
         return  Double.parseDouble(formater.format(numero));
     }
 

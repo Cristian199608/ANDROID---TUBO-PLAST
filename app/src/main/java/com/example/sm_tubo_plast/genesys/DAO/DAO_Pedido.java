@@ -273,7 +273,10 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 				ClonarPedidoDetalle(dbPedido_Detalle);
 			}
 			if(convertirMoneda){
-				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(subtotal+totalIGV+percepcion);
+				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(
+						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
+								+VARIABLES.getDoubleFormaterThowDecimal(totalIGV)
+								+percepcion);
 				PedidoCabeceraRecalcular dataRecalculo=new PedidoCabeceraRecalcular(
 						cabecera.getOc_numero(),
 						peso_total,

@@ -3155,15 +3155,15 @@ private void EnvalularMoneda(){
             sumSubTotal+=itemRes.getSutTotal();
             sumPrecioKiTotal+=itemRes.getPkDolar();
             sumIgvTotal+=itemRes.getIgvTotal();
-            layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_800));
+            layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_800, false));
         }
 
         ResumenVentaTipoProducto itemRes=new ResumenVentaTipoProducto(
                 "Total", sumPesoTotal,sumSubTotal, sumPrecioKiTotal, sumIgvTotal);
-        layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900));
+        layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900, true));
 
     }
-    private View  GetViewResumenByTipoProducto(ResumenVentaTipoProducto itemRes, int resColor){
+    private View  GetViewResumenByTipoProducto(ResumenVentaTipoProducto itemRes, int resColor, boolean isCabecera){
         LayoutInflater inflater = LayoutInflater.from(this);
         final View laViewInflada = inflater.inflate(R.layout.item_resumen_by_tipo_producto, null, true);
         TextView tvTipoProducto =laViewInflada.findViewById(R.id.tvTipoProducto);
@@ -3174,11 +3174,18 @@ private void EnvalularMoneda(){
         TextView tvTotal =laViewInflada.findViewById(R.id.tvTotal);
 
         tvTipoProducto.setText(itemRes.getTipoProducto());
+
+        DecimalFormat formaterText = new DecimalFormat("###0."+(isCabecera?"00":"000"));
+        formaterText.setRoundingMode(RoundingMode.HALF_UP);
+        DecimalFormat formatDouble = new DecimalFormat("0."+(isCabecera?"00":"000"));
+        formatDouble.setRoundingMode(RoundingMode.HALF_UP);
+
         tvPesoTotal.setText(""+ VARIABLES.formater_thow_decimal.format(itemRes.getPesoTotal()));
-        tvSubTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getSutTotal()));
-        tvPrecioKilo.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getPkDolar()));
-        tvIgvTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getIgvTotal()));
-        tvTotal.setText(""+VARIABLES.getDoubleFormaterThreeDecimal(itemRes.getSutTotal()+itemRes.getIgvTotal()));
+        tvSubTotal.setText(""+formaterText.format(itemRes.getSutTotal()));
+        tvPrecioKilo.setText(""+formaterText.format(itemRes.getPkDolar()));
+        tvIgvTotal.setText(""+formaterText.format(itemRes.getIgvTotal()));
+        String totalText= formaterText.format(Double.parseDouble(formatDouble.format(itemRes.getSutTotal())) + Double.parseDouble(formatDouble.format(itemRes.getIgvTotal())));
+        tvTotal.setText(""+totalText);
 
         tvTipoProducto.setBackgroundColor(getResources().getColor(resColor));
         tvPesoTotal.setBackgroundColor(getResources().getColor(resColor));
@@ -5852,7 +5859,7 @@ private void EnvalularMoneda(){
 
             peso_total 	+= producto[i].getPeso();
             subtotal	+= producto[i].getSubtotal(); //Sin IGV
-            IGV			+= producto[i].getSubtotal()*valorIGV;
+            IGV			+= VARIABLES.getDoubleFormaterThreeDecimal(producto[i].getSubtotal()*valorIGV);
             //total 		+= subtotal + IGV;
 
             percepcion 	+= producto[i].getPercepcionPedido();
