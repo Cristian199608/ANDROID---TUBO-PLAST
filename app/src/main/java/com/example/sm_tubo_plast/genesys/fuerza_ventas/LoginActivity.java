@@ -384,7 +384,8 @@ public class LoginActivity extends AppCompatActivity {
             String mensajeLicenciaUso= dbusuarios.getConfiguracionByName("mensaje_licencia_uso", "");
 
             if (mensajeLicenciaUso.length()>0){
-                UtilViewMensaje.MENSAJE_simple(LoginActivity.this, "AVISO", mensajeLicenciaUso);
+                UtilViewMensaje.MENSAJE_simple(LoginActivity.this, "AVISO", mensajeLicenciaUso
+                        +"\n\nSincronize usuario/configuracion para volver a validar.");
                 return;
             }
 

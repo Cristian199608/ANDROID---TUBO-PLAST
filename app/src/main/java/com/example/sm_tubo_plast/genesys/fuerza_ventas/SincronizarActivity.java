@@ -1076,7 +1076,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             @Override
             public String resultOK(String s) {
                 if (s!=null){
-                    String clave=_helper.getConfiguracionByName("clave_forzar", "4545");
+                    String clave=_helper.getConfiguracionByName("clave_forzar", "1551");
                     if (clave.equals(s)) {
                         new asynclogin().execute("", "", ""+s);
                     }else{
@@ -1840,6 +1840,8 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 String sms="Sincronización no completada.";
                 if (controlAcceso!=null) {
                     sms+="\n\n"+controlAcceso.getMensjae();
+                }else{
+                    sms+="Error al verificar disponibilidad de servicio en lìnea";
                 }
                 UtilView.MENSAJE_simple(SincronizarActivity.this, "Licencia de uso",
                         ""+sms);

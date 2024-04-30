@@ -4044,14 +4044,17 @@ public BEAN_ControlAccesso Verificar_control_acceso(String clave_forzar_digitado
 	db.beginTransaction();
 	try{
 
-		GetDataControlAcceso taskService = RetrofilClient.getRetrofitInstanceSERVIDOR().create(GetDataControlAcceso.class);
-		Call<DataRetrofit> call = taskService.getControlAcceso("validar_control_accesos",""+emp.getRuc());
+		Log.i(TAG, "Verificar_control_acceso::  ruc: "+emp.getRuc());
+		GetDataControlAcceso taskService = RetrofilClient.getRetrofitInstanceGODDADY().create(GetDataControlAcceso.class);
+		Call<DataRetrofit> call = taskService.getControlAcceso(GetDataControlAcceso.VALIDAR_CONTROL_ACCESO,""+emp.getRuc());
 		Response<DataRetrofit> response=call.execute();
 
 		if (response.isSuccessful()) {
 			DataRetrofit dataRetrofit = (response.body());
 			String vv = dataRetrofit.getCadena_json();
-			JSONArray jArray = new JSONArray(vv);
+			Log.i(TAG, "Verificar_control_acceso:: "+vv);
+			JSONObject jsonData = new JSONObject(vv);
+			JSONArray jArray = new JSONArray(jsonData.getString("data"));
 
 
 

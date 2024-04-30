@@ -11,23 +11,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofilClient {
     private static Retrofit retrofit;
-    public static Retrofit getRetrofitInstanceSERVIDOR() {
-        String BASE_URL="http://190.187.25.123:4390/ws_control_acceso_app/";
-//        String BASE_URL="http://192.168.0.55/ws_control_acceso_app/";
-
+    public static final String BASE_URL_GODADDY = "https://acgenesys.com/servicios/";
+    public static Retrofit getRetrofitInstanceGODDADY() {
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .build();
 
-        Gson gson = new GsonBuilder() .setDateFormat("yyyy-MM-dd HH:mm:ss").setLenient().create();
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd HH:mm:ss")
+                .setLenient()
+                .create();
 
         retrofit = new retrofit2.Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BASE_URL_GODADDY)
                 .addConverterFactory(GsonConverterFactory
-                 .create(gson)).client(okHttpClient)
+                        .create(gson)).client(okHttpClient)
                 .build();
-
+        //
         return retrofit;
     }
 }
