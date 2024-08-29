@@ -409,13 +409,13 @@ public class PDF {
         //TABLE BANCO -----02
         tableBanco.addCell(new Cell().add(new Paragraph("Banco de Crédito").setFontSize(7f)));
         tableBanco.addCell(new Cell().add(new Paragraph("194-2009913-1-60").setFontSize(7f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("197-2012209-0-42").setFontSize(7f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("194-2012209-0-42").setFontSize(7f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
         tableBanco.addCell(new Cell().add(new Paragraph("Garantía por 50 años").setFontSize(7f)));
 
         //TABLE BANCO -----03
         tableBanco.addCell(new Cell().add(new Paragraph("Banco Continental").setFontSize(7f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. USD 7918").setFontSize(7f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. USD 7198").setFontSize(7f)));
         tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. S/. 7197").setFontSize(7f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
         tableBanco.addCell(new Cell().add(new Paragraph("Asistencia Técnica Constante").setFontSize(7f)));

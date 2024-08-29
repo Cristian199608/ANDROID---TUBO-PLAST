@@ -5,14 +5,18 @@
     android:orientation="vertical"
     android:background="@color/white" >
 
-    <EditText android:id="@+id/inputSearch_cobranzas"
-        android:layout_margin="5dp"
+    <EditText
+        android:id="@+id/inputSearch_cobranzas"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Buscar Clientes"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/edittext_rounded_corners6"
         android:drawableEnd="@drawable/ic_search_grey"
-        android:inputType="textVisiblePassword"/>
+        android:hint="Buscar Clientes"
+        android:inputType="textVisiblePassword" />
 
     <LinearLayout
         android:id="@+id/lyt_lv_cobranza"

@@ -961,12 +961,17 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                     montoTotal_dolares = montoTotal_dolares+ Double.parseDouble(cta.getMonto_total());
                     tipoCambioPK=1;
                 }
-                totalPrecioKiloDolar += (Double.parseDouble(cta.getSubTotal())/ (pesoItem>0?pesoItem:0))/tipoCambioPK;
+                if(pesoItem<=0){
+                    Log.i(TAG, "PEDIDO_CON_PESO_CERO: "+cta.getOc_numero());
+                }
+//                if(pesoItem>0.0){
+                    totalPrecioKiloDolar += (Double.parseDouble(cta.getSubTotal())/ (pesoItem>0?pesoItem:0))/tipoCambioPK;
+                //}//
                 contador = contador + 1;
             }
         }
+        }
 
-    }
 
 
     private boolean pedidoHoy(String fecha_oc) {
@@ -1510,6 +1515,11 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             }
             String ret = "";
 
+            ReportePedidoCabeceraBEAN itemData= getInstancePedidoCabceraLocal();
+            if (itemData!=null && itemData.getTipoRegistro().equals(PedidosActivity.TIPO_COTIZACION)) {
+                ret="0";
+                return ret;
+            }
             DBSync_soap_manager sm = new DBSync_soap_manager(
                     ReportesPedidosCotizacionYVisitaActivity.this);
 
