@@ -474,5 +474,9 @@ public class VARIABLES {
         return list;
     }
 
+    public static String getDescripcionAnPreConcatenarBonif(String codigo,  double monto) {
+        return (codigo.startsWith("B") && monto==0)? "BONIFICACION ":"";
+    }
+
 }
 

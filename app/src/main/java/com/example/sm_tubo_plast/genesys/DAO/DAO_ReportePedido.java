@@ -62,12 +62,14 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         String item = objCursor.getString(objCursor.getColumnIndex("item"));
                         int cantidad = Integer.parseInt(objCursor.getString(objCursor.getColumnIndex("cantidad")));
                         String unidad_medida = objCursor.getString( objCursor.getColumnIndex("unidad_medida"));
-                        String despro = objCursor.getString(objCursor.getColumnIndex("despro"));
+                        String _despro = objCursor.getString(objCursor.getColumnIndex("despro"));
                         String precio_bruto = objCursor.getString(objCursor.getColumnIndex("precio_bruto"));
                         String precio_neto = objCursor.getString(objCursor.getColumnIndex("precio_neto"));
                         double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
                         String porcentaje_desc = objCursor.getString(   objCursor.getColumnIndex("porcentaje_desc"));
                         double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
+
+                        String desproOut = VARIABLES.getDescripcionAnPreConcatenarBonif(codpro,Double.parseDouble(precio_neto))+_despro;
 
                         objDbPedidoCabeceraDetalleArrayList.add(
                                 new ReportePedidoDetallePDF(
@@ -76,7 +78,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                         codpro,
                                         cantidad,
                                         unidad_medida,
-                                        despro,
+                                        desproOut,
                                         precio_bruto,
                                         precio_neto,
                                         porcentaje_desc,

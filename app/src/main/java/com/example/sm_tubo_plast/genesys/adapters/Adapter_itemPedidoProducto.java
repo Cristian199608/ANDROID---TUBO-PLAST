@@ -68,7 +68,7 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		}
 		
 		String codigoProduc = datos.get(posicion).getCodprod();
-		String descripcion	= datos.get(posicion).getDescripcion();		
+		String descripcion	= datos.get(posicion).getDescripcionAnPreConcatenarBonif();
 		double precioUnidad = datos.get(posicion).getPrecio();
 		double precioLista	= datos.get(posicion).getPrecioLista();
 		double cantidad		= datos.get(posicion).getCantidad();
@@ -82,7 +82,7 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		double porcenajeDescuento= Double.parseDouble(VARIABLES.ParseDecimalTwo(porcentaje_desc));
 		double porcenajeDescuentoExtra= Double.parseDouble(VARIABLES.ParseDecimalTwo(datos.get(posicion).getPorcentaje_desc_extra()));
 
-		holder.descripcion.setText(codigoProduc+" "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc a precio base "+porcenajeDescuentoMatriz+"%":""));
+		holder.descripcion.setText(codigoProduc+" - "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc a precio base "+porcenajeDescuentoMatriz+"%":""));
 		holder.precioUnidad.setText(String.valueOf(precioUnidad));
 		holder.precioLista.setText(String.valueOf(precioLista));
 		holder.cantidad.setText(String.valueOf(cantidad));

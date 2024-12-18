@@ -1,5 +1,7 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+
 import java.io.Serializable;
 
 public class ItemProducto {
@@ -104,6 +106,9 @@ public class ItemProducto {
 	}
 	public String getDescripcion() {
 		return Descripcion;
+	}
+	public String getDescripcionAnPreConcatenarBonif() {
+		return VARIABLES.getDescripcionAnPreConcatenarBonif(this.Codprod, this.subtotal)+Descripcion;
 	}
 	public void setDescripcion(String descripcion) {
 		Descripcion = descripcion;

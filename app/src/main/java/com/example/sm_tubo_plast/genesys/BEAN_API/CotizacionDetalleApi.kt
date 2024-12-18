@@ -1,6 +1,7 @@
 package com.example.sm_tubo_plast.genesys.BEAN_API
 
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF
+import com.example.sm_tubo_plast.genesys.util.VARIABLES
 
 class CotizacionDetalleApi
 {
@@ -33,13 +34,15 @@ class CotizacionDetalleApi
     }
 
     fun dataApiToObjetDataDetallePDF(): ReportePedidoDetallePDF {
+        var desproOuput=VARIABLES.getDescripcionAnPreConcatenarBonif(this.codigo_producto!!, this.sub_total!!)+this.descr_producto;
+
         val reporteDetaPDF= ReportePedidoDetallePDF(
             oc_numero = this.codigo_pedido!!,
             item = this.item!!,
             codpro = this.codigo_producto!!,
             cantidad = this.cantidad!!,
             unidad_medida = this.unida_medida!!,
-            despro = this.descr_producto!!,
+            despro = desproOuput,
             precio_bruto = this.precio_venta.toString(),
             precio_neto = this.sub_total.toString(),// debe ser sub total
             porcentaje_desc = this.prct_descuento.toString(),
