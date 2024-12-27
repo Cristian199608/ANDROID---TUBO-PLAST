@@ -44,7 +44,6 @@ public class AdapterViewSeguimientoOp extends RecyclerView.Adapter<RecyclerView.
         this.data.clear();
         this.dataOriginal.clear();
         notifyDataSetChanged();
-        myCallbackLoadMoreData=null;
         if(layoutFooter!=null){
             layoutFooter.setVisibility(View.GONE);
         }
@@ -122,7 +121,7 @@ public class AdapterViewSeguimientoOp extends RecyclerView.Adapter<RecyclerView.
             holder.txtUltimaEntrega.setText(""+item.getUltima_entrega());
             holder.txtDiasEntrega.setText(""+item.getDias());
 
-            if(position==data.size()-1 && myCallbackLoadMoreData!=null){
+            if(position==data.size()-1 && data.size()>1 && myCallbackLoadMoreData!=null){
                 myCallbackLoadMoreData.onLoad();
             }
         }
@@ -133,6 +132,10 @@ public class AdapterViewSeguimientoOp extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount() {
         return data.size()+1;
+    }
+
+    public int getItemCountData() {
+        return data.size();
     }
 
     @Override

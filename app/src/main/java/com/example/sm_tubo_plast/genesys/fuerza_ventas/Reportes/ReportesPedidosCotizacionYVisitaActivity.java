@@ -41,10 +41,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.crashlitics.domain.CrashlyticsUseCases;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraBEAN;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
@@ -81,7 +80,6 @@ import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.example.sm_tubo_plast.genesys.util.recyclerView.RecyclerViewCustom;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"    
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
-    android:background="@drawable/list_selector"
-    >
+    android:background="@drawable/list_selector">
 
     <TextView
         android:id="@+id/tv_tipoRegistro"
@@ -53,10 +53,10 @@
         <TextView
             android:id="@+id/rpt_pedido_tv_oc_numero"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"            
+            android:layout_height="wrap_content"
             android:layout_below="@+id/rpt_pedido_tv_cliente"
             android:layout_alignParentLeft="true"
-            android:text="00088988989"
+            tools:text="📱00088988989"
             android:textColor="#6E6E6E"
             android:textSize="12sp"
             android:textStyle="bold"

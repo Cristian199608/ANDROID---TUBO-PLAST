@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.util.UtilImagen;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -80,6 +80,11 @@ public class PDF {
         String subtotalFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getSubtotal());
         String igvFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getValor_igv());
         String total_netoFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getMonto_total());
+        double dtotalDescuento = 0;
+        for (ReportePedidoDetallePDF dataPedidoCabeceraDetalle : _dataPedidoCabeceraDetalles) {
+            dtotalDescuento+=dataPedidoCabeceraDetalle.getMontoDsctTotal();
+        }
+        String totalDescuentoformateado = getMontoDescuentoIfIsValid(dtotalDescuento);
 
         /***
          * PRINCIPAL IMAGE
@@ -304,7 +309,7 @@ public class PDF {
         }
         else if (tipo_de_envio == ENVIO_A_INTERNO)
         {
-            float columnWidthItems[] = {20, 105, 75, 40, 340, 70, 50, 50,50, 100};
+            float columnWidthItems[] = {20, 105, 75, 40, 340, 70, 50, 50,50,50, 100};
             Table tableItems = new Table(columnWidthItems);
 
             //TABLE ITEMS ----- 01
@@ -317,6 +322,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK ($)").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n EXTRA %").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+            tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n MONTO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
 
@@ -334,10 +340,13 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimalFromString(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc_extra())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
+                String montoDescFormated = getMontoDescuentoIfIsValid(dataPedidoCabeceraDetalles.get(i).getMontoDsctTotal());
+                tableItems.addCell(new Cell().add(new Paragraph(montoDescFormated)).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f));
                 String precio_neto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_neto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_neto))).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f);
             }
 
+            tableItems.addCell(new Cell().setBorder(Border.NO_BORDER));
             tableItems.addCell(new Cell().setBorder(Border.NO_BORDER));
             tableItems.addCell(new Cell().setBorder(Border.NO_BORDER));
             tableItems.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -358,16 +367,25 @@ public class PDF {
         /***
          * OBSERVACIONES
          */
-        float[] columnWidthObservaciones = {139, 457, 145, 150};
+        float[] columnWidthObservaciones = {139, 490, 140, 150};
         Table tableObservaciones = new Table(columnWidthObservaciones);
         float[] columnWidthData = {590, 140, 145};
         Table tableData = new Table(columnWidthData);
 
         //TABLE OBSERVACIONES
         tableObservaciones.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("Observaciones:").setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(7f)));
-        tableObservaciones.addCell(new Cell());
-        tableObservaciones.addCell(new Cell().add(new Paragraph("Sub Total").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + subtotalFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+
+        if (tipo_de_envio == ENVIO_A_INTERNO){
+            //TABLE DATA ----- 0.5
+            tableObservaciones.addCell(new Cell());
+            tableObservaciones.addCell(new Cell().add(new Paragraph("DESC TOTAL(Sin Igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + totalDescuentoformateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+
+        }
+
+        tableData.addCell(new Cell());
+        tableData.addCell(new Cell().add(new Paragraph("Sub Total").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph(moneda + subtotalFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 01
         tableData.addCell(new Cell().add(new Paragraph(dataCabecera.getObservacion3()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
@@ -378,6 +396,7 @@ public class PDF {
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("TOTAL").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
         tableData.addCell(new Cell().add(new Paragraph(moneda + total_netoFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+
 
         //TABLE DATA ----- 03
         String pa = FormateadorNumero.formatter2decimalFromString(dataCabecera.getPeso_total());
@@ -453,6 +472,12 @@ public class PDF {
         document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(7f));
         document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130 - 111").setTextAlignment(TextAlignment.CENTER));
         document.close();
+    }
+    public static String getMontoDescuentoIfIsValid(double montoDesct){
+        if(montoDesct<0){
+            return "";
+        }
+        return FormateadorNumero.formatter3decimal(montoDesct);
     }
 
     public  static void createHtml(Context context,

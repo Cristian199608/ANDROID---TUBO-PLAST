@@ -38,6 +38,7 @@ import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 public class SeguimientoPedidoActivity extends AppCompatActivity {
@@ -48,7 +49,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
     public static final String CODCLI_TODOS ="TODOS";
 
     String codven="", codcliSeleccionado=CODCLI_TODOS;
-    ImageButton ib_seleccionar_cliente, ib_limpiar_cliente, ib_numero_pedido,ib_buscar_op;
+    ImageButton ib_seleccionar_cliente, ib_limpiar_cliente, ib_numero_pedido,ib_buscar_op, ibVerUltimaBusqueda;
     TextView txtNombresCliente, tvVerPdf;
     EditText inputSearch_documento, edtOrdenCompra, edtNroPedido;
     RadioButton rbtnVerTodos, rbtnVerPendientes;
@@ -56,8 +57,11 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
     AdapterViewSeguimientoOpDetalle adapterViewSeguimientoOpDetalle;
     Button btnMostrarOcultarResumen;
 
+    AdapterViewSeguimientoOp adapterViewSeguimientoOp=null;
     ViewSeguimientoPedido viewSeguimientoPedido=null;
+    ArrayList<ViewSeguimientoPedido> listaViewSeguimientoPedido=new ArrayList<>();
     ArrayList<ViewSeguimientoPedidoDetalle> listaDetalleOps=new ArrayList<>();
+    Dialog dialogoBusquedaOps =null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +81,19 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         ib_limpiar_cliente=findViewById(R.id.ib_limpiar_cliente);
         ib_numero_pedido=findViewById(R.id.ib_numero_pedido);
         ib_buscar_op=findViewById(R.id.ib_buscar_op);
+        ibVerUltimaBusqueda=findViewById(R.id.ibVerUltimaBusqueda);
         recyclerViewDetails =findViewById(R.id.recyclerView);
         btnMostrarOcultarResumen=findViewById(R.id.btnMostrarOcultarResumen);
         inputSearch_documento=findViewById(R.id.inputSearch_documento);
         rbtnVerTodos=findViewById(R.id.rbtnVerTodos);
         rbtnVerPendientes=findViewById(R.id.rbtnVerPendientes);
         tvVerPdf=findViewById(R.id.tvVerPdf);
+
+        //-----------------------------------------------------------------------------------------------
+        ibVerUltimaBusqueda.setVisibility(View.GONE);
+
+
         recyclerViewDetails.setLayoutManager(new LinearLayoutManager(this));
-
-
 
         ib_seleccionar_cliente.setOnClickListener(v -> {
             Intent intent=new Intent(this, ClientesActivity.class);
@@ -98,13 +106,19 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             limpiarFormularioAfterChangedCliente();
         });
 
+        ib_numero_pedido.setOnClickListener(view->{
+            StartBusquedaOrdenCompraPedido(view, "");
+        });
+
         ib_buscar_op.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartBusquedaOrdenCompraPedido(v, edtNroPedido.getText().toString());
+                openTryDialogOpsUltimoSelecconado(v, edtNroPedido.getText().toString());
             }
         });
-
+        ibVerUltimaBusqueda.setOnClickListener(vi->{
+            openDialogusquedaOpsUltimo();
+        });
         tvVerPdf.setOnClickListener(v -> {
             if(listaDetalleOps.size()==0){
                 UtilViewSnackBar.SnackBarDanger(this, v, "No hay dato del detalle.");
@@ -160,7 +174,11 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         edtOrdenCompra.setText("");
         edtNroPedido.setText("");
         inputSearch_documento.setText("");
+        ibVerUltimaBusqueda.setVisibility(View.GONE);
+
         viewSeguimientoPedido=null;
+        listaViewSeguimientoPedido.clear();
+        adapterViewSeguimientoOp=null;
 
         if (adapterViewSeguimientoOpDetalle!=null) {
             listaDetalleOps.clear();
@@ -186,11 +204,56 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
 //        newFragment.show(getSupportFragmentManager(), "dialog");
 //    }
 
-    public void  GestionarBusquedaOrdenCompraPedido(View view){
-        StartBusquedaOrdenCompraPedido(view, "");
+
+    public void openDialogusquedaOpsUltimo(){
+        if(dialogoBusquedaOps!=null){
+            dialogoBusquedaOps.show();
+            mostrarOcultarFiltrosDialogResultadoOps(true);
+
+            adapterViewSeguimientoOp.clearDataAndReset();
+            adapterViewSeguimientoOp.addData(listaViewSeguimientoPedido);
+
+        }
     }
+    public void openTryDialogOpsUltimoSelecconado(View v, String reqestNumero_op){
+        boolean isFinded=false;
+        if(dialogoBusquedaOps!=null){
+            for (ViewSeguimientoPedido seguimientoPedido : listaViewSeguimientoPedido) {
+                if(seguimientoPedido.getNum_op().trim().equals(reqestNumero_op.trim())){
+                    adapterViewSeguimientoOp.clearDataAndReset();
+                    adapterViewSeguimientoOp.addData(new ArrayList<>(Collections.singleton(seguimientoPedido)) );
+                    isFinded=true;
+//                }else{
+//                    viewSeguimientoPedido=null;
+//                    listaViewSeguimientoPedido.clear();
+//                    listaDetalleOps.clear();
+//                    recyclerViewDetails.setVisibility(View.GONE);
+                }
+
+            }
+        }
+        if(isFinded){
+            dialogoBusquedaOps.show();
+            mostrarOcultarFiltrosDialogResultadoOps(false);
+            return;
+        }
+        StartBusquedaOrdenCompraPedido(v, reqestNumero_op);
+    }
+    private void mostrarOcultarFiltrosDialogResultadoOps(boolean showR){
+        if(showR){
+            dialogoBusquedaOps.findViewById(R.id.l1).setVisibility(View.VISIBLE);
+            dialogoBusquedaOps.findViewById(R.id.l2).setVisibility(View.VISIBLE);
+        }else{
+            dialogoBusquedaOps.findViewById(R.id.l1).setVisibility(View.GONE);
+            dialogoBusquedaOps.findViewById(R.id.l2).setVisibility(View.GONE);
+        }
+    }
+
     public void  StartBusquedaOrdenCompraPedido(View view, String reqestNumero_op){
-        Dialog dialogo = new Dialog(this);
+        ibVerUltimaBusqueda.setVisibility(View.GONE);
+        dialogoBusquedaOps=null;
+        //-----------------------------------------------------------------------------------------------
+        dialogoBusquedaOps = new Dialog(this);
         String codcliRequest=codcliSeleccionado;
         if(reqestNumero_op.length()==0){
             if (codcliRequest==null){
@@ -205,47 +268,42 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
 
         String finalCodcliRequest = codcliRequest;
 
-        dialogo.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        dialogo.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialogo.setContentView(R.layout.dialogo_orden_compra_pedido);
+        dialogoBusquedaOps.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialogoBusquedaOps.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogoBusquedaOps.setContentView(R.layout.dialogo_orden_compra_pedido);
 
-        Window window = dialogo.getWindow();
+        Window window = dialogoBusquedaOps.getWindow();
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.CENTER;
         //wlp.flags &= ~WindowManager.LayoutParams.FLAG_BLUR_BEHIND;
         window.setAttributes(wlp);
 
-        dialogo.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        dialogoBusquedaOps.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
 
-        dialogo.setCancelable(true);
-        EditText _edtOrdenCompra= dialogo.findViewById(R.id._edtOrdenCompra);
-        TextView txtFechaDesde= dialogo.findViewById(R.id.txtFechaDesde);
-        TextView txtFechaHasta= dialogo.findViewById(R.id.txtFechaHasta);
-        ImageButton ibBuscarOrdenCompra= dialogo.findViewById(R.id.ibBuscarOrdenCompra);
-        Button txt_cancelar= dialogo.findViewById(R.id.txt_cancelar);
-        RecyclerView recyclerViewDialog= dialogo.findViewById(R.id.recyclerView);
+        dialogoBusquedaOps.setCancelable(true);
+        EditText _edtOrdenCompra= dialogoBusquedaOps.findViewById(R.id._edtOrdenCompra);
+        TextView txtFechaDesde= dialogoBusquedaOps.findViewById(R.id.txtFechaDesde);
+        TextView txtFechaHasta= dialogoBusquedaOps.findViewById(R.id.txtFechaHasta);
+        ImageButton ibBuscarOrdenCompra= dialogoBusquedaOps.findViewById(R.id.ibBuscarOrdenCompra);
+        Button txt_cancelar= dialogoBusquedaOps.findViewById(R.id.txt_cancelar);
+        RecyclerView recyclerViewDialog= dialogoBusquedaOps.findViewById(R.id.recyclerView);
         recyclerViewDialog.setLayoutManager(new LinearLayoutManager(this));
 
         _edtOrdenCompra.setText( this.edtOrdenCompra.getText().toString());
 
-        txt_cancelar.setOnClickListener(v -> dialogo.dismiss());
+        if (reqestNumero_op.length()>0) {
+            mostrarOcultarFiltrosDialogResultadoOps(false);
+        }
+
+        txt_cancelar.setOnClickListener(v -> dialogoBusquedaOps.dismiss());
         GestionaOnclickFecha("de ", txtFechaDesde);
         GestionaOnclickFecha("a ", txtFechaHasta);
-        if (reqestNumero_op.length()>0){
-            try {
-                dialogo.findViewById(R.id.l1).setVisibility(View.GONE);
-                dialogo.findViewById(R.id.l2).setVisibility(View.GONE);
-            }catch (Exception e){
-                e.printStackTrace();
-                UtilViewSnackBar.SnackBarWarning(this,view, "Error, no se ha podido ocultar algunas vistas");
-            }
-        }
 
 
         WS_SeguimientoOP ws_seguimientoOP=new WS_SeguimientoOP(this);
         ArrayList<ViewSeguimientoPedido> dataMov=new ArrayList<>();
-        AdapterViewSeguimientoOp adapterViewSeguimientoOp=new AdapterViewSeguimientoOp(SeguimientoPedidoActivity.this,  dataMov,null);
+        adapterViewSeguimientoOp=new AdapterViewSeguimientoOp(SeguimientoPedidoActivity.this,  dataMov,null);
         recyclerViewDialog.setAdapter(adapterViewSeguimientoOp);
         //-------------------------------OnClikRecycler view----------------------------------------------------------------
         adapterViewSeguimientoOp.setOnClickListenerOP(v1 -> {
@@ -254,23 +312,19 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
             viewSeguimientoPedido=dataMov.get(v1.getId());
             edtNroPedido.setText(dataMov.get(v1.getId()).getNum_op());
             edtOrdenCompra.setText(dataMov.get(v1.getId()).getOrden_compra());
-            dialogo.dismiss();
+            dialogoBusquedaOps.dismiss();
             BuscarOpervidor();
         });
 
         //-----------------------------------------------------------------------------------------------
+        viewSeguimientoPedido=null;
+        listaViewSeguimientoPedido.clear();
+        listaDetalleOps.clear();
+        recyclerViewDetails.setVisibility(View.GONE);
+        //-----------------------------------------------------------------------------------------------
 
 
         ibBuscarOrdenCompra.setOnClickListener(v -> {//0199631, 0198238
-            if (viewSeguimientoPedido!=null && reqestNumero_op.length()>0){
-                if(viewSeguimientoPedido.getNum_op().trim().equals(reqestNumero_op.trim())){
-                    ws_seguimientoOP.setDataCargada(viewSeguimientoPedido);
-                }else{
-                    viewSeguimientoPedido=null;
-                    listaDetalleOps.clear();
-                    recyclerViewDetails.setVisibility(View.GONE);
-                }
-            }
 
             String tipoFiltro= rbtnVerTodos.isChecked()?"TODOS":"PENDIENTES";
             String textOrdenCompra=_edtOrdenCompra.getText().toString();
@@ -280,6 +334,7 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
 
             ws_seguimientoOP.desde=1;
             adapterViewSeguimientoOp.clearDataAndReset();
+            listaViewSeguimientoPedido=new ArrayList<>();
             startBusquedaOnlineOp(
                     adapterViewSeguimientoOp,
                     ws_seguimientoOP,
@@ -291,8 +346,8 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                     tipoFiltro);
 
         });
-        dialogo.create();
-        dialogo.show();
+        dialogoBusquedaOps.create();
+        dialogoBusquedaOps.show();
 
         ibBuscarOrdenCompra.performClick();
     }
@@ -306,7 +361,6 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                                        String tipoFiltro){
 
         adapterViewSeguimientoOp.addFooterView();
-
         ws_seguimientoOP.GetOrdenCompraPedido(finalCodcliRequest,
                 textOrdenCompra,
                 textFechaDesde,
@@ -315,15 +369,24 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
                 tipoFiltro,
                 new WS_SeguimientoOP.MyListener() {
                     @Override
-                    public void Reult(boolean valor, ArrayList<ViewSeguimientoPedido> _resultData) {
+                    public void Reult(boolean isOnLineData, ArrayList<ViewSeguimientoPedido> _resultData) {
                         adapterViewSeguimientoOp.addData(_resultData);
+                        if(isOnLineData)listaViewSeguimientoPedido.addAll(_resultData);
                         ws_seguimientoOP.desde=adapterViewSeguimientoOp.getDataOriginal().size()+1;
                         adapterViewSeguimientoOp.removeFooterView();
+
+                        if(listaViewSeguimientoPedido.size()>1){
+                            ibVerUltimaBusqueda.setVisibility(View.VISIBLE); }
+                        else {
+                            listaViewSeguimientoPedido.clear();
+                            ibVerUltimaBusqueda.setVisibility(View.GONE);
+                        }
 
                         if(_resultData.size()==0 || _resultData.size()<= ws_seguimientoOP.nro_item){
                             return;
                         }
                         adapterViewSeguimientoOp.setCallbackLoadMoreData(() -> {
+                            ws_seguimientoOP.setDataCargada(null);//Para cargar mas data del servidor
                             adapterViewSeguimientoOp.setCallbackLoadMoreData(null);
                             startBusquedaOnlineOp(
                                     adapterViewSeguimientoOp,
@@ -425,9 +488,10 @@ public class SeguimientoPedidoActivity extends AppCompatActivity {
         btnMostrarOcultarResumen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StartBusquedaOrdenCompraPedido(btnMostrarOcultarResumen, edtNroPedido.getText().toString());
+                openTryDialogOpsUltimoSelecconado(btnMostrarOcultarResumen, edtNroPedido.getText().toString());
 
             }
         });
     }
+
 }

@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -43,7 +43,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "ifnull(PD.porcentaje_desc, 0) as porcentaje_desc," +
                                 "PD.peso_bruto," +
                                 "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra, " +
-                                "PD.precio_neto " +
+                                "PD.precio_neto," +
+                                "PD.descuento " +
                                 "FROM  pedido_detalle PD " +
                                 "CROSS JOIN  producto P " +
                                 "WHERE " +
@@ -68,11 +69,11 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         double pesoTotalProducto = objCursor.getDouble(objCursor.getColumnIndex("peso_bruto"));
                         String porcentaje_desc = objCursor.getString(   objCursor.getColumnIndex("porcentaje_desc"));
                         double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
+                        double montoDesct = objCursor.getDouble(objCursor.getColumnIndex("descuento"));
 
                         String desproOut = VARIABLES.getDescripcionAnPreConcatenarBonif(codpro,Double.parseDouble(precio_neto))+_despro;
 
-                        objDbPedidoCabeceraDetalleArrayList.add(
-                                new ReportePedidoDetallePDF(
+                        objDbPedidoCabeceraDetalleArrayList.add(new ReportePedidoDetallePDF(
                                         oc_numero,
                                         item,
                                         codpro,
@@ -83,7 +84,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                         precio_neto,
                                         porcentaje_desc,
                                         porcentaje_desc_extra,
-                                        pesoTotalProducto
+                                        pesoTotalProducto,
+                                        montoDesct
                                 ));
                     }
                     objCursor.close();

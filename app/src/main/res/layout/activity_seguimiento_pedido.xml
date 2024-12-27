@@ -171,11 +171,18 @@
                            />
                        <ImageButton
                            android:id="@+id/ib_numero_pedido"
-                           android:onClick="GestionarBusquedaOrdenCompraPedido"
                            android:layout_width="wrap_content"
                            android:layout_height="wrap_content"
                            android:backgroundTint="@color/teal_A700"
                            android:src="@drawable/ic_search_grey"
+                           app:tint="@color/white"
+                           />
+                       <ImageButton
+                           android:id="@+id/ibVerUltimaBusqueda"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:backgroundTint="@color/blue_500"
+                           android:src="@drawable/ic_list_select"
                            app:tint="@color/white"
                            />
                    </LinearLayout>

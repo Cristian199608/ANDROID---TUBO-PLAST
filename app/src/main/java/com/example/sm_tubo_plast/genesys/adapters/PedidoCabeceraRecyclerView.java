@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ViewPdfActivity;

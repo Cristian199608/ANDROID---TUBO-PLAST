@@ -1,6 +1,6 @@
 package com.example.sm_tubo_plast.genesys.BEAN_API
 
-import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoDetallePDF
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF
 import com.example.sm_tubo_plast.genesys.util.VARIABLES
 
 class CotizacionDetalleApi
@@ -47,8 +47,8 @@ class CotizacionDetalleApi
             precio_neto = this.sub_total.toString(),// debe ser sub total
             porcentaje_desc = this.prct_descuento.toString(),
             porcentaje_desc_extra = this.prct_descuento_extra!!.toDouble(),
-            pesoTotalProducto = this.peso_total!!
-
+            pesoTotalProducto = this.peso_total!!,
+            -1.0
         );
         return reporteDetaPDF;
     }

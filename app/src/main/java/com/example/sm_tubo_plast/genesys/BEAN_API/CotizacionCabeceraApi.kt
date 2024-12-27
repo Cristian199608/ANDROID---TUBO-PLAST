@@ -55,6 +55,12 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
                 1.0
             }
         }
+    var codigo_saemovil:String?=null
+
+    fun getCodigoSaemovilTxt(): String {
+        return if(codigo_saemovil.isNullOrEmpty()) "" else "\n📱${codigo_saemovil}"
+    }
+
 
     override fun setViewByHolder(
         activity: Activity?,
@@ -77,7 +83,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
         viewHolder!!.nomcliente.setText("" + this.nomcli);
         viewHolder!!.tipopago.setText("" + this.forma_pago);
         viewHolder!!.total.setText(""+this.total!!)
-        viewHolder!!.numoc.setText(""+this.codigo_pedido)
+        viewHolder!!.numoc.setText(""+this.codigo_pedido+""+this.getCodigoSaemovilTxt())
         viewHolder!!.estado.setText("")
 
         viewHolder.tv_tipoRegistro.text = "C"

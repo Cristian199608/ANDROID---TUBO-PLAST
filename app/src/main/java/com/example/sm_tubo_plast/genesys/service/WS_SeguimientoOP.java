@@ -193,9 +193,15 @@ public class WS_SeguimientoOP {
 
         }.execute();
     }
-    public  void  setDataCargada(ViewSeguimientoPedido data){
+    public  void setDataCargada(ViewSeguimientoPedido data){
         this.dataPrecargada.clear();
-        this.dataPrecargada.add(data);
+        if(data!=null)
+            this.dataPrecargada.add(data);
+    }
+    public  void setDataCargadaList(ArrayList<ViewSeguimientoPedido> listData){
+        this.dataPrecargada.clear();
+        if(listData!=null || listData.size()>0)
+            this.dataPrecargada.addAll(listData);
     }
     public interface MyListener{
         void Reult(boolean valor, ArrayList<ViewSeguimientoPedido> data);
