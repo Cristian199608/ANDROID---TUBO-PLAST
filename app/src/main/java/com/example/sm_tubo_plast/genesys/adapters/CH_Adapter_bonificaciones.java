@@ -34,7 +34,7 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		return Integer.parseInt(listaBonificaciones.get(position).getCodigo());
+		return position;
 	}
 
 	@Override

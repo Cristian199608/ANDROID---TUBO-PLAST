@@ -573,7 +573,6 @@ public class GlobalFunctions {
     		View view = inflater.inflate(R.layout.toast_personalizado, (ViewGroup)activity.findViewById(R.id.toast_personalizado));
     		
     		LinearLayout customToast = (LinearLayout) view.findViewById(R.id.toast_personalizado);
-    		ImageView icon = (ImageView) view.findViewById(R.id.toast_icon);
     		TextView text = (TextView) view.findViewById(R.id.toast_text);
     		
     		text.setText(mensaje);
@@ -582,15 +581,12 @@ public class GlobalFunctions {
     		switch (tipo) {
     		case TOAST_DONE:
     			customToast.setBackgroundResource(R.drawable.toast_done_container);
-    			icon.setBackgroundResource(R.drawable.icon_done);
     			break;
     		case TOAST_WARNING:
     			customToast.setBackgroundResource(R.drawable.toast_warning_container);
-    			icon.setBackgroundResource(R.drawable.icon_warning);
     			break;
     		case TOAST_ERROR:
     			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
-    			icon.setBackgroundResource(R.drawable.icon_error);
     			break;
     		default:
     			break;
@@ -623,7 +619,6 @@ public class GlobalFunctions {
   		View view = inflater.inflate(R.layout.toast_personalizado, (ViewGroup)activity.findViewById(R.id.toast_personalizado));
   		
   		LinearLayout customToast = (LinearLayout) view.findViewById(R.id.toast_personalizado);
-  		ImageView icon = (ImageView) view.findViewById(R.id.toast_icon);
   		TextView text = (TextView) view.findViewById(R.id.toast_text);
   		
   		text.setText(mensaje);
@@ -632,15 +627,12 @@ public class GlobalFunctions {
   		switch (tipo) {
   		case TOAST_DONE:
   			customToast.setBackgroundResource(R.drawable.toast_done_container);
-  			icon.setBackgroundResource(R.drawable.icon_done);
   			break;
   		case TOAST_WARNING:
   			customToast.setBackgroundResource(R.drawable.toast_warning_container);
-  			icon.setBackgroundResource(R.drawable.icon_warning);
   			break;
   		case TOAST_ERROR:
   			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
-  			icon.setBackgroundResource(R.drawable.icon_error);
   			break;
   		default:
   			break;
@@ -674,7 +666,6 @@ public class GlobalFunctions {
     		View view = inflater.inflate(R.layout.toast_personalizado, (ViewGroup)activity.findViewById(R.id.toast_personalizado));
     		
     		LinearLayout customToast = (LinearLayout) view.findViewById(R.id.toast_personalizado);
-    		ImageView icon = (ImageView) view.findViewById(R.id.toast_icon);
     		TextView text = (TextView) view.findViewById(R.id.toast_text);
     		
     		text.setText(mensaje);
@@ -683,15 +674,12 @@ public class GlobalFunctions {
     		switch (tipo) {
     		case TOAST_DONE:
     			customToast.setBackgroundResource(R.drawable.toast_done_container);
-    			icon.setBackgroundResource(R.drawable.icon_done);
     			break;
     		case TOAST_WARNING:
     			customToast.setBackgroundResource(R.drawable.toast_warning_container);
-    			icon.setBackgroundResource(R.drawable.icon_warning);
     			break;
     		case TOAST_ERROR:
     			customToast.setBackgroundResource(R.drawable.toast_wrong_container);
-    			icon.setBackgroundResource(R.drawable.icon_error);
     			break;
     		default:
     			break;

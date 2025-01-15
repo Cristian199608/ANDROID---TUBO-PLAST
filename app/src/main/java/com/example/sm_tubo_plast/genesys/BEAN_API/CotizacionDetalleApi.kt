@@ -34,7 +34,7 @@ class CotizacionDetalleApi
     }
 
     fun dataApiToObjetDataDetallePDF(): ReportePedidoDetallePDF {
-        var desproOuput=VARIABLES.getDescripcionAnPreConcatenarBonif(this.codigo_producto!!, this.sub_total!!)+this.descr_producto;
+        var desproOuput=this.descr_producto+""+VARIABLES.getDescripcionAnPreConcatenarBonif(this.codigo_producto!!, this.sub_total!!);
 
         val reporteDetaPDF= ReportePedidoDetallePDF(
             oc_numero = this.codigo_pedido!!,

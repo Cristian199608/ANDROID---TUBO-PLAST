@@ -73,6 +73,7 @@ import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
+import com.example.sm_tubo_plast.genesys.service.WS_SynClientesNuevos;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
@@ -1076,10 +1077,15 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 //                Intent intentr = new Intent(ClientesActivity.this, CH_RegistroClientesNuevos.class);
 //                startActivity(intentr);
 //                return true;
+
+            case R.id.synClientesNuevos:
+                syncronizarNuevosClientesHoy();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     class asyncGuardarMotivo extends AsyncTask<String, String, String> {
 
@@ -1398,6 +1404,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     }
 
+    @Override
+    protected void onRestart() {
+        syncronizarNuevosClientesHoy();
+        Toast.makeText(this, "Buscando clientes nuevos...", Toast.LENGTH_SHORT).show();
+
+        super.onRestart();
+    }
     /* Remove the locationlistener updates when Activity is paused */
 
     protected void onPause() {
@@ -1479,9 +1492,21 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     }
 
 
+    public static boolean validarClienteCarteraSIDIGE(Activity activity, DBclasses _dBclasses, String _codcli){
+        boolean isSI= _dBclasses.isCarteraSidige(_codcli);
+        if(!isSI){
+            GlobalFunctions.showCustomToast(activity, activity.getString(R.string.msg_cliente_no_sidige), GlobalFunctions.TOAST_ERROR);
+            return false;
+        }
+        return true;
+    }
     private void accion_segunId(final int actionId) {
 
         if (actionId == ID_PEDIDO) {
+            if(!validarClienteCarteraSIDIGE(this, obj_dbclasses, codcli)){
+                return;
+            }
+
             finish();
 
             String vistaSeleccionado;
@@ -1664,6 +1689,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             dialogo.show();
 
         }else if (actionId == ID_COTIZACION) {
+            if(!validarClienteCarteraSIDIGE(ClientesActivity.this, obj_dbclasses, codcli)){
+                return;
+            }
             final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
             i.putExtra("origen", "CLIENTES");
             i.putExtra("nombreCliente", nomcli);
@@ -2273,6 +2301,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             }
         });
         locationApiGoogle.ApiLocationGoogleConectar();
+    }
+
+    private void syncronizarNuevosClientesHoy(){
+        new WS_SynClientesNuevos(this, codven)
+                .ejecutar((boolean ok) ->{
+                    StartCargaCliente();//refrescamos listado cliente independiente a al resultado del servidor
+                });
     }
 
     @Override

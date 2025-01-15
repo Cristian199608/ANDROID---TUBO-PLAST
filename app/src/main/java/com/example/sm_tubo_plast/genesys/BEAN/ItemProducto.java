@@ -108,7 +108,7 @@ public class ItemProducto {
 		return Descripcion;
 	}
 	public String getDescripcionAnPreConcatenarBonif() {
-		return VARIABLES.getDescripcionAnPreConcatenarBonif(this.Codprod, this.subtotal)+Descripcion;
+		return Descripcion+""+VARIABLES.getDescripcionAnPreConcatenarBonif(this.Codprod, this.subtotal);
 	}
 	public void setDescripcion(String descripcion) {
 		Descripcion = descripcion;

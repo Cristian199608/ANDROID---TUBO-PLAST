@@ -16,10 +16,5 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textSize="@dimen/text_toast"/>
-    <ImageView
-        android:id="@+id/toast_icon"
 
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginRight="5dp"/>
 </LinearLayout>

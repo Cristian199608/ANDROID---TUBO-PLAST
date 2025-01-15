@@ -78,11 +78,11 @@ public class DBSync_soap_manager {
 	//
 	
 	SharedPreferences prefs;
-	String url;
-	String catalog;
-	String user;
-	String contrasena;
-	String servicio;
+	public String url;
+	public String catalog;
+	public String user;
+	public String contrasena;
+	public String servicio;
 	
 	String url_local;
 	String catalog_local;
@@ -464,15 +464,17 @@ public class DBSync_soap_manager {
 	    }   		
 	}
  
- public int Sync_tabla_clientexVendedor(String codven, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
+ public int Sync_tabla_clientexVendedor(String codven, String fecha, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
 		
 		String SOAP_ACTION= "http://tempuri.org/obtenerClientesxVendedor_json";
 		String METHOD_NAME="obtenerClientesxVendedor_json";
 		long beforecall;
-		
+
+		String w_fecha= fecha!=null?fecha:"TODOS";
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codven", codven);
-		Request.addProperty("url", url); 
+	 	Request.addProperty("codven", _concatenarCodvenConFecha(codven, w_fecha));
+		Request.addProperty("url", url);
 		Request.addProperty("catalog", catalog); 
 		Request.addProperty("user", user); 
 		Request.addProperty("password", contrasena); 
@@ -498,7 +500,7 @@ public class DBSync_soap_manager {
 	    	  Log.d("CLIENTES", "**************************************************************");
 	    	  Log.d("DBSync_soap_manager ::Sync_tabla_clientexVendedor::",jsonstring.toString());
 	    	  
-	    	  int tamanio_lista=dbclass.syncClientexVendedor(jsonstring,  start);
+	    	  int tamanio_lista=dbclass.syncClientexVendedor(jsonstring, w_fecha, start);
 	    	  
 	    	 Log.i("CLIENTES", "SINCRONIZADA");
 	    	return tamanio_lista;
@@ -513,14 +515,16 @@ public class DBSync_soap_manager {
 
 
 
-	public int Sync_tabla_cliente_contacto_vendedor(String codven, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
+	public int Sync_tabla_cliente_contacto_vendedor(String codven, String fecha, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
 
 		String SOAP_ACTION= "http://tempuri.org/obtenerCLienteContacto_json";
 		String METHOD_NAME="obtenerCLienteContacto_json";
 		long beforecall;
 
+		String w_fecha= fecha!=null?fecha:"TODOS";
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codven", codven);
+		Request.addProperty("codven", _concatenarCodvenConFecha(codven, w_fecha));
 		Request.addProperty("url", url);
 		Request.addProperty("catalog", catalog);
 		Request.addProperty("user", user);
@@ -547,7 +551,7 @@ public class DBSync_soap_manager {
 			Log.d("CLIENTES", "**************************************************************");
 			Log.d("DBSync_soap_manager ::Sync_tabla_clientecontactoxVendedor::",jsonstring.toString());
 
-			int tamanio_lista=dbclass.syncClienteContactoxVendedor(jsonstring,  start);
+			int tamanio_lista=dbclass.syncClienteContactoxVendedor(jsonstring, w_fecha,  start);
 
 			Log.i("CLIENTES", "SINCRONIZADA");
 			return tamanio_lista;
@@ -707,15 +711,17 @@ public class DBSync_soap_manager {
 	}
  
  
- public int  Sync_tabla_direccion_cliente(String codven, String url, String catalog, String user, String contrasena, int start, int paginacion ) throws Exception{
+ public int  Sync_tabla_direccion_cliente(String codven, String fecha, String url, String catalog, String user, String contrasena, int start, int paginacion ) throws Exception{
 	 	ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<HeaderProperty>();
 	    headerPropertyArrayList.add(new HeaderProperty("Connection", "open"));
 		String SOAP_ACTION= "http://tempuri.org/obtenerDireccionCliente_json";
 		String METHOD_NAME="obtenerDireccionCliente_json";
-		
+
+	 	String w_fecha= fecha!=null?fecha:"TODOS";
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codven", codven);
-		Request.addProperty("url", url); 
+	 	Request.addProperty("codven", _concatenarCodvenConFecha(codven, w_fecha));
+		Request.addProperty("url", url);
 		Request.addProperty("catalog", catalog); 
 		Request.addProperty("user", user); 
 		Request.addProperty("password", contrasena); 
@@ -741,7 +747,7 @@ public class DBSync_soap_manager {
 
 	    	JSONArray jsonstring = new JSONArray(result.toString());
 	    	Log.i("DIRECCION CLIENTE","Registros: "+jsonstring.length());
-	    	int tamanio=dbclass.syncDireccionCliente(jsonstring, start);
+	    	int tamanio=dbclass.syncDireccionCliente(jsonstring, w_fecha, start);
 	    	Log.i("DIRECCION CLIENTE", "SINCRONIZADA");
 	    	 return  tamanio;
 	    }catch(Exception e){
@@ -3433,14 +3439,16 @@ public void Sync_tabla_Zona_XY(String codven, String url, String catalog, String
 
 
 
-public int Sync_tabla_ZnfProgramacionClientes(String codven, String url, String catalog, String user, String contrasena, int start, int paginacion) throws Exception {
+public int Sync_tabla_ZnfProgramacionClientes(String codven, String fecha, String url, String catalog, String user, String contrasena, int start, int paginacion) throws Exception {
 	// TODO Auto-generated method stub
 	String SOAP_ACTION= "http://tempuri.org/obtenerZonaPrograClientes_json";
 	String METHOD_NAME="obtenerZonaPrograClientes_json";
-	
+
+	String w_fecha= fecha!=null?fecha:"TODOS";
+
 	SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-	Request.addProperty("codven", codven); 
-	Request.addProperty("url", url); 
+	Request.addProperty("codven", _concatenarCodvenConFecha(codven, w_fecha));
+	Request.addProperty("url", url);
 	Request.addProperty("catalog", catalog); 
 	Request.addProperty("user", user); 
 	Request.addProperty("password", contrasena); 
@@ -3462,7 +3470,7 @@ public int Sync_tabla_ZnfProgramacionClientes(String codven, String url, String 
 
     	 JSONArray jsonstring = new JSONArray(result.toString());
     	 Log.i("ZNF PROGRAMACION CLIENTES","Registros: "+jsonstring.length());
-    	 int tamanio=dbclass.syncZnfProgramacionClientes(jsonstring, start);
+    	 int tamanio=dbclass.syncZnfProgramacionClientes(jsonstring, w_fecha, start);
     	 
     	 Log.i("ZNF PROGRAMACION CLIENTES", "SINCRONIZADA");
     	 return  tamanio;
@@ -5917,14 +5925,18 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	e.printStackTrace();
 	    }
 	}
-	
-	public int Sync_tabla_lugarEntrega(String codigoVendedor, String url, String catalog, String user, String contrasena, int start, int paginacion ) throws Exception{
+	private String _concatenarCodvenConFecha(String codven, String fecha){
+		return codven+"#"+fecha;
+	}
+	public int Sync_tabla_lugarEntrega(String codigoVendedor, String fecha, String url, String catalog, String user, String contrasena, int start, int paginacion ) throws Exception{
 		String SOAP_ACTION= "http://tempuri.org/obtenerLugarEntrega_json";
 		String METHOD_NAME="obtenerLugarEntrega_json";
-		
+
+		String w_fecha= fecha!=null?fecha:"TODOS";
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codven", codigoVendedor);
-		Request.addProperty("url", url); 
+		Request.addProperty("codven", _concatenarCodvenConFecha(codigoVendedor, w_fecha));
+		Request.addProperty("url", url);
 		Request.addProperty("catalog", catalog);
 		Request.addProperty("user", user);
 		Request.addProperty("password", contrasena); 
@@ -5940,7 +5952,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	transporte.call(SOAP_ACTION, Soapenvelope);
 	    	SoapPrimitive result =(SoapPrimitive)Soapenvelope.getResponse();
 	    	JSONArray jsonstring = new JSONArray(result.toString());
-	    	int tamanio=dbclass.sincronizar_lugarEntrega(jsonstring, start);
+	    	int tamanio=dbclass.sincronizar_lugarEntrega(jsonstring, w_fecha, start);
 	    	Log.i(TAG, "Sync_tabla_lugarEntrega done");
 	    	return  tamanio;
 	    }catch(Exception e){
@@ -5977,13 +5989,15 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    }
 	}
 	
-	public int Sync_tabla_transporte(String codigoVendedor, String url, String catalog, String user, String contrasena,  int start, int paginacion ) throws Exception{
+	public int Sync_tabla_transporte(String codigoVendedor, String fecha, String url, String catalog, String user, String contrasena,  int start, int paginacion ) throws Exception{
 		String SOAP_ACTION= "http://tempuri.org/obtenerTransporte_json";
 		String METHOD_NAME="obtenerTransporte_json";
-		
+
+		String w_fecha= fecha!=null?fecha:"TODOS";
+
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
-		Request.addProperty("codven", codigoVendedor);
-		Request.addProperty("url", url); 
+		Request.addProperty("codven", _concatenarCodvenConFecha(codigoVendedor, w_fecha));
+		Request.addProperty("url", url);
 		Request.addProperty("catalog", catalog); 
 		Request.addProperty("user", user); 
 		Request.addProperty("password", contrasena); 
@@ -5998,7 +6012,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	transporte.call(SOAP_ACTION, Soapenvelope);
 	    	SoapPrimitive result =(SoapPrimitive)Soapenvelope.getResponse();
 	    	JSONArray jsonstring = new JSONArray(result.toString());
-	    	int tamanio=dbclass.sincronizar_transporte(jsonstring, start);
+	    	int tamanio=dbclass.sincronizar_transporte(jsonstring,w_fecha, start);
 	    	Log.i(TAG, "Sync_tabla_transporte done");
 	    	return  tamanio;
 	    }catch(Exception e){

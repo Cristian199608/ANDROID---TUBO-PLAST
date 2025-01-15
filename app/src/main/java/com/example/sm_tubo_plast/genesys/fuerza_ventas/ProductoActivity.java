@@ -1098,7 +1098,8 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         if(!isRequestModifyProducto()){
             //verficamos si el producto ya esta registrado
-            if (obj_dbclasses.isRegistradoProducto(oc_numero,codprod)) {
+            if (obj_dbclasses.isRegistradoProducto(oc_numero,codprod)
+                    || obj_dbclasses.isRegistradoProducto(oc_numero,DBPedido_Detalle.PREFIX_PRODUCTO_BONIFICACION_MANUAL+codprod)) {
                 swAgregarComoNuevoProducto.setVisibility(View.VISIBLE);
             }else {
                 swAgregarComoNuevoProducto.setChecked(false);

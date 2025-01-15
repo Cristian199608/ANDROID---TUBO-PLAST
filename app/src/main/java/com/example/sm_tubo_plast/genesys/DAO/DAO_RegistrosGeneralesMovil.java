@@ -11,6 +11,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
 import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
+import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -180,8 +181,9 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
     
     public ArrayList<FormaPago> getCondicionVenta(String codigoCliente){
 		String rawQuery;		
-		//rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta
-		rawQuery = "SELECT * from forma_pago where flagTipo = '"+FORMA_PAGO+"' and codigoCliente = ''";// CV -> CondicionVenta
+		//rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta, // CV -> CondicionVenta
+		rawQuery = "SELECT * from "+ DBtables.FormaPago.TAG+" where flagTipo = '"+FORMA_PAGO+"' and codigoCliente = '' " +
+                "order by desforpag";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
 		

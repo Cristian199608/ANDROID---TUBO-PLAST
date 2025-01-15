@@ -1308,7 +1308,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_clientexVendedor";
-                                        int lista_tamanio=soap_manager.Sync_tabla_clientexVendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_clientexVendedor(codven,null, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
                                         if (!esSuperVendedor){
@@ -1373,7 +1373,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_cliente_contacto_vendedor";
-                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, null, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
                                         if (!esSuperVendedor){
@@ -1405,7 +1405,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_ZnfProgramacionClientes";
-                                        int lista_tamanio=soap_manager.Sync_tabla_ZnfProgramacionClientes(codven, servidorBD, nombreBD,usuarioBD, contrasenaBD, start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_ZnfProgramacionClientes(codven, null,servidorBD, nombreBD,usuarioBD, contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1437,7 +1437,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_cliente_contacto_vendedor";
-                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_cliente_contacto_vendedor(codven,null, servidorBD, nombreBD,	usuarioBD, contrasenaBD,  start, paginacion);
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
                                         if (!esSuperVendedor){
@@ -1473,7 +1473,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_transporte";
-                                        int lista_tamanio=soap_manager.Sync_tabla_transporte(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_transporte(codven,null,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1506,7 +1506,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });
                                         NombreMetodo=valor+") Sync_tabla_lugarEntrega";
-                                        int lista_tamanio=soap_manager.Sync_tabla_lugarEntrega(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD,  start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_lugarEntrega(codven, null,servidorBD, nombreBD, usuarioBD,contrasenaBD,  start, paginacion);
 
                                         start+=paginacion;
                                         existeDatos=lista_tamanio>0;
@@ -1538,7 +1538,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });//15151
                                         NombreMetodo=valor+") Sync_tabla_direccion_cliente";
-                                        int lista_tamanio=soap_manager.Sync_tabla_direccion_cliente(codven, servidorBD, nombreBD,	usuarioBD, contrasenaBD,   start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_direccion_cliente(codven, null, servidorBD, nombreBD,	usuarioBD, contrasenaBD,   start, paginacion);
 
 
                                         start+=paginacion;
@@ -1802,8 +1802,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
 
                     try {
-                        soap_manager.actualizarLogSincro(codven, datetime,
-                                fecha, descp);
+                        soap_manager.actualizarLogSincro(codven, datetime, fecha, descp);
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {

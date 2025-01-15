@@ -3,8 +3,8 @@
     <!--version actual-->
     <!--    <string name="APP_VERSION_CODE">v7.5.0 2023-11-22</string>-->
     <!--    version en fase prueba-->
-    <string name="APP_VERSION">v7.5.7 2024-08-28</string>
-    <string name="APP_NRPO_VERSION">v7.5.7 2024-08-28</string>
+    <string name="APP_VERSION">v7.5.8 2025-01-14</string>
+    <string name="APP_NRPO_VERSION">v7.5.8 2025-01-14</string>
 
 
     <string name="arrow_lefy">&lt;</string>
@@ -462,6 +462,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps_clientes">Map</string>
     <string name="title_activity_maps">Map</string>
+    <string name="msg_cliente_no_sidige"><![CDATA[ESTE CIENTE NO ESTA EN TU CARTERA DE CLIENTES EN SIDIGE]]></string>
     <string-array name="sync_intervals">
         <item>1 hour</item>
         <item>3 hours</item>

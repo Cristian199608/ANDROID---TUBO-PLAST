@@ -1169,6 +1169,7 @@ public class DBtables {
 		public static final String ORDEN_R = "orden_r";
 		public static final String ORDEN_Z = "orden_z";
 		public static final String ORDEN_C = "orden_c";
+		public static final String cartera_sidige = "cartera_sidige";
 
 	}
 

@@ -2511,48 +2511,68 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	public ItemProducto[] obtenerListadoProductos_pedido(String oc_numero) {
 
-		String rawQuery;
-
-		rawQuery = 
-				"select " 
-				+ "pedido_detalle.item,"
-				+ "producto.despro,"
-				+ "producto.factor_conversion,"
-				+ "pedido_detalle.cip,"
-				+ "pedido_detalle.precio_neto," 
-				+ "pedido_detalle.cantidad,"
-				+ "pedido_detalle.tipo_producto,"
-				+ "pedido_detalle.peso_bruto," 
-				+ "pedido_detalle.percepcion,"
-				+ "unidad_medida.desunimed," 
-				+ "producto.cod_rapido,"
-				+ "ifNULL(producto.percepcion,'0'), "
-				+ "pedido_detalle.unidad_medida, "
-				+ "pedido_detalle.precio_bruto, "
-				+ "pedido_detalle.precioLista, "
-				+ "pedido_detalle.descuento, "
-				+ "tp.color, "
-				+ "producto.grupo, "
-				+ "producto.familia, "
-				+ "producto.sub_familia, "
-				+ "producto.afecto, "
-				+ "pedido_detalle.porcentaje_desc, "
-				+ "pedido_detalle.porcentaje_desc_extra, "
-				+ "producto._precio_base "
-				+ "from "+ Pedido_detalle.TAG+" "
-				+ "inner join "+ Producto.TAG+" "
-				+ "on ((producto.codpro = pedido_detalle.cip) OR ((substr(pedido_detalle.cip,2,length(pedido_detalle.cip))) =  producto.codpro)) "
-				+ "inner join unidad_medida "
-				+ "on pedido_detalle.unidad_medida=unidad_medida.codunimed "
-				+ "left join tipoProducto tp on producto.tipoProducto = tp.codigoTipo "
-				+ "where oc_numero='" + oc_numero + "' "
-				+ "and cod_politica <> 'ELIM' " + "order by item asc";
-		
-		Log.d("Dbclasses :obtenerListadProductos_pedido:","___________________________________");
-		Log.d("Dbclasses :obtenerListadProductos_pedido:",rawQuery);
+		String whereAdd;
+		whereAdd =  "and pedido_detalle.oc_numero='" + oc_numero + "' " +
+				"and pedido_detalle.cod_politica <> 'ELIM'  ";
 		Log.d("Dbclasses :obtenerListadProductos_pedido:","Obteniendo listado de pedidos del oc_numero-> "+oc_numero);
+		ItemProducto[] productos= obtenerListadoProductos_pedidoMAIN(whereAdd);
+		return productos;
+	}
+
+	public ItemProducto obtenerListadoProductos_pedidoBY(String oc_numero, String codpro, int item) {
+
+		String whereAdd;
+		whereAdd =  "and pedido_detalle.oc_numero='" + oc_numero + "' " +
+				"and pedido_detalle.cod_politica <> 'ELIM' " +
+				"and pedido_detalle.cip='"+codpro+"' " +
+				"and pedido_detalle.item = "+item+" ";
+		Log.d("Dbclasses :obtenerListadoProductos_pedidoBY:","Obteniendo listado de pedidos del oc_numero-> "+oc_numero);
+		ItemProducto[] productos= obtenerListadoProductos_pedidoMAIN(whereAdd);
+		return productos[0];
+	}
+
+	public ItemProducto[] obtenerListadoProductos_pedidoMAIN(String whereAdd) {
+
+		String sqlRAW =
+				"select "
+						+ "pedido_detalle.item,"
+						+ "producto.despro,"
+						+ "producto.factor_conversion,"
+						+ "pedido_detalle.cip,"
+						+ "pedido_detalle.precio_neto,"
+						+ "pedido_detalle.cantidad,"
+						+ "pedido_detalle.tipo_producto,"
+						+ "pedido_detalle.peso_bruto,"
+						+ "pedido_detalle.percepcion,"
+						+ "unidad_medida.desunimed,"
+						+ "producto.cod_rapido,"
+						+ "ifNULL(producto.percepcion,'0'), "
+						+ "pedido_detalle.unidad_medida, "
+						+ "pedido_detalle.precio_bruto, "
+						+ "pedido_detalle.precioLista, "
+						+ "pedido_detalle.descuento, "
+						+ "tp.color, "
+						+ "producto.grupo, "
+						+ "producto.familia, "
+						+ "producto.sub_familia, "
+						+ "producto.afecto, "
+						+ "pedido_detalle.porcentaje_desc, "
+						+ "pedido_detalle.porcentaje_desc_extra, "
+						+ "producto._precio_base "
+						+ "from "+ Pedido_detalle.TAG+" "
+						+ "inner join "+ Producto.TAG+" "
+						+ "on ((producto.codpro = pedido_detalle.cip) OR ((substr(pedido_detalle.cip,2,length(pedido_detalle.cip))) =  producto.codpro)) "
+						+ "inner join unidad_medida "
+						+ "on pedido_detalle.unidad_medida=unidad_medida.codunimed "
+						+ "left join tipoProducto tp on producto.tipoProducto = tp.codigoTipo "
+						+ "where 5 = 5 "+whereAdd+" "
+						+ " order by item asc";
+
+
+		Log.d(TAG, "::obtenerListadoProductos_pedidoMAIN:___________________________________");
+		Log.d(TAG, "::obtenerListadoProductos_pedidoMAIN: "+sqlRAW);
 		SQLiteDatabase db = getReadableDatabase();
-		Cursor cursor = db.rawQuery(rawQuery, null);
+		Cursor cursor = db.rawQuery(sqlRAW, null);
 
 		ItemProducto[] productos = new ItemProducto[cursor.getCount()];
 
@@ -2588,7 +2608,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Item "+i+"  "+productos[i].getItem());
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Codprod "+productos[i].getCodprod());
 				Log.w("DBclasses ::obtenerListadoProductos_pedido::","Tipo "+productos[i].getTipo());
-				
+
 				//Log.d("DBclasses ::obtenerListadoProductos_pedido::","getPercepcion "+productos[i].getPercepcionPedido());
 				i++;
 
@@ -3934,12 +3954,12 @@ public class DBclasses extends SQLiteAssetHelper {
 	// ///////////////////////////////METODOS DE SINCRONIZACION
 	// (JSON)//////////////////////////////
 
-	public int syncClientexVendedor(JSONArray jArray, int start) throws JSONException {
+	public int syncClientexVendedor(JSONArray jArray,  String fecha,int start) throws JSONException {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		if (start==0){
+		if (start==0 && fecha.equals("TODOS")){
 			getReadableDatabase().delete(DBtables.Cliente.TAG, null, null);
 		}
 		SQLiteDatabase db = getWritableDatabase();
@@ -4034,14 +4054,14 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 
-	public int syncClienteContactoxVendedor(JSONArray jArray, int start) throws JSONException {
+	public int syncClienteContactoxVendedor(JSONArray jArray, String fecha, int start) throws JSONException {
 
 		JSONObject jsonData = null;
 		SQLiteDatabase db = getWritableDatabase();
 		db.beginTransaction();
 
 
-		if (start==0){
+		if (start==0 && fecha.equals("TODOS")){
 			String where = "flag <> ?";
 			String[] args = { "P"};
 			db.delete(DBtables.CLiente_Contacto.TAG, where, args);
@@ -4085,12 +4105,12 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public int syncDireccionCliente(JSONArray jArray, int start) {
+	public int syncDireccionCliente(JSONArray jArray, String fecha, int start) {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		if(start==0){
+		if(start==0 && fecha.equals("TODOS")){
 			getReadableDatabase().delete(DBtables.Direccion_cliente.TAG, null, null);
 		}
 		SQLiteDatabase db = getWritableDatabase();
@@ -4267,12 +4287,12 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public int syncZnfProgramacionClientes(JSONArray jArray, int start) {
+	public int syncZnfProgramacionClientes(JSONArray jArray, String fecha, int start) {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		if (start==0){
+		if (start==0 && fecha.equals("TODOS")){
 			getReadableDatabase().delete(DBtables.ZnfProgramacionClientes.TAG,null, null);
 		}
 
@@ -4308,8 +4328,8 @@ public class DBclasses extends SQLiteAssetHelper {
 						.getString("orden_r").trim());
 				cv.put(DBtables.ZnfProgramacionClientes.ORDEN_Z, jsonData
 						.getString("orden_z").trim());
-				cv.put(DBtables.ZnfProgramacionClientes.ORDEN_C, jsonData
-						.getString("orden_c").trim());
+				cv.put(DBtables.ZnfProgramacionClientes.ORDEN_C, jsonData.getString("orden_c").trim());
+				cv.put(DBtables.ZnfProgramacionClientes.cartera_sidige, jsonData.getString("cartera_sidige").trim());
 
 				db.insert(DBtables.ZnfProgramacionClientes.TAG, null, cv);
 				Log.i("ZNF PROGRAMACION CLIENTES", "i= " + i + " secuencia: "
@@ -6133,7 +6153,39 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		String rawQuery;
 
-		rawQuery = "select * from pedido_detalle where oc_numero='"+oc_numero+"'";
+		rawQuery = "select " +
+				"pd.oc_numero\n" +
+				",pd.ean_item\n" +
+				",pd.cip\n" +
+				",pd.precio_bruto\n" +
+				",sum(pd.precio_neto) as precio_neto\n" +
+				",pd.percepcion\n" +
+				",sum(pd.cantidad) as cantidad\n" +
+				",pd.tipo_producto\n" +
+				",pd.unidad_medida\n" +
+				",pd.peso_bruto\n" +
+				",pd.flag\n" +
+				",pd.cod_politica\n" +
+				",pd.sec_promo\n" +
+				",pd.item_promo\n" +
+				",pd.agrup_promo\n" +/*
+				",pd.item\n" +
+				",pd.precioLista\n" +
+				",pd.porcentaje_desc\n" +
+				",pd.descuento\n" +
+				",pd.lote\n" +
+				",pd.motivoDevolucion\n" +
+				",pd.Expectativa\n" +
+				",pd.Envase\n" +
+				",pd.Contenido\n" +
+				",pd.Proceso\n" +
+				",pd.observacionDevolucion\n" +
+				",pd.tipoDocumento\n" +
+				",pd.serieDevolucion\n" +
+				",pd.numeroDevolucion\n" +
+				",pd.porcentaje_desc_extra" +*/
+				" from pedido_detalle pd where pd.oc_numero='"+oc_numero+"' " +
+				"group by pd.oc_numero, pd.cip ";
 
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -6161,10 +6213,8 @@ public class DBclasses extends SQLiteAssetHelper {
 			if(cur.getString(12).equals("")){
 				dbdetalle.setItem_promo(0);
 			}else{
-				dbdetalle.setItem_promo(Integer.parseInt(cur.getString(12)));
+				dbdetalle.setItem_promo(cur.getInt(13));
 			}
-			
-			dbdetalle.setItem_promo(cur.getInt(13));
 			dbdetalle.setAgrup_promo(Integer.parseInt(cur.getString(14)));
 			
 			lista_pedidos_detalles.add(dbdetalle);
@@ -10389,7 +10439,29 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	
 	public ArrayList<DB_PromocionDetalle> obtenerListaAcumulados(int item,int secuencia){
 		String rawQuery =
-				"select * from promocion_detalle where item like "+item+" and secuencia like '"+secuencia+"' and acumulado like '1' ";
+				"select " +
+				 "prd.secuencia\n" +
+						",prd.general\n" +
+						",prd.promocion\n" +
+						",prd.codalm\n" +
+						",prd.tipo\n" +
+						",prd.item\n" +
+						",prd.agrupado\n" +
+						",prd.entrada\n" +
+						",prd.tipo_unimed_entrada\n" +
+						",prd.monto_minimo\n" +
+						",prd.monto_maximo\n" +
+						",prd.monto\n" +
+						",prd.condicion\n" +
+						",prd.cant_condicion\n" +
+						",prd.salida\n" +
+						",prd.tipo_unimed_salida\n" +
+						",prd.cant_promocion\n" +
+						",prd.max_pedido\n" +
+						",prd.total_agrupado\n" +
+						",prd.tipo_promocion\n" +
+						",prd.acumulado\n" +
+						"from promocion_detalle prd where prd.item like "+item+" and prd.secuencia like '"+secuencia+"' and prd.acumulado like '1' ";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
 		cur.moveToFirst();
@@ -10423,7 +10495,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			itemPromocion.setTipo_promocion(cur.getString(19));
 			/**/
 			/**/			
-			itemPromocion.setAcumulado(cur.getInt(22));
+			itemPromocion.setAcumulado(cur.getInt(20));
 			Log.d("BDclasses ::obtenerListaAgrupados::secuencia: "+secuencia, "Entrada(codigoProducto)-> "+itemPromocion.getEntrada());
 			lista_agrupados.add(itemPromocion);
 			cur.moveToNext();			
@@ -11953,12 +12025,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 	
-	public int sincronizar_lugarEntrega(JSONArray jArray, int start) throws JSONException {
+	public int sincronizar_lugarEntrega(JSONArray jArray, String fecha, int start) throws JSONException {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		if (start==0){
+		if (start==0 && fecha.equals("TODOS")){
 			getReadableDatabase().delete(DBtables.LugarEntrega.TAG, null, null);
 		}
     	SQLiteDatabase db = getWritableDatabase();
@@ -12032,12 +12104,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 	
-	public int sincronizar_transporte(JSONArray jArray, int start) throws JSONException {
+	public int sincronizar_transporte(JSONArray jArray,String fecha, int start) throws JSONException {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		if (start==0){
+		if (start==0 && fecha.equals("TODOS")){
 			getReadableDatabase().delete(DBtables.Transporte.TAG, null, null);
 		}
     	SQLiteDatabase db = getWritableDatabase();
@@ -13666,6 +13738,20 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 		cur.close();
 		db.close();
+	}
+
+	public boolean isCarteraSidige(String codcli){
+		String sql="select * from znf_programacion_clientes znf " +
+				"where znf.cartera_sidige= 'SI' " +
+				"and znf.codcli= '"+codcli+"' " ;
+		SQLiteDatabase db=getReadableDatabase();
+		Cursor cur=db.rawQuery(sql, null, null);
+
+		boolean isSI= cur.getCount()>0;
+		cur.close();
+		db.close();
+		return isSI;
+
 	}
 }
 

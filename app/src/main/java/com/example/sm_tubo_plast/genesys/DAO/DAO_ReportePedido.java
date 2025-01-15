@@ -71,7 +71,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
                         double montoDesct = objCursor.getDouble(objCursor.getColumnIndex("descuento"));
 
-                        String desproOut = VARIABLES.getDescripcionAnPreConcatenarBonif(codpro,Double.parseDouble(precio_neto))+_despro;
+                        String desproOut = _despro+""+VARIABLES.getDescripcionAnPreConcatenarBonif(codpro,Double.parseDouble(precio_neto));
 
                         objDbPedidoCabeceraDetalleArrayList.add(new ReportePedidoDetallePDF(
                                         oc_numero,

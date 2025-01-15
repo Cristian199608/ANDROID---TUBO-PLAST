@@ -4170,7 +4170,6 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
                 (ViewGroup) findViewById(R.id.toast_personalizado));
 
         LinearLayout customToast = (LinearLayout) view.findViewById(R.id.toast_personalizado);
-        ImageView icon = (ImageView) view.findViewById(R.id.toast_icon);
         TextView text = (TextView) view.findViewById(R.id.toast_text);
 
         text.setText(mensaje);
@@ -4178,17 +4177,14 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
         switch (tipo) {
             case "done":
                 customToast.setBackgroundResource(R.drawable.toast_done_container);
-                icon.setBackgroundResource(R.drawable.icon_done);
 
                 break;
             case "warning":
                 customToast
                         .setBackgroundResource(R.drawable.toast_warning_container);
-                icon.setBackgroundResource(R.drawable.icon_warning);
                 break;
             case "wrong":
                 customToast.setBackgroundResource(R.drawable.toast_wrong_container);
-                icon.setBackgroundResource(R.drawable.icon_error);
                 break;
             default:
                 break;

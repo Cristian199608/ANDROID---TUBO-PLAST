@@ -673,11 +673,19 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     }
 
     private void GenerarPdfDocument(String oc_numero) {
+        DBPedido_Cabecera dbPedido_cabecera= obj_dbclasses.getPedido_cabecera(oc_numero);
+        if (!ClientesActivity.validarClienteCarteraSIDIGE(this, obj_dbclasses, dbPedido_cabecera.getCod_cli())) {
+            return;
+        }
+        //-----------------------------------------------------------------------------------------------
         dao_reportePedido=new DAO_ReportePedido(getApplicationContext());
+
         ArrayList<DataCabeceraPDF> lista=dao_reportePedido.getCabecera(""+oc_numero);
         if (lista.size()==0){
             return;
         }
+
+
         ArrayList<ReportePedidoDetallePDF> listaDetalle= dao_reportePedido.getAllDataByCodigo( oc_numero);
         GenerarPdf(lista.get(0), listaDetalle);
     }
