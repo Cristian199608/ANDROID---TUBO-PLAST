@@ -52,6 +52,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.constans.PreferenciaCliente;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.Model.OptionPantallaClientes;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
@@ -500,6 +501,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 		*/
 
         txtAsignacionCliente.setOnClickListener(v -> {
+            PreferenciaCliente.VentanaClientes.setSincronizarClientesNuevos(true);
             startActivity(new Intent(ClientesActivity.this, AsignacionClienteXVendedorWebActivity.class));
         });
 
@@ -579,6 +581,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             intReportes.putExtra("ALTITUD",altitud);
             intReportes.putExtra("CODVEN", codven);
             startActivity(intReportes);
+            PreferenciaCliente.VentanaClientes.setSincronizarClientesNuevos(true);
         }else {
             UtilView.MENSAJE_simple(this, "Sin coordenadas",  "No se ha obtenido las coordenadas. \nVerifique que tengas activado el GPS, ó mantén presionado para registrar sin geolocalizar. " +
                     "Vuelva intentar.");
@@ -1079,7 +1082,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 //                return true;
 
             case R.id.synClientesNuevos:
-                syncronizarNuevosClientesHoy();
+                syncronizarNuevosClientesHoy(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1406,9 +1409,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     @Override
     protected void onRestart() {
-        syncronizarNuevosClientesHoy();
-        Toast.makeText(this, "Buscando clientes nuevos...", Toast.LENGTH_SHORT).show();
-
+        syncronizarNuevosClientesHoy(false);
         super.onRestart();
     }
     /* Remove the locationlistener updates when Activity is paused */
@@ -1493,7 +1494,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
     public static boolean validarClienteCarteraSIDIGE(Activity activity, DBclasses _dBclasses, String _codcli){
-        boolean isSI= _dBclasses.isCarteraSidige(_codcli);
+        boolean isSI= _dBclasses.isCarteraSidigeOrIsLibre(_codcli);
         if(!isSI){
             GlobalFunctions.showCustomToast(activity, activity.getString(R.string.msg_cliente_no_sidige), GlobalFunctions.TOAST_ERROR);
             return false;
@@ -2303,11 +2304,15 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         locationApiGoogle.ApiLocationGoogleConectar();
     }
 
-    private void syncronizarNuevosClientesHoy(){
-        new WS_SynClientesNuevos(this, codven)
-                .ejecutar((boolean ok) ->{
-                    StartCargaCliente();//refrescamos listado cliente independiente a al resultado del servidor
-                });
+    private void syncronizarNuevosClientesHoy(boolean forzar){
+        if(forzar || PreferenciaCliente.VentanaClientes.sincronizarClientesNuevos){
+            PreferenciaCliente.VentanaClientes.sincronizarClientesNuevos=false;
+            Toast.makeText(this, "Buscando clientes nuevos...", Toast.LENGTH_SHORT).show();
+            new WS_SynClientesNuevos(this, codven)
+                    .ejecutar((boolean ok) ->{
+                        StartCargaCliente();//refrescamos listado cliente independiente a al resultado del servidor
+                    });
+        }
     }
 
     @Override

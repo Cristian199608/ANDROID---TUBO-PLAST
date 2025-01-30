@@ -54,7 +54,7 @@
         android:icon="@drawable/ic_account_grey_24"/>
 
     <item android:id="@+id/synClientesNuevos"
-        android:title="Ver Clientes Inactivos"
+        android:title="Sync Clientes nuevos"
         android:icon="@drawable/ic_account_grey_24"/>
 
 <!--<item android:id="@+id/clientes_menu_registrados" android:title="Registro Clientes"-->

@@ -2782,13 +2782,20 @@ public class DBclasses extends SQLiteAssetHelper {
 			String codproReal=codprod;
 			if(codproReal.charAt(0)=='B')codproReal=codproReal.substring(1);
 			double peso=getPesoProducto(codproReal);
-			double precioUnitario=getPrecioParcialPedidoDetalle(nroItem, codprod, oc_numero);
+			DBPedido_Detalle dnPedidoItem = getPedidosDetalleEntity(oc_numero, codproReal, nroItem);
 			SQLiteDatabase db = getWritableDatabase();
+			if(dnPedidoItem==null) return false;
+			//---------------------//recalcular peso, monto subtotal, y monto de dscto--------------------------------------------------------------------------
+			double precioLista = Double.parseDouble(dnPedidoItem.getPrecioLista());
+			double precioUnit = Double.parseDouble(dnPedidoItem.getPrecio_bruto());
+
+			double montoDscUnit  = VARIABLES.getDoubleFormaterThreeDecimal(precioLista-precioUnit);
 
 			ContentValues reg = new ContentValues();
 			reg.put("cantidad", nCantidad);
-			reg.put("precio_neto", VARIABLES.getDoubleFormaterFourDecimal(precioUnitario*nCantidad));
+			reg.put("precio_neto", VARIABLES.getDoubleFormaterFourDecimal(precioUnit*nCantidad));
 			reg.put("peso_bruto", VARIABLES.getDoubleFormaterFourDecimal(peso*nCantidad));
+			reg.put("descuento", VARIABLES.getDoubleFormaterThreeDecimal(montoDscUnit*nCantidad));
 			db.update("pedido_detalle", reg, where, args);
 
 			db.close();
@@ -3971,6 +3978,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			for (int i = 0; i < jArray.length(); i++) {
 
 				jsonData = jArray.getJSONObject(i);
+				cv.put(DBtables.Cliente._ID, -1);
 				cv.put(DBtables.Cliente.PK_CODCLI, jsonData.getString("codcli").trim());
 				cv.put(DBtables.Cliente.NOMCLI, jsonData.getString("nomcli").trim());
 				cv.put(DBtables.Cliente.RUCCLI, jsonData.getString("ruccli").trim());
@@ -4033,10 +4041,10 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Cliente.sistema,	jsonData.getString(DBtables.Cliente.sistema).trim());
 				cv.put(DBtables.Cliente.moneda_ultima_compra,	jsonData.getString(DBtables.Cliente.moneda_ultima_compra).trim());
 
-				db.insert(DBtables.Cliente.TAG, null, cv);
+				long ix= db.insertWithOnConflict(DBtables.Cliente.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
 				Log.i("CLIENTE",
-						"i= " + i + " CODCLI: "
-								+ jsonData.getString("codcli").trim());
+						"syncClientexVendedor:: i= " + i + " CODCLI: "
+								+ jsonData.getString("codcli").trim()+" is Insert "+(ix>0));
 			}
 
 			db.setTransactionSuccessful();
@@ -4044,7 +4052,11 @@ public class DBclasses extends SQLiteAssetHelper {
 		} catch (JSONException e) {
 			Log.e(DBclasses.TAG, "JSON Exception CLIENTE:" + e.getMessage());
 			throw new JSONException(e.getMessage());
-		} finally {
+		}
+		catch (Exception e) {
+			Log.e(DBclasses.TAG, "JSON Exception CLIENTE:" + e.getMessage());
+			throw new JSONException(e.getMessage());
+		}finally {
 			db.endTransaction();
 			db.close();
 		}
@@ -4087,7 +4099,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.CLiente_Contacto.flag, jsonData.getString("flag").trim());
 
 
-				db.insert(DBtables.CLiente_Contacto.TAG, null, cv);
+				//db.insert(DBtables.CLiente_Contacto.TAG, null, cv);
+				db.insertWithOnConflict(DBtables.CLiente_Contacto.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
 				Log.i("CLIENTE","i= " + i + " CODCLI: "+ jsonData.getString("codcli").trim());
 			}
 
@@ -4136,7 +4149,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Direccion_cliente.ESTADO,jsonData.getString("estado").trim());
 				cv.put(Direccion_cliente.altitud,jsonData.getString("altitud").trim());
 
-				db.insert(DBtables.Direccion_cliente.TAG, null, cv);
+//				db.insert(DBtables.Direccion_cliente.TAG, null, cv);
+				db.insertWithOnConflict(DBtables.Direccion_cliente.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
 				Log.i("DIRECCION CLIENTE", "i= " + i + " CODCLI: "+ jsonData.getString("codcli").trim() + " ITEM: "+ jsonData.getString("item").trim()+" DOC:"+jsonData.getString("docAdicional").trim());
 			}
 
@@ -4331,7 +4345,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.ZnfProgramacionClientes.ORDEN_C, jsonData.getString("orden_c").trim());
 				cv.put(DBtables.ZnfProgramacionClientes.cartera_sidige, jsonData.getString("cartera_sidige").trim());
 
-				db.insert(DBtables.ZnfProgramacionClientes.TAG, null, cv);
+				//db.insert(DBtables.ZnfProgramacionClientes.TAG, null, cv);
+				db.insertWithOnConflict(DBtables.ZnfProgramacionClientes.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
 				Log.i("ZNF PROGRAMACION CLIENTES", "i= " + i + " secuencia: "
 						+ jsonData.getString("secuencia").trim() + " CODCLI: "
 						+ jsonData.getString("codcli").trim());
@@ -6266,11 +6281,22 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public DBPedido_Detalle getPedidosDetalleEntity(String oc, String codpro) {
+		String rawQuery;
+		rawQuery = " oc_numero='" + oc+ "' and cip='" + codpro + "'";
+		return getPedidosDetalleEntityMain(rawQuery);
+	}
+
+	public DBPedido_Detalle getPedidosDetalleEntity(String oc, String codpro, int item) {
+		String rawQuery;
+		rawQuery = " oc_numero='" + oc+ "' and cip='" + codpro + "' and item ="+item;
+		return getPedidosDetalleEntityMain(rawQuery);
+	}
+	private DBPedido_Detalle getPedidosDetalleEntityMain(String addWhere) {
 
 		String rawQuery;
 
-		rawQuery = "select * from pedido_detalle where oc_numero='" + oc
-				+ "' and cip='" + codpro + "'";
+		rawQuery = "select * from "+ Pedido_detalle.TAG+" " +
+				"where 5=5 and "+addWhere;
 		Log.d("getPedidosDetalleEntity",rawQuery);
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -6293,6 +6319,9 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbdetalle.setFlag(cur.getString(10));
 			dbdetalle.setCod_politica(cur.getString(11));
 			dbdetalle.setItem(cur.getInt(15));
+			dbdetalle.setPrecioLista(cur.getString(cur.getColumnIndex("precioLista")));
+			dbdetalle.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
+			dbdetalle.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
 Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		Log.e("getPedidosDetalleEntity","Ean_item: "+cur.getString(1));
 		Log.e("getPedidosDetalleEntity","Cip: "+cur.getString(2));
@@ -12052,8 +12081,9 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		        cv.put(DBtables.LugarEntrega.CODIGO_UBIGEO, 	jsonData.getString(DBtables.LugarEntrega.CODIGO_UBIGEO).trim());
 		        cv.put(DBtables.LugarEntrega.CODIGO_DISTRITO, 	jsonData.getString(DBtables.LugarEntrega.CODIGO_DISTRITO).trim());
 		       
-		        db.insert(DBtables.LugarEntrega.TAG, null, cv);
-		        
+		        //db.insert(DBtables.LugarEntrega.TAG, null, cv);
+				db.insertWithOnConflict(DBtables.LugarEntrega.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
+
 		        Log.i(TAG+":sincronizar_lugarEntrega:", i+" "+jsonData.getString(DBtables.LugarEntrega.CODIGO_LUGAR).trim()+"  "+jsonData.getString(DBtables.LugarEntrega.DIRECCION_ENTREGA).trim());
 	    	 }
 	    	db.setTransactionSuccessful();
@@ -12125,7 +12155,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		        cv.put(DBtables.Transporte.ITEM_SUCURSAL,			jsonData.getString(DBtables.Transporte.ITEM_SUCURSAL).trim());  
 		        cv.put(DBtables.Transporte.CODIGO_TRANSPORTE,		jsonData.getString(DBtables.Transporte.CODIGO_TRANSPORTE).trim());  
 		        cv.put(DBtables.Transporte.DESCRIPCION_TRANSPORTE, 	jsonData.getString(DBtables.Transporte.DESCRIPCION_TRANSPORTE).trim());		        
-		        db.insert(DBtables.Transporte.TAG, null, cv);
+		        //db.insert(DBtables.Transporte.TAG, null, cv);
+				db.insertWithOnConflict(DBtables.Transporte.TAG, null, cv,SQLiteDatabase.CONFLICT_IGNORE);
 		        
 		        Log.i(TAG+":sincronizar_transporte:", i+" "+jsonData.getString(DBtables.Transporte.CODIGO_TRANSPORTE).trim()+"  "+jsonData.getString(DBtables.Transporte.DESCRIPCION_TRANSPORTE).trim());
 	    	 }
@@ -13740,9 +13771,9 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.close();
 	}
 
-	public boolean isCarteraSidige(String codcli){
+	public boolean isCarteraSidigeOrIsLibre(String codcli){
 		String sql="select * from znf_programacion_clientes znf " +
-				"where znf.cartera_sidige= 'SI' " +
+				"where (znf.cartera_sidige ='SI' or length(znf.cartera_sidige) =0 )" +//blanco = no esta en sidige, solo en saemovil
 				"and znf.codcli= '"+codcli+"' " ;
 		SQLiteDatabase db=getReadableDatabase();
 		Cursor cur=db.rawQuery(sql, null, null);
@@ -13751,7 +13782,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cur.close();
 		db.close();
 		return isSI;
-
 	}
+
 }
 

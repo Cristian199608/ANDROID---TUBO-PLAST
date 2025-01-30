@@ -9,6 +9,7 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -55,8 +56,9 @@ public class VARIABLES {
                 "fuerzaventas_v2",
                 "fuerzaventas_v2.1",
                 "fuerzaventas_v2.2",//end 2025-01-03
+                "fuerzaventas_v2.3",//end 2025-01-30
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_v2.3"; //at 2025-01-03
+        private static final String DATABASA_NAME       ="fuerzaventas_v2.4"; //at 2025-01-30
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
@@ -423,9 +425,7 @@ public class VARIABLES {
     }
     public static double getDoubleFormaterThowDecimal(double numero)
     {
-        DecimalFormat formater = new DecimalFormat("###0.00");
-        formater.setRoundingMode(RoundingMode.HALF_UP);
-        return  Double.parseDouble(formater.format(numero));
+        return Math.round(numero * 100.0) / 100.0;
     }
     public static String getStringFormaterThreeDecimal(double numero)
     {
@@ -435,9 +435,10 @@ public class VARIABLES {
     }
     public static double getDoubleFormaterThreeDecimal(double numero)
     {
-        DecimalFormat formater = new DecimalFormat("###0.000");
-        formater.setRoundingMode(RoundingMode.HALF_UP);
-        return  Double.parseDouble(formater.format(numero));
+        return Math.round(numero * 1000.0) / 1000.0;
+//        DecimalFormat formater = new DecimalFormat("0.000");
+//        formater.setRoundingMode(RoundingMode.HALF_UP);  // Redondeo hacia el valor más cercano
+//        return  Double.parseDouble(formater.format(numero));
     }
 
     public static double getDoubleFormaterFourDecimal(double numero)

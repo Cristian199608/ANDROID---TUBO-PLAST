@@ -2,18 +2,24 @@ package com.example.sm_tubo_plast.genesys.datatypes;
 
 import android.provider.BaseColumns;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class DBtables {
 
 	DBtables() {
 
 	}
 
-	public static final class Cliente implements BaseColumns {
+	public static final class Cliente /*implements BaseColumns*/ { //basecolumns es cuando no tiene id declarado
 
 		private Cliente() {
 		}
-
 		public static final String TAG = "cliente";
+		public static final List<String> pks = new ArrayList<>(Collections.singletonList(Cliente.PK_CODCLI)) ;
+
 		public static final String PK_CODCLI = "codcli";
 		public static final String NOMCLI = "nomcli";
 		public static final String RUCCLI = "ruccli";
@@ -31,6 +37,7 @@ public class DBtables {
 
 		public static final String CONDICION_VENTA = "condicion_venta";
 		public static final String CODIGO_FAMILIAR = "codigo_familiar";
+		public static final String _ID = "_id";//ya no se usa
 		public static final String FECHA_COMPRA = "fecha_compra";
 		public static final String MONTO_COMPRA = "monto_compra";
 		public static final String OBSERVACION = "observacion";
@@ -80,6 +87,14 @@ public class DBtables {
 	}
 	public static  final class CLiente_Contacto implements BaseColumns{
 		public static final String TAG = "cliente_contacto";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						CLiente_Contacto.codcli,
+						CLiente_Contacto.id_contacto
+				)
+		);
+
+
 		public static final String codcli ="codcli";
 		public static final String id_contacto ="id_contacto";
 		public static final String nombre_contacto ="nombre_contacto";
@@ -879,6 +894,11 @@ public class DBtables {
 		}
 
 		public static final String TAG = "direccion_cliente";
+		public static final List<String> pks = new ArrayList<>(
+													Arrays.asList(
+															Direccion_cliente.PK_CODCLI,
+															Direccion_cliente.PK_ITEM
+													)) ;
 
 		public static final String PK_CODCLI = "codcli";
 		public static final String PK_ITEM = "item";
@@ -1155,6 +1175,17 @@ public class DBtables {
 		}
 
 		public static final String TAG = "znf_programacion_clientes";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						ZnfProgramacionClientes.SECUENCIA,
+						ZnfProgramacionClientes.CODVEN,
+						ZnfProgramacionClientes.N_DIA,
+						ZnfProgramacionClientes.SEC_RUTA,
+						ZnfProgramacionClientes.SEC_ZONA,
+						ZnfProgramacionClientes.CODCLI,
+						ZnfProgramacionClientes.ITEM_DIRCLI
+				)
+		);
 
 		public static final String SECUENCIA = "secuencia";
 		public static final String CODVEN = "codven";
@@ -1322,6 +1353,14 @@ public class DBtables {
 	public static final class LugarEntrega implements BaseColumns {
 		private LugarEntrega() {}
 		public static final String TAG = "lugarEntrega";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						LugarEntrega.CODIGO_CLIENTE,
+						LugarEntrega.ITEM_SUCURSAL,
+						LugarEntrega.CODIGO_LUGAR
+				)
+		);
+
 		public static final String CODIGO_CLIENTE = "codigoCliente";
 		public static final String ITEM_SUCURSAL = "itemSucursal";
 		public static final String CODIGO_LUGAR = "codigoLugar";
@@ -1336,6 +1375,14 @@ public class DBtables {
 	public static final class Transporte implements BaseColumns {
 		private Transporte() {}
 		public static final String TAG = "transporte";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						Transporte.CODIGO_CLIENTE,
+						Transporte.ITEM_SUCURSAL,
+						Transporte.CODIGO_TRANSPORTE
+				)
+		);
+
 		public static final String CODIGO_CLIENTE = "codigoCliente";
 		public static final String ITEM_SUCURSAL = "itemSucursal";
 		public static final String CODIGO_TRANSPORTE = "codigoTransporte";
