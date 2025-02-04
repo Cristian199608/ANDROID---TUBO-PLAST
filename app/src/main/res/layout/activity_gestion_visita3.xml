@@ -633,6 +633,17 @@
                                         android:background="@drawable/img_for_spinner"
                                         android:padding="12dp"
                                         android:text="Datos"/>
+                                    <ImageView
+                                        android:id="@+id/imvEditarContacto"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/ic_edit_24_grey"
+                                        android:background="@drawable/edittext_rounded_corners_cicle"
+                                        android:layout_gravity="center"
+                                        android:padding="5dp"
+                                        android:layout_margin="4dp"
+                                        app:tint="@color/white"
+                                        />
                                 </LinearLayout>
                             </LinearLayout>
                         </LinearLayout>

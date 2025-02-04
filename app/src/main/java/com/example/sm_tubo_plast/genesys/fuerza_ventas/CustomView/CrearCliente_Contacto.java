@@ -8,14 +8,12 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
-import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
@@ -29,6 +27,8 @@ public class CrearCliente_Contacto {
     EditText et_nombres,etdni, et_telefono,et_celular, et_correo,et_cargo;
     Button text_cancelar,txt_guardar;
     String codcliente;
+    Cliente_Contacto clienteContactoEdit=null;
+
     Dialog dialogo;
     MyListener mylistner;
     public CrearCliente_Contacto(Activity activity, DBclasses dBclasses) {
@@ -36,6 +36,9 @@ public class CrearCliente_Contacto {
         this.dBclasses = dBclasses;
     }
 
+    public void setDataEdit(Cliente_Contacto clienteContacto) {
+        this.clienteContactoEdit=clienteContacto;
+    }
     public void VistaCreate(String codcliente, MyListener mylistner){
         this.codcliente=codcliente;
         this.mylistner=mylistner;
@@ -75,7 +78,7 @@ public class CrearCliente_Contacto {
         txt_guardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ValidarCampos();
+                guardarDatos();
             }
         });
         text_cancelar.setOnClickListener(new View.OnClickListener() {
@@ -85,8 +88,22 @@ public class CrearCliente_Contacto {
                 mylistner.crearcion(null);
             }
         });
+        poblarFormularioIfIsEdit();
     }
-    private void ValidarCampos(){
+
+    private void poblarFormularioIfIsEdit() {
+        if(clienteContactoEdit==null)
+            return;
+        //-----------------------------------------------------------------------------------------------
+        et_nombres.setText(clienteContactoEdit.getNombre_contacto());
+        etdni.setText(clienteContactoEdit.getDni());
+        tvFechaNacimiento.setText(clienteContactoEdit.getFec_nacimiento());//parsear fecha
+        et_telefono.setText(clienteContactoEdit.getTelefono());
+        et_celular.setText(clienteContactoEdit.getCelular());
+        et_correo.setText(clienteContactoEdit.getEmail());
+        et_cargo.setText(clienteContactoEdit.getCargo());
+    }
+    private boolean isValidForm(){
         int error=0;
         et_nombres.setError(null);
         if (TextUtils.isEmpty(et_nombres.getText().toString())) {
@@ -115,47 +132,60 @@ public class CrearCliente_Contacto {
                 error++;
             }
         }
+        return error==0;
+
+    }
+    private void guardarDatos(){
+
+        if(!isValidForm()){
+            return;
+        }
 
 
-
-        if (error==0){
-
-            DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
+        DAO_Cliente_Contacto dao_cliente_contacto=new DAO_Cliente_Contacto();
+        if(clienteContactoEdit==null){
             boolean exisite=dao_cliente_contacto.getClienteContactoByDNI(dBclasses, codcliente, etdni.getText().toString());
-
-
             if (exisite){
                 UtilViewMensaje.MENSAJE_simple(activity, "Contacto Nuevo?", "Este contacto para este cliente ya existe");
                 return;
-
-            }
-
-            int nexId=dao_cliente_contacto.getNextIdClienteContacto(dBclasses, codcliente);
-
-            Cliente_Contacto contacto=new Cliente_Contacto();
-            contacto.setCodcli(codcliente);
-            contacto.setId_contacto(nexId);
-            contacto.setNombre_contacto(et_nombres.getText().toString().toUpperCase());
-            contacto.setDni(etdni.getText().toString());
-            contacto.setTelefono(et_telefono.getText().toString());
-            contacto.setCelular(et_celular.getText().toString());
-            contacto.setEmail(et_correo.getText().toString());
-            contacto.setCargo(et_cargo.getText().toString());
-            contacto.setFec_nacimiento(tvFechaNacimiento.getText().toString());
-            contacto.setEstado("G");
-            contacto.setFlag("P");
-
-
-            boolean isRReister=dao_cliente_contacto.Crear_Contacto(dBclasses, contacto);
-            if (isRReister){
-                mylistner.crearcion(contacto);
-                dialogo.dismiss();
-            }
-            else{
-                UtilViewMensaje.MENSAJE_simple(activity, "Ohhh!", "No se ha podido crear el cliente. Vuelva a intentarlo");
             }
         }
+        //-----------------------------------------------------------------------------------------------
+        int nexId=0;
+        if(clienteContactoEdit!=null) nexId = clienteContactoEdit.getId_contacto();
+        else nexId = dao_cliente_contacto.getNextIdClienteContacto(dBclasses, codcliente);
+
+        Cliente_Contacto contacto=new Cliente_Contacto();
+        contacto.setCodcli(codcliente);
+        contacto.setId_contacto(nexId);
+        contacto.setNombre_contacto(et_nombres.getText().toString().toUpperCase());
+        contacto.setDni(etdni.getText().toString());
+        contacto.setTelefono(et_telefono.getText().toString());
+        contacto.setCelular(et_celular.getText().toString());
+        contacto.setEmail(et_correo.getText().toString());
+        contacto.setCargo(et_cargo.getText().toString());
+        contacto.setFec_nacimiento(tvFechaNacimiento.getText().toString());
+        contacto.setEstado("G");
+        contacto.setFlag("P");
+
+
+        boolean isRReister=dao_cliente_contacto.Crear_Contacto(dBclasses, contacto);
+        if (isRReister){
+            mylistner.crearcion(contacto);
+            dialogo.dismiss();
+        }
+        else{
+            showMensaggeError();
+        }
     }
+
+    private void showMensaggeError() {
+        if(clienteContactoEdit!=null)
+            UtilViewMensaje.MENSAJE_simple(activity, "Ohhh!", "No se ha podido actualizar los datos. Vuelva a intentarlo");
+        else
+            UtilViewMensaje.MENSAJE_simple(activity, "Ohhh!", "No se ha podido crear el contacto. Vuelva a intentarlo");
+    }
+
 
     public interface  MyListener{
         void crearcion(Cliente_Contacto contacto);

@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -96,6 +97,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     EditText et_motivo_reporgramacion, tv_nombres, et_Obervacion, et_comentario_visita, et_comentario_proxima_visita;
     TextView  txt_oc_numero, et_fecha_visita_manual, et_fecha_proximavisita,et_hora_inicio, et_hora_fin, txt_ubicacion, et_hora_inicio_next;
     Spinner SpinnerTipoVisita, SpinnerTipoActividad, SpinnerProximaTipoVisita, SpinnerProximaActividad,SpinnerDirecciones, SpinnerContacto;
+    ImageView imvEditarContacto;
     FloatingActionButton FAB_enviar_visita;
 
     Switch  sw_isProximaVisita;
@@ -285,10 +287,12 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         layout_container_prroima_visita=findViewById(R.id.layout_container_prroima_visita);
         FAB_enviar_visita=findViewById(R.id.FAB_enviar_visita);
         SpinnerContacto=findViewById(R.id.SpinnerContacto);
+        imvEditarContacto=findViewById(R.id.imvEditarContacto);
         TextView label_reprogramacion=findViewById(R.id.label_reprogramacion);
 
         label_reprogramacion.setVisibility(View.GONE);
         et_motivo_reporgramacion.setVisibility(View.GONE);
+        imvEditarContacto.setVisibility(View.GONE);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (TIPO_GESTION.equals(VISITA_PLANIFICADA) || TIPO_GESTION.equals(GESTIONAR_VISITA) ) {
             getSupportActionBar().setTitle("GESTION DE VISITA");
@@ -607,6 +611,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         et_comentario_visita.setEnabled(false);
         SpinnerDirecciones.setEnabled(false);
         SpinnerContacto.setEnabled(false);
+        imvEditarContacto.setEnabled(false);
         et_fecha_visita_manual.setEnabled(false);
 
         tv_nombres.setVisibility(View.VISIBLE);
@@ -620,6 +625,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         et_hora_fin.setEnabled(enabled);
         SpinnerContacto.setEnabled(true);
+        imvEditarContacto.setEnabled(true);
         et_comentario_visita.setEnabled(enabled);
 
     }
@@ -725,21 +731,19 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         SpinnerContacto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
                 SpinnerContacto.setBackgroundResource(R.drawable.img_for_spinner);
-                if (position==1){
+                imvEditarContacto.setVisibility(View.GONE);
 
-                    CrearCliente_Contacto cc=new CrearCliente_Contacto(GestionVisita3Activity.this, dBclasses);
-                    cc.VistaCreate(ID_RRHH, contacto -> {
-                        if (contacto==null){
-                            SpinnerContacto.setSelection(0);
-                        }else{
-                            PoblarSpinnersCliente_Contacto(contacto.getId_contacto());
-                            WS_Cliente_Contacto ws_cliente_contacto=new WS_Cliente_Contacto(GestionVisita3Activity.this, dBclasses);
-                            ws_cliente_contacto.EnviarClienteContactoPendienteByCliente(ID_RRHH);
-                        }
-
+                if(position>=2){
+                    imvEditarContacto.setVisibility(View.VISIBLE);
+                    imvEditarContacto.setOnClickListener(v -> {
+                        int posValid= position-2;
+                        gestionEditarContactoCliente(lista.get(posValid));
                     });
+                }
+                if (position==1){
+                    gestionEditarContactoCliente(null);
                 }
 
             }
@@ -749,6 +753,21 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             }
         });
 
+    }
+
+    private void gestionEditarContactoCliente(Cliente_Contacto clienteContactoEdit){
+        CrearCliente_Contacto cc=new CrearCliente_Contacto(this, dBclasses);
+        cc.setDataEdit(clienteContactoEdit);
+        cc.VistaCreate(ID_RRHH, contacto -> {
+            if (contacto==null){
+                if(clienteContactoEdit!=null) return;
+                SpinnerContacto.setSelection(0);
+            }else{
+                PoblarSpinnersCliente_Contacto(contacto.getId_contacto());
+                WS_Cliente_Contacto ws_cliente_contacto=new WS_Cliente_Contacto(GestionVisita3Activity.this, dBclasses);
+                ws_cliente_contacto.EnviarClienteContactoPendienteByCliente(ID_RRHH);
+            }
+        });
     }
 
     private void PoblarSpinnersTIPO_VISITA_NEXT(String valorSelected, final String tipo_actividad_colegio){

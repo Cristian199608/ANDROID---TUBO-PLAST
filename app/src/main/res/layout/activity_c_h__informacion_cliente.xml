@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey_200"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -324,7 +325,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="15dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
@@ -341,6 +342,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textStyle="bold"
+                    android:padding="10dp"
                     android:textSize="17sp"
                     android:text="Sucursal"/>
 
@@ -422,15 +424,37 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_700"
+                >
                 <TextView
-                    android:background="@color/teal_500"
                     android:textColor="@color/white"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:layout_gravity="center"
                     android:textStyle="bold"
                     android:textSize="17sp"
                     android:text="Contacto"/>
+
+                <ImageView
+                    android:id="@+id/imvNuevoContacto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_new_cliente"
+                    android:background="@drawable/edittext_rounded_corners_cicle"
+                    android:padding="5dp"
+                    android:layout_margin="4dp"
+                    app:tint="@color/white"
+                    />
+            </LinearLayout>
+
+
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -441,10 +465,22 @@
                         android:id="@+id/SpinnerContacto"
                         style="@android:style/Widget.Holo.Light.Spinner"
                         android:backgroundTint="@color/teal_500"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
                         android:layout_height="wrap_content"
                         android:singleLine="false"
                         android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:id="@+id/imvEditarContacto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_edit_24_grey"
+                        android:background="@drawable/edittext_rounded_corners_cicle"
+                        android:padding="5dp"
+                        android:layout_margin="4dp"
+                        app:tint="@color/white"
+                    />
                 </LinearLayout>
 
                 <LinearLayout

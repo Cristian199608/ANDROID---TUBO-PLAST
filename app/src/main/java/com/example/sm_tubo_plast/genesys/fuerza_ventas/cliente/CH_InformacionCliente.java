@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,8 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.CustomView.CrearCliente_Contacto;
+import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -38,6 +41,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
     EditText tv_direccion_sucursal, tv_telefono_sucursal, tvVendedoresAsignados,
             tvFechaNacimiento, tvDNI, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
     Spinner spn_direccion, SpinnerContacto;
+    ImageView imvNuevoContacto, imvEditarContacto;
 
     @SuppressLint("NewApi")
     @Override
@@ -77,6 +81,8 @@ public class CH_InformacionCliente extends AppCompatActivity {
         tvVendedoresAsignados = findViewById(R.id.tvVendedoresAsignados);
         tv_celular = findViewById(R.id.tv_celular);
         SpinnerContacto = findViewById(R.id.SpinnerContacto);
+        imvEditarContacto = findViewById(R.id.imvEditarContacto);
+        imvNuevoContacto = findViewById(R.id.imvNuevoContacto);
         //------------------------------------------
 
         Bundle bundle = getIntent().getExtras();
@@ -146,10 +152,15 @@ public class CH_InformacionCliente extends AppCompatActivity {
             }
         });
 
-        PoblarSpinnersCliente_Contacto(dBclasses);
-
+        PoblarSpinnersCliente_Contacto(0);
+        imvNuevoContacto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gestionEditarContactoCliente(null);
+            }
+        });
     }
-    private void PoblarSpinnersCliente_Contacto(  DBclasses dBclasses) {
+    private void PoblarSpinnersCliente_Contacto(int idContactoSelected) {
         DAO_Cliente_Contacto dao_cliente_contacto = new DAO_Cliente_Contacto();
 
         ArrayList<Cliente_Contacto> lista = dao_cliente_contacto.getClienteContactoByID(dBclasses, ""+codigoCliente, 0);
@@ -158,24 +169,33 @@ public class CH_InformacionCliente extends AppCompatActivity {
         int posSelected = 0;
         for (int i = 0; i < lista.size(); i++) {
             listaString.add(lista.get(i).getNombre_contacto() + "-" + lista.get(i).getDni());
-            posSelected=1;
+            if(idContactoSelected==lista.get(i).getId_contacto()){
+                posSelected=i+1;
+            }
         }
 
 
         SpinnerContacto.setAdapter(UtilView.LLENAR_SPINNER_SIMPLE(this, listaString));
-        SpinnerContacto.setSelection(posSelected);
+        imvEditarContacto.setOnClickListener(v -> {
+            int indexPos= SpinnerContacto.getSelectedItemPosition()-1;
+            if(indexPos>=0){
+                gestionEditarContactoCliente(lista.get(indexPos));
+            }
+        });
         if (lista.size()>0){
+            SpinnerContacto.setSelection(posSelected==0?1:posSelected);
             SpinnerContacto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    position--;
-                    if (position>=0){
-                        tv_cargo_contacto.setText(lista.get(position).getCargo());
-                        tvFechaNacimiento.setText(lista.get(position).getFec_nacimiento());
-                        tvDNI.setText(lista.get(position).getDni());
-                        tv_email_contacto.setText(lista.get(position).getEmail());
-                        tv_telefono_contacto.setText(lista.get(position).getTelefono());
-                        tv_celular.setText(lista.get(position).getCelular());
+                    int posValid=position-1;
+                    if (posValid>=0){
+                        tv_cargo_contacto.setText(lista.get(posValid).getCargo());
+                        tvFechaNacimiento.setText(lista.get(posValid).getFec_nacimiento());
+                        tvDNI.setText(lista.get(posValid).getDni());
+                        tv_email_contacto.setText(lista.get(posValid).getEmail());
+                        tv_telefono_contacto.setText(lista.get(posValid).getTelefono());
+                        tv_celular.setText(lista.get(posValid).getCelular());
+
                     }
                 }
 
@@ -186,5 +206,18 @@ public class CH_InformacionCliente extends AppCompatActivity {
             });
         }
 
+    }
+    private void gestionEditarContactoCliente(Cliente_Contacto clienteContacto){
+        CrearCliente_Contacto cc=new CrearCliente_Contacto(this, dBclasses);
+        cc.setDataEdit(clienteContacto);
+        cc.VistaCreate(codigoCliente, contacto -> {
+            if (contacto==null) return;
+
+            PoblarSpinnersCliente_Contacto(contacto.getId_contacto());
+            WS_Cliente_Contacto ws_cliente_contacto=new WS_Cliente_Contacto(
+                    this, dBclasses);
+            ws_cliente_contacto.EnviarClienteContactoPendienteByCliente(codigoCliente);
+
+        });
     }
 }

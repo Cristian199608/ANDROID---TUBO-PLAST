@@ -139,7 +139,7 @@ public class DAO_Cliente_Contacto {
             nre.put(DBtables.CLiente_Contacto.flag, contacto.getFlag());
 
             SQLiteDatabase db = dBclasses.getReadableDatabase();
-            db.insert(DBtables.CLiente_Contacto.TAG, null, nre);
+            db.insertWithOnConflict(DBtables.CLiente_Contacto.TAG, null, nre, SQLiteDatabase.CONFLICT_REPLACE);
             db.close();
 
             return  true;
