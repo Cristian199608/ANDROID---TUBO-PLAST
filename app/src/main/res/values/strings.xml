@@ -3,8 +3,8 @@
     <!--version actual-->
     <!--    <string name="APP_VERSION_CODE">v7.5.0 2023-11-22</string>-->
     <!--    version en fase prueba-->
-    <string name="APP_VERSION">v7.5.9 2025-02-04</string>
-    <string name="APP_NRPO_VERSION">v7.5.9 2025-02-04</string>
+    <string name="APP_VERSION">v7.6.0 2025-02-05</string>
+    <string name="APP_NRPO_VERSION">v7.6.0 2025-02-05</string>
 
 
     <string name="arrow_lefy">&lt;</string>

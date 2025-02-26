@@ -75,6 +75,7 @@ import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.WS_SynClientesNuevos;
+import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.CustomDateTimePicker;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
@@ -1494,6 +1495,11 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
     public static boolean validarClienteCarteraSIDIGE(Activity activity, DBclasses _dBclasses, String _codcli){
+        SessionManager prefer=new SessionManager(activity);
+        if(!prefer.getCodigoNivel().equals("NIVEL3")){//si es diferente a nivel3 (vendedor), permitimos
+            return true;
+        }
+
         boolean isSI= _dBclasses.isCarteraSidigeOrIsLibre(_codcli);
         if(!isSI){
             GlobalFunctions.showCustomToast(activity, activity.getString(R.string.msg_cliente_no_sidige), GlobalFunctions.TOAST_ERROR);
