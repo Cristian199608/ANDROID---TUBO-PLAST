@@ -5129,23 +5129,23 @@ public int Sync_tabla_ObjPedido(String codven, String url, String catalog, Strin
     Soapenvelope.dotNet=true;
     Soapenvelope.setOutputSoapObject(Request);
     
-    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService, 60000);
+    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService, 120000);
     
     beforecall = System.currentTimeMillis();
     
     try{
     	transporte.call(SOAP_ACTION, Soapenvelope);
     	
-    	Log.d("OBJ_PEDIDO","RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+"miliseg");
+    	Log.d(TAG,"Sync_tabla_ObjPedido: RESPUESTA EN: "+(System.currentTimeMillis()-beforecall)+" miliseg");
     	
     	  SoapPrimitive result = (SoapPrimitive)Soapenvelope.getResponse();
-    	  Log.d("OBJ_PEDIDO",""+result.toString());
+    	  Log.d(TAG, "Sync_tabla_ObjPedido: "+result.toString());
     	  JSONArray jsonstring = new JSONArray(result.toString());
     	  //Log.d("OBJ_PEDIDO","Registros: "+jsonstring.length());
 
     	 int tamanio=dbclass.syncObjPedido(jsonstring,codven, start);
 
-    	 Log.d("OBJ_PEDIDO", "SINCRONIZADA");
+    	 Log.d(TAG, "Sync_tabla_ObjPedido: SINCRONIZADA");
     	return tamanio;
     }catch(Exception e){
     	 e.printStackTrace();
