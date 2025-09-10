@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.adapters.ModelBonificacionPendiente;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Pedido_Detalle_Promocion;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
@@ -543,7 +543,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		}
 	}
 		
-	public model_bonificacion getProductoxCodigo(int cantidad, String codigoProducto, String entrada){
+	public Model_bonificacion getProductoxCodigo(int cantidad, String codigoProducto, String entrada){
 			
 		String rawQuery =
 				"select "
@@ -565,7 +565,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		Cursor cursor = db.rawQuery(rawQuery, null);
 		Log.d(TAG, rawQuery);
 		
-		model_bonificacion bonificacion = new model_bonificacion();
+		Model_bonificacion bonificacion = new Model_bonificacion();
 
 		if (cursor.moveToFirst()) {
 			
@@ -588,7 +588,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 	
 	}
 	
-	public model_bonificacion getModelBonificacion(int cantidad,String codigoProducto, String entrada){
+	public Model_bonificacion getModelBonificacion(int cantidad, String codigoProducto, String entrada){
 		
 		String rawQuery =
 				"SELECT "+ 
@@ -604,7 +604,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		Cursor cursor = db.rawQuery(rawQuery, null);
 		Log.d(TAG, rawQuery);
 		
-		model_bonificacion bonificacion = new model_bonificacion();
+		Model_bonificacion bonificacion = new Model_bonificacion();
 
 		if (cursor.moveToFirst()) {
 			
@@ -662,12 +662,13 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return listaRegistroBonificaciones;
 	}
 	
-	public int getCantidadDisponible(String oc_numero, String entrada){
+	public int getCantidadDisponible(String oc_numero, String entrada, int prioridad){
 		//no consultar la minima, sino consultar la q tenga el flag de ultimo = 1
 		String rawQuery =
 				"SELECT cantidadDisponible "+
 				"FROM registro_bonificaciones "+ 
-				"WHERE oc_numero like '"+oc_numero+"' and entrada like '"+entrada+"' and flagUltimo like 1";
+				"WHERE oc_numero like '"+oc_numero+"' and entrada like '"+entrada+"' "+
+				" and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end " ;
 				
 		
 		SQLiteDatabase db = getReadableDatabase();
@@ -687,11 +688,12 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return cantidadDisponible;
 	}
 	
-	public double getMontoDisponible(String oc_numero, String entrada){
+	public double getMontoDisponible(String oc_numero, String entrada,  int prioridad){
 		String rawQuery =
 				"SELECT montoDisponible "+
 				"FROM registro_bonificaciones "+
-				"WHERE oc_numero = '"+oc_numero+"' and entrada like '"+entrada+"' and flagUltimo like 1";
+				"WHERE oc_numero = '"+oc_numero+"' and entrada like '"+entrada+"' "+
+				"and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end " ;
 		
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);
@@ -813,8 +815,13 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return registroBonificacion;
 	}
 	
-	public void AgregarRegistroBonificacion(String oc_numero,int itemBonificacion,int item,int secuencia,int agrupado, String entrada,int tipoUnimedEntrada , String unimedEntrada, int cantidadEntrada,double montoEntrada, String salida, int tipoUnimedSalida, int cantidadSalida, int acumulado, int cantidadDisponible, double montoDisponible,String codigoVendedor){
-		Actualizar_Flag(oc_numero, entrada);		
+	public void AgregarRegistroBonificacion(String oc_numero,int itemBonificacion,int item,int secuencia,int agrupado,
+											String entrada,int tipoUnimedEntrada , String unimedEntrada,
+											int cantidadEntrada,double montoEntrada, String salida,
+											int tipoUnimedSalida, int cantidadSalida, int acumulado,
+											int cantidadDisponible, double montoDisponible,
+											String codigoVendedor, int prioridad){
+		//Actualizar_Flag(oc_numero, entrada);
 		try {
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -835,7 +842,9 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			Nreg.put("acumulado", acumulado);
 			Nreg.put("cantidadDisponible", cantidadDisponible);
 			Nreg.put("montoDisponible", GlobalFunctions.redondear_toDouble(montoDisponible));
-			Nreg.put("flagUltimo", 1);
+			if (prioridad==1){
+				Nreg.put("flagUltimo", 2);
+			}else Nreg.put("flagUltimo", 1);
 			Nreg.put("codigoVendedor",codigoVendedor);
 
 			db.insert("registro_bonificaciones", null, Nreg);
@@ -1886,4 +1895,299 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		}
 
 	}
+
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSalida(String oc_numero, String salida){
+		String addWhere ="and pcompra.tipo_producto!='V' " +
+				"and rb.salida='"+salida+"'  ";
+		return getRegistroBonificaciones_xSQl(oc_numero, addWhere);
+	}
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSQl(String oc_numero, String addWhere){
+
+		String S_TAG="getRegistroBonificaciones_xSQl:: ";
+		String rawQuery = "";
+		rawQuery = "select  rb.oc_numero,\n" +
+				"rb.item,\n" +
+				"rb.secuenciaPromocion,\n" +
+				"rb.agrupado,\n" +
+				"rb.entrada,\n" +
+				"rb.tipo_unimed_entrada,\n" +
+				"rb.unimedEntrada,\n" +
+				"rb.cantidadEntrada,\n" +
+				"rb.montoEntrada,\n" +
+				"rb.salida,\n" +
+				"rb.tipo_unimed_salida,\n" +
+				"rb.cantidadSalida,\n" +
+				"rb.acumulado\n" +
+				/*"rb.cantidadDisponible,\n" +
+				"rb.montoDisponible,\n" +
+				"rb.flagUltimo,\n" +
+				"rb.codigoRegistro,\n" +
+				"rb.cantidadTotal,\n" +
+				"rb.saldoAnterior,\n" +
+				"rb.cantidadEntregada,\n" +
+				"rb.saldo,\n" +
+				"rb.codigoAnterior,\n" +
+				"rb.codigoVendedor,\n" +
+				"rb.codigoCliente "+
+				*/
+				"from registro_bonificaciones rb \n" +
+				"inner join "+DBtables.Pedido_detalle.TAG+" pcompra " +
+				"on rb.oc_numero=pcompra.oc_numero " +
+				"and  ( pcompra.sec_promo  =rb.secuenciaPromocion     or pcompra.promo_prioridad  =rb.secuenciaPromocion    ) " +
+				"and pcompra.cip=rb.entrada "+
+				"where rb.oc_numero = '"+oc_numero+"' "+addWhere;
+
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		Log.d(TAG, S_TAG+"SQL "+rawQuery);
+		ArrayList<DB_RegistroBonificaciones> registroBonificacion = new ArrayList<DB_RegistroBonificaciones>();
+
+		cur.moveToFirst();
+
+		while (!cur.isAfterLast()) {
+			DB_RegistroBonificaciones registro = new DB_RegistroBonificaciones();
+			registro.setOc_numero(cur.getString(0));
+			registro.setItem(cur.getInt(1));
+			registro.setSecuenciaPromocion(cur.getInt(2));
+			registro.setAgrupado(cur.getInt(3));
+			registro.setEntrada(cur.getString(4));
+			registro.setTipo_unimedEntrada(cur.getInt(5));
+			registro.setUnimedEntrada(cur.getString(6));
+			registro.setCantidadEntrada(cur.getInt(7));
+			registro.setMontoEntrada(cur.getDouble(8));
+			registro.setSalida(cur.getString(9));
+			registro.setTipo_unimedSalida(cur.getInt(10));
+			registro.setCantidadSalida(cur.getInt(11));
+			registro.setAcumulado(cur.getInt(12));
+			registroBonificacion.add(registro);
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		return registroBonificacion;
+	}
+
+	@SuppressLint("Range")
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificacionesClonarBy(String oc_numero){
+
+		String S_TAG="getRegistroBonificacionesClonarBy:: ";
+		String rawQuery = "";
+		rawQuery = "select  " +
+				"rb.oc_numero,\n" +
+				"rb.item,\n" +
+				"rb.secuenciaPromocion,\n" +
+				"rb.agrupado,\n" +
+				"rb.entrada,\n" +
+				"rb.tipo_unimed_entrada,\n" +
+				"rb.unimedEntrada,\n" +
+				"rb.cantidadEntrada,\n" +
+				"rb.montoEntrada,\n" +
+				"rb.salida,\n" +
+				"rb.tipo_unimed_salida,\n" +
+				"rb.cantidadSalida,\n" +
+				"rb.acumulado,\n" +
+				"rb.cantidadDisponible,\n" +
+				"rb.montoDisponible,\n" +
+				"rb.flagUltimo,\n" +
+				"rb.codigoRegistro,\n" +
+				"rb.cantidadTotal,\n" +
+				"rb.saldoAnterior,\n" +
+				"rb.cantidadEntregada,\n" +
+				"rb.saldo,\n" +
+				"rb.codigoAnterior,\n" +
+				"rb.codigoVendedor,\n" +
+				"rb.codigoCliente\n" +
+				"from registro_bonificaciones rb\n "+
+				"where rb.oc_numero = '"+oc_numero+"' ";
+
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		Log.d(TAG, S_TAG+"SQL "+rawQuery);
+		ArrayList<DB_RegistroBonificaciones> listaRegBonif = new ArrayList<DB_RegistroBonificaciones>();
+		DB_RegistroBonificaciones registro=null;
+		while (cur.moveToNext()) {
+			registro = new DB_RegistroBonificaciones();
+			registro.setOc_numero(cur.getString(cur.getColumnIndex("oc_numero")));
+
+			if (!cur.isNull(cur.getColumnIndex("item")))
+				registro.setItem(cur.getInt(cur.getColumnIndex("item")));
+			else registro.setItem(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("secuenciaPromocion")))
+				registro.setSecuenciaPromocion(cur.getInt(cur.getColumnIndex("secuenciaPromocion")));
+			else registro.setSecuenciaPromocion(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("agrupado")))
+				registro.setAgrupado(cur.getInt(cur.getColumnIndex("agrupado")));
+			else registro.setAgrupado(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("entrada")))
+				registro.setEntrada(cur.getString(cur.getColumnIndex("entrada")));
+			else registro.setEntrada(null);
+
+			if (!cur.isNull(cur.getColumnIndex("tipo_unimed_entrada")))
+				registro.setTipo_unimedEntrada(cur.getInt(cur.getColumnIndex("tipo_unimed_entrada")));
+			else registro.setTipo_unimedEntrada(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("unimedEntrada")))
+				registro.setUnimedEntrada(cur.getString(cur.getColumnIndex("unimedEntrada")));
+			else registro.setUnimedEntrada(null);
+
+			if (!cur.isNull(cur.getColumnIndex("cantidadEntrada")))
+				registro.setCantidadEntrada(cur.getInt(cur.getColumnIndex("cantidadEntrada")));
+			else registro.setCantidadEntrada(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("montoEntrada")))
+				registro.setMontoEntrada(cur.getDouble(cur.getColumnIndex("montoEntrada")));
+			else registro.setMontoEntrada(Double.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("salida")))
+				registro.setSalida(cur.getString(cur.getColumnIndex("salida")));
+			else registro.setSalida(null);
+
+			if (!cur.isNull(cur.getColumnIndex("tipo_unimed_salida")))
+				registro.setTipo_unimedSalida(cur.getInt(cur.getColumnIndex("tipo_unimed_salida")));
+			else registro.setTipo_unimedSalida(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("cantidadSalida")))
+				registro.setCantidadSalida(cur.getInt(cur.getColumnIndex("cantidadSalida")));
+			else registro.setCantidadSalida(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("acumulado")))
+				registro.setAcumulado(cur.getInt(cur.getColumnIndex("acumulado")));
+			else registro.setAcumulado(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("cantidadDisponible")))
+				registro.setCantidadDisponible(cur.getInt(cur.getColumnIndex("cantidadDisponible")));
+			else registro.setCantidadDisponible(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("montoDisponible")))
+				registro.setMontoDisponible(cur.getDouble(cur.getColumnIndex("montoDisponible")));
+			else registro.setMontoDisponible(Double.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("flagUltimo")))
+				registro.setFlagUltimo(cur.getInt(cur.getColumnIndex("flagUltimo")));
+			else registro.setFlagUltimo(Integer.MIN_VALUE);
+
+			if (!cur.isNull(cur.getColumnIndex("codigoRegistro")))
+				registro.setCodigoRegistro(cur.getString(cur.getColumnIndex("codigoRegistro")));
+			else registro.setCodigoRegistro(null);
+
+			registro.setCantidadTotal(!cur.isNull(cur.getColumnIndex("cantidadTotal"))
+							?cur.getInt(cur.getColumnIndex("cantidadTotal"))
+							:Integer.MIN_VALUE);
+
+			registro.setSaldoAnterior(!cur.isNull(cur.getColumnIndex("saldoAnterior"))
+					?cur.getInt(cur.getColumnIndex("saldoAnterior"))
+					:Integer.MIN_VALUE);
+
+			registro.setCantidadEntregada(!cur.isNull(cur.getColumnIndex("cantidadEntregada"))
+					?cur.getInt(cur.getColumnIndex("cantidadEntregada"))
+					:Integer.MIN_VALUE);
+
+			registro.setSaldo(!cur.isNull(cur.getColumnIndex("saldo"))
+					?cur.getInt(cur.getColumnIndex("saldo"))
+					:Integer.MIN_VALUE);
+
+			registro.setCodigoAnterior(!cur.isNull(cur.getColumnIndex("codigoAnterior"))
+					?cur.getString(cur.getColumnIndex("codigoAnterior"))
+					:null);
+
+			registro.setCodigoVendedor(!cur.isNull(cur.getColumnIndex("codigoVendedor"))
+					?cur.getString(cur.getColumnIndex("codigoVendedor"))
+					:null);
+
+			registro.setCodigoCliente(!cur.isNull(cur.getColumnIndex("codigoCliente"))
+					?cur.getString(cur.getColumnIndex("codigoCliente"))
+					:null);
+
+			listaRegBonif.add(registro);
+		}
+		cur.close();
+		db.close();
+		return listaRegBonif;
+	}
+
+	public void clonarRegistroBonificaciones(DB_RegistroBonificaciones regBonif){
+
+		ContentValues values= null;
+		SQLiteDatabase db=getWritableDatabase();
+		values=new ContentValues();
+		values.put("oc_numero", regBonif.getOc_numero());
+		if(regBonif.getItem()!=Integer.MIN_VALUE)
+			values.put("item", regBonif.getItem());
+		if(regBonif.getSecuenciaPromocion()!=Integer.MIN_VALUE)
+			values.put("secuenciaPromocion", regBonif.getSecuenciaPromocion());
+		if(regBonif.getAgrupado()!=Integer.MIN_VALUE)
+			values.put("agrupado", regBonif.getAgrupado());
+		if(regBonif.getEntrada()!=null)
+			values.put("entrada", regBonif.getEntrada());
+		if(regBonif.getTipo_unimedEntrada()!=Integer.MIN_VALUE)
+			values.put("tipo_unimed_entrada", regBonif.getTipo_unimedEntrada());
+		if(regBonif.getUnimedEntrada()!=null)
+			values.put("unimedEntrada", regBonif.getUnimedEntrada());
+		if(regBonif.getCantidadEntrada()!=Integer.MIN_VALUE)
+			values.put("cantidadEntrada", regBonif.getCantidadEntrada());
+		if(regBonif.getMontoEntrada()!=Double.MIN_VALUE)
+			values.put("montoEntrada", regBonif.getMontoEntrada());
+		if(regBonif.getSalida()!=null)
+			values.put("salida", regBonif.getSalida());
+		if(regBonif.getTipo_unimedSalida()!=Integer.MIN_VALUE)
+			values.put("tipo_unimed_salida", regBonif.getTipo_unimedSalida());
+		if(regBonif.getCantidadSalida()!=Integer.MIN_VALUE)
+			values.put("cantidadSalida", regBonif.getCantidadSalida());
+		if(regBonif.getAcumulado()!=Integer.MIN_VALUE)
+			values.put("acumulado", regBonif.getAcumulado());
+		if(regBonif.getCantidadDisponible()!=Integer.MIN_VALUE)
+			values.put("cantidadDisponible", regBonif.getCantidadDisponible());
+		if(regBonif.getMontoDisponible()!=Double.MIN_VALUE)
+			values.put("montoDisponible", regBonif.getMontoDisponible());
+		if(regBonif.getFlagUltimo()!=Integer.MIN_VALUE)
+			values.put("flagUltimo", regBonif.getFlagUltimo());
+		if(regBonif.getCodigoRegistro()!=null)
+			values.put("codigoRegistro", regBonif.getCodigoRegistro());
+		if(regBonif.getCantidadTotal()!=Integer.MIN_VALUE)
+			values.put("cantidadTotal", regBonif.getCantidadTotal());
+		if(regBonif.getSaldoAnterior()!=Integer.MIN_VALUE)
+			values.put("saldoAnterior", regBonif.getSaldoAnterior());
+		if(regBonif.getCantidadEntregada()!=Integer.MIN_VALUE)
+			values.put("cantidadEntregada", regBonif.getCantidadEntregada());
+		if(regBonif.getSaldo()!=Integer.MIN_VALUE)
+			values.put("saldo", regBonif.getSaldo());
+		if(regBonif.getCodigoAnterior()!=null)
+			values.put("codigoAnterior", regBonif.getCodigoAnterior());
+		if(regBonif.getCodigoVendedor()!=null)
+			values.put("codigoVendedor", regBonif.getCodigoVendedor());
+		if(regBonif.getCodigoCliente()!=null)
+			values.put("codigoCliente", regBonif.getCodigoCliente());
+
+		long id=db.insert(""+DBtables.TB_registro_bonificaciones.TAG, null, values);
+		Log.e(TAG, "clonarRegistroBonificaciones:: id insertado: "+id);
+
+		db.close();
+	}
+
+	public void eliminarBonificacionXSecuenciaConCero(String oc_numero,int secuenciapromo) {
+		String S_TAG="eliminarBonificacionXSecuenciaConCero:: ";
+		String where = "oc_numero = ? and secuenciaPromocion like ? " +
+				"and case (SELECT sum(cantidadSalida) FROM registro_bonificaciones rb " +
+				"where rb.oc_numero='"+oc_numero+"'\n" +
+				"and rb.secuenciaPromocion='"+secuenciapromo+"' ) when 0 then 0= 0 else 5=3 end";
+		String[] args = { oc_numero, String.valueOf(secuenciapromo) };
+
+		SQLiteDatabase dbwrite=getWritableDatabase();
+		long fi=dbwrite.delete(""+DBtables.TB_registro_bonificaciones.TAG, where, args);
+		Log.e(TAG, S_TAG+"Cant eliminados "+fi+" \nwhere exec "+where);
+
+		String where2 = "oc_numero=?\n" +
+				"and cip not in (select salida from registro_bonificaciones where oc_numero=?)\n" +
+				"and tipo_producto != 'V'";
+		String[] args2 = { oc_numero, oc_numero};
+
+		long fi2=dbwrite.delete(""+DBtables.Pedido_detalle.TAG, where2, args2);
+		Log.e(TAG, S_TAG+"Cant eliminados "+fi2+" \nwhere exec "+where2);
+	}
+
 }

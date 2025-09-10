@@ -42,6 +42,9 @@ public class DBPedido_Detalle implements KvmSerializable {
 	private String numeroDevolucion;
 	private double porcentaje_desc_extra;
 
+	private int sec_promo_prioridad;
+	private int item_promo_prioridad;
+
 	
 	
 	public String getMotivoDevolucion() {
@@ -438,6 +441,22 @@ public class DBPedido_Detalle implements KvmSerializable {
 		this.porcentaje_desc_extra = porcentaje_desc_extra;
 	}
 
+	public int getSec_promo_prioridad() {
+		return sec_promo_prioridad;
+	}
+
+	public void setSec_promo_prioridad(int sec_promo_prioridad) {
+		this.sec_promo_prioridad = sec_promo_prioridad;
+	}
+
+	public int getItem_promo_prioridad() {
+		return item_promo_prioridad;
+	}
+
+	public void setItem_promo_prioridad(int item_promo_prioridad) {
+		this.item_promo_prioridad = item_promo_prioridad;
+	}
+
 	public boolean convertirMonedaTo(String moneda, double tipoCambio){
 		if(moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){
 			convertirMonedaToSoles(tipoCambio);
@@ -467,5 +486,44 @@ public class DBPedido_Detalle implements KvmSerializable {
 		double precioNetoVenta = VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(this.precio_bruto) * this.cantidad);
 		this.precio_neto = String.valueOf(precioNetoVenta);
 		this.descuento = ""+VARIABLES.getDoubleFormaterThreeDecimal(precioNetoLista - precioNetoVenta);
+	}
+
+	public DBPedido_Detalle getNuevaInstancia(DBPedido_Detalle itemDetalle_ok) {
+		DBPedido_Detalle neww= new DBPedido_Detalle();
+		neww.setOc_numero(itemDetalle_ok.getOc_numero());
+		neww.setEan_item(itemDetalle_ok.getEan_item());
+		neww.setCip(itemDetalle_ok.getCip());
+		neww.setPrecio_bruto(itemDetalle_ok.getPrecio_bruto());
+		neww.setPrecio_neto(itemDetalle_ok.getPrecio_neto());
+		neww.setPercepcion(itemDetalle_ok.getPercepcion());
+		neww.setCantidad(itemDetalle_ok.getCantidad());
+		neww.setTipo_producto(itemDetalle_ok.getTipo_producto());
+		neww.setUnidad_medida(itemDetalle_ok.getUnidad_medida());
+		neww.setUnidad_medida2(itemDetalle_ok.getUnidad_medida2());
+		neww.setPeso_bruto(itemDetalle_ok.getPeso_bruto());
+		neww.setFlag(itemDetalle_ok.getFlag());
+		neww.setCod_politica(itemDetalle_ok.getCod_politica());
+		neww.setSec_promo(itemDetalle_ok.getSec_promo());
+		neww.setItem_promo(itemDetalle_ok.getItem_promo());
+		neww.setAgrup_promo(itemDetalle_ok.getAgrup_promo());
+		neww.setItem(itemDetalle_ok.getItem());
+		neww.setPrecioLista(itemDetalle_ok.getPrecioLista());
+		neww.setDescuento(itemDetalle_ok.getDescuento());
+		neww.setPorcentaje_desc(itemDetalle_ok.getPorcentaje_desc());
+		neww.setLote(itemDetalle_ok.getLote());
+		neww.setMotivoDevolucion(itemDetalle_ok.getMotivoDevolucion());
+		neww.setExpectativa(itemDetalle_ok.getExpectativa());
+		neww.setEnvase(itemDetalle_ok.getEnvase());
+		neww.setContenido(itemDetalle_ok.getContenido());
+		neww.setProceso(itemDetalle_ok.getProceso());
+		neww.setObservacionDevolucion(itemDetalle_ok.getObservacionDevolucion());
+		neww.setTipoDocumento(itemDetalle_ok.getTipoDocumento());
+		neww.setSerieDevolucion(itemDetalle_ok.getSerieDevolucion());
+		neww.setNumeroDevolucion(itemDetalle_ok.getNumeroDevolucion());
+		neww.setPorcentaje_desc_extra(itemDetalle_ok.getPorcentaje_desc_extra());
+		neww.setSec_promo_prioridad(itemDetalle_ok.getSec_promo_prioridad());
+		neww.setItem_promo_prioridad(itemDetalle_ok.getItem_promo_prioridad());
+
+		return neww;
 	}
 }

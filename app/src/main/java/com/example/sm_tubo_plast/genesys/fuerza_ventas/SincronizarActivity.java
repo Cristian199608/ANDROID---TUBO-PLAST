@@ -1122,7 +1122,10 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             String NombreMetodo = "";
             String error = "0";
 
-            if (origen.equals("LOGIN")) {
+            if (!cd.hasActiveInternetConnection(getApplicationContext())){
+                error = "2";
+            }
+            else if (origen.equals("LOGIN")) {
                 /* SINCRONIZACION DESDE EL LOGIN */
                 if (cd.hasActiveInternetConnection2() || 5==5) {
 
@@ -1174,15 +1177,15 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         }
                     }
                 } else {
-                    error = "2";
+                    error = "22";
                 }
-
             } else {
                 /* SINCRONIZACION DESDE LA APP, TABLAS */
-                if (cd.isConnectingToInternet()) {
-
+                if (!cd.hasActiveInternetConnection2()){
+                    error = "22";
+                }
+                else {
                     String datetime = "";
-
                     try {
                         datetime = soap_manager.obtenerHoraServBD(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
                     } catch (Exception e) {
@@ -1810,10 +1813,6 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                     }
                     //
 
-                } else {
-
-                    error = "2";
-
                 }
 
             }
@@ -1872,11 +1871,16 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", true);
                 editor_preferencias.apply();
 
-            } else if (result.equals("2")) {
+            } else if (result.equals("2") || result.equals("22")) {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
-                alerta.setTitle("Sin conexion al Servidor");
-                alerta.setMessage( GlobalVar.urlService);
+                alerta.setTitle("No tienes conexión a internet");//por default
+                if(result.equals("22")){
+                    alerta.setTitle("Sin conexión al Servidor");
+                }
+                alerta.setMessage( "No se pudo establecer la conexión a "+GlobalVar.urlService+"\n\n" +
+                        "Puedes continuar realizando tus operaciones en modo OFFLINE (guardar datos en el celular)" );
+
                 alerta.setIcon(R.drawable.icon_error);
                 alerta.setCancelable(false);
                 alerta.setPositiveButton("OK", null);

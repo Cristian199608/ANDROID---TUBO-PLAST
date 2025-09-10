@@ -1,6 +1,6 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
-public class model_bonificacion {
+public class Model_bonificacion {
 	private String codigo;
 	private String descripcion;
 	private String entrada;
@@ -14,7 +14,8 @@ public class model_bonificacion {
 	private int stock2;
 	private int cantidad;
 	private boolean checked;
-		
+	private int prioridad;
+
 	public String getCodigo() {
 		return codigo;
 	}
@@ -95,7 +96,12 @@ public class model_bonificacion {
 	public void setDescripcionEntrada(String descripcionEntrada) {
 		this.descripcionEntrada = descripcionEntrada;
 	}
-	
-	
-	
+
+	public int getPrioridad() {
+		return prioridad;
+	}
+
+	public void setPrioridad(int prioridad) {
+		this.prioridad = prioridad;
+	}
 }

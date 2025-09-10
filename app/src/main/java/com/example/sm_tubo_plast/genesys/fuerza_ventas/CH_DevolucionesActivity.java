@@ -43,7 +43,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -64,7 +63,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.RegistroGeneralMovil;
 import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalle;
@@ -2518,8 +2517,8 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
                      * (ESTA REGISTRADO) -se obtienen las cantidades del
                      * registro bonificaciones campo(cantidadDisponible)
                      */
-                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,dbPedido_Detalle.getCip());
-                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,dbPedido_Detalle.getCip());
+                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,dbPedido_Detalle.getCip(),0);
+                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,dbPedido_Detalle.getCip(),0);
                     int cantidadUnidadesMin = Convertir_toUnidadesMinimas(dbPedido_Detalle.getCip(),dbPedido_Detalle.getUnidad_medida(),dbPedido_Detalle.getCantidad());
                     // Si hay cantidad disponible tambien hay monto disponible
 
@@ -2665,8 +2664,8 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
                      * (ESTA REGISTRADO) -se obtienen las cantidades del
                      * registro bonificaciones campo(cantidadDisponible)
                      */
-                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,pedidoDetalle.getCip());
-                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,pedidoDetalle.getCip());
+                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,pedidoDetalle.getCip(),0);
+                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,pedidoDetalle.getCip(),0);
                     int cantidadUnidadesMin = Convertir_toUnidadesMinimas(pedidoDetalle.getCip(),pedidoDetalle.getUnidad_medida(),pedidoDetalle.getCantidad());
                     // Si hay cantidad disponible tambien hay monto disponible
 
@@ -2775,10 +2774,10 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
                         int cantidadDisponible = DAOBonificaciones
                                 .getCantidadDisponible(Oc_numero,
-                                        pedidoDetalle2.getCip());
+                                        pedidoDetalle2.getCip(),0);
                         double montoDisponible = DAOBonificaciones
                                 .getMontoDisponible(Oc_numero,
-                                        pedidoDetalle2.getCip());
+                                        pedidoDetalle2.getCip(),0);
                         int cantidadUnidadesMin = Convertir_toUnidadesMinimas(
                                 pedidoDetalle2.getCip(),
                                 pedidoDetalle2.getUnidad_medida(),
@@ -2917,10 +2916,10 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
                         int cantidadDisponible = DAOBonificaciones
                                 .getCantidadDisponible(Oc_numero,
-                                        AuxItemDetalle.getCip());
+                                        AuxItemDetalle.getCip(),0);
                         double montoDisponible = DAOBonificaciones
                                 .getMontoDisponible(Oc_numero,
-                                        AuxItemDetalle.getCip());
+                                        AuxItemDetalle.getCip(),0);
                         if (cantidadDisponible == -1) {
                             int cantidadCalculada = Convertir_toUnidadesMinimas(
                                     AuxItemDetalle.getCip(),
@@ -3029,8 +3028,8 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
                     if (AuxItemPromo.getEntrada().equals(AuxItemDetalle.getCip())) {
 
-                        int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,AuxItemDetalle.getCip());
-                        double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,AuxItemDetalle.getCip());
+                        int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,AuxItemDetalle.getCip(),0);
+                        double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,AuxItemDetalle.getCip(),0);
                         int cantidadUnidadesMin = Convertir_toUnidadesMinimas(AuxItemDetalle.getCip(),AuxItemDetalle.getUnidad_medida(),AuxItemDetalle.getCantidad());
                         // Si hay cantidad disponible tambien hay monto disponible
 
@@ -3147,10 +3146,10 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
                             int cantidadDisponible = DAOBonificaciones
                                     .getCantidadDisponible(Oc_numero,
-                                            AuxItemDetalle.getCip());
+                                            AuxItemDetalle.getCip(),0);
                             double montoDisponible = DAOBonificaciones
                                     .getMontoDisponible(Oc_numero,
-                                            AuxItemDetalle.getCip());
+                                            AuxItemDetalle.getCip(),0);
                             if (cantidadDisponible == -1) {
                                 int cantidadCalculada = Convertir_toUnidadesMinimas(
                                         AuxItemDetalle.getCip(),
@@ -3203,9 +3202,9 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
             Log.d("", "Es de tipo Ó");
 
             int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(
-                    Oc_numero, itemDetalle.getCip());
+                    Oc_numero, itemDetalle.getCip(),0);
             double montoDisponible = DAOBonificaciones.getMontoDisponible(
-                    Oc_numero, itemDetalle.getCip());
+                    Oc_numero, itemDetalle.getCip(),0);
 
             // Si hay cantidad disponible tambien hay monto disponible
 
@@ -4139,12 +4138,12 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
 
     }
 
-    public ArrayList<model_bonificacion> CastModelBonificacion(
+    public ArrayList<Model_bonificacion> CastModelBonificacion(
             ItemProducto[] productos) {
-        ArrayList<model_bonificacion> listaBonif = new ArrayList<model_bonificacion>();
+        ArrayList<Model_bonificacion> listaBonif = new ArrayList<Model_bonificacion>();
 
         for (int i = 0; i < productos.length; i++) {
-            model_bonificacion bonificacion = new model_bonificacion();
+            Model_bonificacion bonificacion = new Model_bonificacion();
             bonificacion.setCodigo(productos[i].getCodprod());
             bonificacion.setDescripcion((productos[i].getDescripcion()));
             // bonificacion.setEntrada(entrada);

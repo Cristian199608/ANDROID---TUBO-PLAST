@@ -8,16 +8,16 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 
 import java.util.ArrayList;
 
 public class CH_Adapter_bonificaciones extends BaseAdapter {
 
 	protected Activity activity;
-	protected ArrayList<model_bonificacion> listaBonificaciones;
+	protected ArrayList<Model_bonificacion> listaBonificaciones;
 	
-	public CH_Adapter_bonificaciones(Activity activity, ArrayList<model_bonificacion> listaBonificaciones){
+	public CH_Adapter_bonificaciones(Activity activity, ArrayList<Model_bonificacion> listaBonificaciones){
 		this.activity = activity;
 		this.listaBonificaciones = listaBonificaciones;
 	}
@@ -49,6 +49,7 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 
 			holder = new ViewHolder();
 
+			holder.txtIsPrioridad = (TextView) item.findViewById(R.id.txtIsPrioridad);
 			holder.txtCodigo = (TextView) item.findViewById(R.id.tv_codigoBonificacion);
 			holder.txtDescripcion = (TextView) item.findViewById(R.id.tv_descripcionBonificacion);
 			holder.txtPrecio = (TextView) item.findViewById(R.id.tv_precioBonificacion);
@@ -62,7 +63,7 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 			holder = (ViewHolder) item.getTag();
 		}
 		
-		model_bonificacion bonificacion = listaBonificaciones.get(position);
+		Model_bonificacion bonificacion = listaBonificaciones.get(position);
 		holder.txtCodigo.setText(bonificacion.getCodigo());
 		holder.txtDescripcion.setText(bonificacion.getDescripcion());
 		int cantidad = bonificacion.getCantidad();
@@ -70,12 +71,19 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 		holder.txtPrecio.setText(bonificacion.getPrecio());
 		holder.txtUnidadMedida.setText(""+bonificacion.getUnidadMedida());
 		holder.txtFactorConversion.setText(""+bonificacion.getFactorConversion());
-		
+
+		if (bonificacion.getPrioridad()==1){
+			holder.txtIsPrioridad.setVisibility(View.VISIBLE);
+		}
+		else {
+			holder.txtIsPrioridad.setVisibility(View.INVISIBLE);
+		}
+
 		return item;
 	}
 	
 	public class ViewHolder {
-		TextView txtCodigo;
+		TextView txtCodigo,txtIsPrioridad;
 		TextView txtDescripcion,txtCantidadBonificada;
 		TextView txtEntrada, txtPrecio, txtUnidadMedida;
 		TextView txtFactorConversion;

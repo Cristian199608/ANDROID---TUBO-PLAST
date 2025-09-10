@@ -66,7 +66,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalle;
@@ -3149,9 +3149,21 @@ private void EnvalularMoneda(){
             Log.d("PedidosActivity", "Saldo devuelto por "+nuloAgregado.getSalida()+" al codigoRegistro:"+registroUsado.getCodigoRegistro()+" saldo total:"+(registroUsado.getSaldo()+nuloAgregado.getCantidadEntregada()));
         }
 
-        DAOBonificaciones.Eliminar_RegistroBonificacion_xSalida(Oc_numero,codPro);
-        DAOPedidoDetalle.Eliminar_itemPedidoBonificacion(codPro, Oc_numero);
+        //obtenemos todos las secuencia promocion e item que dependa del producto salida
+        ArrayList<DB_RegistroBonificaciones> bonificaciones_xSalida = DAOBonificaciones.getRegistroBonificaciones_xSalida(Oc_numero, codPro);
+        for (int i = 0; i < bonificaciones_xSalida.size(); i++) {
+            DB_RegistroBonificaciones dbRegBonif = bonificaciones_xSalida.get(i);
+            //▄ ▄ ▄ ▄ ▄ ▄Actualizamos los precios con descuento a 0 a todos los productos q dependen ▄ ▄ ▄ ▄
+            int secuencia_promocion=dbRegBonif.getSecuenciaPromocion();
+            int item_promocion  =dbRegBonif.getItem();
+            String productoSalida  =dbRegBonif.getSalida();
 
+            DAOBonificaciones.Eliminar_RegistroBonificacion_xSalida(Oc_numero, productoSalida);
+            /**--Verificamos si hay otro prod de bonfiicacion con el mismo secuencia de promocion ---*/
+            DAOPedidoDetalle.Eliminar_itemPedidoBonificacion(productoSalida, Oc_numero );
+
+            DAOBonificaciones.eliminarBonificacionXSecuenciaConCero(Oc_numero, secuencia_promocion);
+        }
         Log.e("", "---------------------------------");
         Gson gson2 = new Gson();
         Log.d("listaRegistroBonificacaciones", gson2.toJson(DAOBonificaciones.ObtenerRegistroBonificaciones()));
@@ -3841,6 +3853,10 @@ private void EnvalularMoneda(){
                         itemDetalle.setTipoDocumento("");
                         itemDetalle.setSerieDevolucion("");
                         itemDetalle.setNumeroDevolucion("");
+                        itemDetalle.setSec_promo("");
+                        itemDetalle.setItem_promo(0);
+                        itemDetalle.setSec_promo_prioridad(0);
+                        itemDetalle.setItem_promo_prioridad(0);
 
                         dbclass.AgregarPedidoDetallePrincipal(itemDetalle, nro_item);
                     }
@@ -4754,8 +4770,8 @@ private void EnvalularMoneda(){
                      * (ESTA REGISTRADO) -se obtienen las cantidades del
                      * registro bonificaciones campo(cantidadDisponible)
                      */
-                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,dbPedido_Detalle.getCip());
-                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,dbPedido_Detalle.getCip());
+                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,dbPedido_Detalle.getCip(), db_PromocionDetalle.getPrioridad());
+                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,dbPedido_Detalle.getCip(),db_PromocionDetalle.getPrioridad());
                     int cantidadUnidadesMin = Convertir_toUnidadesMinimas(dbPedido_Detalle.getCip(),dbPedido_Detalle.getUnidad_medida(),dbPedido_Detalle.getCantidad());
                     // Si hay cantidad disponible tambien hay monto disponible
 
@@ -4899,8 +4915,8 @@ private void EnvalularMoneda(){
                      * (ESTA REGISTRADO) -se obtienen las cantidades del
                      * registro bonificaciones campo(cantidadDisponible)
                      */
-                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,pedidoDetalle.getCip());
-                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,pedidoDetalle.getCip());
+                    int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,pedidoDetalle.getCip(), promocionAND.getPrioridad());
+                    double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,pedidoDetalle.getCip(), promocionAND.getPrioridad());
                     int cantidadUnidadesMin = Convertir_toUnidadesMinimas(pedidoDetalle.getCip(),pedidoDetalle.getUnidad_medida(),pedidoDetalle.getCantidad());
                     // Si hay cantidad disponible tambien hay monto disponible
 
@@ -5009,10 +5025,10 @@ private void EnvalularMoneda(){
 
                         int cantidadDisponible = DAOBonificaciones
                                 .getCantidadDisponible(Oc_numero,
-                                        pedidoDetalle2.getCip());
+                                        pedidoDetalle2.getCip(), promocionOR.getPrioridad());
                         double montoDisponible = DAOBonificaciones
                                 .getMontoDisponible(Oc_numero,
-                                        pedidoDetalle2.getCip());
+                                        pedidoDetalle2.getCip(), promocionOR.getPrioridad());
                         int cantidadUnidadesMin = Convertir_toUnidadesMinimas(
                                 pedidoDetalle2.getCip(),
                                 pedidoDetalle2.getUnidad_medida(),
@@ -5151,10 +5167,10 @@ private void EnvalularMoneda(){
 
                         int cantidadDisponible = DAOBonificaciones
                                 .getCantidadDisponible(Oc_numero,
-                                        AuxItemDetalle.getCip());
+                                        AuxItemDetalle.getCip(), AuxItemPromo.getPrioridad());
                         double montoDisponible = DAOBonificaciones
                                 .getMontoDisponible(Oc_numero,
-                                        AuxItemDetalle.getCip());
+                                        AuxItemDetalle.getCip(), AuxItemPromo.getPrioridad());
                         if (cantidadDisponible == -1) {
                             int cantidadCalculada = Convertir_toUnidadesMinimas(
                                     AuxItemDetalle.getCip(),
@@ -5263,8 +5279,8 @@ private void EnvalularMoneda(){
 
                     if (AuxItemPromo.getEntrada().equals(AuxItemDetalle.getCip())) {
 
-                        int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,AuxItemDetalle.getCip());
-                        double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,AuxItemDetalle.getCip());
+                        int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(Oc_numero,AuxItemDetalle.getCip(), AuxItemPromo.getPrioridad());
+                        double montoDisponible = DAOBonificaciones.getMontoDisponible(Oc_numero,AuxItemDetalle.getCip(),AuxItemPromo.getPrioridad());
                         int cantidadUnidadesMin = Convertir_toUnidadesMinimas(AuxItemDetalle.getCip(),AuxItemDetalle.getUnidad_medida(),AuxItemDetalle.getCantidad());
                         // Si hay cantidad disponible tambien hay monto disponible
 
@@ -5381,10 +5397,10 @@ private void EnvalularMoneda(){
 
                             int cantidadDisponible = DAOBonificaciones
                                     .getCantidadDisponible(Oc_numero,
-                                            AuxItemDetalle.getCip());
+                                            AuxItemDetalle.getCip(), AuxItemPromo.getPrioridad());
                             double montoDisponible = DAOBonificaciones
                                     .getMontoDisponible(Oc_numero,
-                                            AuxItemDetalle.getCip());
+                                            AuxItemDetalle.getCip(), AuxItemPromo.getPrioridad());
                             if (cantidadDisponible == -1) {
                                 int cantidadCalculada = Convertir_toUnidadesMinimas(
                                         AuxItemDetalle.getCip(),
@@ -5437,9 +5453,9 @@ private void EnvalularMoneda(){
             Log.d("", "Es de tipo Ó");
 
             int cantidadDisponible = DAOBonificaciones.getCantidadDisponible(
-                    Oc_numero, itemDetalle.getCip());
+                    Oc_numero, itemDetalle.getCip(), itemPromocion.getPrioridad());
             double montoDisponible = DAOBonificaciones.getMontoDisponible(
-                    Oc_numero, itemDetalle.getCip());
+                    Oc_numero, itemDetalle.getCip(), itemPromocion.getPrioridad());
 
             // Si hay cantidad disponible tambien hay monto disponible
 
@@ -5996,23 +6012,26 @@ private void EnvalularMoneda(){
                     }
                 } else {
                     Log.d("PedidosActivity ","la bonificacion pendiente no esta registrado.... agregando cantidad: "+ lista.get(i).getCantidadEntregada());
-                    agregarProductoxPromocion(
-                            lista.get(i).getSalida(),
-                            ""+0,
-                            lista.get(i).getCantidadEntregada());
+
+                    UtilViewMensaje.MENSAJE_simple(this, "Bonificacion?","Intentas agregar una bonificación pendiente? No esta disponible por ahora eso ");
+                    //                    agregarProductoxPromocion(
+//                            lista.get(i).getSalida(),
+//                            ""+0,
+//                            lista.get(i).getCantidadEntregada(),
+//                            );
                 }
             }
         }
     }
 
-    public void getProductoSalida(DBPedido_Detalle itemDetalle,String descripcion) {
+    public void getProductoSalida(DBPedido_Detalle itemDetalle_ok,String descripcion) {
         // la cantidadCalculada es la transformada con el factor de conversion.
 
-        int cantidadCalculada = VerificarSiTienePromocion(itemDetalle.getCip(),itemDetalle.getUnidad_medida(), itemDetalle.getCod_politica(),itemDetalle.getCantidad(),codigoUbigeo);
+        int cantidadCalculada = VerificarSiTienePromocion(itemDetalle_ok.getCip(),itemDetalle_ok.getUnidad_medida(), itemDetalle_ok.getCod_politica(),itemDetalle_ok.getCantidad(),codigoUbigeo);
 
         if (cantidadCalculada > 0) {
             Iterator<DB_PromocionDetalle> it_itemDetallePromocion = al_PromocionDetalle.iterator(); // -> lista de promocion detalle (promociones con esa entrada)
-            Log.d("PedidosActivity ::getProductoSalida2::","EL PRODUCTO: " + itemDetalle.getCip() + " tiene "+ al_PromocionDetalle.size() + " promocion(es)");
+            Log.d("PedidosActivity ::getProductoSalida2::","EL PRODUCTO: " + itemDetalle_ok.getCip() + " tiene "+ al_PromocionDetalle.size() + " promocion(es)");
 
             ArrayList<Integer> listaCantidades = new ArrayList<Integer>();
             ArrayList<DB_PromocionDetalle> listaPromociones = new ArrayList<DB_PromocionDetalle>();
@@ -6023,7 +6042,7 @@ private void EnvalularMoneda(){
             while (it_itemDetallePromocion.hasNext()) {
                 Object objeto = it_itemDetallePromocion.next();
                 DB_PromocionDetalle itemPromocion = (DB_PromocionDetalle) objeto;
-
+                DBPedido_Detalle itemDetalle= itemDetalle_ok.getNuevaInstancia(itemDetalle_ok);
                 /*
                  * Acumulado 0 --> No
                  * Acumulado 1 --> Si
@@ -6141,7 +6160,7 @@ private void EnvalularMoneda(){
             if (listaPromociones.size() > 0) {
 
                 if (listaPromociones.size() > 1) {
-                    ArrayList<model_bonificacion> listaBonif = new ArrayList<model_bonificacion>();
+                    ArrayList<Model_bonificacion> listaBonif = new ArrayList<Model_bonificacion>();
                     ArrayList<Integer> items_tipoAgrupado = new ArrayList<Integer>();
                     ArrayList<Integer> listaEscalasBajas = new ArrayList<Integer>();
                     ArrayList<DB_PromocionDetalle> listaEscalasRemover = new ArrayList<DB_PromocionDetalle>();
@@ -6211,14 +6230,12 @@ private void EnvalularMoneda(){
 
                     for (int i = 0; i < listaPromociones.size(); i++) {
 
-                        DB_PromocionDetalle promocionDetalle = listaPromociones
-                                .get(i);
-                        boolean esAgrupado = DAOBonificaciones
-                                .esAgrupado_acumulado(promocionDetalle);
+                        DB_PromocionDetalle promocionDetalle = listaPromociones.get(i);
+                        boolean esAgrupado = DAOBonificaciones.esAgrupado_acumulado(promocionDetalle);
                         if (esAgrupado == true) {
                             items_tipoAgrupado.add(i);
                         }
-                        model_bonificacion bonificacion = DAOBonificaciones
+                        Model_bonificacion bonificacion = DAOBonificaciones
                                 .getModelBonificacion(listaCantidades.get(i),
                                         listaPromociones.get(i).getSalida(),
                                         listaPromociones.get(i).getEntrada());
@@ -6234,17 +6251,56 @@ private void EnvalularMoneda(){
                             i--;
                         }
                         else {
+                            bonificacion.setPrioridad(listaPromociones.get(i).getPrioridad());
                             listaBonif.add(bonificacion);
                         }
                     }
-                    itemDetalleGlobal = itemDetalle;
+
+                    //verificamos si hay mas de un prioridad
+                    double cantCondicion=-1;
+                    double MontoCondicion=-1;//1991, problema 1990
+                    int posOldPrioridad=-1;//1991, problema 1990
+                    for (int i=0; i<listaBonif.size();i++){
+
+                        if (listaPromociones.get(i).getPrioridad()==1){
+                            if (cantCondicion>-1 || MontoCondicion>-1){
+                                int locamlRemove=i;
+                                if (cantCondicion<listaPromociones.get(i).getCant_condicion()  || MontoCondicion <Double.parseDouble(listaPromociones.get(i).getMonto()) ){
+                                    locamlRemove=posOldPrioridad;
+                                    cantCondicion=listaPromociones.get(i).getCant_condicion();
+                                    MontoCondicion=Double.parseDouble(listaPromociones.get(i).getMonto());
+
+                                    posOldPrioridad=i-1;
+                                }
+                                //Elinamos de la posicion el item
+                                Log.e(TAG, " removiendo prioridad de listaBonif  el producto bonif "+new Gson().toJson(listaBonif.get(posOldPrioridad)));
+                                listaBonif.remove(locamlRemove);
+                                listaCantidades.remove(locamlRemove);
+                                listaPromociones.remove(locamlRemove);
+                                listaPromocionCompuesta.remove(locamlRemove);
+                                //items_tipoAgrupado.remove(i); YA no se usa
+                                listaCantidadesUsadas.remove(locamlRemove);
+                                listaMontosUsados.remove(locamlRemove);
+                                i--;
+
+                            }else {
+                                posOldPrioridad=i;
+                                cantCondicion=listaPromociones.get(posOldPrioridad).getCant_condicion();
+                                MontoCondicion=Double.parseDouble(listaPromociones.get(posOldPrioridad).getMonto());
+                            }
+                        }
+                    }
+
+                    int positionOldPrioridad=posOldPrioridad;
+
+                    itemDetalleGlobal = itemDetalle_ok;
                     Log.w("-->","JSON MULTIPLE "+ gson.toJson(listaBonif) );
 
                     DialogFragment_bonificaciones dialog_bonificaciones = new DialogFragment_bonificaciones(
                             listaBonif, descripcion, listaPromociones,
                             listaCantidades, listaPromocionCompuesta,
                             items_tipoAgrupado, listaCantidadesUsadas,
-                            listaMontosUsados);
+                            listaMontosUsados,positionOldPrioridad);
                     dialog_bonificaciones.show(getSupportFragmentManager(),
                             "dialogBonificaciones");
                     dialog_bonificaciones.setCancelable(false);
@@ -6252,13 +6308,13 @@ private void EnvalularMoneda(){
                 } else {
                     /* LA BONIFICACION SE DEBE MOSTRAR COMO UNA OPCION A ELEGIR */
                     Log.w("", "la lista tiene un item");
-                    itemDetalleGlobal = itemDetalle;
+                    itemDetalleGlobal = itemDetalle_ok;
 
                     ArrayList<Integer> items_tipoAgrupado = new ArrayList<Integer>();
-                    ArrayList<model_bonificacion> listaBonif = new ArrayList<model_bonificacion>();
+                    ArrayList<Model_bonificacion> listaBonif = new ArrayList<Model_bonificacion>();
 
                     for (int i = 0; i < listaPromociones.size(); i++) {
-                        model_bonificacion bonificacion = DAOBonificaciones.getModelBonificacion(listaCantidades.get(i),
+                        Model_bonificacion bonificacion = DAOBonificaciones.getModelBonificacion(listaCantidades.get(i),
                                 listaPromociones.get(i).getSalida(),
                                 listaPromociones.get(i).getEntrada());
 
@@ -6274,17 +6330,19 @@ private void EnvalularMoneda(){
                             i--;
                         }
                         else{
+                            bonificacion.setPrioridad(listaPromociones.get(i).getPrioridad());
                             listaBonif.add(bonificacion);
                         }
                     }
 
                     Log.w("-->","JSON SOLO "+ gson.toJson(listaBonif) );
+                    int positionOldPrioridad=listaBonif.get(0).getPrioridad()==1?0:-1;
 
                     DialogFragment_bonificaciones dialog_bonificaciones = new DialogFragment_bonificaciones(
                             listaBonif, descripcion, listaPromociones,
                             listaCantidades, listaPromocionCompuesta,
                             items_tipoAgrupado, listaCantidadesUsadas,
-                            listaMontosUsados);
+                            listaMontosUsados, positionOldPrioridad);
                     dialog_bonificaciones.show(getSupportFragmentManager(),
                             "dialogBonificaciones");
                     dialog_bonificaciones.setCancelable(false);
@@ -6419,7 +6477,9 @@ private void EnvalularMoneda(){
                             promocionDetalle.getAcumulado(),
                             cantidadDisponible,
                             montoDisponible,
-                            codven);
+                            codven,
+                            promocionDetalle.getPrioridad()
+                            );
 
                     Log.d("", "AGREGANDO REGISTRO BONIFICACION");
                     Log.v("", "oc_numero: " + oc_numero);
@@ -6456,7 +6516,8 @@ private void EnvalularMoneda(){
                             promocionDetalle.getAcumulado(),
                             cantidadDisponible,
                             montoDisponible,
-                            codven);
+                            codven,
+                            promocionDetalle.getPrioridad());
 
                     Log.d("", "AGREGANDO REGISTRO BONIFICACION");
                     Log.v("", "oc_numero: " + oc_numero);
@@ -6505,8 +6566,8 @@ private void EnvalularMoneda(){
                             promocionDetalle.getEntrada(),
                             promocionDetalle.getAgrupado());
 
-            cantidadDisponibleRegistro = DAOBonificaciones.getCantidadDisponible(Oc_numero,itemDetalleGlobal.getCip());
-            montoDisponibleRegistro = DAOBonificaciones.getMontoDisponible(Oc_numero, itemDetalleGlobal.getCip());
+            cantidadDisponibleRegistro = DAOBonificaciones.getCantidadDisponible(Oc_numero,itemDetalleGlobal.getCip(), promocionDetalle.getPrioridad());
+            montoDisponibleRegistro = DAOBonificaciones.getMontoDisponible(Oc_numero, itemDetalleGlobal.getCip(), promocionDetalle.getPrioridad());
 
             if (cantidadDisponibleRegistro == -1) {
                 int cantidadCalculada = Convertir_toUnidadesMinimas(
@@ -6576,7 +6637,8 @@ private void EnvalularMoneda(){
                                 .parseInt(promocionDetalle
                                         .getTipo_unimed_salida()),
                         cantidadBonificada, promocionDetalle.getAcumulado(),
-                        cantidadDisponible, montoDisponible, codven);
+                        cantidadDisponible, montoDisponible, codven,
+                        promocionDetalle.getPrioridad());
 
                 Log.d("", "AGREGANDO REGISTRO BONIFICACION");
                 Log.v("", "oc_numero: " + oc_numero);
@@ -6647,7 +6709,12 @@ private void EnvalularMoneda(){
     }
 
     private void agregarProductoxPromocion(String salida,
-                                           String tipo_unimed_salida, int cantidadProducto) {
+                                           String tipo_unimed_salida,
+                                           int cantidadProducto,
+                                           int secuenciaPromo,
+                                             int itemPromo,
+                                             int prioridad
+                                           ) {
         // TODO Auto-generated method stub
 
         DBPedido_Detalle itemDetalle = new DBPedido_Detalle();
@@ -6664,6 +6731,13 @@ private void EnvalularMoneda(){
         itemDetalle.setFlag("N");
         itemDetalle.setPrecioLista("0");
         itemDetalle.setDescuento("0");
+        if (prioridad==1){
+            itemDetalle.setSec_promo_prioridad(secuenciaPromo);
+            itemDetalle.setItem_promo_prioridad(itemPromo);
+        }else {
+            itemDetalle.setSec_promo(""+secuenciaPromo);
+            itemDetalle.setItem_promo(itemPromo);
+        }
 
         dbclass.AgregarPedidoDetalle(itemDetalle);
     }
@@ -7122,12 +7196,12 @@ private void EnvalularMoneda(){
 
     }
 
-    public ArrayList<model_bonificacion> CastModelBonificacion(
+    public ArrayList<Model_bonificacion> CastModelBonificacion(
             ItemProducto[] productos) {
-        ArrayList<model_bonificacion> listaBonif = new ArrayList<model_bonificacion>();
+        ArrayList<Model_bonificacion> listaBonif = new ArrayList<Model_bonificacion>();
 
         for (int i = 0; i < productos.length; i++) {
-            model_bonificacion bonificacion = new model_bonificacion();
+            Model_bonificacion bonificacion = new Model_bonificacion();
             bonificacion.setCodigo(productos[i].getCodprod());
             bonificacion.setDescripcion((productos[i].getDescripcion()));
             // bonificacion.setEntrada(entrada);
@@ -7186,6 +7260,8 @@ private void EnvalularMoneda(){
     // Metodo del DialogFragment_bonificaciones
     @Override
     public void onItemClick(int posicion,
+                            boolean boniAutomatico,
+                            ArrayList<Model_bonificacion> listaBonif,
                             ArrayList<DB_PromocionDetalle> listaPromociones,
                             ArrayList<Integer> listaCantidades,
                             ArrayList<ArrayList<String[]>> listaPromocionesCompuestas,
@@ -7194,9 +7270,40 @@ private void EnvalularMoneda(){
                             ArrayList<ArrayList<Double>> listaMontosUsados) {
         // TODO Auto-generated method stub
 
+
+
+        if (!boniAutomatico)
+            AddBonificacionAutomatico(posicion, null, listaBonif, listaPromociones, listaCantidades,  listaPromocionesCompuestas, items_tipoAgrupado, listaCantidadesUsadas, listaMontosUsados);
+        if (listaPromociones.get(posicion).getPrioridad()!=1 || boniAutomatico){
+            int posPrioridad=0;
+            for (DB_PromocionDetalle item: listaPromociones){
+                if (item.getPrioridad()==1){
+                    AddBonificacionAutomatico(posPrioridad, "Bonificación Automática", listaBonif, listaPromociones, listaCantidades,  listaPromocionesCompuestas, items_tipoAgrupado, listaCantidadesUsadas, listaMontosUsados);
+                    break;
+                }
+                posPrioridad++;
+            }
+        }
+        //else //prioridad ya fue seleccionado
+        mostrarListaProductos("");
+
+
+    }
+    public void AddBonificacionAutomatico(int posicion,
+                                          String descripcionBoni,
+                                          ArrayList<Model_bonificacion> listaBonif,
+                            ArrayList<DB_PromocionDetalle> listaPromociones,
+                            ArrayList<Integer> listaCantidades,
+                            ArrayList<ArrayList<String[]>> listaPromocionesCompuestas,
+                            ArrayList<Integer> items_tipoAgrupado,
+                            ArrayList<ArrayList<Integer>> listaCantidadesUsadas,
+                            ArrayList<ArrayList<Double>> listaMontosUsados) {
+
         Log.e("",
                 "=====================================================================");
         Log.w("", "ACTION GLOBAL -> " + accionGlobal);
+        Model_bonificacion modelBonificacion = listaBonif.get(posicion);
+
         int cantidadActualizada = 0;
         if (accionGlobal!=null && accionGlobal.equals("editar")) {
             // Si se esta editando un producto, se debe eliminar las promociones
@@ -7263,7 +7370,11 @@ private void EnvalularMoneda(){
             agregarProductoxPromocion(
                     "B"+promocionDetalle.getSalida(),
                     promocionDetalle.getTipo_unimed_salida(),
-                    cantidadActualizada);
+                    cantidadActualizada,
+                    promocionDetalle.getSecuencia(),
+                    promocionDetalle.getItem(),
+                    promocionDetalle.getPrioridad()
+                    );
         }
         Log.e("",
                 "=======================================================================");
@@ -7278,7 +7389,7 @@ private void EnvalularMoneda(){
                 gson.toJson(DAOBonificaciones.ObtenerRegistroBonificaciones()));
         Log.d("listaPedidoDetalle",
                 gson.toJson(dbclass.getPedidosDetallexOc_numero(Oc_numero)));
-        mostrarListaProductos("B"+promocionDetalle.getSalida());
+//        mostrarListaProductos("B"+promocionDetalle.getSalida());
     }
 
     @Override

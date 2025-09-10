@@ -4669,8 +4669,8 @@ public void Sync_tabla_usuarios_Online(String url, String catalog, String user, 
 
 public int actualizarObjPedido() throws Exception{
 	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v2_json";
-	String METHOD_NAME="actualizarObjpedido_v2_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v3_json";
+	String METHOD_NAME="actualizarObjpedido_v3_json";
 	
 	ArrayList<DB_ObjPedido>  lista_obj_pedido= new ArrayList<DB_ObjPedido>();
     lista_obj_pedido = dbclass.getTodosObjPedido_json_flagp();
@@ -4772,8 +4772,8 @@ public int actualizarObjPedido() throws Exception{
 
 public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
    	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v2_json";
-	String METHOD_NAME="actualizarObjpedido_v2_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v3_json";
+	String METHOD_NAME="actualizarObjpedido_v3_json";
 	
 	String flag = "";
 	

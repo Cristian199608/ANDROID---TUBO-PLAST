@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.adapters.CH_Adapter_bonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 
@@ -22,16 +22,19 @@ import java.util.ArrayList;
 
 public class DialogFragment_bonificaciones extends DialogFragment {
         String descripcion;
-        ArrayList<model_bonificacion> listaBonificaciones;
+        ArrayList<Model_bonificacion> listaBonificaciones;
         ArrayList<DB_PromocionDetalle> listaPromociones;
         ArrayList<Integer> listaCantidades;
         ArrayList<ArrayList<String[]>> listaPromocionesCompuestas;
         ArrayList<Integer> items_tipoAgrupado;
         ArrayList<ArrayList<Integer>> listaCantidadesUsadas;
         ArrayList<ArrayList<Double>> listaMontosUsados;
+        int positionPrioridad;
 
 public interface DialogListener {
     public void onItemClick(int posicion,
+                            boolean isBonificarAutomatico,
+                            ArrayList<Model_bonificacion> listaBonificaciones,
                             ArrayList<DB_PromocionDetalle> listaPromociones,
                             ArrayList<Integer> listaCantidades,
                             ArrayList<ArrayList<String[]>> listaPromocionesCompuestas,
@@ -46,14 +49,15 @@ public interface DialogListener {
     DialogListener listener;
 
     public DialogFragment_bonificaciones(
-            ArrayList<model_bonificacion> listaBonificaciones,
+            ArrayList<Model_bonificacion> listaBonificaciones,
             String descripcion,
             ArrayList<DB_PromocionDetalle> listaPromociones,
             ArrayList<Integer> listaCantidades,
             ArrayList<ArrayList<String[]>> listraPromocionesCompuestas,
             ArrayList<Integer> items_tipoAgrupado,
             ArrayList<ArrayList<Integer>> listaCantidadesUsadas,
-            ArrayList<ArrayList<Double>> listaMontosUsados) {
+            ArrayList<ArrayList<Double>> listaMontosUsados,
+            int positionPrioridad) {
 
         this.listaBonificaciones = listaBonificaciones;
         this.descripcion = descripcion;
@@ -63,6 +67,7 @@ public interface DialogListener {
         this.items_tipoAgrupado = items_tipoAgrupado;
         this.listaCantidadesUsadas = listaCantidadesUsadas;
         this.listaMontosUsados = listaMontosUsados;
+        this.positionPrioridad = positionPrioridad;
     }
 
     @Override
@@ -103,7 +108,9 @@ public interface DialogListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                listener.onItemClick(position, listaPromociones,
+                listener.onItemClick(position,
+                        false,
+                        listaBonificaciones, listaPromociones,
                         listaCantidades, listaPromocionesCompuestas,
                         items_tipoAgrupado, listaCantidadesUsadas,
                         listaMontosUsados);
@@ -116,6 +123,15 @@ public interface DialogListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
+                        if(positionPrioridad<0)return;
+                        listener.onItemClick(
+                                positionPrioridad,
+                                false,
+                                listaBonificaciones, listaPromociones,
+                                listaCantidades, listaPromocionesCompuestas,
+                                items_tipoAgrupado, listaCantidadesUsadas,
+                                listaMontosUsados);
+
                     }
                 });
         alertBuilder.create();

@@ -34,9 +34,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
+import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
@@ -250,7 +252,7 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     cambiarRutaHttp();
-
+        setDataPrueba();
 //
 //        String carpeta_contenedor =getExternalFilesDir(Environment.DIRECTORY_DCIM).toString() + "/"+ VARIABLES.CARPERTA_CONTENEDOR+"/"+VARIABLES.CARPERTA_CONTENEDOR_PDF+"/";
 //        String nombreArchivo="pdfckdnkcnxxdkcn.pdf";
@@ -267,6 +269,14 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void cambiarRutaHttp(){
         dbusuarios.cambiarRutaHttpServicioWeb();
+    }
+    private void setDataPrueba(){
+        if(!VARIABLES.isSetDataPruebas) return;
+        dbusuarios.setDataPruebas();
+//        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
+//        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
+
+
     }
     public void GoSincronizarInicial(View view){
         Intent iconfig = new Intent(getApplicationContext(),

@@ -38,6 +38,8 @@ public class ItemProducto {
 	private String grupo;
 	private String familia;
 	private String subfamilia;
+	private String sec_promo;
+	private int sec_promo_prioridad;
 
 	
 	public String getGrupo() {
@@ -230,6 +232,21 @@ public class ItemProducto {
 		this.porcentaje_desc_extra = porcentaje_desc_extra;
 	}
 
+	public String getSec_promo() {
+		return sec_promo;
+	}
+
+	public void setSec_promo(String sec_promo) {
+		this.sec_promo = sec_promo;
+	}
+
+	public int getSec_promo_prioridad() {
+		return sec_promo_prioridad;
+	}
+
+	public void setSec_promo_prioridad(int sec_promo_prioridad) {
+		this.sec_promo_prioridad = sec_promo_prioridad;
+	}
 
 	public static class DataEdit implements Serializable{
 

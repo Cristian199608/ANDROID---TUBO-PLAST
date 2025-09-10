@@ -93,6 +93,7 @@ public class DAO_PromocionDetalle  extends SQLiteAssetHelper{
 			itemPromocion.setTotal_agrupado(cur.getInt(18));
 			itemPromocion.setTipo_promocion(cur.getString(19));
 			itemPromocion.setAcumulado(cur.getInt(22));
+			itemPromocion.setPrioridad(cur.getInt(cur.getColumnIndex("prioridad")));
 			Log.d("BDclasses ::obtenerListaAgrupados::secuencia: "+item.getSecuencia(), "Entrada(codigoProducto)-> "+itemPromocion.getEntrada());
 			lista_agrupados.add(itemPromocion);
 			cur.moveToNext();			
@@ -141,6 +142,7 @@ public class DAO_PromocionDetalle  extends SQLiteAssetHelper{
 			itemPromocion.setTotal_agrupado(cur.getInt(18));
 			itemPromocion.setTipo_promocion(cur.getString(19));
 			itemPromocion.setAcumulado(cur.getInt(22));
+			itemPromocion.setPrioridad(cur.getInt(cur.getColumnIndex("prioridad")));
 			Log.d("BDclasses ::obtenerListaAgrupados::secuencia: "+item.getSecuencia(), "Entrada(codigoProducto)-> "+itemPromocion.getEntrada());
 			lista_agrupados.add(itemPromocion);
 			cur.moveToNext();			

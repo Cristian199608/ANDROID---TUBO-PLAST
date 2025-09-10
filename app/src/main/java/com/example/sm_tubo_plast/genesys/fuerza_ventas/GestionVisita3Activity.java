@@ -252,7 +252,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 }else{
                     Toast.makeText(GestionVisita3Activity.this, "Error, no se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
                 }
-                String direccion_name=VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(GestionVisita3Activity.this, LOCATION.getAltitude(), LOCATION.getLongitude());
+                String direccion_name=VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(GestionVisita3Activity.this, LOCATION.getLatitude(), LOCATION.getLongitude());
                 Location_cambiado_2(LOCATION, direccion_name, true);
             }
         });

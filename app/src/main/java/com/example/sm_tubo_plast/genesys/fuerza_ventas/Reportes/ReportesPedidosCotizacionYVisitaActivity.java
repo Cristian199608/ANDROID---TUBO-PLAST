@@ -1316,6 +1316,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     public void crearDialogo_noventa() {
 
+        selectedPosition1=-1;
         dialogo = new Dialog(this);
         numOc = obj_dbclasses.obtenerMaxNumOc(codven);
         dialogo.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -1352,8 +1353,12 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
 
-                item = (DBMotivo_noventa) lstNoventa_motivo.getAdapter()
-                        .getItem(selectedPosition1);
+                if(selectedPosition1<0){
+                    GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Seleccione un motivo", GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+
+                item = (DBMotivo_noventa) lstNoventa_motivo.getAdapter().getItem(selectedPosition1);
 
                 dialogo.dismiss();
 
@@ -1719,7 +1724,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             }
         }
 
-        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses);//Se guarda referencia del pedido anterior
+
+        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses, DAORegistroBonificaciones);//Se guarda referencia del pedido anterior
         GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
         return cabecera;
 

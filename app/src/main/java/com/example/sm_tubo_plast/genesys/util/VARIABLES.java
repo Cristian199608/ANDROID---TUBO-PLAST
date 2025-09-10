@@ -32,6 +32,7 @@ public class VARIABLES {
 
     public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=false;
+    public static final  boolean isSetDataPruebas=true;
 
     public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
     public static String CARPERTA_CONTENEDOR_PDF="PDF";
@@ -57,8 +58,9 @@ public class VARIABLES {
                 "fuerzaventas_v2.1",
                 "fuerzaventas_v2.2",//end 2025-01-03
                 "fuerzaventas_v2.3",//end 2025-01-30
+                "fuerzaventas_v2.4", //at 2025-01-30
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_v2.4"; //at 2025-01-30
+        private static final String DATABASA_NAME       ="fuerzaventas_v2.5"; //at 2025-08-26
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={

@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.BEAN.model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 
 import java.math.BigDecimal;
@@ -20,9 +20,9 @@ import java.util.ArrayList;
 public class Adapter_bonificaciones extends BaseAdapter {
 
 	protected Activity activity;
-	protected ArrayList<model_bonificacion> listaBonificaciones;
+	protected ArrayList<Model_bonificacion> listaBonificaciones;
 	
-	public Adapter_bonificaciones(Activity activity, ArrayList<model_bonificacion> listaBonificaciones){
+	public Adapter_bonificaciones(Activity activity, ArrayList<Model_bonificacion> listaBonificaciones){
 		this.activity = activity;
 		this.listaBonificaciones = listaBonificaciones;
 	}
@@ -71,7 +71,7 @@ public class Adapter_bonificaciones extends BaseAdapter {
 
 		}
 		
-		model_bonificacion bonificacion = listaBonificaciones.get(position);
+		Model_bonificacion bonificacion = listaBonificaciones.get(position);
 		holder.txtCodigo.setText(bonificacion.getCodigo());
 		holder.txtDescripcion.setText(bonificacion.getDescripcion());
 		int cantidad = bonificacion.getCantidad();

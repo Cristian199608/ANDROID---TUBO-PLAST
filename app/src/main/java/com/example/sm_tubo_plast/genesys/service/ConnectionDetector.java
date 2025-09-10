@@ -75,7 +75,7 @@ public class ConnectionDetector {
 	    if (isConnectingToInternet()) {
 	    	
 	    	//String servicio = "saemoviles.com/Service.asmx";
-	    	String servicio = "www.google.com";	    	
+	    	String servicio = GlobalVar.urlService;
 	    	
 	        try {
 	            //HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());

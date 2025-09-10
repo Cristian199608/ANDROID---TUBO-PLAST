@@ -1,5 +1,8 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+
 public class DB_RegistroBonificaciones {
 
 	private String oc_numero;
@@ -173,6 +176,26 @@ public class DB_RegistroBonificaciones {
 	public void setFlagUltimo(int flagUltimo) {
 		this.flagUltimo = flagUltimo;
 	}
-	
+
+	public boolean convertirMonedaTo(String moneda, double tipoCambio){
+		if(moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){
+			convertirMonedaToSoles(tipoCambio);
+			return true;
+		}else if(moneda.equals(PedidosActivity.MONEDA_DOLARES_IN)){
+			convertirMonedaToDolar(tipoCambio);
+			return true;
+		}
+		return false;
+	}
+
+	private void convertirMonedaToSoles(double tipoCambio){
+		this.montoEntrada = VARIABLES.getDoubleFormaterThreeDecimal(this.montoEntrada* tipoCambio);
+		this.montoDisponible = VARIABLES.getDoubleFormaterThreeDecimal(this.montoDisponible* tipoCambio);
+	}
+	private void convertirMonedaToDolar(double tipoCambio){
+		this.montoEntrada = VARIABLES.getDoubleFormaterThreeDecimal(this.montoEntrada/ tipoCambio);
+		this.montoDisponible = VARIABLES.getDoubleFormaterThreeDecimal(this.montoDisponible/ tipoCambio);
+	}
+
 	
 }

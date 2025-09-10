@@ -105,8 +105,13 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 			//holder.bonificacion.setVisibility(View.VISIBLE);
 			String secuencia_promocion=promo.getSecuenciaporEntrada(codigoProduc, oc_numero);
 			//Log.w("ADAPTER ITEM PROD- CODIGO",""+sec);
-			if(promo.validarColorBono(secuencia_promocion)) item.setBackgroundColor(context.getResources().getColor(R.color.yellow_100));
-			else item.setBackgroundColor(context.getResources().getColor(R.color.light_green_300));
+			if(promo.validarColorBono(secuencia_promocion)) item.setBackgroundColor(context.getResources().getColor(R.color.purple_200));
+			else {
+				int colorItem=R.color.light_green_300;
+				if (datos.get(posicion).getSec_promo().length()>0) colorItem= R.color.yellow_100;
+				if (datos.get(posicion).getSec_promo_prioridad()>0) colorItem= R.color.orange_200;
+				item.setBackgroundColor(context.getResources().getColor(colorItem));
+			}
 			//holder.descripcion.setTextColor(context.getResources().getColor(R.color.indigo_500));
 		}	else item.setBackgroundColor(context.getResources().getColor(R.color.white));
 

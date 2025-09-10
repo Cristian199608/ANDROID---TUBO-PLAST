@@ -552,7 +552,9 @@ public class DBtables {
 		public static final String TIPO_DOCUMENTO = "tipoDocumento";
 		public static final String SERIE_DEVOLUCION = "serieDevolucion";
 		public static final String NUMERO_DEVOLUCION = "numeroDevolucion";
-				   
+		public static final String sec_promo_prioridad = "sec_promo_prioridad";
+		public static final String item_promo_prioridad = "item_promo_prioridad";
+
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" 
 				+ PK_OC_NUMERO + " CHAR(21), " 
@@ -818,6 +820,7 @@ public class DBtables {
 		public static final String MAX_PEDIDO = "max_pedido";
 		public static final String TOTAL_AGRUPADO = "total_agrupado";
 		public static final String CANT_COMP = "cant_comp";
+		public static final String prioridad = "prioridad";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + SECUENCIA + " INTEGER PRIMARY KEY, " + GENERAL
@@ -1258,7 +1261,8 @@ public class DBtables {
 		public static final String SUBFAMILIA = "subfamilia";
 		public static final String DESCUENTO = "descuento";
 		public static final String UBIGEO = "ubigeo";
-		
+		public static final String prioridad = "prioridad";
+
 
 	}
 

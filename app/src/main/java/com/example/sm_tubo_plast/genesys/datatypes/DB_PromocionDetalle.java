@@ -30,7 +30,8 @@ public class DB_PromocionDetalle {
 	private String familia;
 	private String subfamilia;
 	private String descuento;
-			
+	private int prioridad;
+
     public String getGrupo() {
 		return grupo;
 	}
@@ -183,7 +184,12 @@ public class DB_PromocionDetalle {
 	public void setAcumulado(int acumulado) {
 		this.acumulado = acumulado;
 	}
-	
-	
 
+	public int getPrioridad() {
+		return prioridad;
+	}
+
+	public void setPrioridad(int prioridad) {
+		this.prioridad = prioridad;
+	}
 }

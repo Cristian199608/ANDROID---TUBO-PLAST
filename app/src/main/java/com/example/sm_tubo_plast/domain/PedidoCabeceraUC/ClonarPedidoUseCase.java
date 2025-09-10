@@ -3,25 +3,32 @@ package com.example.sm_tubo_plast.domain.PedidoCabeceraUC;
 import android.app.Activity;
 
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
+import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 
+import java.util.ArrayList;
+
 public class ClonarPedidoUseCase {
     DAO_Pedido DAOPedidoDetalle;
     DBclasses obj_dbclasses;
+    DAO_RegistroBonificaciones daoRegistroBonificaciones;
     String oc_numero;
     String codven;
     //constructor
     public ClonarPedidoUseCase(DBclasses obj_dbclasses,
                                DAO_Pedido DAOPedidoDetalle,
+                               DAO_RegistroBonificaciones daoRegistroBonificaciones,
                                String codven,
                                String oc_numero
     ){
         this.obj_dbclasses=obj_dbclasses;
         this.DAOPedidoDetalle=DAOPedidoDetalle;
+        this.daoRegistroBonificaciones=daoRegistroBonificaciones;
         this.codven=codven;
         this.oc_numero=oc_numero;
     }
@@ -48,7 +55,7 @@ public class ClonarPedidoUseCase {
             }
         }
 
-        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses);//Se guarda referencia del pedido anterior
+        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses, daoRegistroBonificaciones);//Se guarda referencia del pedido anterior
         //GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
         return cabecera;
 

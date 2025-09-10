@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
+import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
@@ -61,7 +62,12 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 	
 	public void Eliminar_itemPedidoBonificacion(String codprod, String oc_numero) {
 
-		String where = "oc_numero = ? and cip = ? and tipo_producto in ('C','M')";
+		String where = "oc_numero = ? and cip = ? and tipo_producto in ('C','M') " +
+				//y los q tengan relacion con bonificaciones
+				"and (" +
+				"	case when length(sec_promo)>0 then cast(sec_promo as int) else 0 end > 0 " +
+				"	or case when length(sec_promo_prioridad)>0 then cast(sec_promo_prioridad as int) else 0 end > 0 " +
+				")";
 		String[] args = { oc_numero, codprod};
 
 		try {
@@ -178,6 +184,9 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			item.setDescuento(cur.getString(18));
 			item.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
 			item.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
+			item.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
+			item.setSec_promo_prioridad(cur.getInt(cur.getColumnIndex("sec_promo_prioridad")));
+			item.setItem_promo_prioridad(cur.getInt(cur.getColumnIndex("item_promo_prioridad")));
 			lista.add(item);
 			Log.d(TAG,"getPedidoDetalle: "+oc_numero+" cip "+item.getCip());			
 			cur.moveToNext();			
@@ -189,7 +198,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 	public void ClonarPedido(DBPedido_Cabecera cabecera,
 							 boolean convertirMoneda,
 							 double tipocambio,
-							 DBclasses _dbClases) {
+							 DBclasses _dbClases,
+							 DAO_RegistroBonificaciones daoRegBonif) {
 		try {
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -246,6 +256,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Log.w(TAG, "ClonarPedido: cabecera clonada");
 			
 			ArrayList<DBPedido_Detalle> listaDetalle = getPedidoDetalle(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
+			ArrayList<DB_RegistroBonificaciones> listaRegBonificasiones = daoRegBonif.getRegistroBonificacionesClonarBy(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
 			double valorIgv=Double.parseDouble( _dbClases.getCambio("IGV"));
 			double peso_total = 0;
 			double subtotal = 0;
@@ -272,6 +283,16 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 				percepcion += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPercepcion()));
 				ClonarPedidoDetalle(dbPedido_Detalle);
 			}
+
+			for (int i = 0; i < listaRegBonificasiones.size(); i++) {
+				DB_RegistroBonificaciones regBonificaciones = listaRegBonificasiones.get(i);
+				regBonificaciones.setOc_numero(cabecera.getOc_numero());
+				if(convertirMoneda){
+					regBonificaciones.convertirMonedaTo(cabecera.getMoneda(), tipocambio);
+				}
+				daoRegBonif.clonarRegistroBonificaciones(regBonificaciones);
+			}
+
 			if(convertirMoneda){
 				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(
 						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
@@ -321,6 +342,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_detalle.DESCUENTO, item.getDescuento());
 			Nreg.put(DBtables.Pedido_detalle.PORCENTAJE_DESC, item.getPorcentaje_desc());
 			Nreg.put(DBtables.Pedido_detalle.porcentaje_desc_extra, item.getPorcentaje_desc_extra());
+			Nreg.put(DBtables.Pedido_detalle.sec_promo_prioridad, item.getSec_promo_prioridad());
+			Nreg.put(DBtables.Pedido_detalle.item_promo_prioridad, item.getItem_promo_prioridad());
 			Nreg.put(DBtables.Pedido_detalle.LOTE, item.getLote());
 			
 			db.insert(DBtables.Pedido_detalle.TAG, null, Nreg);

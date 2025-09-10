@@ -22,6 +22,7 @@ public class VARIABLESTest  {
         variables= new VARIABLES();
          assertEquals(variables.isProduccion,true);
          assertEquals(variables.isProduccion_prueba,false);
+         assertEquals(variables.isSetDataPruebas,false);
     }
 
     @Test
