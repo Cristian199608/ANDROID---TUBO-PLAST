@@ -1666,6 +1666,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     NombreMetodo=valor+") Sync_tabla_promocion_ubigeo";
                                     soap_manager.Sync_tabla_promocion_ubigeo(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     //soap_manager.Sync_tabla_promocion_politica(servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    publishProgress("43");
+                                    NombreMetodo = "(" + valor + ")Sync_tbProductoPromocion";
+                                    soap_manager.Sync_tbProductoPromocion(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
                                     NombreMetodo=valor+") Sync_tabla_PromocionDetalle";
                                     soap_manager.Sync_tabla_PromocionDetalle(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
@@ -1883,13 +1886,17 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                 alerta.setIcon(R.drawable.icon_error);
                 alerta.setCancelable(false);
-                alerta.setPositiveButton("OK", null);
+                alerta.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor_preferencias = preferencias_configuracion.edit();
+                        editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", true);
+                        editor_preferencias.commit();
+                    }
+                });
                 alerta.show();
 
-                //No hacemos cambio cuando no hay conexion al servidor
-//                editor_preferencias = preferencias_configuracion.edit();
-//                editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", false);
-//                editor_preferencias.commit();
+
 
             } else if (result.equals("3")) {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(

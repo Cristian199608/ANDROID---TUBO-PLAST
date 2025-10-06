@@ -32,9 +32,10 @@ class CotizacionDetalleApi
             "UND?"
         }
     }
+    var tipo_producto:String?=null
 
     fun dataApiToObjetDataDetallePDF(): ReportePedidoDetallePDF {
-        var desproOuput=this.descr_producto+""+VARIABLES.getDescripcionAnPreConcatenarBonif(this.codigo_producto!!, this.sub_total!!);
+        var desproOuput=this.descr_producto+""+VARIABLES.getDescripcionAnPreConcatenarBonif(this.tipo_producto!!);
 
         val reporteDetaPDF= ReportePedidoDetallePDF(
             oc_numero = this.codigo_pedido!!,
@@ -48,7 +49,8 @@ class CotizacionDetalleApi
             porcentaje_desc = this.prct_descuento.toString(),
             porcentaje_desc_extra = this.prct_descuento_extra!!.toDouble(),
             pesoTotalProducto = this.peso_total!!,
-            -1.0
+            montoDsctTotal =-1.0,
+            tipoProducto = this.tipo_producto!!
         );
         return reporteDetaPDF;
     }

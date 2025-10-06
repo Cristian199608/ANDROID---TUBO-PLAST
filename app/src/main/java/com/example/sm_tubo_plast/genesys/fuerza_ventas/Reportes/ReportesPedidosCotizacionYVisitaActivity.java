@@ -49,6 +49,7 @@ import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
 
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistrosGeneralesMovil;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
@@ -686,7 +687,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         }
 
 
-        ArrayList<ReportePedidoDetallePDF> listaDetalle= dao_reportePedido.getAllDataByCodigo( oc_numero);
+        ArrayList<Integer> listaIndex = obj_dbclasses.getOrdenItemPedido(oc_numero);
+        ArrayList<ReportePedidoDetallePDF> listaDetalle= dao_reportePedido.getAllDataByCodigo( oc_numero, listaIndex);
         GenerarPdf(lista.get(0), listaDetalle);
     }
 
@@ -894,8 +896,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         totalPrecioKiloDolar = 0;
 
         if (tipo.equalsIgnoreCase("cliente")) {
-            lista_pedidos = obj_dbclasses
-                    .getPedidosCabeceraxNombreCliente(valor);
+            lista_pedidos = obj_dbclasses.getPedidosCabeceraxNombreCliente(valor);
         } else if (tipo.equalsIgnoreCase("documento")) {
             lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
         } else {
@@ -1708,14 +1709,15 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         double tipocambio =  Double.parseDouble(obj_dbclasses.getCambio("Tipo_cambio"));
 
         String pedidoAnterior = cabecera.getOc_numero();
-        String fechaOc = cabecera.getFecha_oc();
-        String numOc = obj_dbclasses.obtenerMaxNumOc(codven);
+        String fechaOc =GlobalFunctions.getFechaActual();
+        String numOc = obj_dbclasses.obtenerMaxNumOc(codven);//
         String fecha_configuracion = obj_dbclasses.getCambio("Fecha");
         String nuevoOc_numero = codven + PedidosActivity.calcularSecuencia(numOc,fecha_configuracion);
         cabecera.setOc_numero(nuevoOc_numero);
         cabecera.setFecha_oc(fechaOc);
         cabecera.setPedidoAnterior(pedidoAnterior);
         cabecera.setTipoRegistro(tipoRegistro);
+        cabecera.setFlag("P");
         DAO_Pedido DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
         if(cambiarMoneda){
             if (!cabecera.convertirMonedaFrom(tipocambio)) {
@@ -1724,8 +1726,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             }
         }
 
-
-        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses, DAORegistroBonificaciones);//Se guarda referencia del pedido anterior
+        DAO_Pedido_detalle2 dao_pedido_detalle2=new DAO_Pedido_detalle2(this);
+        DAOPedidoDetalle.ClonarPedido(cabecera, cambiarMoneda, tipocambio, obj_dbclasses, DAORegistroBonificaciones, dao_pedido_detalle2);//Se guarda referencia del pedido anterior
         GlobalFunctions.showCustomToast(ReportesPedidosCotizacionYVisitaActivity.this, "Nuevo pedido Generado ! "+nuevoOc_numero, GlobalFunctions.TOAST_DONE);
         return cabecera;
 

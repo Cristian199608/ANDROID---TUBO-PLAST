@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
+import com.example.sm_tubo_plast.genesys.datatypes.DBtables;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
@@ -16,14 +18,16 @@ import java.util.ArrayList;
 public class DAO_ReportePedido extends SQLiteAssetHelper {
 
     Context context;
+    DAO_Pedido_detalle2 daopedido2;
 
     public DAO_ReportePedido(Context context) {
         super(context, VARIABLES.ConfigDatabase.getDatabaseName(), null, VARIABLES.ConfigDatabase.getDatabaseVersion());
         this.context = context;
+        daopedido2 = new DAO_Pedido_detalle2(context);
     }
 
     @SuppressLint("Range")
-    public ArrayList<ReportePedidoDetallePDF> getAllDataByCodigo(String oc_num)
+    public ArrayList<ReportePedidoDetallePDF> getAllDataByCodigo(String oc_num, ArrayList<Integer> listaIndex)
     {
         try
         {
@@ -35,7 +39,9 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         "SELECT " +
                                 "PD.oc_numero," +
                                 "PD.cip as codpro, " +
+                                "P.codpro as codproOriginal, " +
                                 "PD.item, " +
+                                "PD.tipo_producto, " +
                                 "P.despro, " +
                                 "PD.cantidad, " +
                                 "PD.unidad_medida, " +
@@ -44,23 +50,30 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "PD.peso_bruto," +
                                 "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra, " +
                                 "PD.precio_neto," +
-                                "PD.descuento " +
+                                "PD.descuento, " +
+                                "PD.sec_promo, " +
+                                "PD.item_promo, " +
+                                "PD.sec_promo_prioridad, " +
+                                "PD.sec_promo_prioridad " +
                                 "FROM  pedido_detalle PD " +
                                 "CROSS JOIN  producto P " +
+                                "left join "+ DBtables.TB_registro_bonificaciones.TAG+" rb on PD.oc_numero=rb.oc_numero \n" +
+                                "and PD.cip=rb.entrada and pd.item=rb.entrada_item\n" +
                                 "WHERE " +
                                 "PD.oc_numero = '" + oc_num + "' " +
-                                "AND " +
-                                "(PD.cip = P.codpro or substr(PD.cip,2, length(PD.cip) ) = P.codpro) " +
-                                "order by PD.oc_numero, PD.item asc ",
+                                //"AND substr(P.codpro,1,5)!='COMBO'  " +
+                                "AND (PD.cip = P.codpro or substr(PD.cip,2, length(PD.cip) ) = P.codpro) " +
+                                "order by cast(PD.item as INTEGER)+(ifnull(cast(rb.salida_item as INTEGER) , 0)*0.01) asc",
                         null);
                 if (objCursor.getCount() != 0)
                 {
+                    int indexNro = 0;
                     while (objCursor.moveToNext())
                     {
-
                         String oc_numero = objCursor.getString(objCursor.getColumnIndex("oc_numero"));
                         String codpro = objCursor.getString(objCursor.getColumnIndex("codpro"));
-                        String item = objCursor.getString(objCursor.getColumnIndex("item"));
+                        String codproOriginal = objCursor.getString(objCursor.getColumnIndex("codproOriginal"));
+                        int item = objCursor.getInt(objCursor.getColumnIndex("item"));
                         int cantidad = Integer.parseInt(objCursor.getString(objCursor.getColumnIndex("cantidad")));
                         String unidad_medida = objCursor.getString( objCursor.getColumnIndex("unidad_medida"));
                         String _despro = objCursor.getString(objCursor.getColumnIndex("despro"));
@@ -70,23 +83,55 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         String porcentaje_desc = objCursor.getString(   objCursor.getColumnIndex("porcentaje_desc"));
                         double porcentaje_desc_extra = objCursor.getDouble(objCursor.getColumnIndex("porcentaje_desc_extra"));
                         double montoDesct = objCursor.getDouble(objCursor.getColumnIndex("descuento"));
+                        String tipo_producto = objCursor.getString(objCursor.getColumnIndex("tipo_producto"));
 
-                        String desproOut = _despro+""+VARIABLES.getDescripcionAnPreConcatenarBonif(codpro,Double.parseDouble(precio_neto));
 
-                        objDbPedidoCabeceraDetalleArrayList.add(new ReportePedidoDetallePDF(
-                                        oc_numero,
-                                        item,
-                                        codpro,
-                                        cantidad,
-                                        unidad_medida,
-                                        desproOut,
-                                        precio_bruto,
-                                        precio_neto,
-                                        porcentaje_desc,
-                                        porcentaje_desc_extra,
-                                        pesoTotalProducto,
-                                        montoDesct
-                                ));
+                        String desproOut = _despro+""+VARIABLES.getDescripcionAnPreConcatenarBonif(tipo_producto);
+                        if(!codproOriginal.startsWith("COMBO")){
+                            indexNro+=1;
+                            objDbPedidoCabeceraDetalleArrayList.add(new ReportePedidoDetallePDF(
+                                    oc_numero,
+                                    String.valueOf(indexNro),
+                                    codpro,
+                                    cantidad,
+                                    unidad_medida,
+                                    desproOut,
+                                    precio_bruto,
+                                    precio_neto,
+                                    porcentaje_desc,
+                                    porcentaje_desc_extra,
+                                    pesoTotalProducto,
+                                    montoDesct,
+                                    tipo_producto
+                            ));
+                        }
+                        String sec_promo = objCursor.getString(objCursor.getColumnIndex("sec_promo"));
+                        int sec_promo_prioridad = objCursor.getInt(objCursor.getColumnIndex("sec_promo_prioridad"));
+                        int secPromocion= sec_promo.length()>0? Integer.parseInt(sec_promo): 0;
+                        if ((secPromocion<=0 && sec_promo_prioridad<=0) || tipo_producto.equals("V")){
+                            continue;
+                        }
+                        ArrayList<Pedido_detalle2> listaPedido2=daopedido2.getDataView(oc_numero, secPromocion, item);
+                        for (int i = 0; i < listaPedido2.size(); i++) {
+                            indexNro+=1;
+                            Pedido_detalle2 pedDet2 = listaPedido2.get(i);
+                            String desproOutDet2 = pedDet2.getItemProducto().getDescripcion()+""+VARIABLES.getDescripcionAnPreConcatenarBonif("C");
+                            objDbPedidoCabeceraDetalleArrayList.add(new ReportePedidoDetallePDF(
+                                    oc_numero,
+                                    String.valueOf(indexNro),
+                                    "B"+pedDet2.getCodpro(),
+                                    pedDet2.getCantidad(),
+                                    pedDet2.getItemProducto().getDesunimed(),
+                                    ""+desproOutDet2,
+                                    String.valueOf(pedDet2.getPrecio_unit()),
+                                    String.valueOf(pedDet2.getPrecio_neto()),
+                                    ""+pedDet2.getPctj_desc(),
+                                    0+pedDet2.getPctj_extra(),
+                                    0+pedDet2.getPeso_total(),
+                                    0+pedDet2.getDescuento(),
+                                    "C"
+                            ));
+                        }
                     }
                     objCursor.close();
                     return objDbPedidoCabeceraDetalleArrayList;
@@ -134,7 +179,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "PC.observacion, PC.observacion2, " +
                     "PC.observacion3," +
                     "PC.tipoRegistro," +
-                    "PC.diasVigencia " +
+                    "PC.diasVigencia, " +
+                    "PC.dsctoBonificacion as totalDsctEnBonif " +
                     "FROM " +
                     "pedido_cabecera PC " +
                     "CROSS JOIN " +
@@ -199,6 +245,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     cabecera.setObservacion3(objCursor.getString(objCursor.getColumnIndex("observacion3")));
                     cabecera.setTipoRegistro(objCursor.getString(objCursor.getColumnIndex("tipoRegistro")));
                     cabecera.setDiasVigencia(objCursor.getInt(objCursor.getColumnIndex("diasVigencia")));
+                    cabecera.setDsctoBonificacion(objCursor.getDouble(objCursor.getColumnIndex("totalDsctEnBonif")));
                     objDbPedidoCabeceraArrayList.add(cabecera);
 
                 }

@@ -56,6 +56,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
             }
         }
     var codigo_saemovil:String?=null
+    var dsctoBonificacion: Double?=null
 
     fun getCodigoSaemovilTxt(): String {
         return if(codigo_saemovil.isNullOrEmpty()) "" else "\n📱${codigo_saemovil}"
@@ -125,6 +126,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
             it.observacion3 = this.observacion
             it.tipoRegistro = this.tipotipo_registro
             it.diasVigencia = this.validez_oferta!!
+            it.dsctoBonificacion = this.dsctoBonificacion!!
             return it;
         }
         return dataCabcera;

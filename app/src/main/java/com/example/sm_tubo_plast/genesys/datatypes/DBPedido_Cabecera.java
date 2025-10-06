@@ -70,6 +70,7 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String diasVigencia;
 	private String pedidoAnterior;
 	private String CodTurno;
+	private double dsctoBonificacion;
 
 	Cliente cliente;
 			
@@ -819,6 +820,14 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setCliente(Cliente cliente) {
 		this.cliente = cliente;
+	}
+
+	public double getDsctoBonificacion() {
+		return dsctoBonificacion;
+	}
+
+	public void setDsctoBonificacion(double dsctoBonificacion) {
+		this.dsctoBonificacion = dsctoBonificacion;
 	}
 
 	public boolean convertirMonedaFrom(double tipoCambio){

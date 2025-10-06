@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class DB_ObjPedido{
 	private String DT_PEDI_FECHASERVIDOR;
 	private String totalSujetoPercepcion;
 	private ArrayList<DBPedido_Detalle> detalles;
+	private ArrayList<Pedido_detalle2> pedidoDetalle2;
 	private ArrayList<DB_RegistroBonificaciones> bonificaciones;
 	
 	private String numeroOrdenCompra;
@@ -59,6 +61,7 @@ public class DB_ObjPedido{
 	private String pedidoAnterior;
 	private String CodTurno;
 	private String nroletra;
+	private double dsctoBonificacion;
 	private ArrayList<San_Visitas> san_visitas;
 
 	
@@ -456,7 +459,20 @@ public class DB_ObjPedido{
 	public void setCodTurno(String CodTurno) {
 		this.CodTurno = CodTurno;
 	}
-	
-	
 
+	public ArrayList<Pedido_detalle2> getPedidoDetalle2() {
+		return pedidoDetalle2;
+	}
+
+	public void setPedidoDetalle2(ArrayList<Pedido_detalle2> pedidoDetalle2) {
+		this.pedidoDetalle2 = pedidoDetalle2;
+	}
+
+	public double getDsctoBonificacion() {
+		return dsctoBonificacion;
+	}
+
+	public void setDsctoBonificacion(double dsctoBonificacion) {
+		this.dsctoBonificacion = dsctoBonificacion;
+	}
 }

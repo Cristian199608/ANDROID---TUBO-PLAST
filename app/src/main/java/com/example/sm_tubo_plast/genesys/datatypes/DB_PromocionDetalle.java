@@ -1,7 +1,14 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
 public class DB_PromocionDetalle {
-	
+
+	public static final String salidaBonificacionXCANTIDAD = "XCANTIDAD";
+	public static final String salidaBonificacionXDESCUENTO = "XDESCUENTO";
+	public static final String salidaBonificacionXDSCMONEDA = "XDSCMONEDA";
+	public static final String salidaBonificacionXCOMBO = "XCOMBO";
+	public static final String salidaBonificacionXCOLORES = "XCOLORES";
+	public static final String salidaBonificacionXREBAJA = "XREBAJA";
+
 	public int secuencia ;
     public int general;
     public String promocion ;

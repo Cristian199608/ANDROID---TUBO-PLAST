@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
 import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app;
+import com.example.sm_tubo_plast.genesys.BEAN.PromocionDetalleProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
@@ -23,6 +24,8 @@ import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalleProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
@@ -49,7 +52,6 @@ import org.ksoap2.transport.HttpTransportSE;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import retrofit2.Call;
@@ -4669,8 +4671,8 @@ public void Sync_tabla_usuarios_Online(String url, String catalog, String user, 
 
 public int actualizarObjPedido() throws Exception{
 	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v3_json";
-	String METHOD_NAME="actualizarObjpedido_v3_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
+	String METHOD_NAME="actualizarObjpedido_v4_json";
 	
 	ArrayList<DB_ObjPedido>  lista_obj_pedido= new ArrayList<DB_ObjPedido>();
     lista_obj_pedido = dbclass.getTodosObjPedido_json_flagp();
@@ -4772,11 +4774,11 @@ public int actualizarObjPedido() throws Exception{
 
 public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
    	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v3_json";
-	String METHOD_NAME="actualizarObjpedido_v3_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
+	String METHOD_NAME="actualizarObjpedido_v4_json";
 	
 	String flag = "";
-	
+	DAO_Pedido_detalle2 dao_pedido_detalle2=new DAO_Pedido_detalle2(context);
 	ArrayList<DB_ObjPedido>  lista_obj_pedido= new ArrayList<DB_ObjPedido>();
     lista_obj_pedido = dbclass.getObjPedido_jsons(Oc_numero);
     
@@ -4785,7 +4787,9 @@ public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
     	ArrayList<DBPedido_Detalle> detalles = new ArrayList<DBPedido_Detalle>();
     	detalles = dbclass.getPedido_detalles(lista_obj_pedido.get(i).getOc_numero());    	
     	lista_obj_pedido.get(i).setDetalles(detalles);
-    	
+
+		lista_obj_pedido.get(i).setPedidoDetalle2(dao_pedido_detalle2.getDataByOcnumero(lista_obj_pedido.get(i).getOc_numero()));
+
     	//Seteo del registro de bonificaciones por el oc_numero
     	ArrayList<DB_RegistroBonificaciones> registroBonificaciones = new ArrayList<>();
     	registroBonificaciones = DAORegistroBonificaciones.getRegistroBonificaciones(lista_obj_pedido.get(i).getOc_numero());
@@ -7002,5 +7006,34 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		}
 	}
 
+
+	public void Sync_tbProductoPromocion(String codven, String url, String catalog,
+										 String user, String contrasena) throws Exception{
+		try{
+			String _METHOD_NAME="getPromocionProducto_json";
+			ArrayList<String> propiedad=new ArrayList<>();
+			propiedad.add("codven"+__PARTIR___+codven);
+			propiedad.add("url"+__PARTIR___+url);
+			propiedad.add("catalog"+__PARTIR___+ catalog);
+			propiedad.add("user"+__PARTIR___+ user);
+			propiedad.add("password"+__PARTIR___+contrasena);
+//
+			String jsonstring = AddRequestHeader(propiedad, _METHOD_NAME);
+			if(jsonstring.startsWith("Error")){
+				throw new Exception(""+jsonstring);
+			}
+
+			final Type malla = new TypeToken<ArrayList<PromocionDetalleProducto>>() {}.getType();
+			final ArrayList<PromocionDetalleProducto> lista = gson.fromJson(jsonstring, malla);
+			Log.i("Sync_tbProductoPromocion","Registros: "+lista.size());
+			DAO_PromocionDetalleProducto dao=new DAO_PromocionDetalleProducto(context);
+			dao.PoblarData(lista);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i("Sync_tbProductoPromocion", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
 
 }

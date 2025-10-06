@@ -498,7 +498,8 @@ public class DBtables {
 		public static final String DIAS_VIGENCIA = "diasVigencia";
 		public static final String PEDIDO_ANTERIOR = "pedidoAnterior";
 		public static final String CODIGO_TURNO = "CodTurno";
- 
+		public static final String DSCTO_BONIFICACION = "dsctoBonificacion";
+
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_OC_NUMERO + " CHAR(21) PRIMARY KEY, " + SITIO_ENFA
 				+ " VARCHAR(100), " + MONTO_TOTAL + " DECIMAL(12,4), "
@@ -768,7 +769,9 @@ public class DBtables {
 		public static final String CODIGO_ANTERIOR = "codigoAnterior";
 		public static final String CODIGO_VENDEDOR = "codigoVendedor";
 		public static final String CODIGO_CLIENTE = "codigoCliente";
-		
+		public static final String ENTRADA_ITEM = "entrada_item";
+		public static final String SALIDA_ITEM = "salida_item";
+
 		
 		
 		public static final String CREATE_STATEMENT = 
@@ -797,42 +800,7 @@ public class DBtables {
 	}
 	
 	
-	public static final class Tb_promocion_detalle implements BaseColumns {
 
-		private Tb_promocion_detalle() {
-		}
-
-		public static final String TAG = "tb_promocion_detalle";
-
-		public static final String SECUENCIA = "secuencia";
-		public static final String GENERAL = "general";
-		public static final String PROMOCION = "promocion";
-		public static final String CODALM = "codalm";
-		public static final String TIPO = "tipo";
-		public static final String ITEM = "item";
-		public static final String AGRUPADO = "agrupado";
-		public static final String ENTRADA = "entrada";
-		public static final String MONTO = "monto";
-		public static final String CONDICION = "condicion";
-		public static final String CANT_CONDICION = "cant_condicion";
-		public static final String SALIDA = "salida";
-		public static final String CANT_PROMOCION = "cant_promocion";
-		public static final String MAX_PEDIDO = "max_pedido";
-		public static final String TOTAL_AGRUPADO = "total_agrupado";
-		public static final String CANT_COMP = "cant_comp";
-		public static final String prioridad = "prioridad";
-
-		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
-				+ " (" + SECUENCIA + " INTEGER PRIMARY KEY, " + GENERAL
-				+ " INTEGER, " + PROMOCION + " VARCHAR(40), " + CODALM
-				+ " CHAR(2)," + TIPO + " CHAR(1)," + ITEM + " INTEGER,"
-				+ AGRUPADO + " INTEGER," + ENTRADA + " CHAR(4)," + MONTO
-				+ " NUMERIC(9,4)," + CONDICION + " CHAR(10)," + CANT_CONDICION
-				+ " INTEGER," + SALIDA + " CHAR(4)," + CANT_PROMOCION
-				+ " INTEGER," + MAX_PEDIDO + " INTEGER," + TOTAL_AGRUPADO
-				+ " INTEGER);";
-
-	}
 
 	public static final class Unidad_medida implements BaseColumns {
 
@@ -1262,7 +1230,6 @@ public class DBtables {
 		public static final String DESCUENTO = "descuento";
 		public static final String UBIGEO = "ubigeo";
 		public static final String prioridad = "prioridad";
-
 
 	}
 
@@ -1755,5 +1722,51 @@ public class DBtables {
 		public static final String codigoRol = "codigoRol";
 		public static final String codigoOpcion = "codigoOpcion";
 	}
+
+	public static final class PromocionDetalle_producto {
+
+		private PromocionDetalle_producto() {
+		}
+
+		public static final String TAG = "promocion_detalle_producto";
+		public static final String sec_promocion = "sec_promocion";
+		public static final String codpro_bonificacion = "codpro_bonificacion";
+		public static final String codpro_producto = "codpro_producto";
+		public static final String cantidad = "cantidad";
+	}
+
+
+	public static final class Pedido_detalle2 {
+
+		private Pedido_detalle2() {
+		}
+
+		public static final String TAG = "pedido_detalle2";
+
+		public static final String[] pks = new String[]{
+				Pedido_detalle2.oc_numero,
+				Pedido_detalle2.sec_promo,
+				Pedido_detalle2.item_promo,
+				Pedido_detalle2.salida_item,
+				Pedido_detalle2.codpro,
+		} ;
+
+		public static final String oc_numero = "oc_numero";
+		public static final String sec_promo = "sec_promo";
+		public static final String item_promo = "item_promo";
+		public static final String salida_item = "salida_item";
+		public static final String codpro = "codpro";
+		public static final String cantidad = "cantidad";
+
+		public static final String precio_lista = "precio_lista";
+		public static final String porcentaje_desc = "pctj_desc";
+		public static final String porcentaje_desc_extra = "pctj_extra";
+		public static final String precio_unit = "precio_unit";
+		public static final String precio_neto = "precio_neto";
+		public static final String descuento = "descuento";
+		public static final String peso_total = "peso_total";
+
+	}
+
 
 }

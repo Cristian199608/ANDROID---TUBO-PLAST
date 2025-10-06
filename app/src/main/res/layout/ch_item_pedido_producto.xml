@@ -288,7 +288,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Desc:"
+                android:text="PK: ($)"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
@@ -298,12 +298,20 @@
                 android:gravity="left"
                 android:text="xxxxx"
                 android:textStyle="bold"
-                android:textColor="@color/red_700"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
         </LinearLayout>
 
         <!-- ....... solo sera visble cuando sea una bonificacion .......... -->
 
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearLayoutPromoComboContainer"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:orientation="vertical"
+        android:padding="2dp">
     </LinearLayout>
 </RelativeLayout>

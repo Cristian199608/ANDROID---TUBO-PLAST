@@ -75,6 +75,12 @@ public class VARIABLESTest  {
 
     }
 
+    @Test
+    public void  testSubString(){
+        String cadena="COMBO123";
+        String subcadena=cadena.substring(0,5);
+        assertEquals("COMBO",subcadena);
+    }
 
 
 }

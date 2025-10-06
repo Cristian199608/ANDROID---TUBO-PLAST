@@ -30,7 +30,9 @@ public class DB_RegistroBonificaciones {
 	private String codigoAnterior;
 	private String codigoVendedor;
 	private String codigoCliente;
-	
+	private int entrada_item;
+	private int salida_item;
+
 	
 	public String getCodigoCliente() {
 		return codigoCliente;
@@ -175,6 +177,22 @@ public class DB_RegistroBonificaciones {
 	}
 	public void setFlagUltimo(int flagUltimo) {
 		this.flagUltimo = flagUltimo;
+	}
+
+	public int getEntrada_item() {
+		return entrada_item;
+	}
+
+	public void setEntrada_item(int entrada_item) {
+		this.entrada_item = entrada_item;
+	}
+
+	public int getSalida_item() {
+		return salida_item;
+	}
+
+	public void setSalida_item(int salida_item) {
+		this.salida_item = salida_item;
 	}
 
 	public boolean convertirMonedaTo(String moneda, double tipoCambio){

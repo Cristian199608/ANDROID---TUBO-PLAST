@@ -12,6 +12,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.util.UtilImagen;
 import com.example.sm_tubo_plast.genesys.util.FormateadorNumero;
+import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -78,13 +79,14 @@ public class PDF {
          * Formatter
          */
         String subtotalFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getSubtotal());
-        String igvFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getValor_igv());
-        String total_netoFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getMonto_total());
         double dtotalDescuento = 0;
         for (ReportePedidoDetallePDF dataPedidoCabeceraDetalle : _dataPedidoCabeceraDetalles) {
             dtotalDescuento+=dataPedidoCabeceraDetalle.getMontoDsctTotal();
         }
+        String igvFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getValor_igv());
+        String total_netoFormateado = FormateadorNumero.formatter2decimalFromString(dataCabecera.getMonto_total());
         String totalDescuentoformateado = getMontoDescuentoIfIsValid(dtotalDescuento);
+        String totalDsctEnBonif = FormateadorNumero.formatter2decimal(dataCabecera.getDsctoBonificacion());
 
         /***
          * PRINCIPAL IMAGE
@@ -282,6 +284,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PRECIO UNITARIO").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
+
             for (int i = 0; i < dataPedidoCabeceraDetalles.size(); i++)
             {
                 String itemDetalle = dataPedidoCabeceraDetalles.get(i).getItem().length()>0?dataPedidoCabeceraDetalles.get(i).getItem(): String.valueOf(i + 1);
@@ -375,13 +378,22 @@ public class PDF {
         //TABLE OBSERVACIONES
         tableObservaciones.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("Observaciones:").setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(7f)));
 
+        String pa = FormateadorNumero.formatter2decimalFromString(dataCabecera.getPeso_total());
+        String obsPesoTotalTxt="Peso Aprox. " + pa+" KG";
         if (tipo_de_envio == ENVIO_A_INTERNO){
             //TABLE DATA ----- 0.5
-            tableObservaciones.addCell(new Cell());
-            tableObservaciones.addCell(new Cell().add(new Paragraph("DESC TOTAL(Sin Igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableObservaciones.addCell(new Cell().add(new Paragraph(moneda + totalDescuentoformateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-
+            double pkDolar=Double.parseDouble(dataCabecera.getSubtotal())/Double.parseDouble(dataCabecera.getPeso_total())/tipoCambio;
+            tableData.addCell(new Cell().add(
+                    new Paragraph("Precio Kilo (sin igv $) "+FormateadorNumero.formatter2decimal(pkDolar)
+                    +" | "+obsPesoTotalTxt).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph("DESC TOTAL(Sin Igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            tableData.addCell(new Cell().add(new Paragraph(moneda + totalDescuentoformateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+            obsPesoTotalTxt="";//limpiamos
         }
+
+        tableData.addCell(new Cell().add(new Paragraph(""+obsPesoTotalTxt).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph("DESC BONIF.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
+        tableData.addCell(new Cell().add(new Paragraph(moneda + totalDsctEnBonif).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         tableData.addCell(new Cell());
         tableData.addCell(new Cell().add(new Paragraph("Sub Total").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
@@ -399,19 +411,9 @@ public class PDF {
 
 
         //TABLE DATA ----- 03
-        String pa = FormateadorNumero.formatter2decimalFromString(dataCabecera.getPeso_total());
-        tableData.addCell(new Cell());
-        tableData.addCell(new Cell().add(new Paragraph("Peso Aprox.").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        tableData.addCell(new Cell().add(new Paragraph("KG " + pa).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
 
         //TABLE DATA ----- 04
         tableData.addCell(new Cell().add(new Paragraph(observaciones).setFontSize(7f)));
-        if (tipo_de_envio == ENVIO_A_INTERNO){
-            double pkDolar=Double.parseDouble(dataCabecera.getSubtotal())/Double.parseDouble(dataCabecera.getPeso_total())/tipoCambio;
-            tableData.addCell(new Cell().add(new Paragraph("Precio Kilo (sin igv $)").setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-            tableData.addCell(new Cell().add(new Paragraph(""+(FormateadorNumero.formatter2decimal(pkDolar)) ).setTextAlignment(TextAlignment.RIGHT).setFontSize(7f)));
-        }
-
         /***
          * BANCO
          */

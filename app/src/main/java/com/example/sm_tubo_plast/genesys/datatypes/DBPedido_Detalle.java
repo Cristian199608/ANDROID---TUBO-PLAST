@@ -493,6 +493,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 		neww.setOc_numero(itemDetalle_ok.getOc_numero());
 		neww.setEan_item(itemDetalle_ok.getEan_item());
 		neww.setCip(itemDetalle_ok.getCip());
+		neww.setItem(itemDetalle_ok.getItem());
 		neww.setPrecio_bruto(itemDetalle_ok.getPrecio_bruto());
 		neww.setPrecio_neto(itemDetalle_ok.getPrecio_neto());
 		neww.setPercepcion(itemDetalle_ok.getPercepcion());

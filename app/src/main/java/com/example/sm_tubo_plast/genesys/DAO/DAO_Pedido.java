@@ -8,7 +8,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
+import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
@@ -60,22 +62,56 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 		return cantidad;
 	}
 	
-	public void Eliminar_itemPedidoBonificacion(String codprod, String oc_numero) {
-
-		String where = "oc_numero = ? and cip = ? and tipo_producto in ('C','M') " +
+	public void Eliminar_itemPedidoBonificacion(String codprod,
+												String oc_numero,
+												DAO_RegistroBonificaciones regBonif,
+												ItemProducto prodEntrada,
+												int secuencia_promocion,
+												int salidaItem
+	) {
+		String S_TAG = "DAO_Pedido::Eliminar_itemPedidoBonificacion:: ";
+		String where = "oc_numero = ? and cip = ? and tipo_producto in ('C','M') and item = ? " +
 				//y los q tengan relacion con bonificaciones
 				"and (" +
 				"	case when length(sec_promo)>0 then cast(sec_promo as int) else 0 end > 0 " +
 				"	or case when length(sec_promo_prioridad)>0 then cast(sec_promo_prioridad as int) else 0 end > 0 " +
 				")";
-		String[] args = { oc_numero, codprod};
+		String[] args = { oc_numero, codprod, String.valueOf(salidaItem)};
 
 		try {
 
 			SQLiteDatabase db = getWritableDatabase();
-			db.delete("pedido_detalle", where, args);
+			long xfilas = db.delete("pedido_detalle", where, args);
+
+			ArrayList<DB_RegistroBonificaciones> listaReg=regBonif.ObtenerRegistroBonificacionesBY_sec_promo(oc_numero, secuencia_promocion, salidaItem);
+			if (xfilas>0 && prodEntrada!=null){
+
+				String prodEntradaEItem=" '0' ";
+				for (DB_RegistroBonificaciones db_registroBonificaciones : listaReg) {
+					prodEntradaEItem+=", '"+db_registroBonificaciones.getEntrada()
+							+"::"+db_registroBonificaciones.getEntrada_item()+"'";
+				}
+				String whereD = null;
+				String[] argsD = { oc_numero, ""+secuencia_promocion };
+				ContentValues reg = new ContentValues();
+				if (secuencia_promocion==Integer.parseInt(prodEntrada.getSec_promo()!=null && prodEntrada.getSec_promo().length()>0?prodEntrada.getSec_promo():"0")){
+					whereD = "oc_numero = ? and sec_promo=? and cip||'::'||cast(item as TEXT) in ("+prodEntradaEItem+")";
+					reg.put("sec_promo", "");
+					reg.put("item_promo", "0");
+				}else if (secuencia_promocion==prodEntrada.getSec_promo_prioridad()){
+					whereD = "oc_numero = ? and promo_prioridad = ? and cip||'::'||cast(item as TEXT) in ("+prodEntradaEItem+")";
+					reg.put("sec_promo_prioridad", "");
+					reg.put("item_promo_prioridad", "");
+				}
+				if (reg.size()>0){
+					long fi=db.update(""+DBtables.Pedido_detalle.TAG, reg, whereD, argsD);
+					Log.i(TAG, " secuencia promocion de pedido detalle fue actualizado? "+(fi>=1)+" , a vacio para "+prodEntrada.getCodprod());
+				}
+			}
+			Log.i(TAG,S_TAG+""+oc_numero+"  "+codprod+" eliminado "+(xfilas>=1));
 			db.close();
-			
+
+
 			Log.i("ELIMINAR ITEM PEDIDO BONIF",oc_numero+"  "+codprod);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -154,6 +190,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 		}
 	}
 	
+	@SuppressLint("Range")
 	public ArrayList<DBPedido_Detalle> getPedidoDetalle(String oc_numero){
 		String rawQuery = "SELECT * FROM pedido_detalle WHERE oc_numero like '"+oc_numero+"'";
 		SQLiteDatabase db = getReadableDatabase();
@@ -199,7 +236,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 							 boolean convertirMoneda,
 							 double tipocambio,
 							 DBclasses _dbClases,
-							 DAO_RegistroBonificaciones daoRegBonif) {
+							 DAO_RegistroBonificaciones daoRegBonif,
+							 DAO_Pedido_detalle2 dao_pedido_detalle2) {
 		try {
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -257,10 +295,13 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			
 			ArrayList<DBPedido_Detalle> listaDetalle = getPedidoDetalle(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
 			ArrayList<DB_RegistroBonificaciones> listaRegBonificasiones = daoRegBonif.getRegistroBonificacionesClonarBy(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
+			ArrayList<Pedido_detalle2> listaDetalle2 = dao_pedido_detalle2.getDataByOcnumero(cabecera.getPedidoAnterior());//Se toma los productos del pedido anterior
+
 			double valorIgv=Double.parseDouble( _dbClases.getCambio("IGV"));
 			double peso_total = 0;
 			double subtotal = 0;
-			double totalIGV = 0;
+			double montoDsctBonificacion = 0;
+			//double totalIGV = 0;
 			double montoTotalDsc = 0;
 			double percepcion = 0;
 			double totalSujetoPercepcion = 0;
@@ -273,14 +314,19 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 					dbPedido_Detalle.convertirMonedaTo(cabecera.getMoneda(), tipocambio);
 				}
 				peso_total += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPeso_bruto()));
-				subtotal += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto()));
-				totalIGV += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto())*valorIgv);
-				montoTotalDsc+=VARIABLES.getDoubleFormaterThreeDecimal(
-						(
-						VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecioLista())*dbPedido_Detalle.getCantidad())
-						)-Double.parseDouble(dbPedido_Detalle.getPrecio_neto())
-				);
-				percepcion += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPercepcion()));
+
+				if(dbPedido_Detalle.getTipo_producto().equals("C")){
+					montoDsctBonificacion+=VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto()));
+				}
+				else {
+					subtotal += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto()));
+					montoTotalDsc+=VARIABLES.getDoubleFormaterThreeDecimal(
+							(
+									VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecioLista())*dbPedido_Detalle.getCantidad())
+							)-Double.parseDouble(dbPedido_Detalle.getPrecio_neto())
+					);
+					percepcion += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPercepcion()));
+				}
 				ClonarPedidoDetalle(dbPedido_Detalle);
 			}
 
@@ -293,7 +339,18 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 				daoRegBonif.clonarRegistroBonificaciones(regBonificaciones);
 			}
 
+			for (Pedido_detalle2 pedido_detalle2 : listaDetalle2) {
+				if (convertirMoneda) {
+					pedido_detalle2.convertirMonedaTo(cabecera.getMoneda(), tipocambio);
+				}
+				pedido_detalle2.setOc_numero(cabecera.getOc_numero());
+				dao_pedido_detalle2.InsertItem(pedido_detalle2, null);
+				montoDsctBonificacion += pedido_detalle2.getPrecio_neto();
+			}
+
 			if(convertirMoneda){
+				subtotal = VARIABLES.getDoubleFormaterThowDecimal(subtotal);
+				double totalIGV = VARIABLES.getDoubleFormaterThowDecimal(subtotal*valorIgv);
 				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(
 						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
 								+VARIABLES.getDoubleFormaterThowDecimal(totalIGV)
@@ -307,7 +364,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 						percepcion,
 						totalSujetoPercepcion,
 						montoTotalDsc,
-						0
+						0,
+						montoDsctBonificacion
 				);
 				_dbClases.guardarPedidoTotales(dataRecalculo);
 			}

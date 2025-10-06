@@ -111,7 +111,7 @@ public class PedidoCabeceraRecyclerView extends RecyclerView.Adapter<PedidoCabec
     private void Generate_pdf_by_ocumero(View itemView, int tipoEnvio, DataCabeceraPDF dataCabecera) {
         String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero();
         try {
-            ArrayList<ReportePedidoDetallePDF> listaDetalle=mydbClass.getAllDataByCodigo( dataCabecera.getOc_numero());
+            ArrayList<ReportePedidoDetallePDF> listaDetalle=mydbClass.getAllDataByCodigo( dataCabecera.getOc_numero(), new ArrayList<>());
             PDF.createPdf(itemView.getContext(),
                     nombreArchivo,
                     /*dataCabecera.getOc_numero(),

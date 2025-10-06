@@ -45,30 +45,69 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void Eliminar_RegistroBonificacion(String oc_numero, int secuencia,int item,String entrada, int agrupado){
-		String where = "oc_numero=? and secuenciaPromocion like ? and item like ? and entrada like ? and agrupado like ?";
+	public DB_RegistroBonificaciones Eliminar_RegistroBonificacion(String oc_numero, int secuencia,
+																   int item,String entrada, int agrupado,
+											  int entradaItem, int salidaItem){
+		DB_RegistroBonificaciones  itemPromocion=null;
+		String where = "oc_numero=? and secuenciaPromocion like ? and item like ? and entrada like ? and agrupado like ? " +
+				"and entrada_item = ? and (salida_item = ? or -999 = ?)";
+		//cuando es -999 borra todos los items de la promocion sin importar que sean diferentes los salida_item 's
 				
-		String[] args = { oc_numero, String.valueOf(secuencia), String.valueOf(item), entrada, String.valueOf(agrupado) };
+		String[] args = { oc_numero, String.valueOf(secuencia), String.valueOf(item), entrada, String.valueOf(agrupado),
+				String.valueOf(entradaItem), String.valueOf(salidaItem), String.valueOf(salidaItem)
+		};
+		String whereSelec = "where oc_numero='"+oc_numero+"' and secuenciaPromocion like "+secuencia+" and item like "+item+" " +
+				"and entrada like '"+entrada+"' " +
+				"and agrupado like '"+agrupado+"' "+
+				"and entrada_item like '"+entradaItem+"' "+
+				"and salida_item like '"+salidaItem+"' ";
 
 		try {
 			SQLiteDatabase db = getWritableDatabase();
-			db.delete("registro_bonificaciones", where, args);			
+
+			if(whereSelec.length()>0){
+				Cursor cursor=db.rawQuery("SELECT oc_numero, secuenciaPromocion, item, entrada, entrada_item, " +
+						" cantidadEntrada, montoEntrada, cantidadSalida, salida_item " +
+						"from registro_bonificaciones "+whereSelec, null);
+				if (cursor.moveToNext()){
+					itemPromocion=new DB_RegistroBonificaciones();
+					itemPromocion.setOc_numero(cursor.getString(cursor.getColumnIndex("oc_numero")));
+					itemPromocion.setSecuenciaPromocion(cursor.getInt(cursor.getColumnIndex("secuenciaPromocion")));
+					itemPromocion.setItem(cursor.getInt(cursor.getColumnIndex("item")));
+					itemPromocion.setEntrada(cursor.getString(cursor.getColumnIndex("entrada")));
+					itemPromocion.setEntrada_item(cursor.getInt(cursor.getColumnIndex("entrada_item")));
+					itemPromocion.setCantidadEntrada(cursor.getInt(cursor.getColumnIndex("cantidadEntrada")));
+					itemPromocion.setMontoEntrada(cursor.getDouble(cursor.getColumnIndex("montoEntrada")));
+					itemPromocion.setCantidadSalida(cursor.getInt(cursor.getColumnIndex("cantidadSalida")));
+					itemPromocion.setSalida_item(cursor.getInt(cursor.getColumnIndex("salida_item")));
+				}
+				cursor.close();
+			}
+
+			long delx=db.delete("registro_bonificaciones", where, args);
 			db.close();
 
 			Log.e("ELIMINAR REGISTRO BONIFICACION", "oc_numero: "+oc_numero+" secuencia:"+secuencia+" item:"+item+" entrada:"+entrada+" agrupado:"+agrupado);
-
+			return itemPromocion;
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 	
-	public void Eliminar_RegistroBonificacion_Dependencias(String oc_numero,int secuencia, int item, int agrupado){
-		String where = "oc_numero=? and secuenciaPromocion like ? and item like ? and (agrupado=? or acumulado like 1)";
-		String [] args= {oc_numero, String.valueOf(secuencia), String.valueOf(item), String.valueOf(agrupado) };
+	public void Eliminar_RegistroBonificacion_Dependencias(String oc_numero,int secuencia, int item, int agrupado,
+														   int salidaItem){
+		String where = "oc_numero=? and secuenciaPromocion like ? and item like ? and (agrupado=? or acumulado like 1) " +
+				"and salida_item = ? ";
+		String [] args= {oc_numero, String.valueOf(secuencia), String.valueOf(item), String.valueOf(agrupado),
+				String.valueOf(salidaItem)};
 		
 		try {
 			SQLiteDatabase db = getWritableDatabase();
-			db.delete("registro_bonificaciones", where, args);			
+			long x = db.delete("registro_bonificaciones", where, args);
 			db.close();
 
 			Log.e("ELIMINAR REGISTRO BONIFICACION", "oc_numero: "+oc_numero+" secuencia:"+secuencia+" item:"+secuencia+" agrupado:"+agrupado);
@@ -77,7 +116,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		}
 	}	
 		
-	public int Recalcular_cantidadEntrada(String oc_numero,int secuencia,int acumulado){
+	public int Recalcular_cantidadEntrada(String oc_numero,int secuencia,int acumulado, int salidaItem){
 		if(acumulado == 1){
 			
 		}else{
@@ -96,7 +135,8 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				+ ")"+
 				")"
 				+ "	from registro_bonificaciones"
-				+ "	where oc_numero ='"+oc_numero+"' and secuenciaPromocion="+secuencia+" and acumulado like 1";
+				+ "	where oc_numero ='"+oc_numero+"' and secuenciaPromocion="+secuencia+" and acumulado like 1 " +
+						"and salida_item = "+salidaItem+"";
 
 		Log.i("DAO_RegistroBonificaciones :Recalcular_Salida:",rawQuery);
 		SQLiteDatabase db = getReadableDatabase();
@@ -116,7 +156,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return cantidadEntrada;
 	}
 	
-	public double Recalcular_montoEntrada(String oc_numero,int secuencia,int acumulado){
+	public double Recalcular_montoEntrada(String oc_numero,int secuencia,int acumulado, int salidaItem){
 		if(acumulado == 1){
 			
 		}else{
@@ -124,7 +164,8 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		}
 		
 		String rawQuery = "SELECT sum(montoEntrada) from registro_bonificaciones "
-				+ "where oc_numero='"+oc_numero+"' and secuenciaPromocion="+secuencia+" and acumulado like 1";
+				+ "where oc_numero='"+oc_numero+"' and secuenciaPromocion="+secuencia+" and acumulado like 1 " +
+				"and salida_item = "+salidaItem+" ";
 
 		Log.i("DAO_RegistroBonificaciones :Recalcular_montoEntrada:",rawQuery);
 		SQLiteDatabase db = getReadableDatabase();
@@ -214,9 +255,13 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 
 	}
 	
-	public void ActualizarRegistrosAcumulado(String oc_numero, int secuencia, int item, String entrada, int agrupado, int cantidadBonificada, int cantidadDisponible, double montoDisponible){
-		String where = "oc_numero = ? and secuenciaPromocion like ? and item like ? and entrada like ? and agrupado like ?";
-		String[] args2 = { oc_numero, String.valueOf(secuencia), String.valueOf(item), entrada, String.valueOf(agrupado) };
+	public void ActualizarRegistrosAcumulado(String oc_numero, int secuencia, int item, String entrada, int agrupado,
+											 int cantidadBonificada, int cantidadDisponible, double montoDisponible, int entradaItem){
+		String where = "oc_numero = ? and secuenciaPromocion like ? and item like ? and entrada like ? and agrupado like ? " +
+				"entrada_item = ? ";
+		String[] args2 = { oc_numero, String.valueOf(secuencia), String.valueOf(item), entrada, String.valueOf(agrupado),
+		String.valueOf(entradaItem)
+		};
 		SQLiteDatabase db = getReadableDatabase();
 				
 		try {
@@ -368,9 +413,9 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return dbpromo;
 	}
 	
-	public void Eliminar_RegistroBonificacion_xSalida(String oc_numero,String salida){
-		String where = "oc_numero=? and salida=?";		
-		String[] args = { oc_numero, salida};
+	public void Eliminar_RegistroBonificacion_xSalida(String oc_numero,String salida, int salidaItem){
+		String where = "oc_numero=? and salida=? and salida_item=? ";
+		String[] args = { oc_numero, salida, String.valueOf(salidaItem)};
 
 		try {
 			SQLiteDatabase db = getWritableDatabase();
@@ -662,18 +707,28 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return listaRegistroBonificaciones;
 	}
 	
-	public int getCantidadDisponible(String oc_numero, String entrada, int prioridad){
+	public int getCantidadDisponible(String oc_numero, String entrada, DB_PromocionDetalle itemPromocion, int entradItem){
 		//no consultar la minima, sino consultar la q tenga el flag de ultimo = 1
+		int  cantidadDisponible = -1;
+
+		int prioridad= itemPromocion.getPrioridad();
+		int secuenciaPromocion = itemPromocion.getSecuencia();
+		if (!this.siPromocionSoloEsteEnMismaSecuenciaPromocion(oc_numero, secuenciaPromocion, prioridad, entrada, entradItem)) {
+			cantidadDisponible = 0;
+			return cantidadDisponible;
+		}
+
 		String rawQuery =
 				"SELECT cantidadDisponible "+
 				"FROM registro_bonificaciones "+ 
 				"WHERE oc_numero like '"+oc_numero+"' and entrada like '"+entrada+"' "+
-				" and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end " ;
+				" and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end " +
+				" and entrada_item = "+entradItem+"";
 				
 		
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);
-		int cantidadDisponible = -1;
+
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			cantidadDisponible = cursor.getInt(0);
@@ -687,17 +742,53 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		
 		return cantidadDisponible;
 	}
+
+	private boolean siPromocionSoloEsteEnMismaSecuenciaPromocion(String oc_numero,int secuenciaPromocion,
+																 int prioridad, String entrada, int entradaItem){
+		boolean mismoPromocion=false;
+		//verificamos que si esta registrado la entrada en otra secuencia promocion que sea sea lo mismo a la peticion...
+		//... si es asi retornamos disponibilidad=0, de lo contrario retornamos -1
+		String rawQuery="select pd.secuencia from registro_bonificaciones rb " +
+				"inner join  "+DBtables.Promocion_Detalle.TAG+" pd on rb.secuenciaPromocion=pd.secuencia " +
+				"where rb.oc_numero='"+oc_numero+"' " +
+				"and rb.secuenciaPromocion !='"+secuenciaPromocion+"' " +
+				"and pd.prioridad= "+prioridad+" " +
+				"and rb.entrada='"+entrada+"' " +
+				"and (rb.entrada_item="+entradaItem+" " +
+				"or rb.entrada_item='"+entradaItem+"' )" +
+				"group by pd.secuencia ";
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery(rawQuery, null);
+		if(cursor.getCount()==0){
+			mismoPromocion=true;
+		}
+		Log.i(TAG,"siPromocionSoloEsteEnMismaSecuenciaPromocion:: mismoPromocion: "+mismoPromocion+" \nSQL "+rawQuery);
+		cursor.close();
+		db.close();
+		return mismoPromocion;
+	}
 	
-	public double getMontoDisponible(String oc_numero, String entrada,  int prioridad){
+	public double getMontoDisponible(String oc_numero, String entrada,  DB_PromocionDetalle itemPromocion, int entradItem){
+
+		double  montoDisponible = -1;
+
+		int prioridad= itemPromocion.getPrioridad();
+		int secuenciaPromocion = itemPromocion.getSecuencia();
+		if (!this.siPromocionSoloEsteEnMismaSecuenciaPromocion(oc_numero, secuenciaPromocion, prioridad, entrada, entradItem)) {
+			montoDisponible = 0;
+			return montoDisponible;
+		}
+
 		String rawQuery =
 				"SELECT montoDisponible "+
 				"FROM registro_bonificaciones "+
 				"WHERE oc_numero = '"+oc_numero+"' and entrada like '"+entrada+"' "+
-				"and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end " ;
+				"and flagUltimo = case "+prioridad+" when 0 then 1 when 1 then 2 end "+
+				" and entrada_item = "+entradItem+"";
 		
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);
-		double montoDisponible = -1;
+
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			montoDisponible = cursor.getDouble(0);
@@ -742,10 +833,14 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return registro;
 	}
 	
-	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSecuencia(String oc_numero, int secuencia, int item, int acumulado){
+	@SuppressLint("Range")
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSecuencia(String oc_numero, int secuencia, int item, int acumulado,
+																					 int salidaItem){
 
 		String rawQuery = "select * from registro_bonificaciones "
-						+ "where oc_numero = '"+oc_numero+"' and secuenciaPromocion like "+secuencia+" and item like "+item+" and acumulado like "+acumulado;
+						+ "where oc_numero = '"+oc_numero+"' and secuenciaPromocion like "+secuencia+" " +
+				"and item like "+item+" and acumulado like "+acumulado+" " +
+				"and salida_item = "+salidaItem+" ";
 		
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -772,6 +867,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			registro.setCantidadDisponible(cur.getInt(13));
 			registro.setMontoDisponible(cur.getDouble(14));
 			registro.setFlagUltimo(cur.getInt(15));
+			registro.setEntrada_item(cur.getInt(cur.getColumnIndex("entrada_item")));
 			
 			registroBonificacion.add(registro);
 			cur.moveToNext();
@@ -781,9 +877,20 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return registroBonificacion;
 	}
 	
-	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xEntrada(String oc_numero, String entrada){
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xEntrada(String oc_numero,
+																				   String entrada,
+																				   int item){
 
-		String rawQuery = "select * from registro_bonificaciones where oc_numero = '"+oc_numero+"' and entrada like '"+entrada+"'";
+		String rawQuery = "SELECT *\n" +
+				"FROM registro_bonificaciones rb\n" +
+				"WHERE " +
+				" rb.oc_numero||'::'||rb.entrada||'::'||cast(rb.salida_item AS TEXT) IN (\n" +
+				"\t\tSELECT rbx.oc_numero||'::'||rbx.entrada||'::'||cast(rbx.salida_item AS TEXT)\n" +
+				"\t\tFROM registro_bonificaciones rbx\n" +
+				"\t\tWHERE rbx.oc_numero = '"+oc_numero+"'\n" +
+				"\t\t\tAND rbx.entrada LIKE '"+entrada+"'\n" +
+				"\t\t\tAND rbx.entrada_item = "+item +
+				"\t\t)";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
 		Log.d("getRegistroBonificaciones",rawQuery);
@@ -806,7 +913,9 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			registro.setTipo_unimedSalida(cur.getInt(10));
 			registro.setCantidadSalida(cur.getInt(11));
 			registro.setAcumulado(cur.getInt(12));
-			
+			registro.setEntrada_item(cur.getInt(cur.getColumnIndex("entrada_item")));
+			registro.setSalida_item(cur.getInt(cur.getColumnIndex("salida_item")));
+
 			registroBonificacion.add(registro);
 			cur.moveToNext();
 		}
@@ -820,7 +929,8 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 											int cantidadEntrada,double montoEntrada, String salida,
 											int tipoUnimedSalida, int cantidadSalida, int acumulado,
 											int cantidadDisponible, double montoDisponible,
-											String codigoVendedor, int prioridad){
+											String codigoVendedor, int prioridad,
+											int entrada_item, int salidaItem){
 		//Actualizar_Flag(oc_numero, entrada);
 		try {
 			SQLiteDatabase db = getWritableDatabase();
@@ -832,6 +942,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			Nreg.put("secuenciaPromocion", secuencia);
 			Nreg.put("agrupado", agrupado);
 			Nreg.put("entrada", entrada);
+			Nreg.put("entrada_item", entrada_item);
 			Nreg.put("tipo_unimed_entrada", tipoUnimedEntrada);
 			Nreg.put("unimedEntrada", unimedEntrada);
 			Nreg.put("cantidadEntrada", cantidadEntrada);
@@ -846,6 +957,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				Nreg.put("flagUltimo", 2);
 			}else Nreg.put("flagUltimo", 1);
 			Nreg.put("codigoVendedor",codigoVendedor);
+			Nreg.put(TB_registro_bonificaciones.SALIDA_ITEM,salidaItem);
 
 			db.insert("registro_bonificaciones", null, Nreg);
 			db.close();
@@ -1007,10 +1119,13 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		}
 	}
 	
-	public boolean VerificarRegistroBonificacion(String oc_numero,int secuencia,int item, String entrada,int agrupado){
+	public boolean VerificarRegistroBonificacion(String oc_numero,int secuencia,int item, String entrada,int agrupado,
+												 int entradaItem){
 		boolean flag = false;
 		String rawQuery = "SELECT * from registro_bonificaciones "
-						+ "where oc_numero='"+oc_numero+"' and secuenciaPromocion like "+secuencia+" and item like "+item+" and entrada like '"+entrada+"' and agrupado like "+agrupado; 
+						+ "where oc_numero='"+oc_numero+"' and secuenciaPromocion like "+secuencia+" " +
+				"and item like "+item+" and entrada like '"+entrada+"' and agrupado like "+agrupado+" " +
+				"and entrada_item = "+entradaItem;
 		
 		Log.e("DBclasses :VerificarRegistroBonificaion:",rawQuery);
 		
@@ -1057,9 +1172,10 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 
 	}
 	
-	public int obtenerCantidadBonificacion(String oc_numero, String salida){
+	public int obtenerCantidadBonificacion(String oc_numero, String salida, int salidaItem){
 		int cantidad = 0;
-		String rawQuery = "SELECT sum(cantidadSalida) from registro_bonificaciones where oc_numero='"+oc_numero+"' and salida like '"+salida+"'"; 
+		String rawQuery = "SELECT sum(cantidadSalida) from registro_bonificaciones " +
+				"where oc_numero='"+oc_numero+"' and salida like '"+salida+"' and salida_item = "+salidaItem+" ";
 		
 		Log.i("DBclasses :obtenerCantidadBonificacion:",rawQuery);
 		
@@ -1191,7 +1307,9 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				}
 				item.setCodigoVendedor(cur.getString(22));
 				item.setCodigoCliente(cur.getString(23));
-				
+				item.setEntrada_item(cur.getInt(cur.getColumnIndex("entrada_item")));
+				item.setSalida_item(cur.getInt(cur.getColumnIndex("salida_item")));
+
 				lista.add(item);
 				Log.i("DAO_RegistroBonificaciones","getRegistroBonificaciones:  " + cur.getString(0));
 				cur.moveToNext();
@@ -1316,8 +1434,11 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 		return lista;
 	}
 	
-	public int getCantidadEntregada(String oc_numero, String codigoSalida){
-		String rawQuery = "SELECT sum(cantidadEntregada) from registro_bonificaciones WHERE oc_numero like '"+oc_numero+"' and salida like '"+codigoSalida+"' and cantidadTotal IS NOT NULL";
+	public int getCantidadEntregada(String oc_numero, String codigoSalida, int salidaItem){
+		String rawQuery = "SELECT sum(cantidadEntregada) from registro_bonificaciones " +
+				"WHERE oc_numero like '"+oc_numero+"' and salida like '"+codigoSalida+"' " +
+				"and cantidadTotal IS NOT NULL " +
+				"and  salida_item = "+salidaItem+" ";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
 		cur.moveToFirst();
@@ -1331,9 +1452,11 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 	}
 	
 
-	public int getCantidadSalidaSecuencia(String oc_numero, int secuencia, int item, int agrupado){
+	public int getCantidadSalidaSecuencia(String oc_numero, int secuencia, int item, int agrupado,
+										  int salidaItem){
 		String rawQuery = "SELECT sum(cantidadSalida) FROM registro_bonificaciones "
-						+ "WHERE oc_numero like '"+oc_numero+"' AND secuenciaPromocion like '"+secuencia+"' AND item like '"+item+"' AND agrupado like '"+agrupado+"'";
+						+ "WHERE oc_numero like '"+oc_numero+"' AND secuenciaPromocion like '"+secuencia+"' AND item like '"+item+"' AND agrupado like '"+agrupado+"'" +
+						" AND salida_item = "+salidaItem+" ";
 		Log.i(TAG,rawQuery);
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -1896,9 +2019,10 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 
 	}
 
-	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSalida(String oc_numero, String salida){
+	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSalida(String oc_numero, String salida, int nroItemSalida){
 		String addWhere ="and pcompra.tipo_producto!='V' " +
-				"and rb.salida='"+salida+"'  ";
+				"and rb.salida='"+salida+"' " +
+				"and rb.salida_item="+nroItemSalida+ " ";
 		return getRegistroBonificaciones_xSQl(oc_numero, addWhere);
 	}
 	public ArrayList<DB_RegistroBonificaciones> getRegistroBonificaciones_xSQl(String oc_numero, String addWhere){
@@ -1917,7 +2041,8 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				"rb.salida,\n" +
 				"rb.tipo_unimed_salida,\n" +
 				"rb.cantidadSalida,\n" +
-				"rb.acumulado\n" +
+				"rb.acumulado,\n" +
+				"rb.salida_item\n" +
 				/*"rb.cantidadDisponible,\n" +
 				"rb.montoDisponible,\n" +
 				"rb.flagUltimo,\n" +
@@ -1933,8 +2058,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				"from registro_bonificaciones rb \n" +
 				"inner join "+DBtables.Pedido_detalle.TAG+" pcompra " +
 				"on rb.oc_numero=pcompra.oc_numero " +
-				"and  ( pcompra.sec_promo  =rb.secuenciaPromocion     or pcompra.promo_prioridad  =rb.secuenciaPromocion    ) " +
-				"and pcompra.cip=rb.entrada "+
+				"and  ( pcompra.sec_promo  =rb.secuenciaPromocion     or pcompra.sec_promo_prioridad  =rb.secuenciaPromocion    ) " +
 				"where rb.oc_numero = '"+oc_numero+"' "+addWhere;
 
 
@@ -1960,6 +2084,7 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			registro.setTipo_unimedSalida(cur.getInt(10));
 			registro.setCantidadSalida(cur.getInt(11));
 			registro.setAcumulado(cur.getInt(12));
+			registro.setSalida_item(cur.getInt(cur.getColumnIndex("salida_item")));
 			registroBonificacion.add(registro);
 			cur.moveToNext();
 		}
@@ -1997,7 +2122,9 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 				"rb.saldo,\n" +
 				"rb.codigoAnterior,\n" +
 				"rb.codigoVendedor,\n" +
-				"rb.codigoCliente\n" +
+				"rb.codigoCliente,\n" +
+				"rb.entrada_item,\n" +
+				"rb.salida_item\n" +
 				"from registro_bonificaciones rb\n "+
 				"where rb.oc_numero = '"+oc_numero+"' ";
 
@@ -2103,6 +2230,14 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 					?cur.getString(cur.getColumnIndex("codigoCliente"))
 					:null);
 
+			registro.setEntrada_item(!cur.isNull(cur.getColumnIndex("entrada_item"))
+					?cur.getInt(cur.getColumnIndex("entrada_item"))
+					:Integer.MIN_VALUE);
+
+			registro.setSalida_item(!cur.isNull(cur.getColumnIndex("salida_item"))
+					?cur.getInt(cur.getColumnIndex("salida_item"))
+					:Integer.MIN_VALUE);
+
 			listaRegBonif.add(registro);
 		}
 		cur.close();
@@ -2162,6 +2297,10 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 			values.put("codigoVendedor", regBonif.getCodigoVendedor());
 		if(regBonif.getCodigoCliente()!=null)
 			values.put("codigoCliente", regBonif.getCodigoCliente());
+		if(regBonif.getEntrada_item()!=Integer.MIN_VALUE)
+			values.put("entrada_item", regBonif.getEntrada_item());
+		if(regBonif.getSalida_item()!=Integer.MIN_VALUE)
+			values.put("salida_item", regBonif.getSalida_item());
 
 		long id=db.insert(""+DBtables.TB_registro_bonificaciones.TAG, null, values);
 		Log.e(TAG, "clonarRegistroBonificaciones:: id insertado: "+id);
@@ -2188,6 +2327,84 @@ public class DAO_RegistroBonificaciones extends SQLiteAssetHelper {
 
 		long fi2=dbwrite.delete(""+DBtables.Pedido_detalle.TAG, where2, args2);
 		Log.e(TAG, S_TAG+"Cant eliminados "+fi2+" \nwhere exec "+where2);
+	}
+
+
+	public ArrayList<DB_RegistroBonificaciones> ObtenerRegistroBonificacionesBY_sec_promo(String oc_numero, int secuencia_promo, int salidaItem){
+		String rawQuery = "select * from "+DBtables.TB_registro_bonificaciones.TAG+" " +
+				"where oc_numero ='"+oc_numero+"' and secuenciaPromocion = '"+secuencia_promo+"' " +
+				"and salida_item = "+salidaItem+" ";
+		rawQuery ="SELECT *\n" +
+				"FROM registro_bonificaciones rb\n" +
+				"WHERE rb.oc_numero = '"+oc_numero+"' \n" +
+				"\tAND rb.secuenciaPromocion = '"+secuencia_promo+"'\n" +
+				"\tAND rb.salida_item = "+salidaItem+"\n" +
+				"\tAND rb.oc_numero || '::' || cast(rb.entrada_item AS TEXT) NOT IN (\n" +
+				"\t\t	SELECT rbx.oc_numero || '::' || cast(rbx.entrada_item AS TEXT)\n" +
+				"\t\t	FROM registro_bonificaciones rbx\n" +
+				"\t\t	WHERE rbx.oc_numero = '"+oc_numero+"'\n" +
+				"\t\t\t	AND rbx.secuenciaPromocion = '"+secuencia_promo+"'\n" +
+				"\t\t\t	AND rbx.salida_item != "+salidaItem+"\n" +
+				"\t\t)";
+		return ObtenerRegistroBonificacionesRAIZ(rawQuery);//salidaItem
+	}
+
+	@SuppressLint("Range")
+	public ArrayList<DB_RegistroBonificaciones> ObtenerRegistroBonificacionesRAIZ(String rawQuery){
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		ArrayList<DB_RegistroBonificaciones> listaRegistroBonificaciones = new ArrayList<DB_RegistroBonificaciones>();
+		cur.moveToFirst();
+
+		while (!cur.isAfterLast()) {
+
+			DB_RegistroBonificaciones registro = new DB_RegistroBonificaciones();
+			registro.setOc_numero(cur.getString(cur.getColumnIndex("oc_numero")));
+			registro.setSecuenciaPromocion(cur.getInt(cur.getColumnIndex("secuenciaPromocion")));
+			registro.setItem(cur.getInt(cur.getColumnIndex("item")));
+			registro.setEntrada(cur.getString(cur.getColumnIndex("entrada")));
+			registro.setEntrada_item(cur.getInt(cur.getColumnIndex("entrada_item")));
+			registro.setSalida_item(cur.getInt(cur.getColumnIndex("salida_item")));
+
+			listaRegistroBonificaciones.add(registro);
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		return listaRegistroBonificaciones;
+	}
+
+	public int getcantidadSalidaPromocion(String oc_numero,
+										  int secuencia,
+										  String tipo_promocion,
+										  int item){
+		String S_TAG="getcantidadSalidaPromocion:: ";
+
+		int cantidadSalida=0;
+
+		String rawQuery = "SELECT case '"+tipo_promocion+"' when 'XDESCUENTO' " +
+				"THEN MAX(cantidadSalida) " +
+				"ELSE sum(cantidadSalida) END " +
+				"from registro_bonificaciones "
+				+ "where oc_numero='"+oc_numero+"' and secuenciaPromocion like "+secuencia+" " +
+				"and item like "+item;
+
+		Log.d(TAG, S_TAG+"SQL "+rawQuery);
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+
+		cur.moveToFirst();
+
+		while (!cur.isAfterLast()) {
+			cantidadSalida = cur.getInt(0);
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		Log.d("DAO_RegistroBonificaciones :getcantidadSalidaPromocion:","cantidadSalida: "+cantidadSalida);
+		return cantidadSalida;
 	}
 
 }

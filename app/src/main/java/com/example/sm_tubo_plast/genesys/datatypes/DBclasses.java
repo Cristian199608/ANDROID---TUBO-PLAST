@@ -30,10 +30,12 @@ import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
+import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.BEAN.ResumenVentaTipoProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
@@ -43,7 +45,6 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Politica_precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Producto;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.SincronizarActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
@@ -1710,14 +1711,21 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public void AgregarPedidoDetalle(DBPedido_Detalle item) {
-
 		int nro_item=getNextNroItemPedido(item.getOc_numero());
 		AgregarPedidoDetallePrincipal(item, nro_item);
 	}
+	public void AgregarPedidoDetallePromocion(DBPedido_Detalle item) {
+		AgregarPedidoDetallePrincipal(item, item.getItem());
+	}
+
 
 	public void AgregarPedidoDetallePrincipal(DBPedido_Detalle item, int nro_item) {
 
 		try {
+			if(nro_item<=0){
+				new Exception("El nro de item debe ser mayor a 0");
+				return;
+			}
 			SQLiteDatabase db = getWritableDatabase();
 
 
@@ -2511,14 +2519,50 @@ public class DBclasses extends SQLiteAssetHelper {
 		return cantidad;
 	}
 
+	public ArrayList<Integer> getOrdenItemPedido(String oc_numero){
+		ArrayList<Integer> listaIndex=new  ArrayList<Integer>();
+		SQLiteDatabase db = getReadableDatabase();
+		String rawQuery = "SELECT \n" +
+				"pd.item, ifnull(rb.salida_item , 0) as itemSalida \n" +
+				" from pedido_detalle pd \n" +
+				"left join "+DBtables.TB_registro_bonificaciones.TAG+" rb on pd.oc_numero=rb.oc_numero \n" +
+				"and pd.cip=rb.entrada and pd.item=rb.entrada_item\n" +
+				"where pd.oc_numero ='"+oc_numero+"' \n" +
+				"order by cast(pd.item as INTEGER)+(ifnull(cast(rb.salida_item as INTEGER) , 0)*0.01) asc";
+		Cursor cur = db.rawQuery(rawQuery, null);
+		while (cur.moveToNext()) {
+			int itemIndex1 = cur.getInt(0);
+			int itemIndex2 = cur.getInt(1);
+			if(!listaIndex.contains(itemIndex1) && itemIndex1>0)
+				listaIndex.add(listaIndex.size(), itemIndex1);
+			if(!listaIndex.contains(itemIndex2) && itemIndex2>0)
+				listaIndex.add(listaIndex.size(),itemIndex2);
+		}
+		cur.close();
+		db.close();
+		return listaIndex;
+	}
+
 	public ItemProducto[] obtenerListadoProductos_pedido(String oc_numero) {
 
+		ArrayList<Integer> listaIndex = this.getOrdenItemPedido(oc_numero);
 		String whereAdd;
 		whereAdd =  "and pedido_detalle.oc_numero='" + oc_numero + "' " +
-				"and pedido_detalle.cod_politica <> 'ELIM'  ";
+				"and pedido_detalle.cod_politica <> 'ELIM' " +
+				" ";
 		Log.d("Dbclasses :obtenerListadProductos_pedido:","Obteniendo listado de pedidos del oc_numero-> "+oc_numero);
 		ItemProducto[] productos= obtenerListadoProductos_pedidoMAIN(whereAdd);
-		return productos;
+		//-------------------------------ORDENAMIENTO DEL PEDIDO----------------------------------------------------------------
+		ItemProducto[] productosOrdenados=new ItemProducto[productos.length];
+		for (int i = 0; i < listaIndex.size(); i++) {
+			for (int j = 0; j < productos.length; j++) {
+				if(productos[j].getItem()==listaIndex.get(i)){
+					productosOrdenados[i]=productos[j];
+					break;
+				}
+			}
+		}
+		return productosOrdenados;
 	}
 
 	public ItemProducto obtenerListadoProductos_pedidoBY(String oc_numero, String codpro, int item) {
@@ -2570,7 +2614,7 @@ public class DBclasses extends SQLiteAssetHelper {
 						+ "on pedido_detalle.unidad_medida=unidad_medida.codunimed "
 						+ "left join tipoProducto tp on producto.tipoProducto = tp.codigoTipo "
 						+ "where 5 = 5 "+whereAdd+" "
-						+ " order by item asc";
+						+ " order by cast(pedido_detalle.item  as INTEGER) asc";
 
 
 		Log.d(TAG, "::obtenerListadoProductos_pedidoMAIN:___________________________________");
@@ -2788,20 +2832,23 @@ public class DBclasses extends SQLiteAssetHelper {
 			String codproReal=codprod;
 			if(codproReal.charAt(0)=='B')codproReal=codproReal.substring(1);
 			double peso=getPesoProducto(codproReal);
-			DBPedido_Detalle dnPedidoItem = getPedidosDetalleEntity(oc_numero, codproReal, nroItem);
+			DBPedido_Detalle dnPedidoItem = getPedidosDetalleEntityWithItem(oc_numero, codprod, nroItem);
 			SQLiteDatabase db = getWritableDatabase();
 			if(dnPedidoItem==null) return false;
 			//---------------------//recalcular peso, monto subtotal, y monto de dscto--------------------------------------------------------------------------
 			double precioLista = Double.parseDouble(dnPedidoItem.getPrecioLista());
 			double precioUnit = Double.parseDouble(dnPedidoItem.getPrecio_bruto());
+			double precioListaTotal= VARIABLES.getDoubleFormaterFourDecimal(precioLista*nCantidad);
+			double precioUnitTotal= VARIABLES.getDoubleFormaterFourDecimal(precioUnit*nCantidad);
 
-			double montoDscUnit  = VARIABLES.getDoubleFormaterThreeDecimal(precioLista-precioUnit);
+			double montoDscUnit  = VARIABLES.getDoubleFormaterThreeDecimal(precioListaTotal- precioUnitTotal);
+			double pesoTotal= VARIABLES.getDoubleFormaterFourDecimal(peso*nCantidad);
 
 			ContentValues reg = new ContentValues();
 			reg.put("cantidad", nCantidad);
-			reg.put("precio_neto", VARIABLES.getDoubleFormaterFourDecimal(precioUnit*nCantidad));
-			reg.put("peso_bruto", VARIABLES.getDoubleFormaterFourDecimal(peso*nCantidad));
-			reg.put("descuento", VARIABLES.getDoubleFormaterThreeDecimal(montoDscUnit*nCantidad));
+			reg.put("precio_neto", precioUnitTotal);
+			reg.put("peso_bruto", pesoTotal);
+			reg.put("descuento", montoDscUnit);
 			db.update("pedido_detalle", reg, where, args);
 
 			db.close();
@@ -2961,6 +3008,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			valor.put(DBtables.Pedido_cabecera.PERCEPCION_TOTAL,dataRecalcular.getPercepcion());
 			valor.put(DBtables.Pedido_cabecera.PESO_TOTAL, dataRecalcular.getPeso_total());
 			valor.put(DBtables.Pedido_cabecera.TOTAL_SUJETO_PERCEPCION,dataRecalcular.getTotalSujetoPercepcion());
+			valor.put(DBtables.Pedido_cabecera.DSCTO_BONIFICACION,dataRecalcular.getMontoDsctBonificacion());
 
 			db.update("pedido_cabecera", valor, where, args);
 			db.close();
@@ -5623,6 +5671,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		if (start==0){
 			EliminarRegistro_bonificaciones_enviados(codven);
 			EliminarPedido_detalle_enviados(codven);
+			EliminarPedidoDetalle2Enviados(codven);
 			EliminarSanVisitas(codven);
 			EliminarPedido_cabecera_enviados(codven);
 		}
@@ -5631,6 +5680,8 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		db.beginTransaction();
 
+		DAO_Pedido_detalle2 daoPedidoDet2=new DAO_Pedido_detalle2(_context);
+		Gson gsonParser=new Gson();
 		try {
 			for (int i = 0; i < jArray.length(); i++) {
 				jsonData = jArray.getJSONObject(i);
@@ -5690,6 +5741,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					cv.put(DBtables.Pedido_cabecera.DIAS_VIGENCIA, 			jsonData.getString(DBtables.Pedido_cabecera.DIAS_VIGENCIA).trim());
 					cv.put(DBtables.Pedido_cabecera.PEDIDO_ANTERIOR, 		jsonData.getString(DBtables.Pedido_cabecera.PEDIDO_ANTERIOR).trim());
 					cv.put(DBtables.Pedido_cabecera.CODIGO_TURNO, 			jsonData.getString(DBtables.Pedido_cabecera.CODIGO_TURNO).trim());
+					cv.put(Pedido_cabecera.DSCTO_BONIFICACION, 			jsonData.getString(Pedido_cabecera.DSCTO_BONIFICACION).trim());
 
 					//cv.put(DBtables.Pedido_cabecera.NRO_LETRA, 				jsonData.getString(DBtables.Pedido_cabecera.NRO_LETRA).trim());
 					//cv.put(DBtables.Pedido_cabecera.OBSERVACION4, 			jsonData.getString(DBtables.Pedido_cabecera.OBSERVACION4).trim());
@@ -5748,8 +5800,13 @@ public class DBclasses extends SQLiteAssetHelper {
 							Log.i("syncObjPedido det", "OCNUMERO: "	+ jsonData_det.getString("oc_numero").trim()	+ " CIP: " + jsonData_det.getString("cip").trim());
 						}
 
-						/*Insertando Registro bonificaciones del pedido*/
+						final Type mallax = new TypeToken<ArrayList<Pedido_detalle2>>() {}.getType();
+						final ArrayList<Pedido_detalle2> listaDet2 = gson.fromJson(jsonData.getString("pedidoDetalle2"), mallax);
+						for (Pedido_detalle2 pedido_detalle2 : listaDet2) {
+							daoPedidoDet2.InsertItem(pedido_detalle2, db);
+						}
 
+						/*Insertando Registro bonificaciones del pedido*/
 						JSONArray json_registroBonificaciones = new JSONArray(jsonData.getString("bonificaciones"));
 						for (int j = 0; j < json_registroBonificaciones.length(); j++) {
 
@@ -5785,6 +5842,8 @@ public class DBclasses extends SQLiteAssetHelper {
 							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_ANTERIOR));
 							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_VENDEDOR));
 							cv2.put(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE, jsonData_reg.getString(DBtables.TB_registro_bonificaciones.CODIGO_CLIENTE));
+							cv2.put(DBtables.TB_registro_bonificaciones.ENTRADA_ITEM, jsonData_reg.getInt(DBtables.TB_registro_bonificaciones.ENTRADA_ITEM));
+							cv2.put(DBtables.TB_registro_bonificaciones.SALIDA_ITEM, jsonData_reg.getInt(DBtables.TB_registro_bonificaciones.SALIDA_ITEM));
 
 							db.insert(DBtables.TB_registro_bonificaciones.TAG, null, cv2);
 
@@ -6184,9 +6243,9 @@ public class DBclasses extends SQLiteAssetHelper {
 				",pd.ean_item\n" +
 				",pd.cip\n" +
 				",pd.precio_bruto\n" +
-				",sum(pd.precio_neto) as precio_neto\n" +
+				",pd.precio_neto as precio_neto\n" +
 				",pd.percepcion\n" +
-				",sum(pd.cantidad) as cantidad\n" +
+				",pd.cantidad as cantidad\n" +
 				",pd.tipo_producto\n" +
 				",pd.unidad_medida\n" +
 				",pd.peso_bruto\n" +
@@ -6194,8 +6253,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				",pd.cod_politica\n" +
 				",pd.sec_promo\n" +
 				",pd.item_promo\n" +
-				",pd.agrup_promo\n" +/*
-				",pd.item\n" +
+				",pd.agrup_promo\n" +
+				",pd.item\n" +/*
 				",pd.precioLista\n" +
 				",pd.porcentaje_desc\n" +
 				",pd.descuento\n" +
@@ -6212,8 +6271,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				",pd.porcentaje_desc_extra" +*/
 				" from pedido_detalle pd " +
 				"where pd.oc_numero='"+oc_numero+"' " +
-				"and pd.tipo_producto='V' " +
-				"group by pd.oc_numero, pd.cip ";
+				"and pd.tipo_producto='V' " ;
 
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -6227,6 +6285,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbdetalle.setOc_numero(cur.getString(0));
 			dbdetalle.setEan_item(cur.getString(1));
 			dbdetalle.setCip(cur.getString(2));
+			dbdetalle.setItem(cur.getInt(cur.getColumnIndex("item")));
 			dbdetalle.setPrecio_bruto(cur.getString(3));
 			dbdetalle.setPrecio_neto(cur.getString(4));
 			dbdetalle.setPercepcion(cur.getString(5));
@@ -6299,7 +6358,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		return getPedidosDetalleEntityMain(rawQuery);
 	}
 
-	public DBPedido_Detalle getPedidosDetalleEntity(String oc, String codpro, int item) {
+	public DBPedido_Detalle getPedidosDetalleEntityWithItem(String oc, String codpro, int item) {
 		String rawQuery;
 		rawQuery = " oc_numero='" + oc+ "' and cip='" + codpro + "' and item ="+item;
 		return getPedidosDetalleEntityMain(rawQuery);
@@ -6331,7 +6390,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbdetalle.setPeso_bruto(cur.getString(9));
 			dbdetalle.setFlag(cur.getString(10));
 			dbdetalle.setCod_politica(cur.getString(11));
-			dbdetalle.setItem(cur.getInt(15));
+			dbdetalle.setItem(cur.getInt(cur.getColumnIndex("item")));
 			dbdetalle.setPrecioLista(cur.getString(cur.getColumnIndex("precioLista")));
 			dbdetalle.setPorcentaje_desc(cur.getDouble(cur.getColumnIndex("porcentaje_desc")));
 			dbdetalle.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
@@ -6744,7 +6803,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setCodTurno(cur.getString(46));
 			dbpedido.setNroletra(cur.getString(47));
 			dbpedido.setObservacion4(cur.getString(48));
-			
+			dbpedido.setDsctoBonificacion(cur.getDouble(cur.getColumnIndex("dsctoBonificacion")));
+
 			Log.e("NumeroOrdenCompra", ""+cur.getString(24));
 			Log.e("CodigoPrioridad", ""+cur.getString(25));
 			Log.e("CodigoSucursal", ""+cur.getString(26));
@@ -10897,7 +10957,24 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 
 	}
+	public void EliminarPedidoDetalle2Enviados(String codven) {
 
+		String where = "oc_numero in (select oc_numero from pedido_cabecera where flag not in (?) or cod_emp <> ?)";
+		String[] args = { "P",  codven };
+
+		try {
+			SQLiteDatabase db = getWritableDatabase();
+
+			long pr = db.delete(""+DBtables.Pedido_detalle2.TAG, where, args);
+			db.close();
+			Log.i(TAG,
+					"EliminarMovimiento_imagenes_enviados:: eliminados los "+pr+" Movimiento_imagen de las cabeceras con estado <> 'P'");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
 	public void EliminarSanVisitas(String codven) {
 		// TODO Auto-generated method stub
 
@@ -12351,7 +12428,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				pc.setCodTurno(cursor.getString(46));
 				pc.setNroletra(cursor.getString(47));
 				pc.setObservacion4(cursor.getString(48));
-				
+				pc.setDsctoBonificacion(cursor.getDouble(cursor.getColumnIndex("dsctoBonificacion")));
+
 			} while (cursor.moveToNext());
 
 		}
@@ -13433,9 +13511,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
 				"select  \n" +
 				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
-				"pd.peso_bruto, pd.precio_neto, pd.cantidad\n" +
-				" from pedido_detalle pd   \n" +
-				"inner join producto p on (pd.cip=p.codpro OR ((substr(pd.cip,2,length(pd.cip))) =  p.codpro))\n" +
+				"pd.peso_bruto, pd.precio_neto \n" +
+				" from (" +
+				"select x.oc_numero, x.cip, x.tipo_producto, x.peso_bruto, x.precio_neto from pedido_detalle x \n" +
+				"UNION ALL \n"+
+				"select y.oc_numero, 'B'||y.codpro, 'C' as tipo_producto, y.peso_total, y.precio_neto from pedido_detalle2 y \n" +
+				") pd   \n" +
+				"inner join producto p on (pd.cip = case when pd.tipo_producto='C' then 'B' else '' end ||p.codpro)\n" +
 				"where pd.oc_numero='"+oc_numero+"'\n" +
 				") res group by tipoProducto " +
 				"order by tipoProducto asc";
@@ -13808,15 +13890,59 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	public void setDataPruebas() {
 		SQLiteDatabase db = getWritableDatabase();
-//		String sql = "update " + DBtables.Promocion_Detalle.TAG + " set  " +
-//				"prioridad=1, " +
-//				"agrupado=1, " +
-//				"total_agrupado=1 " +
-//				 "where secuencia in ('7','8') ";
-		String sql="DELETE FROM registro_bonificaciones  where oc_numero='V3225082903' AND codigoVendedor is null ";
+		String sql = "update " + DBtables.Promocion_Detalle.TAG + " set  " +
+				"acumulado=1 " +
+				//"agrupado=1, " +
+				//"total_agrupado=1 " +
+				 "where secuencia in ('11', '7') ";
+		//16
+		sql = "update " + DBtables.Promocion_Detalle.TAG + " set  " +
+				"general=0, " +
+				"max_pedido=999 " +
+				"where secuencia in ('16','17','18', '19', '20', '21') ";
+//		String sql="update producto set despro='COMBOX '||despro where codpro='ISO18167X1M' ";
+		//String sql="update promocion_detalle set tipo_promocion='XCOMBO' where secuencia='11'";
 		db.execSQL(sql);
 		db.close();
 
+	}
+
+	public void updatePedidoDetalle_SecuenciaPromocion(String oc_numero,String sec_promo, int item_promo, int prioridad, int salidaItem) {
+
+
+		DAO_RegistroBonificaciones dao_reg=new DAO_RegistroBonificaciones(_context);
+		ArrayList<DB_RegistroBonificaciones> listaBonificados=dao_reg.ObtenerRegistroBonificacionesBY_sec_promo(oc_numero, Integer.parseInt(sec_promo), salidaItem);
+
+		String inCodpro="'vacio'";
+		for (DB_RegistroBonificaciones boni:listaBonificados){
+			inCodpro=inCodpro+", '"+boni.getEntrada()+"::"+boni.getEntrada_item()+"'";
+		}
+
+
+		String where = "oc_numero = ? and cip||'::'||cast(item as TEXT) in("+inCodpro+") and tipo_producto='V'";
+		String[] args = { oc_numero};
+
+		try {
+			SQLiteDatabase db = getWritableDatabase();
+
+			ContentValues reg = new ContentValues();
+			if (prioridad==0){
+				reg.put("sec_promo", sec_promo);
+				reg.put("item_promo", item_promo);
+			}else if (prioridad==1){
+				reg.put("sec_promo_prioridad", sec_promo);
+				reg.put("item_promo_prioridad", item_promo);
+			}
+
+			long i=db.update(""+DBtables.Pedido_detalle.TAG, reg, where, args);
+			db.close();
+
+			Log.i("udatePedidoDetalle_SecuenciaPromocion:: ", "SecuenciaPromocion UPDATE a '"
+					+ inCodpro + "' es "+(i>=1));
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 }
 

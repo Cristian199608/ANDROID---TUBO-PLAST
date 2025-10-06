@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.sm_tubo_plast.domain.PedidoCabeceraUC.ClonarPedidoUseCase;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
@@ -38,6 +39,7 @@ public  class DBHelperTest {
     Context context;
     DAO_Pedido daoPedidoDetalle;
     DAO_RegistroBonificaciones dao_registroBonificaciones;
+    DAO_Pedido_detalle2 dao_pedido_detalle2;
     String codven="V207";
     @Before
     public void setup() {
@@ -45,6 +47,7 @@ public  class DBHelperTest {
         dbHelper = new DBclasses(context);
         daoPedidoDetalle= new DAO_Pedido(context);
         dao_registroBonificaciones= new DAO_RegistroBonificaciones(context);
+        dao_pedido_detalle2= new DAO_Pedido_detalle2(context);
     }
 
     @Test
@@ -70,6 +73,7 @@ public  class DBHelperTest {
                     dbHelper,
                     daoPedidoDetalle,
                     dao_registroBonificaciones,
+                    dao_pedido_detalle2,
                     codven,
                     oc_numero
             );
@@ -125,6 +129,7 @@ public  class DBHelperTest {
                     dbHelper,
                     daoPedidoDetalle,
                     dao_registroBonificaciones,
+                    dao_pedido_detalle2,
                     codven,
                     oc_numero
             );
@@ -181,6 +186,7 @@ public  class DBHelperTest {
                     dbHelper,
                     daoPedidoDetalle,
                     dao_registroBonificaciones,
+                    dao_pedido_detalle2,
                     codven,
                     oc_numero
             );

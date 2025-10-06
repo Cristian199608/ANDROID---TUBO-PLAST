@@ -32,7 +32,7 @@ public class VARIABLES {
 
     public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=false;
-    public static final  boolean isSetDataPruebas=true;
+    public static final  boolean isSetDataPruebas=false;
 
     public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
     public static String CARPERTA_CONTENEDOR_PDF="PDF";
@@ -479,8 +479,8 @@ public class VARIABLES {
         return list;
     }
 
-    public static String getDescripcionAnPreConcatenarBonif(String codigo,  double monto) {
-        return (codigo.startsWith("B") && monto==0)? " •BONIFICACION ":"";
+    public static String getDescripcionAnPreConcatenarBonif(String tipoProducto) {
+        return (tipoProducto.equals("C"))? " •BONIFICACION ":"";
     }
 
 }

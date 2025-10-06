@@ -6,7 +6,7 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
-public class PDFHTML {
+public class PDFHTMLnoUsed {
     public String GenerateHtml(){
         String tbWidth = "1040px";
 

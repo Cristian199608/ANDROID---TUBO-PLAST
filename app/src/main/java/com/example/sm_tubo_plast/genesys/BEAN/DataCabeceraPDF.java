@@ -27,6 +27,7 @@ public class DataCabeceraPDF {
 
     String tipoRegistro;
     int diasVigencia;
+    double dsctoBonificacion;
 
 
     public String getOc_numero() {
@@ -221,4 +222,11 @@ public class DataCabeceraPDF {
         this.diasVigencia = diasVigencia;
     }
 
+    public double getDsctoBonificacion() {
+        return dsctoBonificacion;
+    }
+
+    public void setDsctoBonificacion(double dsctoBonificacion) {
+        this.dsctoBonificacion = dsctoBonificacion;
+    }
 }
