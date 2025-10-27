@@ -6909,19 +6909,21 @@ private void EnvalularMoneda(){
         }
 
         String salida= "B"+cipSalida;
+        double precioLista= Double.parseDouble(resulPrecio.precioLista.replace(",", ""));
         double precioVentaSinIgv= Double.parseDouble(resulPrecio.precioVentaPreSinIGV.replace(",", ""));
-        String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioVentaSinIgv);
+        double precioVentaConIgv= Double.parseDouble(resulPrecio.precioVentaPreConIGV.replace(",", ""));
+        String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioVentaSinIgv).replace(",","");
         double pesoProducto = dbclass.getPesoProducto(codproEntrada);
 
         DBPedido_Detalle itemDetalle = new DBPedido_Detalle();
         itemDetalle.setOc_numero(edt_nroPedido.getText().toString());
         itemDetalle.setCip(salida);
         itemDetalle.setEan_item("");
-        itemDetalle.setPrecioLista(resulPrecio.precioLista);
+        itemDetalle.setPrecioLista(String.valueOf(precioLista));
         itemDetalle.setPercepcion("0");
-        itemDetalle.setPorcentaje_desc(detalleOrigen.getPorcentaje_desc());
-        itemDetalle.setPorcentaje_desc_extra(detalleOrigen.getPorcentaje_desc_extra());
-        itemDetalle.setDescuento(resulPrecio.descuentoSinIgvTotal);
+        itemDetalle.setPorcentaje_desc(precioVentaSinIgv==0?100:detalleOrigen.getPorcentaje_desc());
+        itemDetalle.setPorcentaje_desc_extra(precioVentaSinIgv==0?100:detalleOrigen.getPorcentaje_desc_extra());
+        itemDetalle.setDescuento(String.valueOf(precioVentaConIgv));
         itemDetalle.setPrecio_bruto(String.valueOf(precioVentaSinIgv));
         itemDetalle.setPrecio_neto(precioSutotal);
         itemDetalle.setCantidad(cantidadProducto);
@@ -7641,10 +7643,15 @@ private void EnvalularMoneda(){
             }
             double pesoProducto= dbclass.getPesoProducto(promDetCombo.getCodpro_bonificacion());
             int cantidadBonifXcombo= (promDetCombo.getCantidad() * cantidadActualizada);
-            double precioListaTotaL =VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(resulPrecio.precioLista)*cantidadBonifXcombo);
-            double precioUnitTotal =VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(resulPrecio.precioVentaPreSinIGV)*cantidadBonifXcombo);
+            double precioLista = Double.parseDouble(resulPrecio.precioLista.replace(",",""));
+            double precioListaTotaL =VARIABLES.getDoubleFormaterThreeDecimal(precioLista*cantidadBonifXcombo);
+            double precioVentaSinIgv =Double.parseDouble(resulPrecio.precioVentaPreSinIGV.replace(",",""));
+            double precioUnitTotal =VARIABLES.getDoubleFormaterThreeDecimal(precioVentaSinIgv*cantidadBonifXcombo);
             double descuentoTotal =VARIABLES.getDoubleFormaterThreeDecimal(precioListaTotaL-precioUnitTotal);
             double pesoTotal =VARIABLES.getDoubleFormaterThreeDecimal(pesoProducto*cantidadBonifXcombo);
+            double desc1= precioLista==0?100:itemDetalleGlobal.getPorcentaje_desc();
+            double descExtra=precioLista==0?100:itemDetalleGlobal.getPorcentaje_desc_extra();
+
             Pedido_detalle2 pedDeta2 = new Pedido_detalle2(
                     Oc_numero,
                     secuenciaPromocion,
@@ -7652,8 +7659,8 @@ private void EnvalularMoneda(){
                     promDetCombo.getCodpro_bonificacion(),
                     cantidadBonifXcombo,
                     Double.parseDouble(resulPrecio.precioLista),
-                    itemDetalleGlobal.getPorcentaje_desc(),
-                    itemDetalleGlobal.getPorcentaje_desc_extra(),
+                    desc1,
+                    descExtra,
                     Double.parseDouble(resulPrecio.precioVentaPreSinIGV),
                     precioUnitTotal,
                     descuentoTotal,

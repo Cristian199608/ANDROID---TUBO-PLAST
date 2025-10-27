@@ -99,7 +99,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 					reg.put("sec_promo", "");
 					reg.put("item_promo", "0");
 				}else if (secuencia_promocion==prodEntrada.getSec_promo_prioridad()){
-					whereD = "oc_numero = ? and promo_prioridad = ? and cip||'::'||cast(item as TEXT) in ("+prodEntradaEItem+")";
+					whereD = "oc_numero = ? and sec_promo_prioridad = ? and cip||'::'||cast(item as TEXT) in ("+prodEntradaEItem+")";
 					reg.put("sec_promo_prioridad", "");
 					reg.put("item_promo_prioridad", "");
 				}

@@ -67,9 +67,24 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         null);
                 if (objCursor.getCount() != 0)
                 {
+                    //------------------------ORDERNAR-----------------------------------------------------------------------
+                    ArrayList<Integer> lisOrderIndexCursor = new ArrayList<>();
+                    for (int i = 0; i < listaIndex.size(); i++) {
+                        for (int i1 = 0; i1 < objCursor.getCount(); i1++) {
+                            objCursor.moveToPosition(i1);
+                            int item = objCursor.getInt(objCursor.getColumnIndex("item"));
+                            if(item == listaIndex.get(i)){
+                                lisOrderIndexCursor.add(objCursor.getPosition());
+                                break;
+                            }
+                        }
+                    }
+                    //-----------------------------------------------------------------------------------------------
+
                     int indexNro = 0;
-                    while (objCursor.moveToNext())
-                    {
+                    for (int x= 0; x < objCursor.getCount(); x++) {
+                        objCursor.moveToPosition(lisOrderIndexCursor.get(x));
+
                         String oc_numero = objCursor.getString(objCursor.getColumnIndex("oc_numero"));
                         String codpro = objCursor.getString(objCursor.getColumnIndex("codpro"));
                         String codproOriginal = objCursor.getString(objCursor.getColumnIndex("codproOriginal"));
@@ -134,6 +149,16 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                         }
                     }
                     objCursor.close();
+
+
+                    if(VARIABLES.isProduccion_prueba){
+                        int forhasta15 = 15 - objDbPedidoCabeceraDetalleArrayList.size();
+                        if(forhasta15 > 0){
+                            for (int i = 0; i < forhasta15; i++) {
+                                objDbPedidoCabeceraDetalleArrayList.add(objDbPedidoCabeceraDetalleArrayList.get(0));
+                            }
+                        }
+                    }
                     return objDbPedidoCabeceraDetalleArrayList;
                 }
                 else

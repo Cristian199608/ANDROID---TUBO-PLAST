@@ -117,7 +117,8 @@ class DAO_Pedido_detalle2 : DAO_Database {
                 "on pe.codpro= p.codpro " +
                 "left join "+DBtables.Unidad_medida.TAG+" um on um.codunimed=p.codunimed_almacen "+
                 "where pe.oc_numero='"+oc_numero+"' and pe.sec_promo='"+secPromo+"' " +
-                "and pe.salida_item="+salidaItem+ " ";
+                "and pe.salida_item="+salidaItem+ " " +
+                "order by p.despro asc ";
         Log.d("ALERT-", " .rawQuery "+rawQuery)
         var lista: ArrayList<Pedido_detalle2> = ArrayList();
         var item: Pedido_detalle2? = null
