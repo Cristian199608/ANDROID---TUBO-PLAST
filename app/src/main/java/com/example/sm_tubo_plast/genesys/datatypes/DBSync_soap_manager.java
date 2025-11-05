@@ -1272,10 +1272,10 @@ public void Sync_tabla_pedido_detalle(){
  
  
  public void Sync_tabla_producto(String codven, String url, String catalog, String user, String contrasena) throws Exception{
-	 
-		String SOAP_ACTION= "http://tempuri.org/obtenerProductos_json";
-		String METHOD_NAME="obtenerProductos_json";
-		//ImageLoader imageLoader= new ImageLoader(null);  
+
+	 String METHOD_NAME="obtenerProductos_v2_json";
+	 String SOAP_ACTION= "http://tempuri.org/"+METHOD_NAME;
+		//ImageLoader imageLoader= new ImageLoader(null);
 		
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 		Request.addProperty("url", url); 

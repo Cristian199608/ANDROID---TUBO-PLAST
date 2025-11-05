@@ -59,8 +59,9 @@ public class VARIABLES {
                 "fuerzaventas_v2.2",//end 2025-01-03
                 "fuerzaventas_v2.3",//end 2025-01-30
                 "fuerzaventas_v2.4", //at 2025-01-30
+                "fuerzaventas_v2.5", //at 2025-08-26
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_v2.5"; //at 2025-08-26
+        private static final String DATABASA_NAME       ="fuerzaventas_v2.6"; //at 2025-11-04
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={

@@ -4729,6 +4729,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Producto.TIPO_PRODUCTO,jsonData.getString(DBtables.Producto.TIPO_PRODUCTO).trim());
 				cv.put(DBtables.Producto._PRECIO_BASE,jsonData.getDouble(DBtables.Producto._PRECIO_BASE));
 				cv.put(DBtables.Producto.desc_comercial,jsonData.getString(Producto.desc_comercial).trim());
+				cv.put(DBtables.Producto.flg_bonificacion,jsonData.getInt(Producto.flg_bonificacion));
 
 
 				db.insert(DBtables.Producto.TAG, null, cv);
@@ -7120,6 +7121,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbproductos.setEstado(cur.getString(13));
 			dbproductos.setPeso(cur.getDouble(14));
 			dbproductos.setFoto(cur.getString(15));
+			dbproductos.setFlg_bonificacion(cur.getInt(cur.getColumnIndex("flg_bonificacion")));
 
 			lista_productos.add(dbproductos);
 			cur.moveToNext();

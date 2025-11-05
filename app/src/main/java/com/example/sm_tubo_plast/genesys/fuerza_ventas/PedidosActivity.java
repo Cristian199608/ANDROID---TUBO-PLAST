@@ -83,6 +83,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMotivo_noventa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
+import com.example.sm_tubo_plast.genesys.datatypes.DBProductos;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBTb_Promocion_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Detalle_Entrega;
@@ -6900,12 +6901,26 @@ private void EnvalularMoneda(){
         DBPedido_Detalle detalleOrigen = dbclass.getPedidosDetalleEntityWithItem(edt_nroPedido.getText().toString(),
                 codproEntrada,
                 itemEntrada);
+
+
+        ArrayList<DBProductos> listProduc = dbclass.getProductosxCodpro(cipSalida);
+        double porcentajeDesc= detalleOrigen.getPorcentaje_desc();
+        double porcentajeDescExtra= detalleOrigen.getPorcentaje_desc_extra();
+        if(listProduc.size()==0){
+            GlobalFunctions.showCustomToast(this,  "Producto promoción codigo: "+cipSalida+" no se agregó, pues no está en el catalogo de artículos.", GlobalFunctions.TOAST_ERROR);
+            return;
+        }
+        if(listProduc.get(0).isFlg_bonificacion()){
+            porcentajeDesc= 100;
+            porcentajeDescExtra= 0;
+        }
         UtilCalcularPrecioProducto utilCaclularPrecioProductoUnit= new UtilCalcularPrecioProducto(
                 dbclass, codcli, codigoMoneda
         );
-        UtilCalcularPrecioProducto.ResultPrecios resulPrecio =utilCaclularPrecioProductoUnit.consultarPrecios(cipSalida, detalleOrigen.getPorcentaje_desc(), detalleOrigen.getPorcentaje_desc_extra());
+        UtilCalcularPrecioProducto.ResultPrecios resulPrecio =utilCaclularPrecioProductoUnit.consultarPrecios(cipSalida, porcentajeDesc, porcentajeDescExtra);
         if(resulPrecio.errorMensaje!=null) {
             GlobalFunctions.showCustomToast(this,  "Producto promoción no se agregó motivo a: \n\n"+resulPrecio.errorMensaje, GlobalFunctions.TOAST_ERROR);
+            return;
         }
 
         String salida= "B"+cipSalida;
@@ -6921,8 +6936,8 @@ private void EnvalularMoneda(){
         itemDetalle.setEan_item("");
         itemDetalle.setPrecioLista(String.valueOf(precioLista));
         itemDetalle.setPercepcion("0");
-        itemDetalle.setPorcentaje_desc(precioVentaSinIgv==0?100:detalleOrigen.getPorcentaje_desc());
-        itemDetalle.setPorcentaje_desc_extra(precioVentaSinIgv==0?100:detalleOrigen.getPorcentaje_desc_extra());
+        itemDetalle.setPorcentaje_desc(porcentajeDesc);
+        itemDetalle.setPorcentaje_desc_extra(porcentajeDescExtra);
         itemDetalle.setDescuento(String.valueOf(precioVentaConIgv));
         itemDetalle.setPrecio_bruto(String.valueOf(precioVentaSinIgv));
         itemDetalle.setPrecio_neto(precioSutotal);
@@ -7634,8 +7649,22 @@ private void EnvalularMoneda(){
         DAO_PromocionDetalleProducto dao_promoP = new DAO_PromocionDetalleProducto(this);
         ArrayList<PromocionDetalleProducto> listaBon = dao_promoP.getDataByID(secuenciaPromocion);
         ArrayList<Pedido_detalle2 > listaPedidoDeta2=new ArrayList<>();
+
+
         for (PromocionDetalleProducto promDetCombo : listaBon) {
-            UtilCalcularPrecioProducto.ResultPrecios resulPrecio = utilCaclularPrecioProductoUnit.consultarPrecios(promDetCombo.getCodpro_bonificacion(),    itemDetalleGlobal.getPorcentaje_desc(), itemDetalleGlobal.getPorcentaje_desc_extra());
+            ArrayList<DBProductos> listProduc = dbclass.getProductosxCodpro(promDetCombo.getCodpro_bonificacion());
+            double porcentajeDesc= itemDetalleGlobal.getPorcentaje_desc();
+            double porcentajeDescExtra= itemDetalleGlobal.getPorcentaje_desc_extra();
+            if(listProduc.size()==0){
+                GlobalFunctions.showCustomToast(this,  "Producto promociónXcombo codigo: "+promDetCombo.getCodpro_bonificacion()+" no se agregó, pues no está en el catalogo de artículos.", GlobalFunctions.TOAST_ERROR);
+                listaPedidoDeta2.clear();
+                break;
+            }
+            if(listProduc.get(0).isFlg_bonificacion()){
+                porcentajeDesc= 100;
+                porcentajeDescExtra= 0;
+            }
+            UtilCalcularPrecioProducto.ResultPrecios resulPrecio = utilCaclularPrecioProductoUnit.consultarPrecios(promDetCombo.getCodpro_bonificacion(),    porcentajeDesc, porcentajeDescExtra);
             if (resulPrecio.errorMensaje!=null) {
                 GlobalFunctions.showCustomToast(this,  "Producto promociónXcombo detalle no se agregó motivo a: \n\n"+resulPrecio.errorMensaje, GlobalFunctions.TOAST_ERROR);
                 listaPedidoDeta2.clear();
@@ -7649,8 +7678,6 @@ private void EnvalularMoneda(){
             double precioUnitTotal =VARIABLES.getDoubleFormaterThreeDecimal(precioVentaSinIgv*cantidadBonifXcombo);
             double descuentoTotal =VARIABLES.getDoubleFormaterThreeDecimal(precioListaTotaL-precioUnitTotal);
             double pesoTotal =VARIABLES.getDoubleFormaterThreeDecimal(pesoProducto*cantidadBonifXcombo);
-            double desc1= precioLista==0?100:itemDetalleGlobal.getPorcentaje_desc();
-            double descExtra=precioLista==0?100:itemDetalleGlobal.getPorcentaje_desc_extra();
 
             Pedido_detalle2 pedDeta2 = new Pedido_detalle2(
                     Oc_numero,
@@ -7659,8 +7686,8 @@ private void EnvalularMoneda(){
                     promDetCombo.getCodpro_bonificacion(),
                     cantidadBonifXcombo,
                     Double.parseDouble(resulPrecio.precioLista),
-                    desc1,
-                    descExtra,
+                    porcentajeDesc,
+                    porcentajeDescExtra,
                     Double.parseDouble(resulPrecio.precioVentaPreSinIGV),
                     precioUnitTotal,
                     descuentoTotal,

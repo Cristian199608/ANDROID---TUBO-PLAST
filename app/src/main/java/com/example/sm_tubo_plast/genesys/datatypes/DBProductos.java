@@ -24,7 +24,8 @@ public class DBProductos {
     private double peso;
     private String foto;
     private String linea_negocio;
-    
+    private int flg_bonificacion;
+
     
 	public String getLinea_negocio() {
 		return linea_negocio;
@@ -122,7 +123,15 @@ public class DBProductos {
 	public void setFoto(String bs) {
 		this.foto = bs;
 	}
-    
-    
 
+	public int getFlg_bonificacion() {
+		return flg_bonificacion;
+	}
+
+	public void setFlg_bonificacion(int flg_bonificacion) {
+		this.flg_bonificacion = flg_bonificacion;
+	}
+	public boolean isFlg_bonificacion() {
+		return flg_bonificacion==1;
+	}
 }

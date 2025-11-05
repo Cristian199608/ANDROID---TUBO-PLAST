@@ -664,6 +664,7 @@ public class DBtables {
 		public static final String TIPO_PRODUCTO = "tipoProducto";
 		public static final String _PRECIO_BASE = "_precio_base";
 		public static final String desc_comercial = "desc_comercial";
+		public static final String flg_bonificacion = "flg_bonificacion";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO
