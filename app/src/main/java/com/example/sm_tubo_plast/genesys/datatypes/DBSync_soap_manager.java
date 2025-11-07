@@ -4673,54 +4673,13 @@ public int actualizarObjPedido() throws Exception{
 	
    	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
 	String METHOD_NAME="actualizarObjpedido_v4_json";
-	
-	ArrayList<DB_ObjPedido>  lista_obj_pedido= new ArrayList<DB_ObjPedido>();
-    lista_obj_pedido = dbclass.getTodosObjPedido_json_flagp();
-    
-    if(lista_obj_pedido.size() == 0){
+
+	ArrayList<DB_ObjPedido> listaCabecera = dbclass.getTodosObjPedido_json_flagp();
+    if(listaCabecera.size() == 0){
     	return  0;
     }
-    
-    for(int i=0; i< lista_obj_pedido.size(); i++){
-    	//Seteo del detalle del pedido por el oc_numero
-    	ArrayList<DBPedido_Detalle> detalles = new ArrayList<DBPedido_Detalle>();
-    	detalles = dbclass.getPedido_detalles(lista_obj_pedido.get(i).getOc_numero());    	
-    	lista_obj_pedido.get(i).setDetalles(detalles);
-    	
-    	//Seteo del registro de bonificaciones por el oc_numero
-    	registroBonificaciones = new ArrayList<DB_RegistroBonificaciones>();
-    	registroBonificaciones = DAORegistroBonificaciones.getRegistroBonificaciones(lista_obj_pedido.get(i).getOc_numero());
-    	   
-    	
-    	
-    	ArrayList<DB_RegistroBonificaciones> pendientesUsados = new ArrayList<DB_RegistroBonificaciones>();
-    	for (int j = 0; j < registroBonificaciones.size(); j++) {
-    		DB_RegistroBonificaciones registroUsado = DAORegistroBonificaciones.getRegistroBonificacion(registroBonificaciones.get(j).getCodigoAnterior());
-    		if (registroUsado.getOc_numero()!=null) {//Si se uso algun pendiente
-    			boolean isRegistrado = false;
-    			for (int k = 0; k < registroBonificaciones.size(); k++) {//Verifico que ese registro ya no este agregado
-    				if (registroBonificaciones.get(k).getCodigoRegistro().equals(registroUsado.getCodigoRegistro())) {
-    					isRegistrado = true;
-    				}
-    			}
-    			if (isRegistrado==false) {
-    				Log.e(TAG, "Agregando a registroBonificaciones el pendiente Usado: "+registroUsado.getCodigoRegistro());
-					pendientesUsados.add(registroUsado);					
-				}
-			}    		 
-		}
-    	
-    	Log.e(TAG, "registro bonificaciones size: "+registroBonificaciones.size());
-    	if (!pendientesUsados.isEmpty()) {
-    		registroBonificaciones.addAll(pendientesUsados);
-    		Log.e(TAG, "registro bonificaciones con pendientes size: "+registroBonificaciones.size());
-		}
-    	
-    	lista_obj_pedido.get(i).setRegistroBonificaciones(registroBonificaciones);
-		ArrayList<San_Visitas> listaVisitas= DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, lista_obj_pedido.get(i).getOc_numero());
-		lista_obj_pedido.get(i).setSan_visitas(listaVisitas);
-    }
-    
+	ArrayList<DB_ObjPedido>  lista_obj_pedido = getDataParaEnviar(listaCabecera);
+
     Gson gson = new Gson();
     String cadena = gson.toJson(lista_obj_pedido);
     
@@ -4772,57 +4731,60 @@ public int actualizarObjPedido() throws Exception{
 	    return 1;
 }
 
+private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaCabecera){
+	String flag = "";
+	DAO_Pedido_detalle2 dao_pedido_detalle2=new DAO_Pedido_detalle2(context);
+	for(int i=0; i< listaCabecera.size(); i++){
+		//Seteo del detalle del pedido por el oc_numero
+		ArrayList<DBPedido_Detalle> detalles = new ArrayList<DBPedido_Detalle>();
+		detalles = dbclass.getPedido_detalles(listaCabecera.get(i).getOc_numero());
+		listaCabecera.get(i).setDetalles(detalles);
+
+		listaCabecera.get(i).setPedidoDetalle2(dao_pedido_detalle2.getDataByOcnumero(listaCabecera.get(i).getOc_numero()));
+
+		//Seteo del registro de bonificaciones por el oc_numero
+		ArrayList<DB_RegistroBonificaciones> registroBonificaciones = new ArrayList<>();
+		registroBonificaciones = DAORegistroBonificaciones.getRegistroBonificaciones(listaCabecera.get(i).getOc_numero());
+		//Se deben agregar los regisros pendientes que han sido usados para que sean actualizados
+
+		ArrayList<DB_RegistroBonificaciones> pendientesUsados = new ArrayList<DB_RegistroBonificaciones>();
+		for (int j = 0; j < registroBonificaciones.size(); j++) {
+			DB_RegistroBonificaciones registroUsado = DAORegistroBonificaciones.getRegistroBonificacion(registroBonificaciones.get(j).getCodigoAnterior());
+			if (registroUsado.getOc_numero()!=null) {//Si se uso algun pendiente
+				boolean isRegistrado = false;
+				for (int k = 0; k < registroBonificaciones.size(); k++) {//Verifico que ese registro ya no este agregado
+					if (registroBonificaciones.get(k).getCodigoRegistro().equals(registroUsado.getCodigoRegistro())) {
+						isRegistrado = true;
+					}
+				}
+				if (isRegistrado==false) {
+					Log.e(TAG, "Agregando a registroBonificaciones el pendiente Usado: "+registroUsado.getCodigoRegistro());
+					pendientesUsados.add(registroUsado);
+				}
+			}
+		}
+
+		Log.e(TAG, "registro bonificaciones size: "+registroBonificaciones.size());
+		if (!pendientesUsados.isEmpty()) {
+			registroBonificaciones.addAll(pendientesUsados);
+			Log.e(TAG, "registro bonificaciones con pendientes size: "+registroBonificaciones.size());
+		}
+
+		listaCabecera.get(i).setRegistroBonificaciones(registroBonificaciones);
+		ArrayList<San_Visitas> listaVisitas= DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, listaCabecera.get(i).getOc_numero());
+		listaCabecera.get(i).setSan_visitas(listaVisitas);
+
+	}
+	return listaCabecera;
+}
 public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
    	
    	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
 	String METHOD_NAME="actualizarObjpedido_v4_json";
 	
 	String flag = "";
-	DAO_Pedido_detalle2 dao_pedido_detalle2=new DAO_Pedido_detalle2(context);
-	ArrayList<DB_ObjPedido>  lista_obj_pedido= new ArrayList<DB_ObjPedido>();
-    lista_obj_pedido = dbclass.getObjPedido_jsons(Oc_numero);
-    
-    for(int i=0; i< lista_obj_pedido.size(); i++){
-    	//Seteo del detalle del pedido por el oc_numero
-    	ArrayList<DBPedido_Detalle> detalles = new ArrayList<DBPedido_Detalle>();
-    	detalles = dbclass.getPedido_detalles(lista_obj_pedido.get(i).getOc_numero());    	
-    	lista_obj_pedido.get(i).setDetalles(detalles);
-
-		lista_obj_pedido.get(i).setPedidoDetalle2(dao_pedido_detalle2.getDataByOcnumero(lista_obj_pedido.get(i).getOc_numero()));
-
-    	//Seteo del registro de bonificaciones por el oc_numero
-    	ArrayList<DB_RegistroBonificaciones> registroBonificaciones = new ArrayList<>();
-    	registroBonificaciones = DAORegistroBonificaciones.getRegistroBonificaciones(lista_obj_pedido.get(i).getOc_numero());
-    	//Se deben agregar los regisros pendientes que han sido usados para que sean actualizados
-    	
-    	ArrayList<DB_RegistroBonificaciones> pendientesUsados = new ArrayList<DB_RegistroBonificaciones>();
-    	for (int j = 0; j < registroBonificaciones.size(); j++) {
-    		DB_RegistroBonificaciones registroUsado = DAORegistroBonificaciones.getRegistroBonificacion(registroBonificaciones.get(j).getCodigoAnterior());
-    		if (registroUsado.getOc_numero()!=null) {//Si se uso algun pendiente
-    			boolean isRegistrado = false;
-    			for (int k = 0; k < registroBonificaciones.size(); k++) {//Verifico que ese registro ya no este agregado
-    				if (registroBonificaciones.get(k).getCodigoRegistro().equals(registroUsado.getCodigoRegistro())) {
-    					isRegistrado = true;
-    				}
-    			}
-    			if (isRegistrado==false) {
-    				Log.e(TAG, "Agregando a registroBonificaciones el pendiente Usado: "+registroUsado.getCodigoRegistro());
-					pendientesUsados.add(registroUsado);					
-				}
-			}
-		}
-    	
-    	Log.e(TAG, "registro bonificaciones size: "+registroBonificaciones.size());
-    	if (!pendientesUsados.isEmpty()) {
-    		registroBonificaciones.addAll(pendientesUsados);
-    		Log.e(TAG, "registro bonificaciones con pendientes size: "+registroBonificaciones.size());
-		}
-    	
-    	lista_obj_pedido.get(i).setRegistroBonificaciones(registroBonificaciones);
-        ArrayList<San_Visitas> listaVisitas= DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, lista_obj_pedido.get(i).getOc_numero());
-        lista_obj_pedido.get(i).setSan_visitas(listaVisitas);
-
-    }
+	ArrayList<DB_ObjPedido>  listaCabecera = dbclass.getObjPedido_jsons(Oc_numero);
+	ArrayList<DB_ObjPedido>  lista_obj_pedido = getDataParaEnviar(listaCabecera);
     
     Gson gson = new Gson();
     String cadena = gson.toJson(lista_obj_pedido);

@@ -7,27 +7,35 @@ import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.sm_tubo_plast.R
 import com.example.sm_tubo_plast.databinding.ActivityReportesVentasVendedorBinding
+import com.example.sm_tubo_plast.genesys.datatypes.DBclasses
 import com.example.sm_tubo_plast.genesys.session.SessionManager
-import com.example.sm_tubo_plast.genesys.util.GlobalVar
-import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal
+import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar
 
 
 class ReportesWebVentasVendedorActivity : AppCompatActivity() {
     lateinit var binding: ActivityReportesVentasVendedorBinding;
     var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var FILE_CHOOSER_RESULT_CODE=1200;
+    lateinit var dBclasses: DBclasses;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityReportesVentasVendedorBinding.inflate(layoutInflater);
+        dBclasses= DBclasses(this);
         setContentView(binding.root);
         loadWebView();
     }
 
     private fun loadWebView() {
         binding.myWebVew.setWebViewClient(WebViewClient());
-        val ruta=GlobalVar.UrlBase()+"/tuboplast?codven="+(SessionManager(this).codigoVendedor);
-        binding.myWebVew.loadUrl(ruta);
+        var urlConfig = dBclasses.getConfiguracionByName("urlReporteEstadisticoVendedor", "");
+        if(urlConfig.isEmpty()){
+            UtilViewSnackBar.SnackBarDanger(this,binding.root,"No se ha configurado la url para los reportes estadisticos");
+            return;
+        }
+//        val ruta=GlobalVar.UrlBase()+"/tuboplast?codven="+(SessionManager(this).codigoVendedor);
+        var urlRequest=urlConfig.replace("P_CODVEN","${SessionManager(this).codigoVendedor}");
+        binding.myWebVew.loadUrl(urlRequest);
         val webSettings: WebSettings = binding.myWebVew.getSettings()
         webSettings.javaScriptEnabled = true
 

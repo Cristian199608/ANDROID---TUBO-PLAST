@@ -6602,81 +6602,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	// metodo para el envio de pendientes con el metodo json
 	// Obtiene todos los pedidos con FLAG = P
 	public ArrayList<DB_ObjPedido> getTodosObjPedido_json_flagp() {
-		Gson gson = new Gson();
-		String rawQuery;
-
-		rawQuery = "select * from pedido_cabecera where flag in('P','I')";
-
-		SQLiteDatabase db = getReadableDatabase();
-
-		Cursor cur = db.rawQuery(rawQuery, null);
-
-		ArrayList<DB_ObjPedido> lista_pedidos = new ArrayList<DB_ObjPedido>();
-		cur.moveToFirst();
-
-		while (!cur.isAfterLast()) {
-
-			DB_ObjPedido dbpedido = new DB_ObjPedido();
-			dbpedido.setOc_numero(cur.getString(0));
-			dbpedido.setSitio_enfa(cur.getString(1));
-			dbpedido.setMonto_total(cur.getString(2));
-			dbpedido.setPercepcion_total(cur.getString(3));
-			dbpedido.setValor_igv(cur.getString(4));
-			dbpedido.setMoneda(cur.getString(5));
-			dbpedido.setFecha_oc(cur.getString(6));
-			dbpedido.setFecha_mxe(cur.getString(7));
-			dbpedido.setCond_pago(cur.getString(8));
-			dbpedido.setCod_cli(cur.getString(9));
-			dbpedido.setCod_emp(cur.getString(10));
-			dbpedido.setEstado(cur.getString(11));
-			dbpedido.setUsername(cur.getString(12));
-			dbpedido.setRuta(cur.getString(13));
-			dbpedido.setObserv(cur.getString(14));
-			dbpedido.setCod_noventa(cur.getInt(15));
-			dbpedido.setPeso_total(cur.getString(16));
-			dbpedido.setFlag(cur.getString(17));
-			dbpedido.setLatitud(cur.getString(18));
-			dbpedido.setLongitud(cur.getString(19));
-			dbpedido.setCodigo_familiar(cur.getString(20));
-			dbpedido.setTotalSujetoPercepcion(cur.getString(22));
-
-			dbpedido.setNumeroOrdenCompra(""+cur.getString(24));
-			dbpedido.setCodigoPrioridad(""+cur.getString(25));
-			dbpedido.setCodigoSucursal(""+cur.getString(26));
-			dbpedido.setCodigoPuntoEntrega(""+cur.getString(27));
-			dbpedido.setCodigoTipoDespacho(""+cur.getString(28));
-			dbpedido.setFlagEmbalaje(""+cur.getString(29));
-			dbpedido.setFlagPedido_Anticipo(""+cur.getString(30));
-			dbpedido.setCodigoTransportista(""+cur.getString(31));
-			dbpedido.setCodigoAlmacen(""+cur.getString(32));
-			dbpedido.setObservacion2(""+cur.getString(33));
-			dbpedido.setObservacion3(""+cur.getString(34));
-			dbpedido.setObservacionDescuento(""+cur.getString(35));
-			dbpedido.setObservacionTipoProducto(""+cur.getString(36));
-			dbpedido.setFlagDescuento(cur.getString(37));
-			dbpedido.setCodigoObra(cur.getString(38));
-			dbpedido.setFlagDespacho(cur.getString(39));
-			dbpedido.setDocAdicional(cur.getString(40));
-			dbpedido.setSubtotal(cur.getString(41));
-			dbpedido.setTipoDocumento(cur.getString(42));
-
-			dbpedido.setTipoRegistro(cur.getString(43));
-			dbpedido.setDiasVigencia(cur.getString(44));
-			if (cur.getString(45)==null){
-				dbpedido.setPedidoAnterior("");
-			}else{
-				dbpedido.setPedidoAnterior(cur.getString(45));
-			}
-			dbpedido.setCodTurno(cur.getString(46));
-			dbpedido.setNroletra(cur.getString(47));
-			dbpedido.setObservacion4(cur.getString(48));
-
-			lista_pedidos.add(dbpedido);
-			cur.moveToNext();
-		}
-		cur.close();
-		db.close();
-		return lista_pedidos;
+		String addWhere = "and flag in('P','I')";
+		return  getObjPedidoParaEnviar_by(addWhere);
 	}
 
 	public ArrayList<DBIngresos> getTodosIngresos_json_flagp() {
@@ -6734,16 +6661,18 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	// Metodo para el envio de pedido (PedidoActivity)
 	public ArrayList<DB_ObjPedido> 	getObjPedido_jsons(String oc_numero) {
+		String addWhere = "and oc_numero = '"+oc_numero+"' ";
+		return  getObjPedidoParaEnviar_by(addWhere);
 
-		String rawQuery;
-		String[] args = { oc_numero };
+	}
+	private ArrayList<DB_ObjPedido> 	getObjPedidoParaEnviar_by(String addWhere) {
 
-		rawQuery = "select * from pedido_cabecera where oc_numero like ?";
-		Log.i(TAG+":getObjPedido_json:", rawQuery+"\n "+oc_numero);
+		String sqlSelect = "select * from pedido_cabecera " +
+				"where 0=0  "+addWhere;
+		Log.i(TAG+":getObjPedido_json:", sqlSelect);
 
 		SQLiteDatabase db = getReadableDatabase();
-
-		Cursor cur = db.rawQuery(rawQuery, args);
+		Cursor cur = db.rawQuery(sqlSelect, null);
 
 		ArrayList<DB_ObjPedido> lista_pedidos = new ArrayList<DB_ObjPedido>();
 		cur.moveToFirst();

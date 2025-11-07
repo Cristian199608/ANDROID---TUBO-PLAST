@@ -6911,7 +6911,7 @@ private void EnvalularMoneda(){
             return;
         }
         if(listProduc.get(0).isFlg_bonificacion()){
-            porcentajeDesc= 100;
+            porcentajeDesc= 0;
             porcentajeDescExtra= 0;
         }
         UtilCalcularPrecioProducto utilCaclularPrecioProductoUnit= new UtilCalcularPrecioProducto(
@@ -7661,7 +7661,7 @@ private void EnvalularMoneda(){
                 break;
             }
             if(listProduc.get(0).isFlg_bonificacion()){
-                porcentajeDesc= 100;
+                porcentajeDesc= 0;
                 porcentajeDescExtra= 0;
             }
             UtilCalcularPrecioProducto.ResultPrecios resulPrecio = utilCaclularPrecioProductoUnit.consultarPrecios(promDetCombo.getCodpro_bonificacion(),    porcentajeDesc, porcentajeDescExtra);
