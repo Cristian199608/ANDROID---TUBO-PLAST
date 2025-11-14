@@ -219,25 +219,28 @@ public class PDF {
         /**+
          * TABLE N° 6
          */
-        float columnWidth6[] = {160, 185, 135, 460};
+        float columnWidth6[] = {160, 780};
         Table table6 = new Table(columnWidth6);
 
         //TABLE 6 ----- 01
         table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FORMA DE PAGO").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDesforpag()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PLAZO ENTREGA").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph("48 HRS.").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDesforpag()).setTextAlignment(TextAlignment.LEFT).setFontSize(7f)));
 
+        /**+
+         * TABLE N° 6
+         */
+        float columnWidth6_1[] = {160, 185, 135, 460};
+        Table table6_1 = new Table(columnWidth6_1);
         //TABLE 6 ----- 02
-        table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FECHA ENTREGA").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getFecha_mxe()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
-        table6.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("VALIDEZ OFERTA").setFontSize(7f)));
-        table6.addCell(new Cell().add(new Paragraph(dataCabecera.getDiasVigencia()+" DÍAS").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6_1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("FECHA ENTREGA").setFontSize(7f)));
+        table6_1.addCell(new Cell().add(new Paragraph(dataCabecera.getFecha_mxe()).setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
+        table6_1.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("VALIDEZ OFERTA").setFontSize(7f)));
+        table6_1.addCell(new Cell().add(new Paragraph(dataCabecera.getDiasVigencia()+" DÍAS").setTextAlignment(TextAlignment.CENTER).setFontSize(7f)));
 
-        table6.addCell(new Cell().setBorder(Border.NO_BORDER));
-        table6.addCell(new Cell().setBorder(Border.NO_BORDER));
-        table6.addCell(new Cell().setBorder(Border.NO_BORDER));
-        table6.addCell(new Cell().setBorder(Border.NO_BORDER));
+        table6_1.addCell(new Cell().setBorder(Border.NO_BORDER));
+        table6_1.addCell(new Cell().setBorder(Border.NO_BORDER));
+        table6_1.addCell(new Cell().setBorder(Border.NO_BORDER));
+        table6_1.addCell(new Cell().setBorder(Border.NO_BORDER));
 
         /***
          * VALIDAMOS MONEDA Y OBSERVACIONES
@@ -462,6 +465,7 @@ public class PDF {
         Log.i("PDF CREATE", "WITHS 2 "+table2.getWidth());
         document.add(table3);
         document.add(table6);
+        document.add(table6_1);
         document.add(item);
         document.add(tableObservaciones);
         document.add(tableData);
