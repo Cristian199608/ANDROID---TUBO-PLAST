@@ -7685,10 +7685,10 @@ private void EnvalularMoneda(){
                     nroItemDetalleSalida,
                     promDetCombo.getCodpro_bonificacion(),
                     cantidadBonifXcombo,
-                    Double.parseDouble(resulPrecio.precioLista),
+                    precioLista,
                     porcentajeDesc,
                     porcentajeDescExtra,
-                    Double.parseDouble(resulPrecio.precioVentaPreSinIGV),
+                    precioVentaSinIgv,
                     precioUnitTotal,
                     descuentoTotal,
                     pesoTotal

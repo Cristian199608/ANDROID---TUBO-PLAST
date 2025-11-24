@@ -697,11 +697,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         int cantidad=Integer.parseInt(edtCantidad.getText().toString().trim().length()>0?edtCantidad.getText().toString():"0");
         double precioFinalSinIgv=0;
         double precioFinalConIgv=0;
-        if(VARIABLES.IsDouble(tv_precioSinIGV.getText().toString().replace(",", "'"))){
-            precioFinalSinIgv=Double.parseDouble(tv_precioSinIGV.getText().toString());
+        String precioSinIgvStr=tv_precioSinIGV.getText().toString().replace(",", "");
+        String precioIncIgvStr=tv_precioIncIGV.getText().toString().replace(",", "");
+        if(VARIABLES.IsDouble(precioSinIgvStr)){
+            precioFinalSinIgv=Double.parseDouble(precioSinIgvStr);
         }
-        if(VARIABLES.IsDouble(tv_precioIncIGV.getText().toString().replace(",", "'"))){
-            precioFinalConIgv=Double.parseDouble(tv_precioIncIGV.getText().toString());
+        if(VARIABLES.IsDouble(precioIncIgvStr)){
+            precioFinalConIgv=Double.parseDouble(precioIncIgvStr);
         }
         tvTotalVenta.setText("SUB TOTAL "+tv_monedaPrecio.getText().toString()+" "+VARIABLES.formater_thow_decimal.format(precioFinalSinIgv*cantidad)+"     TOTAL: "+tv_monedaPrecio.getText().toString()+" "+VARIABLES.formater_thow_decimal.format(precioFinalConIgv*cantidad));
     }
@@ -888,7 +890,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             return;
         }
 
-        PRECIO_LISTA=resulPrecio.precioLista;
+        PRECIO_LISTA=resulPrecio.precioLista.replace(",","");
         btn_consultarProducto.setText(resulPrecio.smstxtPrecio);
         edtPrecioUnt.setText(resulPrecio.precioOriginal);
 
