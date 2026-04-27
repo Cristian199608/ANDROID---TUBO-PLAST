@@ -1695,7 +1695,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 		String subQuery =
 				"SELECT max(cast(item as INTEGER)) FROM pedido_detalle "
-						+ "where item > 0 and oc_numero = '"+oc_numero+"'";
+						+ "where cast(item as INTEGER) > 0 and oc_numero = '"+oc_numero+"'";
 
 		Cursor curAux = db.rawQuery(subQuery, null);
 		curAux.moveToFirst();
@@ -1719,12 +1719,12 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 
-	public void AgregarPedidoDetallePrincipal(DBPedido_Detalle item, int nro_item) {
+	public boolean AgregarPedidoDetallePrincipal(DBPedido_Detalle item, int nro_item) {
 
 		try {
 			if(nro_item<=0){
 				new Exception("El nro de item debe ser mayor a 0");
-				return;
+				return false;
 			}
 			SQLiteDatabase db = getWritableDatabase();
 
@@ -1773,14 +1773,16 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("sec_promo_prioridad", item.getSec_promo_prioridad());
 			Nreg.put("item_promo_prioridad", item.getItem_promo_prioridad());
 
-			db.insert("pedido_detalle", null, Nreg);
+			long a=db.insert("pedido_detalle", null, Nreg);
 			db.close();
 
 			Gson gson = new Gson();
 			Log.e("(DBclasses)AgregarPedidoDetalle","detallePedido: ITEM AGREGADO\n" + gson.toJson(item));
+			return a>0;
 
 		} catch (Exception e) {
 			Log.i("PEDIDO_DETALLES", "Error registro insertado");
+			return false;
 		}
 
 	}
@@ -5797,7 +5799,7 @@ public class DBclasses extends SQLiteAssetHelper {
 							cv2.put(DBtables.Pedido_detalle.item_promo_prioridad, jsonData_det.getInt(DBtables.Pedido_detalle.sec_promo_prioridad));
 
 							db.insert(DBtables.Pedido_detalle.TAG, null, cv2);
-
+//							if(ax<=0) throw new SQLiteException("Error no se pudo registrar");
 							Log.i("syncObjPedido det", "OCNUMERO: "	+ jsonData_det.getString("oc_numero").trim()	+ " CIP: " + jsonData_det.getString("cip").trim());
 						}
 

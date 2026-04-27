@@ -520,6 +520,10 @@ public class DBtables {
 		}
 
 		public static final String TAG = "pedido_detalle";
+		public static final String[] pks = new String[]{
+				Pedido_detalle.PK_OC_NUMERO,
+				Pedido_detalle.ITEM,
+		} ;
 
 		public static final String PK_OC_NUMERO = "oc_numero";
 		public static final String PK_EAN_ITEM = "ean_item";
@@ -1749,7 +1753,6 @@ public class DBtables {
 				Pedido_detalle2.sec_promo,
 				Pedido_detalle2.item_promo,
 				Pedido_detalle2.salida_item,
-				Pedido_detalle2.codpro,
 		} ;
 
 		public static final String oc_numero = "oc_numero";

@@ -3914,7 +3914,11 @@ private void EnvalularMoneda(){
                         itemDetalle.setSec_promo_prioridad(0);
                         itemDetalle.setItem_promo_prioridad(0);
 
-                        dbclass.AgregarPedidoDetallePrincipal(itemDetalle, nro_item);
+                        boolean isOK = dbclass.AgregarPedidoDetallePrincipal(itemDetalle, nro_item);
+                        if(!isOK){
+                            UtilViewMensaje.MENSAJE_simple(this, "Error", "No se ha podido registrar el producto. Vuelva intentarlo nuevamente");
+                            return;
+                        }
                     }
                     ObtenerBonificaciones(w_codpro_inser, nro_item, descripcion);
                     mostrarListaProductos("");
