@@ -6,11 +6,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.util.Log;
@@ -32,27 +30,37 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
-import com.example.sm_tubo_plast.genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity;
-import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
-import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
-import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetMapDialog;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
+import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -205,6 +213,12 @@ public class LoginActivity extends AppCompatActivity {
                 Usuario = txtUsuario.getText().toString().trim();
                 Contrasena = txtPassword.getText().toString().trim();
                 rucString = dbusuarios.getRuc();
+                if(Usuario.isEmpty() || Contrasena.isEmpty()){
+                    GlobalFunctions.showCustomToast(LoginActivity.this, "Ingrese usuario y/o contraseña", GlobalFunctions.TOAST_DONE);
+                    return;
+                }
+                loginContol(Usuario, Contrasena);
+                if(true)return;
                 String ruc = "";
                 // verificamos si estan en blanco
                 if (checklogindata(Usuario, Contrasena) == true) {
@@ -271,11 +285,16 @@ public class LoginActivity extends AppCompatActivity {
         dbusuarios.cambiarRutaHttpServicioWeb();
     }
     private void setDataPrueba(){
-        if(!VARIABLES.isSetDataPruebas) return;
+        boolean prueba = VARIABLES.isSetDataPruebas;
+        if(!prueba) return;
         dbusuarios.setDataPruebas();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
 //        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
 
+        txtUsuario.setText("SAEMOVIL");
+        txtPassword.setText("XQC2WYG");
+//        sincronizarProductoPrecio();
+        //testMapa();
 
     }
     public void GoSincronizarInicial(View view){
@@ -400,18 +419,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (result.equals("vendedor")) {
-                session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
-                session.createLoginSession(user, pass);
-                session.setCodigoVendedor(codVendedor);
-
-                SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
-
-                Intent intentVendedor = new Intent(getApplicationContext(),
-                        MenuPrincipalActivity.class);
-                intentVendedor.putExtra("codven", codVendedor);
-
-                startActivity(intentVendedor);
-
+                guardarDatosSession(user, pass, codVendedor, "", "");
             } else if (result.equals("chofer")) {
                 Intent intentChofer = new Intent(getApplicationContext(),
                         MenuLiquidacionActivity.class);
@@ -424,6 +432,22 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void guardarDatosSession(String user, String pass, String codVendedor, String nombreVendedor, String token){
+        session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
+        session.createLoginSession(user, pass);
+        session.setCodigoVendedor(codVendedor);
+        session.setNombreVendedor(nombreVendedor);
+        session.setToken(token);
+
+        SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
+
+        Intent intentVendedor = new Intent(getApplicationContext(),
+                MenuPrincipalActivity.class);
+        intentVendedor.putExtra("codven", codVendedor);
+
+        startActivity(intentVendedor);
     }
 
     // ??
@@ -613,6 +637,90 @@ public class LoginActivity extends AppCompatActivity {
                 if(contador>=0)testConeccionInternet(contador-1);
             }
         }.execute();
+    }
+
+    private void loginContol(String user, String pass){
+
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCantol.login(user, pass));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstance().create(GetDataCantol.class).getLoginToken(body);
+
+        pDialog = new ProgressDialog(LoginActivity.this);
+        pDialog.setMessage("Autenticando...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        WS_RetrofitCustom ws = new WS_RetrofitCustom(this);
+        ws.setIsLogin(true);
+        ws.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensajeError, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            LoginActivity.this,
+                            mensajeError,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                ResultLogin resultLogin= gson.fromJson(gson.toJson(data), ResultLogin.class);
+                guardarDatosSession(user, pass,
+                        String.valueOf((int) Double.parseDouble(resultLogin.getVendedor().getCodigo())),
+                        resultLogin.getVendedor().getNombre(),
+                        resultLogin.getToken()
+                        );
+            }
+        });
+    }
+    private void sincronizarProductoPrecio(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando precios...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPreciosProducto("ME0102060002");
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.getDataByUrl(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getCliente(body);
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            LoginActivity.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultPrecioArticulo>>() {}.getType();
+                final ArrayList<ResultPrecioArticulo> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i("TAG", "cant precios "+lista.size());
+
+            }
+        });
+    }
+
+    private void testMapa(){
+        final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
+        i.putExtra("origen", "CLIENTES");
+        i.putExtra("nombreCliente", "AVILA CASAS JANETH MAGALY");
+        i.putExtra("codcli", "C10421390687");
+        i.putExtra("codigoVendedor", "33");
+        i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
+        startActivity(i);
     }
 
 }

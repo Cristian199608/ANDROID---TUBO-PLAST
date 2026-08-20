@@ -26,6 +26,20 @@ class SessionManager(var context: Context) {
             editor!!.putString("codven", codven)
             ApplyCloseEdit()
         }
+    var nombreVendedor: String?
+        get() = if (prefs != null) prefs!!.getString("nombreVendedor", "por_defecto") else ""
+        set(codven) {
+            openEdit()
+            editor!!.putString("nombreVendedor", codven)
+            ApplyCloseEdit()
+        }
+    var token: String?
+        get() = if (prefs != null) prefs!!.getString("token", "por_defecto") else ""
+        set(codven) {
+            openEdit()
+            editor!!.putString("token", codven)
+            ApplyCloseEdit()
+        }
 
     val usuario: String? get() = if (prefs != null) prefs!!.getString("usuario", "") else ""
     val password: String?  get() = if (prefs != null) prefs!!.getString("pass", "") else ""

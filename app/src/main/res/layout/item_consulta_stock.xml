@@ -1,54 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/white" >
 
-    <TextView
-        android:id="@+id/tv_almacen"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight=".33"
-        android:background="@drawable/box_border"
-        android:gravity="center" />
-    
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/tv_stock_xConfirmar"
-        android:layout_width="0dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:text="0.0"
-        android:background="@drawable/box_border"
-        android:layout_weight=".33"/>
 
-    <TextView
-        android:id="@+id/tv_stock_actual"
-        android:layout_width="0dp"
-        android:gravity="center"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0.0"
-        android:background="@drawable/box_border"
-        android:layout_weight=".33"/>
+        android:orientation="vertical"
+        android:background="@color/white" >
+        <TextView
+            android:id="@+id/tv_almacen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".33"
+            android:text="Nombre almacen"
+            android:background="@drawable/box_border"
+            android:paddingStart="10dp"
+            android:textSize="16dp"
+            android:textColor="@color/grey_900"
+            android:gravity="start" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/white" >
+            <TextView
+                android:id="@+id/tv_stock_actual"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:text="0.0"
+                android:background="@drawable/box_border"
+                android:layout_weight=".33"/>
+            <TextView
+                android:id="@+id/tv_stock_separado"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:background="@drawable/box_border"
+                android:layout_weight=".33"/>
+            <TextView
+                android:id="@+id/tv_stock_xConfirmar"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:background="@drawable/box_border"
+                android:layout_weight=".33"/>
+            <TextView
+                android:id="@+id/tv_stockDisponible"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:background="@drawable/box_border"
+                android:layout_weight=".33"/>
+        </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_stock_separado"
-        android:layout_width="0dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:text="0.0"
-        android:background="@drawable/box_border"
-        android:layout_weight=".33"/>
-    
-    <TextView 
-        android:id="@+id/tv_stockDisponible"
-        android:layout_width="0dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:text="0.0"
-        android:background="@drawable/box_border"
-        android:layout_weight=".33"/>
-    
-
+    </LinearLayout>
 </LinearLayout>

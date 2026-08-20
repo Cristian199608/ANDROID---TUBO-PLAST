@@ -289,6 +289,10 @@
         <item name="colorControlActivated">@color/blue_500</item>
     </style>
 
+    <style name="Theme_Dialog_Translucent" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
 
     <!-- Start with the Holographic Light theme -->
 </resources>

@@ -124,6 +124,7 @@
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/txtid_usuario"
+                    android:visibility="gone"
                     android:backgroundTint="@color/red_100"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"

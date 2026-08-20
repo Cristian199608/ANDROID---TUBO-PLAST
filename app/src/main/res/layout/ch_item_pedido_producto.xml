@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/relativeLayout1"
@@ -209,7 +210,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:text="Precio Neto:"
+                android:text="Precio Unit:"
                 android:textSize="@dimen/text_item_pedido_producto" />
 
             <TextView
@@ -284,6 +285,8 @@
 
             <TextView
                 android:id="@+id/textView6"
+                android:visibility="gone"
+                tools:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -293,6 +296,8 @@
 
             <TextView
                 android:id="@+id/tv_numero"
+                android:visibility="gone"
+                tools:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"

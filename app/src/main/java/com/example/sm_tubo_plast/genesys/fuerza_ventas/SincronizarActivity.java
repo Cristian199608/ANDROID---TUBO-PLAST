@@ -1098,6 +1098,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
         // String opcion,pass;
         BEAN_ControlAccesso controlAcceso;
+        String errorMotivo = null;
         protected void onPreExecute() {
             // para el progress dialog
             pDialog = new ProgressDialog(SincronizarActivity.this);
@@ -1295,6 +1296,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     boolean existeDatos=true;
                                     int start=0;
                                     int paginacion=5000;
+                                    /*
                                     while (existeDatos){
                                         int finalStart = start;
                                         int finalPaginacion = paginacion;
@@ -1317,8 +1319,11 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                         if (!esSuperVendedor){
                                             existeDatos=false;
                                         }
-
-                                    }
+                                    }*/
+                                    errorMotivo =soap_manager.Sync_tabla_clientexVendedorV2(SincronizarActivity.this, codven);
+                                    if(errorMotivo !=null) {
+                                        throw new Exception(errorMotivo);
+                                    };
                                     publishProgress("25");
 
 
@@ -1722,7 +1727,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
 
                                     publishProgress("80");
-                                    //soap_manager.Sync_tabla_politica_precio1(servidorBD_ERP, nombreBD_ERP, usuarioBD_ERP, contrasenaBD_ERP);
+//                                    soap_manager.Sync_tabla_politica_precio1(servidorBD_ERP, nombreBD_ERP, usuarioBD_ERP, contrasenaBD_ERP);
 //                                    publishProgress("75");
                                     //SERVER .212
                                     NombreMetodo=valor+") Sync_tabla_politica_precio2";
@@ -1914,8 +1919,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             } else {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
-                alerta.setMessage("Algunas tablas no se sincronizaron correctamente\nSincronice nuevamente");
-                alerta.setIcon(R.drawable.check);
+                alerta.setTitle("Error Sincronizacion");
+                alerta.setMessage("Algunas tablas no se sincronizaron correctamente"+(errorMotivo!=null?("\n"+errorMotivo):"")+"\n\nSincronice nuevamente");
+                alerta.setIcon(R.drawable.icon_error);
                 alerta.setCancelable(false);
                 alerta.setPositiveButton("OK", null);
                 alerta.show();

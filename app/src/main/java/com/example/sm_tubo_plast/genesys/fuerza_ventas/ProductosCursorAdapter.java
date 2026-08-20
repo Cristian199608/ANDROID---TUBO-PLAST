@@ -31,15 +31,29 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Producto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 public class ProductosCursorAdapter extends AppCompatActivity {
 
@@ -80,7 +94,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             }
         });
 
-        new async_MostrarProductos().execute();
+        sincronizarProducto();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -472,6 +486,48 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             return convertView;
         }
 
+    }
+
+    private void sincronizarProducto(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando productos...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.catalogo());
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getProducto(body);
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            ProductosCursorAdapter.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultProducto>>() {}.getType();
+                final ArrayList<ResultProducto> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant producto "+lista.size());
+                String msgError= database.guardarProductoSyn(lista);
+                if(msgError!=null){
+                    GlobalFunctions.showCustomToast(
+                            ProductosCursorAdapter.this,
+                            msgError,
+                            GlobalFunctions.TOAST_ERROR);
+                }
+                new async_MostrarProductos().execute();
+            }
+        });
     }
 
 }

@@ -25,9 +25,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Producto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultStockArticulo;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
+import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -39,6 +47,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 public class CH_InformacionProducto extends AppCompatActivity {
 
@@ -100,49 +111,49 @@ public class CH_InformacionProducto extends AppCompatActivity {
         }
 
         //Cargar Stock
-        new AsyncTask<Void, Void, Void>() {
-            ProgressDialog pDialog;
-            String respuestaStock;
-
-            @Override
-            protected void onPreExecute() {
-                pDialog = new ProgressDialog(CH_InformacionProducto.this);
-                pDialog.setMessage("Cargando Stock....");
-                pDialog.setIndeterminate(false);
-                pDialog.setCancelable(false);
-                pDialog.show();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    respuestaStock = soap_manager.sincro_obtenerStockProducto_json(codigoProducto);
-                } catch (Exception e) {
-                    respuestaStock = "";
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                Log.d(TAG, "respuestaStock:"+respuestaStock);
-                pDialog.dismiss();
-                respuestConsultarProducto(respuestaStock);
-            }
-        }.execute();
+//        new AsyncTask<Void, Void, Void>() {
+//            ProgressDialog pDialog;
+//            String respuestaStock;
+//
+//            @Override
+//            protected void onPreExecute() {
+//                pDialog = new ProgressDialog(CH_InformacionProducto.this);
+//                pDialog.setMessage("Cargando Stock....");
+//                pDialog.setIndeterminate(false);
+//                pDialog.setCancelable(false);
+//                pDialog.show();
+//            }
+//
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                try {
+//                    respuestaStock = soap_manager.sincro_obtenerStockProducto_json(codigoProducto);
+//                } catch (Exception e) {
+//                    respuestaStock = "";
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Void result) {
+//                Log.d(TAG, "respuestaStock:"+respuestaStock);
+//                pDialog.dismiss();
+//                respuestConsultarProducto(null/*respuestaStock*/);
+//            }
+//        }.execute();
+        sincronizarProductoStock();
     }
 
-    private void respuestConsultarProducto(String respuestaStock) {
+    private void respuestConsultarProducto(ArrayList<ResultStockArticulo> lista) {
         Gson gson = new Gson();
 
         Type listType = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
 
-        if (!respuestaStock.equals("")) {
-            ArrayList<HashMap<String, Object>> listMap2 = gson.fromJson(respuestaStock,listType);
-            if (listMap2 != null) {
-                if (!listMap2.isEmpty()) {
-                    Adapter_consultaStock adapter = new Adapter_consultaStock(CH_InformacionProducto.this, listMap2);
+        if (lista.size()>0) {
+            if (true) {
+                if (true) {
+                    Adapter_consultaStock adapter = new Adapter_consultaStock(CH_InformacionProducto.this, lista);
                     lv_consultaStock.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                     totalStockConfirmar = 0.0;
@@ -180,9 +191,9 @@ public class CH_InformacionProducto extends AppCompatActivity {
     public class Adapter_consultaStock extends BaseAdapter {
 
         protected Activity activity;
-        protected ArrayList<HashMap<String, Object>> lista;
+        protected ArrayList<ResultStockArticulo> lista;
 
-        public Adapter_consultaStock(Activity activity, ArrayList<HashMap<String, Object>> lista){
+        public Adapter_consultaStock(Activity activity, ArrayList<ResultStockArticulo> lista){
             this.activity = activity;
             this.lista = lista;
         }
@@ -225,29 +236,17 @@ public class CH_InformacionProducto extends AppCompatActivity {
             }
 
 
-            try {
-
-            //JSONObject jsonData = null listaArray.getJSONObject(position);
-
-            //HashMap<String, Object> map = lista.get(position);
-
-            //holder.tv_almacen.setText(database.getAlmacenDescripcion((String)map.get("codigoAlmacen")));
-
-                JSONObject jsonData = new JSONObject(lista.get(position));
-                String nombre=database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
-                holder.tv_almacen.setText( (nombre.length()>0?nombre:jsonData.get("codigoAlmacen"))+"" );
-                holder.tv_stock_actual.setText((String)jsonData.get("stock_actual"));
-                holder.tv_stock_separado.setText((String)jsonData.get("stock_separado"));
-                holder.tv_stock_xConfirmar.setText((String)jsonData.get("stock_x_confirmar"));
-                holder.tv_stockDisponible.setText((String)jsonData.get("stock_disponible"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                ResultStockArticulo dataStock = lista.get(position);
+                String nombre=  dataStock.getNombre_almacen();//database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
+                holder.tv_almacen.setText(nombre);
+                holder.tv_stock_actual.setText(VARIABLES.formater_integer.format(dataStock.getEn_stock()));
+                holder.tv_stock_separado.setText(VARIABLES.formater_integer.format(dataStock.getComprometido()));
+                holder.tv_stock_xConfirmar.setText(VARIABLES.formater_integer.format(dataStock.getEn_pedido()));
+                holder.tv_stockDisponible.setText(VARIABLES.formater_integer.format(dataStock.getDisponible()));
 
             try {
                 totalStockConfirmar += Double.parseDouble(holder.tv_stock_xConfirmar.getText().toString());
                 totalStockDisponible += Double.parseDouble(holder.tv_stockDisponible.getText().toString());
-                //Log.d(TAG, "totalStockDisponible:"+totalStockDisponible+" + "+holder.tv_stockDisponible.getText() );
                 tv_totalStockConfirmar.setText(""+totalStockConfirmar);
                 tv_totalStockDisponible.setText(""+totalStockDisponible);
             } catch (Exception e) {
@@ -271,6 +270,48 @@ public class CH_InformacionProducto extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void sincronizarProductoStock(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando stock...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String urlReq=RetrofilClientCantol.UrlPeticiones.getListaStockByProducto(codigoProducto);
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.getListaStock(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getCliente(body);
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            CH_InformacionProducto.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultStockArticulo>>() {}.getType();
+                final ArrayList<ResultStockArticulo> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant stock "+lista.size());
+                if(lista.size()==0){
+                    GlobalFunctions.showCustomToast(
+                            CH_InformacionProducto.this,
+                            "No hay lista de stock",
+                            GlobalFunctions.TOAST_WARNING);
+                }
+                respuestConsultarProducto(lista);
+            }
+        });
     }
 }
 

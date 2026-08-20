@@ -270,7 +270,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="2.5"
-                                    android:text="N° Orden Compra:"
+                                    android:text="N° Orden Venta:"
                                     android:textSize="15sp" />
 
                                 <EditText
@@ -340,6 +340,46 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Condición Venta:"
+                                    android:textSize="15sp" />
+                                <Spinner
+                                    android:id="@+id/spn_condicionVenta"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal" >
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Canal Venta:"
+                                    android:textSize="15sp" />
+                                <Spinner
+                                    android:id="@+id/spn_subCanalCategoria"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    />
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:orientation="horizontal"
                                 android:paddingBottom="5dp"
                                 android:paddingTop="5dp" >
@@ -356,6 +396,33 @@
 
                                 <EditText
                                     android:id="@+id/edt_limiteCredito"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:editable="false"
+                                    android:text="" />
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp"
+                                android:paddingTop="5dp" >
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:clickable="false"
+                                    android:editable="false"
+                                    android:text="Credito Disponible"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_disponibleCredito"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
@@ -487,22 +554,6 @@
 
 
                             <LinearLayout
-                                android:background="@color/grey_200"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Punto de entrega:"
-                                    android:textSize="15sp" />
-
-                            </LinearLayout>
-
-                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal" >
@@ -603,7 +654,6 @@
 
                             <LinearLayout
 
-                                android:visibility="gone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal" >
@@ -629,6 +679,7 @@
 
 
                             <LinearLayout
+                                android:visibility="gone"
                                 android:background="@color/grey_200"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -654,6 +705,7 @@
                             </LinearLayout>
 
                             <LinearLayout
+                                android:visibility="gone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal" >
@@ -746,28 +798,7 @@
                                     style="@android:style/Widget.Holo.Light.Spinner"
                                     android:spinnerMode="dialog" />
                             </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
 
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2.5"
-                                    android:text="Condicion de Venta:"
-                                    android:textSize="15sp" />
-
-                                <Spinner
-                                    android:id="@+id/spn_condicionVenta"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
-                            </LinearLayout>
 
                             <LinearLayout
                                 android:background="@color/grey_200"
@@ -862,7 +893,6 @@
                         </LinearLayout>
                     </ScrollView>
                 </LinearLayout>
-
                 <RelativeLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
@@ -900,6 +930,7 @@
                                 android:layout_marginLeft="5dp"/>
                         </LinearLayout>
                         <LinearLayout
+                            android:visibility="invisible"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.40"
@@ -1085,9 +1116,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_weight="2"
-                            android:text="Sub Total"
+                            android:text="Volumen"
                             android:textColor="@color/grey_300"
                             android:textSize="@dimen/text_resumen_pedido" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_margin="1dp"
@@ -1095,7 +1127,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:layout_weight="2"
-                            android:text="PK($)"
+                            android:text="Sub Total"
                             android:textColor="@color/grey_300"
                             android:textSize="@dimen/text_resumen_pedido" />
                         <TextView
@@ -1180,7 +1212,6 @@
 
 
                 </RelativeLayout>
-
 
             </FrameLayout>
         </LinearLayout>

@@ -88,6 +88,7 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		double porcenajeDescuentoExtra= Double.parseDouble(VARIABLES.ParseDecimalTwo(datos.get(posicion).getPorcentaje_desc_extra()));
 		double precioKilo= getPrecioKilo_str(subTotal, pesoTotal, valor_cambio);
 
+
 		holder.descripcion.setText(codigoProduc+" - "+descripcion + (porcenajeDescuentoMatriz>0.0?"\nDesc a precio base "+porcenajeDescuentoMatriz+"%":""));
 		holder.precioUnidad.setText(String.valueOf(precioUnidad));
 		holder.precioLista.setText(String.valueOf(precioLista));

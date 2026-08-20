@@ -108,6 +108,28 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 		}
 		return item;
 	}
+	public String getLimiteCreditoDisponible(String codigoCliente) {
+		String rawQuery = "SELECT ifnull(disponible_credito,0) FROM cliente WHERE codcli = '"+codigoCliente+"'";
+		Log.i(TAG, rawQuery);
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cursor = db.rawQuery(rawQuery, null);
+
+		String item = "0.0";
+		cursor.moveToFirst();
+		if (cursor.moveToFirst()) {
+			do {
+				item = cursor.getString(0);
+			} while (cursor.moveToNext());
+
+		}
+		cursor.close();
+		db.close();
+		if (item.equals("")) {
+			return "0.0";
+		}
+		return item;
+	}
     
 
     public ArrayList<Sucursal> getSucursales(String codigoCliente) {
@@ -137,7 +159,10 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 	}
     
     public ArrayList<LugarEntrega> getPuntoEntrega(String codigoCliente, String itemSucursal) {
-		String rawQuery = "SELECT * FROM lugarEntrega WHERE codigoCliente like '"+codigoCliente+"' and itemSucursal like '"+itemSucursal+"' order by direccionEntrega";
+		String rawQuery = "SELECT * FROM lugarEntrega " +
+				"WHERE codigoCliente = '"+codigoCliente+"' " +
+				"and itemSucursal = '"+itemSucursal+"' " +
+				"order by direccionEntrega";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -155,7 +180,15 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				item.setIndicadorDespacho(cursor.getString(4));
 				item.setIndicadorCobranza(cursor.getString(5));
 				item.setDireccionEntrega(cursor.getString(6));
-				lista.add(item);				
+				item.setLatitud(cursor.getString(cursor.getColumnIndex("latitud")));
+				item.setLongitud(cursor.getString(cursor.getColumnIndex("longitud")));
+				item.setCodigoDistrito(cursor.getString(cursor.getColumnIndex("codigoDistrito")));
+				item.setCodigo_provincia(cursor.getString(cursor.getColumnIndex("codigo_provincia")));
+				item.setCodigo_departamento(cursor.getString(cursor.getColumnIndex("codigo_departamento")));
+				item.setTelefono(cursor.getString(cursor.getColumnIndex("telefono")));
+				item.setContacto(cursor.getString(cursor.getColumnIndex("contacto")));
+				item.setCargo_contacto(cursor.getString(cursor.getColumnIndex("cargo_contacto")));
+				lista.add(item);
 				Log.d(TAG, "getPuntoEntrega add: Sucursal:"+cursor.getString(1)+" - Lugar:"+cursor.getString(2)+" - Direccion:"+cursor.getString(3));
 			} while (cursor.moveToNext());
 
@@ -166,7 +199,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 	}
         
     public ArrayList<Obra> getObras(String codigoCliente) {
-		String rawQuery = "SELECT * FROM obra WHERE codigoCliente like '"+codigoCliente+"' ";
+		String rawQuery = "SELECT * FROM obra " +
+				"WHERE codigoCliente = '"+codigoCliente+"' or  codigoCliente='TODOS' ";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -193,7 +227,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 	}
     
     public ArrayList<Transporte> getTransportes(String codigoCliente){
-    	String rawQuery = "SELECT * FROM transporte WHERE codigoCliente like '"+codigoCliente+"' ";
+    	String rawQuery = "SELECT * FROM transporte " +
+				"WHERE codigoCliente like '"+codigoCliente+"' or codigoCliente ='TODOS' ";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -284,7 +319,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
     public Cliente getInformacionCliente(String codigoCliente){
     	String rawQuery = 
     			"SELECT codcli,DescSector,nomcli,DireccionFiscal,Giro, telefono,DescCanal, "+
-    			"CASE WHEN monedaLimCred='ME' THEN 'DOLAR $'  WHEN monedaLimCred='MN' THEN 'PEN S/.' ELSE monedaLimCred  END, "+
+    			"monedaLimCred, "+
     			"limite_credito,DescUnidNeg, "+
     			"CASE WHEN monedaDocumento='A' THEN 'Ambas Monedas' WHEN monedaDocumento='E' THEN 'Moneda Extranjera' WHEN monedaDocumento='N' THEN 'Moneda Nacional' ELSE '' END," +
 				" email, rubro_cliente, " +

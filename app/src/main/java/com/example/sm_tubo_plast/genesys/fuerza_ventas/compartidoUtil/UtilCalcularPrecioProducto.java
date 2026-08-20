@@ -2,6 +2,7 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas.compartidoUtil;
 
 import android.widget.Toast;
 
+import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPolitica_Precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
@@ -20,8 +21,10 @@ public class UtilCalcularPrecioProducto {
         this.codcli = codcli;
         this.codigoMoneda = codigoMoneda;
     }
-public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double pcjDesc2) {
-        if(codprod.startsWith("COMBO")) {
+public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double pcjDesc2,
+                                       MaestroCanalCategoriaDescuento maestroCanalCategoriaDescuento) {
+        if(codprod.startsWith("COMBO")
+        || maestroCanalCategoriaDescuento==null) {
             return new ResultPrecios(
                     "0.000",
                     "0.000",
@@ -30,19 +33,22 @@ public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double p
                     "0.000",
                     "0.000",
                     "0.000",
-                    "0.000"
+                    "0.000",
+                    "-1"
             );
         }
+        //if(maestroCanalCategoriaDescuento==null) return null;
+
         DecimalFormat formaterPrecioourDecimal = new DecimalFormat("#,##0.000");
         formaterPrecioourDecimal.setRoundingMode(RoundingMode.HALF_UP);
 
         double valor_cambio=1;
         if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             String tipo_de_cambio  = obj_dbclasses.getCambio("Tipo_cambio");
-            valor_cambio  = Double.parseDouble(tipo_de_cambio);
+            valor_cambio  = 1;//Double.parseDouble(tipo_de_cambio);
         }
 
-        DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio);
+        DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio, maestroCanalCategoriaDescuento);
         if(politica_precio2!=null){
             double porcentajeDescuentoManual=pcjDesc1;
             double porcentajeDescuentoExtra= pcjDesc2;
@@ -90,7 +96,8 @@ public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double p
                     formaterPrecioourDecimal.format(descuentoSinIgvExtra),
                     formaterPrecioourDecimal.format(descuentoSinIgv+descuentoSinIgvExtra),
                     formaterPrecioourDecimal.format(precioVentaFinalSinIGV),
-                    formaterPrecioourDecimal.format(precioVentaFinalIncIGV)
+                    formaterPrecioourDecimal.format(precioVentaFinalIncIGV),
+                    String.valueOf(politica_precio2.getSecuencia())
                     );
             return resultx;
         }else{
@@ -109,12 +116,16 @@ public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double p
         public String descuentoSinIgvTotal;
         public String precioVentaPreSinIGV;
         public String precioVentaPreConIGV;
+        public String codigo_politica;
 
         public ResultPrecios(String errorMensaje) {
             this.errorMensaje = errorMensaje;
         }
 
-        public ResultPrecios(String precioOriginal, String precioLista, String smstxtPrecio, String descuentoSinIgv, String descuentoSinIgvExtra, String descuentoSinIgvTotal, String precioVentaPreSinIGV, String precioVentaPreConIGV) {
+        public ResultPrecios(String precioOriginal, String precioLista, String smstxtPrecio, String descuentoSinIgv,
+                             String descuentoSinIgvExtra, String descuentoSinIgvTotal, String precioVentaPreSinIGV,
+                             String precioVentaPreConIGV,
+                             String codigo_politica) {
             this.precioOriginal = precioOriginal;
             this.precioLista = precioLista;
             this.smstxtPrecio = smstxtPrecio;
@@ -123,6 +134,7 @@ public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double p
             this.descuentoSinIgvTotal = descuentoSinIgvTotal;
             this.precioVentaPreSinIGV = precioVentaPreSinIGV;
             this.precioVentaPreConIGV = precioVentaPreConIGV;
+            this.codigo_politica=codigo_politica;
         }
     }
 }

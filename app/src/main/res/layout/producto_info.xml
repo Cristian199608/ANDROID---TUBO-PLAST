@@ -108,9 +108,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/producto_text_stock"
-        android:layout_alignBottom="@+id/producto_text_stock"
         android:layout_alignLeft="@+id/producto_info_codpro"
+        android:layout_alignBottom="@+id/producto_text_stock"
         android:text="x.x"
+        android:visibility="invisible"
         android:textColor="#343434"
         android:textSize="13sp" />
 
@@ -122,6 +123,7 @@
         android:layout_toLeftOf="@+id/producto_info_codpro"
         android:layout_toRightOf="@+id/thumbnail"
         android:text="Stock:"
+        android:visibility="invisible"
         android:textColor="@color/black"
         android:textSize="13sp" />
 

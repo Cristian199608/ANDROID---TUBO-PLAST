@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
@@ -38,6 +39,16 @@ import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.InformacionLogistica;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteLugarEntrega;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCuentasXcobrar;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPromocionDetalle;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultStockArticulo;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultTransporte;
 import com.example.sm_tubo_plast.genesys.adapters.ModelDevolucionProducto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Direccion_cliente;
 import com.example.sm_tubo_plast.genesys.datatypes.DBtables.Pedido_cabecera;
@@ -566,10 +577,29 @@ public class DBclasses extends SQLiteAssetHelper {
 				+") result "
 				+ "order by nomcli asc  ";
 
+		rawQuery = "select * from (" +
+				"select distinct(nomcli) as nomcli," +
+				"ruccli," +
+				"fecha_compra," +
+				"monto_compra," +
+				"cliente.codcli," +
+				"0 as item_dircli, 1 as n_dia,ifnull(observacion,'') as observacion, " +
+				"  cliente.direccionFiscal as direccion," +
+				"cliente.codcli as codcli," +
+				//"cliente.stdcli as estado_cli," +
+				"1 as estado_cli," +
+				"'' as motivoBajaCliente," +
+				"1 as sistema, " +
+				"'1' as moneda_ultima_compra " +
+				" from cliente "
+				+"where (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
+				+ " limit "+start+", "+end+" "
+				+") result "
+				+ "order by nomcli asc  ";
 		SQLiteDatabase db = getReadableDatabase();
 
-		Cursor cur = db.rawQuery(rawQuery, null);
 		Log.i(TAG, "listart cliente: query_> "+rawQuery);
+		Cursor cur = db.rawQuery(rawQuery, null);
 		ArrayList<HashMap<String, Object>> dbcliente = new ArrayList<HashMap<String, Object>>();
 		if (cur.isClosed() && bucle>50){
 			bucle--;
@@ -841,7 +871,9 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "end as serie_doc, "
 					+ "numero_factura,  total, "
 				    + "acuenta,saldo,feccom,codcli,username,fecha_vencimiento,codven, "
-				    + "round(saldo_virtual,2) saldo_virtual,coddoc,Observaciones,forma, cc_flag, Estado_Cobranza  as tipo,NroUnicoBanco "
+				    + "round(saldo_virtual,2) saldo_virtual,coddoc,Observaciones,forma, cc_flag, "
+					+" Estado_Cobranza  as tipo,"
+					+"NroUnicoBanco "
 				    + "from cta_ingresos "
 				    + "where cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
 
@@ -875,7 +907,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			
 			dbcta.setForma((cur.getString(16)));
 			dbcta.setCc_flag((cur.getString(17)));
-			dbcta.setEstado_cobranza((cur.getString(18)));
+			dbcta.setEstado_cobranza((cur.getString(cur.getColumnIndex("tipo"))));
 			dbcta.setNroUnicoBanco((cur.getString(19)));			
 			//Log.i("Enviando parametros : numfactura:",(cur.getString(15))+", serie:"+(cur.getString(3))+", tipo:"+(cur.getString(14)));
 			
@@ -1238,11 +1270,12 @@ public class DBclasses extends SQLiteAssetHelper {
 				+ "from producto "
 				+ "left join politica_precio2 on producto.codpro = politica_precio2.codpro "
 				+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
-				+ "where politica_precio2.secuencia=(select ifnull((select sec_politica from politica_cliente where codcli='"
+				+ "where 1=1 "
+				/*"politica_precio2.secuencia=(select ifnull((select sec_politica from politica_cliente where codcli='"
 				+ codigoCliente
 				+ "'),'"
 				+ sec_politica
-				+ "')) "
+				+ "')) "*/
 				+ "and producto.codpro like '%"
 				+ codigoProducto
 				+ "%' "
@@ -12542,12 +12575,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				+ "as cantidad , (select count(ci.secuencia) as cant_entrega from cta_ingresos_resumen ci where ci.forma like '%Entregar%' "
 				+ "and ci.codcli=cl.codcli) as cant_entregar, "
 				+ "(select count(ci.secuencia) as cant_entrega from cta_ingresos_resumen ci where ci.forma like '%Aceptar%' "
-				+ "and ci.codcli=cl.codcli) as cant_aceptar,flagCobranza, "
+				+ "and ci.codcli=cl.codcli) as cant_aceptar,1 as flagCobranza, "
 				+ "ifnull( ( select ci.saldo from cta_ingresos_resumen ci where ci.codmon =1 and ci.codcli= cl.codcli and Forma like '%Cobrar%' ),0 ) as totalSaldoSoles, "
 				+ "ifnull( (select ci.saldo from cta_ingresos_resumen ci where ci.codmon =2 and ci.codcli= cl.codcli  and Forma like '%Cobrar%' ),0 ) as totalSaldoDolares "
-				+ "from cliente cl where ((totalSoles!=0 or totalDolares !=0) or (totalSaldoSoles!=0 or totalSaldoDolares !=0)) " +
-				"and cl.codcli in (" +
-				" select znf.codcli from znf_programacion_clientes znf where znf.codven='"+codvendedor+"' ) "
+				+ "from cliente cl where ((totalSoles!=0 or totalDolares !=0) or (totalSaldoSoles!=0 or totalSaldoDolares !=0)) "
+				//"and cl.codcli in (" +
+				//" select znf.codcli from znf_programacion_clientes znf where znf.codven='"+codvendedor+"' ) "
 				+ "order by flagCobranza desc";
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -13057,7 +13090,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 
-	public DBPolitica_Precio2 GetPoliticaPrecio2ByCliente(String codcli, String codpro, double valor_cambio ) {
+	public DBPolitica_Precio2 GetPoliticaPrecio2ByCliente(String codcli, String codpro, double valor_cambio,
+														  MaestroCanalCategoriaDescuento maestroCanalCategoriaDescuento) {
 
 
 
@@ -13069,8 +13103,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
                     "round ((select p._precio_base from producto p where p.codpro=pr2.codpro)* "+valor_cambio+", 4) as _precio_base, " +
                     "round (pr2.prepro_unidad*"+valor_cambio+", 4) as prepro_unidad, " +
                     "round (pr2.prepro*"+valor_cambio+", 4) as prepro " +
-                    "from "+ Politica_precio2.TAG+" pr2 where pr2.codpro='"+codpro+"' " +
-					"and pr2.secuencia in (select pc.sec_politica from politica_cliente pc where pc.codcli='"+codcli+"')";
+                    "from "+ Politica_precio2.TAG+" pr2 " +
+                    "inner join "+ DBtables.Politica_precio1.TAG+" pr1 " +//pr2
+					"on pr2.secuencia=pr1.secuencia " +
+					"where pr2.codpro='"+codpro+"' " +
+					"and pr1.descripcion = '"+maestroCanalCategoriaDescuento.getNombreLitaPrecio()+"' " +
+					//"and pr2.secuencia in (select pc.sec_politica from politica_cliente pc where pc.codcli='"+codcli+"')
+					" ";
 			Cursor cursor=db.rawQuery(sql, null);
 			if (cursor.moveToNext()){
 				politica_precio2=new DBPolitica_Precio2();
@@ -13320,10 +13359,59 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
+	public void updateGeolocalizacionClientePuntoEntrega(String codigoCliente,
+														 String itemSucursal,
+														 String codigoPuntoEntrega,
+														 double lat,
+														 double lng,
+														 double altitud) {
+
+		try {
+
+			SQLiteDatabase db = getWritableDatabase();
+
+			ContentValues Nreg = new ContentValues();
+			String where = "codigoCliente = ? and itemSucursal = ? and codigoLugar = ? ";
+			String[] args = { codigoCliente, itemSucursal, codigoPuntoEntrega };
+
+			Nreg.put("latitud", lat);
+			Nreg.put("longitud", lng);
+			//Nreg.put("altitud", altitud);
+			Nreg.put("estado", "P");
+
+			db.update(DBtables.LugarEntrega.TAG, Nreg, where, args);
+			db.close();
+			Log.w("updateGeolocalizacionCliente", " codigoCliente: "+ codigoCliente + ", codigoPuntoEntrega "+ codigoPuntoEntrega);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 
 	public String getEstadoDireccionCliente(String codigoCliente, String item) {
 		String rawQuery;
 		rawQuery = "SELECT ifnull(estado,'') FROM "+DBtables.Direccion_cliente.TAG+" WHERE codcli like '"+codigoCliente+"' and item like '"+item+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		String estado = "";
+		cur.moveToFirst();
+		while (!cur.isAfterLast()) {
+			estado = cur.getString(0);
+			cur.moveToNext();
+		}
+		Log.v(TAG, estado);
+		cur.close();
+		db.close();
+		return estado;
+	}
+	public String getEstadoDireccionClientePuntoEntrega(String codigoCliente, String item, String codigoLugar) {
+		String rawQuery;
+		rawQuery = "SELECT ifnull(estado,'') FROM "+DBtables.LugarEntrega.TAG+" " +
+				"WHERE codigoCliente like '"+codigoCliente+"' " +
+				"and itemSucursal like '"+item+"' " +
+				"and codigoLugar = '"+codigoLugar+"' ";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -13439,16 +13527,20 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv, double tipoCambio) {
 		String rawQuery;
 		rawQuery = "SELECT " +
-				" tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, " +
+				"tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, " +
 				" (sum(precio_neto)/sum(peso_bruto)) / "+tipoCambio+" as pkDolar,\n" +
-				" sum(precio_neto) * "+igv+" as igvTotal from (\n" +
+				" sum(precio_neto) * "+igv+" as igvTotal, " +
+				"sum(volumen) as volumenTotal "+
+				"from (\n" +
 				"select  \n" +
-				"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
-				"pd.peso_bruto, pd.precio_neto \n" +
+				//"ifnull((select tp.descripcion from tipoProducto tp where tp.codigoTipo=p.tipoProducto), 'OTROS') as tipoProducto,\n" +
+				"p.familia as tipoProducto, "+
+				"pd.peso_bruto, pd.precio_neto, \n" +
+				"volumen*pd.cantidad as volumen " +
 				" from (" +
-				"select x.oc_numero, x.cip, x.tipo_producto, x.peso_bruto, x.precio_neto from pedido_detalle x \n" +
+				"select x.oc_numero, x.cip, x.tipo_producto, x.peso_bruto, x.precio_neto, x.cantidad from pedido_detalle x \n" +
 				"UNION ALL \n"+
-				"select y.oc_numero, 'B'||y.codpro, 'C' as tipo_producto, y.peso_total, y.precio_neto from pedido_detalle2 y \n" +
+				"select y.oc_numero, 'B'||y.codpro, 'C' as tipo_producto, y.peso_total, y.precio_neto, y.cantidad from pedido_detalle2 y \n" +
 				") pd   \n" +
 				"inner join producto p on (pd.cip = case when pd.tipo_producto='C' then 'B' else '' end ||p.codpro)\n" +
 				"where pd.oc_numero='"+oc_numero+"'\n" +
@@ -13466,7 +13558,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				cur.getDouble(cur.getColumnIndex("pesoTotal")),
 				cur.getDouble(cur.getColumnIndex("sutTotal")),
 				cur.getDouble(cur.getColumnIndex("pkDolar")),
-				cur.getDouble(cur.getColumnIndex("igvTotal"))
+				cur.getDouble(cur.getColumnIndex("igvTotal")),
+				cur.getDouble(cur.getColumnIndex("volumenTotal"))
 			);
 			lista.add(item);
 		}
@@ -13676,6 +13769,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	}
 	public boolean VersionAppActualizadoCheck(final Activity activity){
 		String mensaje="";
+		if(true)return true;
 
 		if (!getNroVersion().equalsIgnoreCase(""+activity.getResources().getString(R.string.APP_NRPO_VERSION))
 				&& !isVersionSuperior(activity) ){
@@ -13877,5 +13971,421 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			ex.printStackTrace();
 		}
 	}
+
+	public String guardarProductoSyn(ArrayList<ResultProducto> listaProductos) {
+
+		SQLiteDatabase db = getWritableDatabase();
+		db.beginTransaction();
+		String msgError="";
+		try {
+			db.delete(Producto.TAG, null, null);
+			db.delete(Politica_precio2.TAG, null, null);
+
+			ContentValues values=null;
+
+			for (ResultProducto producto : listaProductos) {
+				values = new ContentValues();
+				values.put(Producto.CODPRO, producto.getCodigo_producto());
+				values.put("despro", producto.getNombre_producto());
+				values.put("abrevpro", producto.getDescripcion());
+				values.put("familia", producto.getCategoria());
+				values.put("sub_familia", producto.getSubcategoria());
+				values.put("marca", producto.getMarca());
+//				values.put("codigo_familia", producto.getCodigoFamilia());
+//				values.put("codigo_subfamilia", producto.getCodigoSubfamilia());
+				values.put("codunimed", producto.getUnidad_medida());
+				values.put("estado", producto.getEstado());
+				// Si en SQLite los manejas como texto
+				values.put("factor_conversion", producto.getFactor_conversion());
+				values.put(
+						"afecto",
+						producto.getTipo_afectacion_igv_default().equals("10")?"S":"N"
+				);
+				values.put("percepcion", producto.getValor_percepcion());
+				values.put("_precio_base", producto.getPrecio_base_sin_igv());
+				values.put("foto", producto.getFoto_url());
+				values.put("ficha_pdf_url", producto.getFicha_tecnica_pdf_url());
+				values.put("desc_comercial", "");
+				values.put("cod_rapido", "");
+				values.put("ean13", "");
+				values.put("linea_negocio", "");
+				values.put("flg_bonificacion", "");
+				// informacion_logistica
+				if (producto.getInformacion_logistica() != null) {
+					InformacionLogistica logistica = producto.getInformacion_logistica();
+					values.put("cantidad_master",logistica.getCantidad_Master());
+					values.put("cantidad_pallet",logistica.getCantidad_Pallet());
+					values.put( "volumen", logistica.getVolumen());
+					values.put( "peso", logistica.getPeso_unitario());
+				}
+				db.insert(Producto.TAG,null,values);
+//				-------------------------------unidad medida----------------------------------------------------------------
+				values=new ContentValues();
+				values.put("codunimed", producto.getUnidad_medida());
+				values.put("desunimed", producto.getUnidad_medida());
+				db.insertWithOnConflict(DBtables.Unidad_medida.TAG,null,values, SQLiteDatabase.CONFLICT_IGNORE);
+
+				//-------------------------------ahora insertamos precios fakse----------------------------------------------------------------+
+//				values=new ContentValues();
+//				values.put("secuencia", 1);
+//				values.put("item", 1);
+//				values.put("codpro", producto.getCodigo_producto());
+//				values.put("prepro", producto.getPrecio_base_sin_igv());
+//				values.put("prepro_unidad", producto.getPrecio_base_sin_igv());
+//				db.insertWithOnConflict(Politica_precio2.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de productos";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+	public String guardarSyncClientesMasivo(ArrayList<ResultClienteCantol> listaClientes) {
+
+		SQLiteDatabase db = getWritableDatabase();
+
+		db.beginTransaction();
+		try {
+			db.delete(DBtables.Cliente.TAG, null, null);
+			db.delete(DBtables.Direccion_cliente.TAG, null, null);
+
+			for (ResultClienteCantol cliente : listaClientes) {
+
+				ContentValues values = new ContentValues();
+
+				values.put("codcli", cliente.getCodigoCliente());
+				values.put("tipo_documento", cliente.getTipoDocumento());
+				values.put("comprobante",
+						cliente.getTipoDocumento().equals("RUC")
+						?PedidosActivity.FACTURA
+						:PedidosActivity.BOLETA);
+				values.put("ruccli", cliente.getNumeroDocumento());
+				values.put("nomcli", cliente.getNombreLegal());
+				//values.put("nombre_comercial", cliente.getNombreComercial());
+				values.put("persona", cliente.getPersona());
+				//values.put("canal_venta", cliente.getCanalVenta()); //sacar de info
+				//values.put("canal_venta_nombre", cliente.getCanalVentaNombre());
+//				values.put("segmento_cliente_codigo",
+//						cliente.getSegmentoClienteCodigo()
+//				);
+//				values.put("segmento_cliente",
+//						cliente.getSegmentoCliente()
+//				);
+//				values.put("valido", cliente.getValido());
+				values.put("email", cliente.getCorreoPrincipal());
+				values.put("telefono", cliente.getTelefonoPrincipal());
+				//values.put("fecha_alta", cliente.getFechaAlta());
+
+				values.put(
+						"limite_credito",
+						cliente.getLineaCreditoAprobado()
+				);
+
+				values.put(
+						"disponible_credito",
+						cliente.getLineaCreditoDisponible()
+				);
+
+				values.put(
+						"fecha_compra",
+						cliente.getFechaUltimaCompra()
+				);
+
+				values.put(
+						"monto_compra",
+						cliente.getImporteUltimaCompra()
+				);
+				values.put("codven_asginados", "");
+				String txtUbigeo= cliente.getDepartamento()
+						+" - "+cliente.getProvincia()+
+						"-"+cliente.getDistrito();
+				values.put("direccionFiscal", txtUbigeo);
+				values.put("monedaDocumento", PedidosActivity.MONEDA_NACIONAL);
+				values.put("monedaLimCred", PedidosActivity.MONEDA_NACIONAL);
+
+				long a = db.insertWithOnConflict(DBtables.Cliente.TAG, null,values, SQLiteDatabase.CONFLICT_IGNORE);
+				//-------------------------------direccion cliente----------------------------------------------------------------
+				values=new ContentValues();
+				values.put(DBtables.Direccion_cliente.PK_CODCLI, cliente.getCodigoCliente());
+				values.put(DBtables.Direccion_cliente.PK_ITEM, 0);
+				values.put(DBtables.Direccion_cliente.DIRECCION, txtUbigeo);
+				values.put(DBtables.Direccion_cliente.DES_CORTA, txtUbigeo);
+				values.put(DBtables.Direccion_cliente.TELEFONO,cliente.getTelefonoPrincipal());
+				values.put(DBtables.Direccion_cliente.CODDEP,"");
+				values.put(DBtables.Direccion_cliente.CODPRV,"");
+				values.put(DBtables.Direccion_cliente.UBIGEO,"");
+				values.put(DBtables.Direccion_cliente.LATITUD,"0.0");
+				values.put(DBtables.Direccion_cliente.LONGITUD,"0.0");
+				values.put(DBtables.Direccion_cliente.DOC_ADICIONAL,"");
+				values.put(DBtables.Direccion_cliente.ESTADO,"S");
+				values.put(Direccion_cliente.altitud,"0.0");
+				db.insertWithOnConflict(DBtables.Direccion_cliente.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de productos";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+	public String guardarSyncLugarEntregaClientesMasivo(ArrayList<ResultClienteLugarEntrega> listaLugarEntrega) {
+
+		SQLiteDatabase db = getWritableDatabase();
+
+		db.beginTransaction();
+
+		try {
+			String where = "estado != ?";
+			String[] args = { "P" };
+			long d = db.delete(DBtables.LugarEntrega.TAG, where, args);
+			Log.i(TAG, "CANT ELIMINADO LUGAR ENTREGA "+d);
+
+			ContentValues values=null;
+			for (ResultClienteLugarEntrega cliente : listaLugarEntrega) {
+					values = new ContentValues();
+					values.put("codigoCliente", cliente.getCodigo_cliente());
+					values.put("itemSucursal", "0");
+					values.put("codigoLugar", cliente.getCodigo_punto_entrega());
+					values.put("nombre_comercial", cliente.getNombre_comercial());
+					values.put("direccion", cliente.getDireccion());
+					values.put("direccionEntrega", cliente.getDireccion());
+					//values.put("referencia", cliente.getReferencia());
+//					values.put("zona", cliente.getZona());
+					values.put("codigoDistrito", cliente.getDistrito());
+					values.put("codigo_provincia", cliente.getProvincia());
+					values.put("codigo_departamento", cliente.getDepartamento());
+					values.put("latitud", cliente.getLatitud().trim().isEmpty()?"0.0":cliente.getLatitud());
+					values.put("longitud", cliente.getLongitud().trim().isEmpty()?"0.0":cliente.getLongitud());
+					values.put("telefono", cliente.getTelefono());
+					values.put("contacto", cliente.getContacto());
+					values.put("cargo_contacto", cliente.getCargo_contacto());
+					values.put("estado", cliente.getLatitud().trim().isEmpty()?"O":"E");
+
+					long a = db.insertWithOnConflict(DBtables.LugarEntrega.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+					a=1;
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de lugar de entregas";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+	public String guardarSyncCuentasxCobrarMasivo(ArrayList<ResultCuentasXcobrar> listaCtaXcobrar) {
+
+		SQLiteDatabase db = getWritableDatabase();
+
+		db.beginTransaction();
+
+		try {
+			long d = db.delete(DBtables.Cta_ingresos.TAG, null, null);
+			long dd = db.delete(DBtables.cta_ingresos_resumen.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO cta ingresos "+d);
+
+			ContentValues values=null;
+			for (ResultCuentasXcobrar cuenta : listaCtaXcobrar) {
+				values= new ContentValues();
+				values.put("secuencia", cuenta.getTipo_documento()+"-"+cuenta.getSerie_documento()+"-"+cuenta.getNumero_documento());
+				values.put("codmon", PedidosActivity.MONEDA_SOLES_IN);
+				values.put("coddoc", cuenta.getTipo_documento());
+				values.put("codcli", cuenta.getCodigo_cliente());
+				values.put("serie_doc", cuenta.getSerie_documento());
+				values.put("numero_factura", cuenta.getNumero_documento());
+				//values.put("documento_referencia", cuenta.getDocumento_referencia());
+				values.put("total", cuenta.getTotal());
+				values.put("saldo", cuenta.getSaldo());
+				values.put("saldo_virtual", cuenta.getSaldo());
+				values.put("acuenta", 0.0);
+				values.put("feccom", cuenta.getFecha_emision());
+				values.put("fecoperacion", cuenta.getFecha_emision());
+				values.put("codven", "SAP");
+				values.put("fecha_vencimiento", cuenta.getFecha_vencimiento());
+				values.put("observaciones", cuenta.getObservaciones());
+				values.put("fecha_despacho", cuenta.getFecha_emision());
+				values.put("plazo", "0");
+				values.put("forma", "Aceptar");
+				values.put("cc_flag", "");
+				values.put("Estado_Cobranza", "Cobrar");
+				values.put("NroUnicoBanco", "");
+				long a = db.insertWithOnConflict(DBtables.Cta_ingresos.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+				a=1;
+			}
+			db.execSQL("INSERT INTO cta_ingresos_resumen (secuencia,codmon,\n" +
+					"coddoc,serie_doc,numero_factura,total,acuenta,saldo,feccom,codcli,username,fecoperacion,codven,saldo_virtual,forma )\n" +
+					"\n" +
+					"SELECT codcli as secuencia, "+PedidosActivity.MONEDA_SOLES_IN+" as codmon, '' as coddoc, \n" +
+					"'' as serie_doc, '' as numero_factura,\n" +
+					"sum(total) as total, sum(acuenta) as acuenta,\n" +
+					"sum(saldo) as saldo, '' as feccom, codcli, '' as username, '' as fecoperacion, '' as codven," +
+					"sum(saldo_virtual) as saldo_virtual, 'Cobrar' forma\n" +
+					" from cta_ingresos\n" +
+					" group by codcli\n" +
+					" ");
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de cuentas x cobrar";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+	public String guardarSyncPreciosProducto(ResultPrecioArticulo resulListaPrecio) {
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.beginTransaction();
+			long d = db.delete(DBtables.Politica_precio1.TAG, null, null);
+			long dd = db.delete(DBtables.Politica_precio2.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO cta precios2 "+d);
+
+			ContentValues values= new ContentValues();
+			values.put("secuencia", resulListaPrecio.getListaPreciosCodigo());
+			values.put("descripcion", resulListaPrecio.getListaPreciosNombre());
+			values.put("orden", "-1");
+			long a = db.insertWithOnConflict(DBtables.Politica_precio1.TAG, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+			if(a<=0){
+				throw new RuntimeException("No se insertó la tabla politica precio 1");
+			}
+			values= new ContentValues();
+			values.put("secuencia", resulListaPrecio.getListaPreciosCodigo());
+			values.put("item", "1");
+			values.put("codpro", resulListaPrecio.getCodigoArticulo());
+			values.put("prepro", resulListaPrecio.getPrecioUnitario());
+			values.put("prepro_unidad", resulListaPrecio.getPrecioUnitario());
+			a = db.insertWithOnConflict(DBtables.Politica_precio2.TAG, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+			a=1;
+
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de precio";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+	public String guardarSyncObrasCliente(String codcli, ArrayList<ResultClienteObras> resultClienteObras) {
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.beginTransaction();
+			long d = db.delete(DBtables.Obra.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO obras "+d);
+			for (int i = 0; i < resultClienteObras.size(); i++) {
+				ResultClienteObras obras=resultClienteObras.get(i);
+				ContentValues values= new ContentValues();
+				values.put("codigoCliente", codcli);
+				values.put("codigoVendedor", "");
+				values.put("codigoObra", obras.getCodigo_obra());
+				values.put("obra", obras.getNombre()+" - "+obras.getDireccion());
+				long a = db.insertWithOnConflict(DBtables.Obra.TAG, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de obras";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+	public String guardarSyncTransportes(ArrayList<ResultTransporte> resultClienteObras) {
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.beginTransaction();
+			long d = db.delete(DBtables.Transporte.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO obras "+d);
+			for (int i = 0; i < resultClienteObras.size(); i++) {
+				ResultTransporte tranp=resultClienteObras.get(i);
+				ContentValues values= new ContentValues();
+				values.put("codigoCliente", "TODOS");
+				values.put("itemSucursal", "-1");
+				values.put("codigoTransporte", tranp.getCodigo_transportista());
+				values.put("descripcion", tranp.getNombre());
+				long a = db.insertWithOnConflict(DBtables.Transporte.TAG, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de transportes";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
+	public String guardarSyncPromocionDetalle(ArrayList<ResultPromocionDetalle> listaPromoDetalle) {
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.beginTransaction();
+			long d = db.delete(DBtables.Promocion_Detalle.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO obras "+d);
+			ContentValues cv=null;
+			for (int i = 0; i < listaPromoDetalle.size(); i++) {
+				ResultPromocionDetalle promo=listaPromoDetalle.get(i);
+				cv=new ContentValues();
+				if(promo.getMecanica().size()==0) continue;
+				cv.put(DBtables.Promocion_Detalle.SECUENCIA, promo.getCodigo_Promocion());
+				cv.put(DBtables.Promocion_Detalle.GENERAL,promo.getCliente().size());
+				cv.put(DBtables.Promocion_Detalle.PROMOCION, promo.getDescripcion());
+				cv.put(DBtables.Promocion_Detalle.CODALM,"TODOS");
+				cv.put(DBtables.Promocion_Detalle.TIPO, "C");// validar y corregir
+				cv.put(DBtables.Promocion_Detalle.ITEM,i+1);
+				cv.put(DBtables.Promocion_Detalle.AGRUPADO,i+1);
+				cv.put(DBtables.Promocion_Detalle.ENTRADA, promo.getMecanica().get(0).getCodpro());
+				cv.put(DBtables.Promocion_Detalle.TIPO_UNIMED_ENTRADA, 0);
+				cv.put(DBtables.Promocion_Detalle.MONTO_MINIMO, 0.0);
+				cv.put(DBtables.Promocion_Detalle.MONTO_MAXIMO, 0.0);
+				cv.put(DBtables.Promocion_Detalle.MONTO,0.0);
+				cv.put(DBtables.Promocion_Detalle.CONDICION, (promo.getCondicion().equals("XPC")?3:2) );
+				cv.put(DBtables.Promocion_Detalle.CANT_CONDICION,promo.getMecanica().get(0).getCantidad());
+				cv.put(DBtables.Promocion_Detalle.SALIDA, promo.getBonificacion().getCodpro());
+				cv.put(DBtables.Promocion_Detalle.TIPO_UNIMED_SALIDA, 0);
+				cv.put(DBtables.Promocion_Detalle.CANT_PROMOCION, promo.getBonificacion().getCantidad());
+				cv.put(DBtables.Promocion_Detalle.MAX_PEDIDO, promo.getMax_pedido()==0?9999:promo.getMax_pedido());
+				cv.put(DBtables.Promocion_Detalle.TOTAL_AGRUPADO, promo.getAplica_obligatorio()?2:1);
+				cv.put(DBtables.Promocion_Detalle.TIPO_PROMOCION, promo.getTipo_promocion());
+				cv.put(DBtables.Promocion_Detalle.VENDEDOR,promo.getVendedor().size());
+				cv.put(DBtables.Promocion_Detalle.POLITICA,0);//validar chek
+				cv.put(DBtables.Promocion_Detalle.ACUMULADO, promo.getAplica_acumulado()?1:0);
+				cv.put(DBtables.Promocion_Detalle.GRUPO, "");
+				cv.put(DBtables.Promocion_Detalle.FAMILIA, 0);
+				cv.put(DBtables.Promocion_Detalle.SUBFAMILIA, 0);
+				cv.put(DBtables.Promocion_Detalle.DESCUENTO, 0);
+				cv.put(DBtables.Promocion_Detalle.UBIGEO, 0);
+				cv.put(DBtables.Promocion_Detalle.prioridad, 0);
+
+				long a = db.insertWithOnConflict(DBtables.Promocion_Detalle.TAG, null, cv,SQLiteDatabase.CONFLICT_REPLACE);
+				a=0;
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de promociones";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
+
 }
 

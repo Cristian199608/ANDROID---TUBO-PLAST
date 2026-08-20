@@ -128,7 +128,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:textStyle="bold"
-            android:text="&#xf0ec; Dirección Fiscal"/>
+            android:text="&#xf0ec; Ubigeo"/>
         <EditText
             android:id="@+id/tv_direccionFiscal"
             android:layout_width="match_parent"
@@ -136,7 +136,6 @@
             android:textSize="14sp"
             android:textColor="@color/blue_grey_500"
             android:editable="false"/>
-
 
         <LinearLayout
             android:orientation="horizontal"
@@ -164,7 +163,6 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5">
@@ -207,7 +205,7 @@
             android:editable="false"/>
 
         <TextView
-
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -217,6 +215,7 @@
         <EditText
 
             android:id="@+id/tv_moneda"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"
@@ -288,7 +287,7 @@
         </LinearLayout>
 
         <TextView
-
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -296,7 +295,7 @@
             android:textStyle="bold"
             android:text="&#xf007; Vendedores Asignados"/>
         <EditText
-
+            android:visibility="gone"
             android:id="@+id/tvVendedoresAsignados"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -330,6 +329,7 @@
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             android:layout_marginRight="2dp"
+            android:visibility="gone"
             app:cardCornerRadius="5dp">
             <LinearLayout
                 android:orientation="vertical"
@@ -413,6 +413,190 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginBottom="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="2dp"
+            app:cardCornerRadius="5dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:background="@color/blue_500"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:padding="10dp"
+                    android:textSize="17sp"
+                    android:text="Punto de Entregas"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:background="@color/blue_100"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <Spinner
+                        android:id="@+id/spn_puntoEntrega"
+                        style="@android:style/Widget.Holo.Light.Spinner"
+                        android:backgroundTint="@color/blue_500"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:singleLine="false"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf0ec; Dirección"/>
+
+                        <EditText
+                            android:id="@+id/tv_direccion_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf0ec; Ubigeo"/>
+                        <EditText
+                            android:id="@+id/tv_ubigeo_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf1d1; Coordenadas"/>
+
+                        <EditText
+                            android:id="@+id/tv_coordenada_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf095; Teléfono"/>
+                        <EditText
+                            android:id="@+id/tv_telefono_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf007; Nombre Contacto"/>
+
+                        <EditText
+                            android:id="@+id/tv_contacto_nombre_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:textStyle="bold"
+                            android:text="&#xf007; Cargo Contacto"/>
+                        <EditText
+                            android:id="@+id/tv_contacto_cargo_punto_entrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="@color/blue_grey_500"
+                            android:editable="false"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_marginBottom="5dp"
             android:layout_height="wrap_content"

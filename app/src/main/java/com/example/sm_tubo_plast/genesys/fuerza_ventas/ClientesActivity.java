@@ -43,7 +43,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,12 +59,18 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteLugarEntrega;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
 import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DBClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMotivo_noventa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
-import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Google.MapsClientesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.cliente.CH_InformacionCliente;
@@ -102,6 +107,8 @@ import java.util.Map;
 
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 @SuppressLint("LongLogTag")
 public class ClientesActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -303,7 +310,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         // itemSelectedListener no funciona
         // cargo los clientes directamente
 
-        GestionCargarCliente(0, "");
+        sincronizarClienteCartera();
 
         /* ***************ENVIAR MENSAJE DE SINCRONIZACION************** */
         SharedPreferences preferencias_configuracion;
@@ -332,7 +339,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         ActionItem infoItem = new ActionItem(ID_INFO, "Informacion", R.drawable.icon_man_24dp);
         //ActionItem infoWebItem = new ActionItem(ID_INFOWEB,"Informacion Online", getResources().getDrawable(R.drawable.infoweb));
-        ActionItem itemPedido = new ActionItem(ID_PEDIDO, "Orden Compra",R.drawable.pedidopn);
+        ActionItem itemPedido = new ActionItem(ID_PEDIDO, "Orden Venta",R.drawable.pedidopn);
         ActionItem itemCobranza = new ActionItem(ID_COBRANZA, "Estado de Cuenta", R.drawable.icon_coins_24dp);
         ActionItem uploadItem = new ActionItem(ID_NO_VENTA, "Motivo no venta", R.drawable.icon_stop_24dp);
         ActionItem gestionVisita = new ActionItem(ID_VISITA_CLIENTE, "Gestión visita", R.drawable.icon_man_24dp);
@@ -344,7 +351,15 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_OR_ALTA_ClIENTE, "Baja/Alta de Cliente", R.drawable.icon_man_24dp);
 
         final QuickAction mQuickAction = new QuickAction(this);
+        final QuickAction mQuickAction3 = new QuickAction(this);
         final QuickAction mQuickAction2 = new QuickAction(this);
+
+        mQuickAction3.addActionItem(infoItem);
+        mQuickAction3.addActionItem(geolocalizacion);
+        mQuickAction3.addActionItem(cotizacionItem);
+        mQuickAction3.addActionItem(itemPedido);
+        mQuickAction3.addActionItem(gestionVisita);
+        mQuickAction3.addActionItem(programar_visita);
 
         mQuickAction.addActionItem(infoItem);
         mQuickAction.addActionItem(geolocalizacion);
@@ -378,9 +393,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         AdministrarAccesos(mQuickAction, mQuickAction2);
 
 
+
         // ///////////////////Acciones para mQuickAction///////////////////////
         // setup the action item click listener
-        mQuickAction
+        mQuickAction3
                 .setOnActionItemClickListener(new QuickAction.OnActionItemClickListener() {
                     @Override
                     public void onItemClick(ActionItem item) {
@@ -439,11 +455,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     setResult(RESULT_OK, returnIntent);
                     finish();
                 }else{
-                    if (obj_dbclasses.existePedidoCabeceraXcodcli_item(codcli, item_direccion)) {
-                        mQuickAction.show(view);
-                    } else {
-                        mQuickAction2.show(view);
-                    }
+                    //if (obj_dbclasses.existePedidoCabeceraXcodcli_item(codcli, item_direccion)) {
+//                        mQuickAction.show(tv_fecha_filtrado_de);
+                    //} 7//else {
+//                    mQuickAction2.show(tv_fecha_filtrado_de);
+                    mQuickAction3.show(view);
+//                        mQuickAction2.show(view);
+                    //}
                 }
 
 
@@ -741,7 +759,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 // viewHolder.observacion.setText(searchResults.get(position).get("observacion").toString());
                 viewHolder.observacion.setText(obs);
 
-                viewHolder.item_sistema_registrado.setText(searchResults.get(position).get("sistema").toString());
+                viewHolder.item_sistema_registrado.setText(""/*searchResults.get(position).get("sistema").toString()*/);
                 if(searchResults.get(position).get("sistema").toString().equals(TIPO_CLIENTE_SIDIGE)){
                     viewHolder.item_sistema_registrado.setTextColor(getResources().getColor(R.color.blue_600));
                 }else  viewHolder.item_sistema_registrado.setTextColor(getResources().getColor(R.color.grey_700));
@@ -749,8 +767,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 String ultima_compra=searchResults.get(position).get("fecha").toString();
                 viewHolder.layout_container_ultima_compra.setVisibility(ultima_compra.isEmpty()?View.GONE:View.VISIBLE);
                 viewHolder.list_item_ultima_compra.setText(ultima_compra+" " +
-                                 searchResults.get(position).get("moneda_ultima_compra").toString()+" " +
-                                 searchResults.get(position).get("monto").toString()
+                                 "S/. "+searchResults.get(position).get("monto").toString()
                 );
                 viewHolder.direccion.setText(searchResults.get(position).get("direccion").toString());
                 viewHolder.direccion.setHint(searchResults.get(position).get("item_direccion").toString());
@@ -972,8 +989,10 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         super.onDestroy();
 
 
-        asynCliente3.interrupt();
-        asynCliente3=null;
+        if(asynCliente3!=null){
+            asynCliente3.interrupt();
+            asynCliente3=null;
+        }
 
         if (locationApiGoogle!=null){
             if (locationApiGoogle.fusedLocationClient!=null && locationApiGoogle.locationCallback!=null){
@@ -1721,148 +1740,33 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
                 flagTipoEnvio= "S";
 
-                View alertLayout = inflater.inflate(R.layout.dialog_geolocalizar, null);
-                final TextView tv1 = (TextView) alertLayout.findViewById(R.id.tv1);
-                final TextView tv_localizacionActual = (TextView) alertLayout.findViewById(R.id.tv_localizacionActual);
-                final TextView tv_altitud_actual = (TextView) alertLayout.findViewById(R.id.tv_altitud_actual);
-                final TextView tv_localizacion = (TextView) alertLayout.findViewById(R.id.tv_localizacion);
-                final TextView tv_altitud_nueva = (TextView) alertLayout.findViewById(R.id.tv_altitud_nueva);
-                final TextView btnVerMapsGeo = (TextView) alertLayout.findViewById(R.id.btnVerMapsGeo);
-                final TextView btnVerMapsSinGeo = (TextView) alertLayout.findViewById(R.id.btnVerMapsSinGeo);
-                final TextView tv_cliente = (TextView) alertLayout.findViewById(R.id.tv_cliente);
-                final Spinner spn_direccion = (Spinner) alertLayout.findViewById(R.id.spn_direccion);
 
+            BottomSheetGeolocalizarCliente bottomSheetGeolocalizarCliente = BottomSheetGeolocalizarCliente
+                    .newInstance(codven, codcli, nomcli, item_direccion);
+            bottomSheetGeolocalizarCliente.setMyGeolocaliacionListener(new BottomSheetGeolocalizarCliente.MyGeolocaliacionListener() {
+                @Override
+                public LatLng getLastUbicacion() {
+                    return new LatLng(lat, lng);//ultima ubicacion
+                }
+                @Override
+                public void onCancel() {
 
-                tv_localizacion.setText(lat+" , "+lng);
-                tv_altitud_nueva.setText(VARIABLES.formater_thow_decimal.format(altitud)+" m.s.n.m");
-                tv_cliente.setText(nomcli);
-
-                final ArrayList<DB_DireccionClientes> direcciones = obj_dbclasses.obtenerDirecciones_cliente2(codcli);
-                List<String> direccionesList = new ArrayList<String>();
-                int posicionDireccionHoy = 0;
-                for (int i=0;i<direcciones.size();i++) {
-                    DB_DireccionClientes db_DireccionClientes = direcciones.get(i);
-
-                    direccionesList.add(db_DireccionClientes.getDireccion());
-                    if (db_DireccionClientes.getItem().equals(codSucursal)) {
-                        posicionDireccionHoy = i;
-                    }
                 }
 
-                ArrayAdapter<String> direccionAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, direccionesList);
-                spn_direccion.setAdapter(direccionAdapter);
-                //Seleccionar la direccion cliente de la visita actual (programcion zonificacion)
-                spn_direccion.setSelection(posicionDireccionHoy);
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ClientesActivity.this,AlertDialog.THEME_HOLO_LIGHT);
-
-                ///builder.setTitle("Importante");
-                builder.setIcon(R.drawable.warning);
-                builder.setView(alertLayout);
-                builder.setCancelable(true);
-                builder.setPositiveButton("Enviar al servidor", null);
-                builder.setNegativeButton("Local", null);
-                builder.setNeutralButton("cancelar", null);
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                    positiveButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                                String itemDireccion="";
-                                int secuenciaGiro=0;
-                                if (!direcciones.isEmpty()) {
-                                    itemDireccion = direcciones.get(spn_direccion.getSelectedItemPosition()).getItem();
-                                }
-
-                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng, altitud);
-
-                                new asyncEnviarGeolocalizacionCliente().execute();
-                                //dialog.dismiss();
-                            }
-                        });
-            negativeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onChanged(int itemDirCli) {
+                    adapter.notifyDataSetChanged();
+                }
 
-                                String itemDireccion="";
-                                int secuenciaGiro=0;
-                                if (!direcciones.isEmpty()) {
-                                    itemDireccion = direcciones.get(spn_direccion.getSelectedItemPosition()).getItem();
-                                }
+                @Override
+                public void onEnvioServer() {
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(ClientesActivity.this, "Falta guardar en el servidor", Toast.LENGTH_SHORT).show();
 
-
-                                obj_dbclasses.updateGeolocalizacionCliente(codcli,itemDireccion,lat,lng, altitud);
-
-
-                                Log.d(TAG, "itemDireccion"+itemDireccion+"\nsecuenciaGiro"+secuenciaGiro+"\nSucursal:"+codSucursal);
-                                adapter.notifyDataSetChanged();
-                                dialog.dismiss();
-                            }
-                        });
-
-                btnVerMapsSinGeo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        LatLng coordenadaLast=new LatLng(lat,lng);
-                        lanzarGooleMaps(coordenadaLast);
-                    }
-                });
-
-                //tv_localizacionActual.setText(""+coordenadaActual.latitude+", "+coordenadaActual.longitude);
-
-                spn_direccion.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        try {
-
-                            String estado = obj_dbclasses.getEstadoDireccionCliente(codcli, direcciones.get(i).getItem());
-                            double altitud_actual = direcciones.get(i).getAltitud();
-
-                            if(estado.equals("V")) {
-                                estado= "La geolocalización de este cliente esta validada y no se podra modificar.";
-                                positiveButton.setEnabled(false);
-                                negativeButton.setEnabled(false);
-                            }else {
-                                positiveButton.setEnabled(true);
-                                negativeButton.setEnabled(true);
-                                if (estado.equals("P")) {//Pendiente de localizar
-                                    estado="Atención esta dirreción está pendiente por localizar.\nSe guardarán los siguientes datos:";
-                                }else estado="Se guardarán los siguientes datos:";
-                            }
-
-                            tv1.setText(estado);
-
-                            tv_localizacionActual.setText(Double.parseDouble(direcciones.get(i).getLatitud())+", "+Double.parseDouble(direcciones.get(i).getLongitud()));
-                            tv_altitud_actual.setText(VARIABLES.formater_thow_decimal.format(altitud_actual)+" m.s.n.m");
-                        }catch (Exception e){
-                            UtilView.MENSAJES(ClientesActivity.this,  "Error!",
-                                    "\n\n Detalle del error:\n"+e.getMessage(), 0,false);
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-
-                    }
-                });
-                btnVerMapsGeo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        int posDir=spn_direccion.getSelectedItemPosition();
-                        try {
-                            LatLng coordenadaLast=new LatLng(Double.parseDouble(direcciones.get(posDir).getLatitud()),Double.parseDouble(direcciones.get(posDir).getLongitud()));
-                            lanzarGooleMaps(coordenadaLast);
-                        }catch (Exception e){
-                            UtilView.MENSAJES(ClientesActivity.this,  "Error!",
-                                    "Error al intentar abrir GOOGLE MAPS\n\n Detalle del error:\n"+e.getMessage(), 0,false);
-                        }
-                    }
-                });
+                    //new asyncEnviarGeolocalizacionCliente().execute();
+                }
+            });
+            bottomSheetGeolocalizarCliente.show(getSupportFragmentManager(), bottomSheetGeolocalizarCliente.getTag());
 
         }
         else {
@@ -2319,6 +2223,92 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                         StartCargaCliente();//refrescamos listado cliente independiente a al resultado del servidor
                     });
         }
+    }
+
+    private void sincronizarClienteCartera(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando clientes 1 de  2...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String urlReq=RetrofilClientCantol.UrlPeticiones.listaCliente(codven);
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.lista(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getCliente(body);
+
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            ClientesActivity.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultClienteCantol>>() {}.getType();
+                final ArrayList<ResultClienteCantol> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant cliente "+lista.size());
+                String msgError= obj_dbclasses.guardarSyncClientesMasivo(lista);
+                if(msgError!=null){
+                    GlobalFunctions.showCustomToast(
+                            ClientesActivity.this,
+                            msgError,
+                            GlobalFunctions.TOAST_ERROR);
+                }
+                sincronizarClienteLugarEntrega();
+            }
+        });
+    }
+    private void sincronizarClienteLugarEntrega(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando clientes 2 de 2...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String urlReq=RetrofilClientCantol.UrlPeticiones.listaLugarEntregaCliente(codven);
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaLugarEntrega(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getCliente(body);
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            ClientesActivity.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultClienteLugarEntrega>>() {}.getType();
+                final ArrayList<ResultClienteLugarEntrega> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant cliente "+lista.size());
+                String msgError= obj_dbclasses.guardarSyncLugarEntregaClientesMasivo(lista);
+                if(msgError!=null){
+                    GlobalFunctions.showCustomToast(
+                            ClientesActivity.this,
+                            msgError,
+                            GlobalFunctions.TOAST_ERROR);
+                }
+                GestionCargarCliente(0, "");
+            }
+        });
     }
 
     @Override

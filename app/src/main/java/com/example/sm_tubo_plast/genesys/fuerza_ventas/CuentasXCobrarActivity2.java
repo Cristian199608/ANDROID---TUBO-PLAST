@@ -344,7 +344,10 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
                 Log.i("Enviando parametros : numfactura:",numfactura+", serie:"+serie+", tipo:"+tipo+" formaPago :"+formaPago);
                 if (Double.parseDouble(saldo_virtual)>0){
                     mQuickAction.show(view);
-                }else{
+                }else if(Double.parseDouble(saldo_virtual)==0){
+                    UtilViewSnackBar.SnackBarWarning(CuentasXCobrarActivity2.this, list, "Documento sin deuda");
+                }
+                else{
                     UtilViewSnackBar.SnackBarWarning(CuentasXCobrarActivity2.this, list, "Monto a favor de cliente.");
                 }
 
@@ -443,18 +446,18 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
 
             codigoVendedor = new SessionManager(CuentasXCobrarActivity2.this).getCodigoVendedor();
 
-
-            try {
-                Log.d("Documento", codigoVendedor+"-"+codcli+"-"+url+"-"+catalog+"-"+userid+"-"+contrasena+"-");
-                Log.d(TAG,"Sync_tabla_cta_ingresos_x_cliente("+codigoVendedor+","+ parametro+","+codcli+","+ url+","+catalog);
-                soap_manager.Sync_tabla_cta_ingresos_x_cliente(codigoVendedor, parametro+","+codcli, url,catalog, userid,contrasena );
-            }catch(TimeoutException ex){
-                mensaje="Se superó el tiempo de respuesta";
-            }catch (Exception e) {
-                //e.printStackTrace();
-                mensaje="Se superó el tiempo de respuesta";
-                Log.e(TAG, e.getMessage());
-            }
+//
+//            try {
+//                Log.d("Documento", codigoVendedor+"-"+codcli+"-"+url+"-"+catalog+"-"+userid+"-"+contrasena+"-");
+//                Log.d(TAG,"Sync_tabla_cta_ingresos_x_cliente("+codigoVendedor+","+ parametro+","+codcli+","+ url+","+catalog);
+//                soap_manager.Sync_tabla_cta_ingresos_x_cliente(codigoVendedor, parametro+","+codcli, url,catalog, userid,contrasena );
+//            }catch(TimeoutException ex){
+//                mensaje="Se superó el tiempo de respuesta";
+//            }catch (Exception e) {
+//                //e.printStackTrace();
+//                mensaje="Se superó el tiempo de respuesta";
+//                Log.e(TAG, e.getMessage());
+//            }
             /*------------------------------------------------------------------------*/
 
             lista_cta_ingresos_original = obj_dbclasses.VerificarCtasXCobrar(codcli);

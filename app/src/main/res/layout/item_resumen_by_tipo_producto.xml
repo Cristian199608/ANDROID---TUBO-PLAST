@@ -33,6 +33,18 @@
             android:textColor="@color/grey_300"
             android:textSize="@dimen/text_resumen_pedido" />
         <TextView
+            android:id="@+id/tvVolumenTotal"
+            android:layout_width="0dp"
+            android:layout_margin="1dp"
+            android:background="@color/grey_800"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="volumen"
+            android:textColor="@color/grey_300"
+            android:textSize="@dimen/text_resumen_pedido" />
+        <TextView
             android:id="@+id/tvSubTotal"
             android:layout_width="0dp"
             android:layout_margin="1dp"
@@ -48,6 +60,7 @@
             android:id="@+id/tvPrecioKilo"
             android:layout_width="0dp"
             android:layout_margin="1dp"
+            android:visibility="gone"
             android:background="@color/grey_800"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"

@@ -30,9 +30,9 @@ public class VARIABLES {
     public static final  String SEPARADOR_OBSERVACION="_#_";
 
 
-    public static final  boolean isProduccion=true;
-    public static final  boolean isProduccion_prueba=false;
-    public static final  boolean isSetDataPruebas=false;
+    public static final  boolean isProduccion=false;
+    public static final  boolean isProduccion_prueba=true;
+    public static final  boolean isSetDataPruebas=true;
 
     public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
     public static String CARPERTA_CONTENEDOR_PDF="PDF";
@@ -61,16 +61,18 @@ public class VARIABLES {
                 "fuerzaventas_v2.4", //at 2025-01-30
                 "fuerzaventas_v2.5", //at 2025-08-26
                 "fuerzaventas_v2.6", //at 2025-11-04
+                "fuerzaventas_v2.7", //at 2026-04-25
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_v2.7"; //at 2026-04-25
+        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.111";// at 2026-08-11
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
                 "fuerzaventas_prueba",
                 "fuerzaventas_prueba_v2.1",
                 "fuerzaventas_prueba_v2.2",//end 2025-01-03
+                "fuerzaventas_prueba_v2.3",//at 2025-01-03
         };
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_prueba_v2.3";//at 2025-01-03
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.111";// at 2026-08-11
         private static final  int DATABASA_VERSION_prueba       =1;
 
         public static String[] getDatabaseNameOld() {
@@ -316,8 +318,10 @@ public class VARIABLES {
 
     public static String OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(Activity activity, double latitud, double longitud) {
         String direccion_larga="";
+        direccion_larga=latitud+" -- "+longitud;
+        if(true)return direccion_larga;
         //Obtener la direccion de la calle a partir de la latitud y la longitud
-        /*if (latitud != 0.0 && longitud != 0.0) {
+        if (latitud != 0.0 && longitud != 0.0) {
             try {
                 ConnectionDetector cd=new ConnectionDetector(activity);
                 if (cd.hasActiveInternetConnection(activity)) {
@@ -336,7 +340,7 @@ public class VARIABLES {
                 direccion_larga="No se ha podido obtener la dirreción de su ubición.\nCoordenada: "+latitud+", "+longitud;
                 e.printStackTrace();
             }
-        }*/
+        }
         return direccion_larga;
     }
 
@@ -454,6 +458,7 @@ public class VARIABLES {
 
     public static      DecimalFormat formater_thow_decimal = new DecimalFormat("#,##0.00");
     public static      DecimalFormat formater_one_decimal = new DecimalFormat("#,##0.0");
+    public static      DecimalFormat formater_integer = new DecimalFormat("#,###");
 
     public static  boolean isDate(String dateString){
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -484,6 +489,9 @@ public class VARIABLES {
     public static String getDescripcionAnPreConcatenarBonif(String tipoProducto) {
         return (tipoProducto.equals("C"))? " •BONIFICACION ":"";
     }
+
+
+
 
 }
 

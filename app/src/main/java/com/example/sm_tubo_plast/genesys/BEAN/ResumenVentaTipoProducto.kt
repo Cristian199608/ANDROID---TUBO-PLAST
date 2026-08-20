@@ -5,5 +5,6 @@ data class ResumenVentaTipoProducto (
     var pesoTotal:Double,
     var sutTotal:Double,
     var pkDolar:Double,
-    var igvTotal:Double
+    var igvTotal:Double,
+    var volumenTotal:Double
 )

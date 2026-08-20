@@ -31,7 +31,11 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.Retrofit.GetDataControlAcceso;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.DataRetrofit;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClient;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
@@ -54,6 +58,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -467,7 +472,7 @@ public class DBSync_soap_manager {
 	}
  
  public int Sync_tabla_clientexVendedor(String codven, String fecha, String url, String catalog, String user, String contrasena,  int start, int paginacion) throws Exception{
-		
+
 		String SOAP_ACTION= "http://tempuri.org/obtenerClientesxVendedor_json";
 		String METHOD_NAME="obtenerClientesxVendedor_json";
 		long beforecall;
@@ -512,6 +517,23 @@ public class DBSync_soap_manager {
 	    	 throw new Exception(e);
 	    }
 
+	}
+
+	public String Sync_tabla_clientexVendedorV2(Activity activity, String codven) throws Exception {
+
+		String urlReq = RetrofilClientCantol.UrlPeticiones.listaCliente(codven);
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.lista(urlReq));
+		Call<Object> call = RetrofilClientCantol
+				.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultClienteCantol>>() {}.getType();
+			final ArrayList<ResultClienteCantol> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncClientesMasivo(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
 	}
 
 

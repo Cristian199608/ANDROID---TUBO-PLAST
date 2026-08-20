@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/rlayoutPrincipal"
+    android:background="@drawable/shape_background_header"
+    android:backgroundTint="@color/grey_200"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/lLayoutCab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:paddingBottom="5dp">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:text="Selecciona una ubicación"
+                android:textColor="@color/grey_800"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/red_500"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:src="@drawable/ic_cancel_grey_24"
+                app:tint="@color/grey_800"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/mapContainer"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_below="@+id/lLayoutCab">
+
+            <FrameLayout
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="5dp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvDireccionMapa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lLayoutCab"
+            android:layout_margin="10dp"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:ems="10"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:drawableEnd="@drawable/ic_edit_grey"
+            tools:text="DireccionDireccionDireccionDireccionDireccion" />
+
+
+        <CheckBox
+            android:id="@+id/swCambiarToSatelital"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lLayoutCab"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/edittext_rounded_corners6"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:text="Satelital"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="@color/teal_500"
+            android:ems="15"
+            android:text="Aceptar Ubicación"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+</RelativeLayout>

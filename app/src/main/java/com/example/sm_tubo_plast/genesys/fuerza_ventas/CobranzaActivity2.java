@@ -30,14 +30,21 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCuentasXcobrar;
+import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.adapters.CobranzaAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
-import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaPrincipal;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -47,9 +54,11 @@ import java.util.StringTokenizer;
 
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import okhttp3.RequestBody;
+import retrofit2.Call;
 
 public class CobranzaActivity2 extends AppCompatActivity {
-
+    private static final String TAG = "CobranzaActivity2";
     DBclasses obj_dbclasses;
     static final String KEY_TOTAL = "total";
     static final String KEY_SALDO = "saldo";
@@ -122,7 +131,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
         soap_manager = new DBSync_soap_manager(getApplicationContext());
 
-        new cargarCobranzas().execute("");
+        sincronizarListaCuentaXcobrar();
 
         ActionItem addItem 		= new ActionItem(ID_AMORTIZAR, "Amortizar", (R.drawable.pagar));
         ActionItem acceptItem 	= new ActionItem(ID_DETALLE, "Ver Detalle", (R.drawable.detalle2));
@@ -551,5 +560,47 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
     }
 
+    private void sincronizarListaCuentaXcobrar(){
+        ProgressDialog pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Consultando Cuentas por cobrar...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaEstadoCuentasXCobrar(codven);
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaCuentaXcobrar(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
+                .create(GetDataCantol.class).getCliente(body);
+        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
+        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensaje, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            CobranzaActivity2.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                final Type malla = new TypeToken<ArrayList<ResultCuentasXcobrar>>() {}.getType();
+                final ArrayList<ResultCuentasXcobrar> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant cliente "+lista.size());
+                String msgError= obj_dbclasses.guardarSyncCuentasxCobrarMasivo(lista);
+                if(msgError!=null){
+                    GlobalFunctions.showCustomToast(
+                            CobranzaActivity2.this,
+                            msgError,
+                            GlobalFunctions.TOAST_ERROR);
+                }
+                new cargarCobranzas().execute("");
+            }
+        });
+    }
 
 }

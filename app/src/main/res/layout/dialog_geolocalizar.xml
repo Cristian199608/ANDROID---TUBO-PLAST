@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
-<!--    android:theme="@android:style/Theme.Holo.Light"-->
+    xmlns:tools="http://schemas.android.com/tools">
+
 
     <RelativeLayout
         android:id="@+id/layout"
@@ -12,31 +11,31 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@color/green_A700"
+        android:background="@drawable/shape_background_header"
+        android:backgroundTint="@color/green_A700"
         android:elevation="3dp"
         android:orientation="horizontal">
 
         <RelativeLayout
-            android:layout_toStartOf="@+id/poputMenu"
             android:layout_width="match_parent"
-
             android:layout_height="wrap_content">
-            <ImageView
-                android:layout_centerVertical="true"
-                android:id="@+id/imgAddGeo"
-                android:src="@drawable/mapa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
-            <TextView
-                android:layout_toEndOf="@+id/imgAddGeo"
-                android:id="@+id/tv_geo_cabezado"
-                android:layout_alignParentTop="true"
+            <ImageView
+                android:id="@+id/imgAddGeo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/mapa" />
+
+            <TextView
+                android:id="@+id/tv_geo_cabezado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/imgAddGeo"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:text="Geolocalizar Cliente"
+                android:text="Geolocalizar Cliente - Punto Entrega"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -45,8 +44,8 @@
                 android:id="@+id/tv_cliente"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imgAddGeo"
                 android:layout_below="@+id/tv_geo_cabezado"
+                android:layout_toEndOf="@+id/imgAddGeo"
                 android:gravity="center|left"
                 android:paddingBottom="5dp"
                 android:text="Nombre del Cliente"
@@ -58,172 +57,244 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/layout2"
         android:layout_below="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:padding="5dp"
         android:orientation="vertical" >
         <TextView
             android:id="@+id/tv1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/grey_800"
             android:text="Se guardarán los siguientes datos:"
             android:layout_marginBottom="8dp" />
+
+        <TableRow
+            android:id="@+id/trow_giro"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/labelGiro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textStyle="bold"
+                android:text="Giro Cliente:" />
+
+            <Spinner
+                android:id="@+id/spn_giro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:spinnerMode="dialog"
+                />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/labelDireccion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textStyle="bold"
+                android:textColor="@color/grey_800"
+                android:text="Dirección:" />
+
+
+
+            <Spinner
+                android:id="@+id/spn_direccion"
+                style="@android:style/Widget.Holo.Light.Spinner"
+                android:backgroundTint="@color/green_500"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:spinnerMode="dropdown"
+                android:layout_weight="1"
+                />
+
+        </TableRow>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/layout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical" >
+
+
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal" >
 
-            <TableRow
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+            <TextView
+                android:id="@+id/txt_valor_extra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:visibility="gone"
+                android:text="Geolocalizado por Rojas el 10/12/2021:" />
+
+            <LinearLayout
+                android:layout_below="@+id/layout"
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingHorizontal="5dp"
+                android:orientation="horizontal" >
+
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:padding="5dp"
-                    android:text="Actual\nLocalizacion:" />
-
-                <TextView
-                    android:id="@+id/tv_localizacionActual"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    android:padding="5dp"
-                    android:text="" />
-                <TextView
+                    android:paddingStart="5dp"
                     android:paddingBottom="5dp"
-                    android:id="@+id/btnVerMapsGeo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/shape_edit_text_acerca_cliente"
-                    android:textColor="@color/teal_500"
-                    android:layout_marginEnd="4dp"
-                    android:padding="8dp"
-                    android:elevation="4dp"
-                    android:gravity="center"
-                    android:text="Ver"/>
-            </TableRow>
-
-            <TableRow
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content" >
+                    android:textColor="@color/grey_900"
+                    android:text="Actual Localizacion:" />
 
                 <TextView
+                    android:id="@+id/tvActualGeolocalizacion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:padding="5dp"
-                    android:text="Actitud:" />
+                    android:textStyle="normal"
+                    android:paddingStart="5dp"
+                    android:paddingBottom="5dp"
+                    android:textColor="@color/grey_800"
+                    tools:text="Actual Localizacion: " />
 
-                <TextView
-                    android:id="@+id/tv_altitud_actual"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    android:padding="5dp"
-                    android:text="S/N m.s.n.m" />
-            </TableRow>
+            </LinearLayout>
 
             <View android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_color"/>
-            <TableRow
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
+                android:layout_height="2dp"
+                android:background="@color/divider_color"
+                />
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content" >
+                android:layout_height="380dp"
+                >
 
-                <TextView
-                    android:id="@+id/labelLocalizacion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
+                <FrameLayout
+                    android:id="@+id/mapGeo"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                     />
+
+                <TableRow
                     android:padding="5dp"
-                    android:text="Nueva\nLocalizacion:" />
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content" >
 
-                <TextView
-                    android:id="@+id/tv_localizacion"
-                    android:layout_width="wrap_content"
+
+                    <TextView
+                        android:paddingBottom="5dp"
+                        android:id="@+id/tv_localizacion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_edit_text_acerca_cliente"
+                        android:textColor="@color/grey_900"
+                        android:layout_marginEnd="4dp"
+                        android:padding="8dp"
+                        android:elevation="4dp"
+                        android:gravity="center"
+                        android:text="Dirección"/>
+
+
+
+
+                    <TextView
+                        android:paddingBottom="5dp"
+                        android:id="@+id/btnVerMapsSinGeo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_edit_text_acerca_cliente"
+                        android:backgroundTint="@color/green_200"
+                        android:drawableTint="@color/green_800"
+                        android:drawableEnd="@drawable/ic_map_24"
+                        android:textColor="@color/green_900"
+                        android:layout_marginEnd="4dp"
+                        android:padding="8dp"
+                        android:textStyle="bold"
+                        android:elevation="4dp"
+                        android:gravity="center"
+                        android:text="Ver en Maps"/>
+
+                    <TextView
+                        android:id="@+id/chckEditar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableEnd="@drawable/ic_edit_grey"
+                        android:background="@drawable/shape_edit_text_acerca_cliente"
+                        android:backgroundTint="@color/blue_200"
+                        android:drawableTint="@color/blue_800"
+                        android:textColor="@color/blue_900"
+                        android:padding="8dp"
+                        android:elevation="4dp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:text="Editar" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/trow_btns"
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    android:padding="5dp"
-                    android:text="" />
-                <TextView
-                    android:paddingBottom="5dp"
-                    android:id="@+id/btnVerMapsSinGeo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/shape_edit_text_acerca_cliente"
-                    android:textColor="@color/blue_500"
-                    android:layout_marginEnd="4dp"
-                    android:padding="8dp"
-                    android:elevation="4dp"
-                    android:gravity="center"
-                    android:text="Ver"/>
-            </TableRow>
-            <TableRow
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="wrap_content" >
+                    android:layout_alignParentBottom="true">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:padding="5dp"
-                    android:text="Actitud:" />
+                    <Button
+                        android:id="@+id/btnCancel"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginEnd="3dp"
+                        android:backgroundTint="@color/grey_300"
+                        android:ems="15"
+                        android:text="Cancelar"
+                        android:textColor="@color/red_500" />
 
-                <TextView
-                    android:id="@+id/tv_altitud_nueva"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="5dp"
-                    android:padding="5dp"
-                    android:text="S/N m.s.n.m" />
-            </TableRow>
+                    <Button
+                        android:id="@+id/btnConfirm"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginStart="3dp"
+                        android:backgroundTint="@color/green_A700"
+                        android:ems="15"
+                        android:text="Guardar"
+                        android:textColor="@color/white" />
 
-            <View android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_color"/>
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
 
-                <TextView
-                    android:id="@+id/labelDireccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textStyle="bold"
-                    android:text="Dirección:" />
+                </TableRow>
 
-                <Spinner
-                    android:id="@+id/spn_direccion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:singleLine="false"
-                    android:spinnerMode="dialog" />
 
-            </TableRow>
+            </RelativeLayout>
+
+
 
 
         </TableLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

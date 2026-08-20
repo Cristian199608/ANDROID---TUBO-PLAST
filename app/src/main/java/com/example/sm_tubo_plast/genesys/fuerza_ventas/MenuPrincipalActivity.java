@@ -108,10 +108,9 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         servicio = prefs.getString("servicio","0");
         servicio_local = prefs.getString("servicio_local","0");
 
-        String vendedor_name=database.getVendedorByCodven(codven);
-        tv_welcomeUser.setText("Bienvenido "+ vendedor_name);
+        tv_welcomeUser.setText("Bienvenido "+ sessionManager.getNombreVendedor());
 
-        configurarDatosVendedorParaCrashlytics(codven, vendedor_name);
+        configurarDatosVendedorParaCrashlytics(codven, sessionManager.getNombreVendedor());
         GlobalVar.servicio_principal_activo = prefs.getBoolean("servicio_principal_activo", true);
         GlobalVar.servicio_secundario_activo = prefs.getBoolean("servicio_secundario_activo", true);
 
@@ -407,21 +406,21 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
 
     private void AdministrarAccesos() {
-        accesoMenuPrincipal=new AccesosOpciones.OptionMenuPrincipal(this);
-        OptionMenuPrinicipal optiones=accesoMenuPrincipal.accesoOptionMenuPrincipal();
-
-        DisableOrEnableOpcion(binding.lContainerMenuCliente, optiones.getMenuCliente());
-        DisableOrEnableOpcion(binding.lContainerMenuCotizacionAndPedido, optiones.getMenuCotizacionAndPedido());
-        DisableOrEnableOpcion(binding.lContainerMenuAgenda, optiones.getMenuAgenda());
-        DisableOrEnableOpcion(binding.lContainerMenuProducto, optiones.getMenuProducto());
-        DisableOrEnableOpcion(binding.lContainerMenuSeguimientoOp, optiones.getMenuSeguimientoOp());
-        DisableOrEnableOpcion(binding.lContainerMenuVentas, optiones.getMenuVentas());
-        DisableOrEnableOpcion(binding.lContainerMenuCuentasXCobrar, optiones.getMenuCuentasXCobrar());
-        DisableOrEnableOpcion(binding.lContainerMenuEstadistica, optiones.getMenuEstadistica());
-        DisableOrEnableOpcion(binding.lContainerMenuConsultaFacturas, optiones.getMenuConsultaFacturas());
-        DisableOrEnableOpcion(binding.lContainerMenuReportes, optiones.getMenuReportes());
-        DisableOrEnableOpcion(binding.lContainerMenuCuotaVentas, optiones.getMenuCuotaVentas());
-        DisableOrEnableOpcion(binding.lContainerMenuSincronizar, optiones.getMenuSincronizar());
+//        accesoMenuPrincipal=new AccesosOpciones.OptionMenuPrincipal(this);
+//        OptionMenuPrinicipal optiones=accesoMenuPrincipal.accesoOptionMenuPrincipal();
+//
+//        DisableOrEnableOpcion(binding.lContainerMenuCliente, optiones.getMenuCliente());
+//        DisableOrEnableOpcion(binding.lContainerMenuCotizacionAndPedido, optiones.getMenuCotizacionAndPedido());
+//        DisableOrEnableOpcion(binding.lContainerMenuAgenda, optiones.getMenuAgenda());
+//        DisableOrEnableOpcion(binding.lContainerMenuProducto, optiones.getMenuProducto());
+//        DisableOrEnableOpcion(binding.lContainerMenuSeguimientoOp, optiones.getMenuSeguimientoOp());
+//        DisableOrEnableOpcion(binding.lContainerMenuVentas, optiones.getMenuVentas());
+//        DisableOrEnableOpcion(binding.lContainerMenuCuentasXCobrar, optiones.getMenuCuentasXCobrar());
+//        DisableOrEnableOpcion(binding.lContainerMenuEstadistica, optiones.getMenuEstadistica());
+//        DisableOrEnableOpcion(binding.lContainerMenuConsultaFacturas, optiones.getMenuConsultaFacturas());
+//        DisableOrEnableOpcion(binding.lContainerMenuReportes, optiones.getMenuReportes());
+//        DisableOrEnableOpcion(binding.lContainerMenuCuotaVentas, optiones.getMenuCuotaVentas());
+//        DisableOrEnableOpcion(binding.lContainerMenuSincronizar, optiones.getMenuSincronizar());
 
     }
     private void DisableOrEnableOpcion(LinearLayout linearLayout, boolean enabled){

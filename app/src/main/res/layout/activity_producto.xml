@@ -635,22 +635,7 @@
                 android:background="@color/blue_grey_500"
                 android:orientation="horizontal" >
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".33"
-                    android:gravity="center"
-                    android:text="Almacen"
-                    android:textColor="@color/grey_200" />
 
-                <TextView
-                    android:visibility="gone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".33"
-                    android:gravity="center"
-                    android:text="Stock x Confirmar"
-                    android:textColor="@color/grey_200" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -665,6 +650,15 @@
                     android:layout_weight=".33"
                     android:gravity="center"
                     android:text="Stock\nSeparado"
+                    android:textColor="@color/grey_200" />
+
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".33"
+                    android:gravity="center"
+                    android:text="Stock\nEn Camino"
                     android:textColor="@color/grey_200" />
 
                 <TextView

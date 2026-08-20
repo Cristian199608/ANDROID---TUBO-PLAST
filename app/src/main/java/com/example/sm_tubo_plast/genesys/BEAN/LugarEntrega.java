@@ -8,7 +8,15 @@ public class LugarEntrega {
 	private String indicadorDespacho;
 	private String indicadorCobranza;
 	private String direccionEntrega;
-	
+	private String latitud;
+	private String longitud;
+	private String codigoDistrito;
+	private String codigo_provincia;
+	private String codigo_departamento;
+	private String telefono;
+	private String contacto;
+	private String cargo_contacto;
+
 	public String getCodigoCliente() {
 		return codigoCliente;
 	}
@@ -51,6 +59,75 @@ public class LugarEntrega {
 	public void setDireccionEntrega(String direccionEntrega) {
 		this.direccionEntrega = direccionEntrega;
 	}
-	
-	
+
+	public String getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(String latitud) {
+		this.latitud = latitud;
+	}
+
+	public String getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(String longitud) {
+		this.longitud = longitud;
+	}
+
+	public String getCodigoDistrito() {
+		return codigoDistrito;
+	}
+
+	public void setCodigoDistrito(String codigoDistrito) {
+		this.codigoDistrito = codigoDistrito;
+	}
+
+	public String getCodigo_provincia() {
+		return codigo_provincia;
+	}
+
+	public void setCodigo_provincia(String codigo_provincia) {
+		this.codigo_provincia = codigo_provincia;
+	}
+
+	public String getCodigo_departamento() {
+		return codigo_departamento;
+	}
+
+	public void setCodigo_departamento(String codigo_departamento) {
+		this.codigo_departamento = codigo_departamento;
+	}
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public String getContacto() {
+		return contacto;
+	}
+
+	public void setContacto(String contacto) {
+		this.contacto = contacto;
+	}
+
+	public String getCargo_contacto() {
+		return cargo_contacto;
+	}
+
+	public void setCargo_contacto(String cargo_contacto) {
+		this.cargo_contacto = cargo_contacto;
+	}
+
+	public  String getCoordenadas(){
+		return this.latitud+","+this.longitud;
+	}
+	public String getTxtUbigeo(){
+		return this.codigoDistrito+" - "+this.codigo_provincia+" - "+this.codigo_departamento;
+	}
 }

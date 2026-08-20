@@ -83,7 +83,7 @@ public class CobranzaAdapter extends BaseAdapter {
        // if(asignado == "1" ){
         
         if(asignado.equals("1") ){
-        	vi.setBackgroundColor(activity.getResources().getColor(R.color.orange_A100));
+        	vi.setBackgroundColor(activity.getResources().getColor(R.color.orange_50));
         }else{ vi.setBackgroundColor(activity.getResources().getColor(R.color.white));  }
         
         totalLetraEntregar = song.get("entregar");

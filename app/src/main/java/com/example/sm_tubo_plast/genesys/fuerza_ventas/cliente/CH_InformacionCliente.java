@@ -17,11 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_Contacto;
+import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_DireccionClientes;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.CustomView.CrearCliente_Contacto;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.service.WS_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
@@ -40,7 +42,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
             tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito,tv_unidadNegocio,tv_monedaFacturacion;
     EditText tv_direccion_sucursal, tv_telefono_sucursal, tvVendedoresAsignados,
             tvFechaNacimiento, tvDNI, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
-    Spinner spn_direccion, SpinnerContacto;
+    Spinner spn_direccion, spn_puntoEntrega, SpinnerContacto;
     ImageView imvNuevoContacto, imvEditarContacto;
 
     @SuppressLint("NewApi")
@@ -71,6 +73,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         tv_unidadNegocio = (EditText) findViewById(R.id.tv_unidadNegocio);
         tv_monedaFacturacion = (EditText) findViewById(R.id.tv_monedaFacturacion);
         spn_direccion = findViewById(R.id.spn_direccion);
+        spn_puntoEntrega = findViewById(R.id.spn_puntoEntrega);
         tv_direccion_sucursal = findViewById(R.id.tv_direccion_sucursal);
         tv_telefono_sucursal = findViewById(R.id.tv_telefono_sucursal);
         tv_cargo_contacto = findViewById(R.id.tv_cargo_contacto);
@@ -98,8 +101,14 @@ public class CH_InformacionCliente extends AppCompatActivity {
             tv_telefono.setText(cliente.getTelefono());
             tv_canal.setText(cliente.getCanal());
             tv_moneda.setText(cliente.getMonedaCredito());
-            tv_montoCredito.setText(VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getLimiteCredito())));
-            tv_disponibleCredito.setText(VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getDisponible_credido())));
+
+            String moneda="USD";
+            if(cliente.getMonedaCredito().equals(PedidosActivity.MONEDA_NACIONAL)){
+                moneda="S/.";
+            }
+
+            tv_montoCredito.setText(moneda+" "+VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getLimiteCredito())));
+            tv_disponibleCredito.setText(moneda+" "+VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getDisponible_credido())));
             tv_unidadNegocio.setText(cliente.getUnidadNegocio());
             tv_monedaFacturacion.setText(cliente.getMonedaDocumento());
             tv_email.setText(cliente.getEmail());
@@ -107,7 +116,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
             tv_rubro.setText(dBclasses.getRegistrosGeneralesMovilByCodigo(cliente.getRubro_cliente(), "Sin valor"));
             tv_tipo_cliente.setText(dBclasses.getRegistrosGeneralesMovilByCodigo(cliente.getTipo_cliente(), "Sin valor"));
 
-            String []spliCodvens=cliente.getCodven_asginados().split(",");
+            String []spliCodvens="".split(",");//cliente.getCodven_asginados().split(",");
             StringBuilder vendedores= new StringBuilder();
             for (int i = 0; i < spliCodvens.length; i++) {
                 if (vendedores.toString().length()>0) vendedores.append("\n");
@@ -116,6 +125,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
             tvVendedoresAsignados.setText(vendedores.toString());
 
             GestionarSucursales();
+            GestionarLugarPuntoEntrega();
         }
     }
 
@@ -157,6 +167,39 @@ public class CH_InformacionCliente extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 gestionEditarContactoCliente(null);
+            }
+        });
+    }
+    private void GestionarLugarPuntoEntrega(){
+        DAO_Cliente daoCliente=new DAO_Cliente(this);
+        EditText tv_direccion_punto_entrega = findViewById(R.id.tv_direccion_punto_entrega);
+        EditText tv_ubigeo_punto_entrega = findViewById(R.id.tv_ubigeo_punto_entrega);
+        EditText tv_coordenada_punto_entrega = findViewById(R.id.tv_coordenada_punto_entrega);
+        EditText tv_telefono_punto_entrega = findViewById(R.id.tv_telefono_punto_entrega);
+        EditText tv_contacto_nombre_punto_entrega = findViewById(R.id.tv_contacto_nombre_punto_entrega);
+        EditText tv_contacto_cargo_punto_entrega = findViewById(R.id.tv_contacto_cargo_punto_entrega);
+
+        ArrayList<LugarEntrega> puntoEntregas  = daoCliente.getPuntoEntrega(codigoCliente, "0");
+        List<String> direccionesList = new ArrayList<String>();
+        for (int i=0;i<puntoEntregas.size();i++) {
+            direccionesList.add(puntoEntregas.get(i).getCodigoLugar()+" - "+puntoEntregas.get(i).getDireccion());
+        }
+
+        ArrayAdapter<String> puntoEntregaAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item, direccionesList);
+        spn_puntoEntrega.setAdapter(puntoEntregaAdapter);
+        spn_puntoEntrega.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tv_direccion_punto_entrega.setText(puntoEntregas.get(position).getDireccion());
+                tv_ubigeo_punto_entrega.setText(puntoEntregas.get(position).getTxtUbigeo() );
+                tv_coordenada_punto_entrega.setText(puntoEntregas.get(position).getCoordenadas() );
+                tv_telefono_punto_entrega.setText(puntoEntregas.get(position).getTelefono() );
+                tv_contacto_nombre_punto_entrega.setText(puntoEntregas.get(position).getContacto() );
+                tv_contacto_cargo_punto_entrega.setText(puntoEntregas.get(position).getCargo_contacto() );
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }

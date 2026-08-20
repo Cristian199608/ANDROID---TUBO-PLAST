@@ -60,6 +60,12 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
         mlocManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
     }
 
+    public void StartLocationTo3SecondsCallback() {
+        long UPDATE_INTERVAL=LocationApiGoogle.UPDATE_INTERVAL_3_segundos;
+        long FASTEST_INTERVAL= LocationApiGoogle.UPDATE_INTERVAL_3_segundos;
+        int TIPO_PRIORIDAD=LocationRequest.PRIORITY_HIGH_ACCURACY;
+        StartLocationCallback(UPDATE_INTERVAL, FASTEST_INTERVAL, TIPO_PRIORIDAD);
+    }
     public void StartLocationCallback(long UPDATE_INTERVAL, long FASTEST_INTERVAL, int TIPO_PRIORIDAD) {
         locationRequest = new LocationRequest();
         locationRequest.setPriority(TIPO_PRIORIDAD);

@@ -61,6 +61,9 @@ public class DBtables {
 		public static final String codven_asginados = "codven_asginados";
 		public static final String sistema = "sistema";
 		public static final String moneda_ultima_compra="moneda_ultima_compra";
+		public static final String canal="canal";
+		public static final String sub_canal="sub_canal";
+		public static final String fecha_alta="fecha_alta";
 
 		 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
@@ -411,6 +414,7 @@ public class DBtables {
 
 		public static final String PK_KARDEX = "kardex";
 		public static final String PK_CODALM = "codalm";
+		public static final String nombre_almacen = "nombre_almacen";
 		public static final String PK_CODPRO = "codpro";
 		public static final String STOCK = "stock";
 		public static final String XTEMP = "xtemp";
@@ -604,6 +608,12 @@ public class DBtables {
 				+ "));";
 	}
 
+	public static final class Politica_precio1 implements BaseColumns {
+		public static final String TAG = "politica_precio1";
+		public static final String SECUENCIA = "secuencia";
+		public static final String DESCRIPCION = "descripcion";
+		public static final String ORDEN = "orden";
+	}
 	public static final class Politica_precio2 implements BaseColumns {
 
 		private Politica_precio2() {
@@ -669,6 +679,10 @@ public class DBtables {
 		public static final String _PRECIO_BASE = "_precio_base";
 		public static final String desc_comercial = "desc_comercial";
 		public static final String flg_bonificacion = "flg_bonificacion";
+		public static final String ficha_pdf_url = "ficha_pdf_url";
+		public static final String cantidad_master = "cantidad_master";
+		public static final String cantidad_pallet = "cantidad_pallet";
+		public static final String volumen = "volumen";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO
@@ -1346,6 +1360,15 @@ public class DBtables {
 		public static final String DIRECCION_ENTREGA = "direccionEntrega";
 		public static final String CODIGO_UBIGEO = "codigoUbigeo";
 		public static final String CODIGO_DISTRITO = "codigoDistrito";
+		public static final String nombre_comercial = "nombre_comercial";
+		public static final String codigo_provincia = "codigo_provincia";
+		public static final String codigo_departamento = "codigo_departamento";
+		public static final String latitud = "latitud";
+		public static final String longitud = "longitud";
+		public static final String telefono = "telefono";
+		public static final String contacto = "contacto";
+		public static final String cargo_contacto = "cargo_contacto";
+		public static final String estado = "estado";
 	}
 	
 	public static final class Transporte implements BaseColumns {
