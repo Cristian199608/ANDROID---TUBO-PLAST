@@ -7,13 +7,17 @@ import okhttp3.RequestBody
 
 class RequestProducto{
     companion object{
-        fun catalogo(): String {
-
-            var jsonBody = "{\n" +
-                    "  \"fecha_actualizacion\": \"\",\n" +//20260629
-                    "  \"categoria\": \"\",\n" +
-                    "  \"marca\": \"\",\n" +
-                    "  \"estado\": \"Y\"\n" +
+        fun catalogo(baseUrl:String, codven: String, desproLike: String): String {
+            var jsonBody= "{\n" +
+                    "    \"url\":\"$baseUrl\",\n" +
+                    "    \"data\":{\n" +
+                    "        \"fecha_actualizacion\": \"\",\n" +//20260629
+                    "        \"categoria\": \"\",\n" +
+                    "        \"marca\": \"\",\n" +
+                    "        \"estado\": \"Y\",\n" +
+                    "        \"articulo\": \"$desproLike\",\n" +
+                    "        \"vendedor\": \"$codven\"\n" +
+                    "    }\n" +
                     "}";
             return jsonBody;
         }

@@ -25,6 +25,7 @@ public class DBProductos {
     private String foto;
     private String linea_negocio;
     private int flg_bonificacion;
+    private String marca;
 
     
 	public String getLinea_negocio() {
@@ -133,5 +134,13 @@ public class DBProductos {
 	}
 	public boolean isFlg_bonificacion() {
 		return flg_bonificacion==1;
+	}
+
+	public String getMarca() {
+		return marca;
+	}
+
+	public void setMarca(String marca) {
+		this.marca = marca;
 	}
 }

@@ -26,6 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroCategoriaDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
@@ -38,11 +39,13 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistrosGeneralesMovil;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.InformacionLogistica;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteLugarEntrega;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCondicionVenta;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCuentasXcobrar;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
@@ -1032,7 +1035,8 @@ public class DBclasses extends SQLiteAssetHelper {
 
 
 	public ItemProducto[] getProductosXcliente(String codigoCliente,
-											   String descripcion) {
+											   String descripcion,
+											   long time_sincronizacion) {
 
 		int sec_politica = getSecPoliticaConfiguracion();
 
@@ -1806,7 +1810,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("sec_promo_prioridad", item.getSec_promo_prioridad());
 			Nreg.put("item_promo_prioridad", item.getItem_promo_prioridad());
 
-			long a=db.insert("pedido_detalle", null, Nreg);
+			long a=db.insertOrThrow("pedido_detalle", null, Nreg);
 			db.close();
 
 			Gson gson = new Gson();
@@ -7056,7 +7060,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		return cur;
 	}
 
-	public ArrayList<DBProductos> getProductosxCodpro(String codpro) {
+	public DBProductos getProductosxCodpro(String codpro) {
 		String rawQuery;
 
 		rawQuery = "select * from producto where codpro='" + codpro + "'";
@@ -7066,10 +7070,10 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		ArrayList<DBProductos> lista_productos = new ArrayList<DBProductos>();
 		cur.moveToFirst();
 
+		DBProductos dbproductos = null;
+
 		while (!cur.isAfterLast()) {
-
-			DBProductos dbproductos = new DBProductos();
-
+			dbproductos = new DBProductos();
 			dbproductos.setCodpro(cur.getString(1));
 			dbproductos.setDespro(cur.getString(2));
 			dbproductos.setAbrevpro(cur.getString(3));
@@ -7086,13 +7090,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbproductos.setPeso(cur.getDouble(14));
 			dbproductos.setFoto(cur.getString(15));
 			dbproductos.setFlg_bonificacion(cur.getInt(cur.getColumnIndex("flg_bonificacion")));
+			dbproductos.setMarca(cur.getString(cur.getColumnIndex("marca")));
 
-			lista_productos.add(dbproductos);
 			cur.moveToNext();
 		}
 		cur.close();
 		db.close();
-		return lista_productos;
+		return dbproductos;
 	}
 
 	public void updateIngresos(String secuencia, String secitm, String flag) {
@@ -7836,6 +7840,40 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.close();
 
 		return stock;
+	}
+
+	public DBMta_Kardex getStockInfoProducto(String codpro) {
+		String rawQuery;
+		rawQuery = "select " +
+				"codpro," +
+				"stock," +
+				"xtemp," +
+				"transito," +
+				"disponible" +
+				" from " +
+				"mta_kardex " +
+				"where codpro='"+ codpro + "' ";
+		Log.d("ALERT-", " ." + rawQuery);
+		String stock = "";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		cur.moveToFirst();
+		DBMta_Kardex dbMtaKardex=null;
+		if (cur.moveToFirst()) {
+			do {
+				dbMtaKardex=new DBMta_Kardex();
+				dbMtaKardex.setCodpro(cur.getString(cur.getColumnIndex("codpro")));
+				dbMtaKardex.setStock(cur.getInt(cur.getColumnIndex("stock")));
+				dbMtaKardex.setXtemp(cur.getInt(cur.getColumnIndex("xtemp")));
+				dbMtaKardex.setTransito(cur.getInt(cur.getColumnIndex("transito")));
+				dbMtaKardex.setDisponible(cur.getInt(cur.getColumnIndex("disponible")));
+			} while (cur.moveToNext());
+
+		}
+		cur.close();
+		db.close();
+		return dbMtaKardex;
 	}
 
 	public ArrayList<DBLocales> getLocales() {
@@ -10816,6 +10854,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			codunimed = cur.getString(0);
 			cur.moveToNext();
 		}
+		cur.close();
+		db.close();
 		return codunimed;
 	}
 
@@ -13090,8 +13130,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 
-	public DBPolitica_Precio2 GetPoliticaPrecio2ByCliente(String codcli, String codpro, double valor_cambio,
-														  MaestroCanalCategoriaDescuento maestroCanalCategoriaDescuento) {
+	public DBPolitica_Precio2 GetPoliticaPrecio2ByCliente(String codcli, String codpro, double valor_cambio) {
 
 
 
@@ -13104,12 +13143,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
                     "round (pr2.prepro_unidad*"+valor_cambio+", 4) as prepro_unidad, " +
                     "round (pr2.prepro*"+valor_cambio+", 4) as prepro " +
                     "from "+ Politica_precio2.TAG+" pr2 " +
-                    "inner join "+ DBtables.Politica_precio1.TAG+" pr1 " +//pr2
-					"on pr2.secuencia=pr1.secuencia " +
+                    //"inner join "+ DBtables.Politica_precio1.TAG+" pr1 " +//pr2
+					//"on pr2.secuencia=pr1.secuencia " +
 					"where pr2.codpro='"+codpro+"' " +
-					"and pr1.descripcion = '"+maestroCanalCategoriaDescuento.getNombreLitaPrecio()+"' " +
 					//"and pr2.secuencia in (select pc.sec_politica from politica_cliente pc where pc.codcli='"+codcli+"')
-					" ";
+					"limit 1 ";
 			Cursor cursor=db.rawQuery(sql, null);
 			if (cursor.moveToNext()){
 				politica_precio2=new DBPolitica_Precio2();
@@ -13972,19 +14010,33 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
-	public String guardarProductoSyn(ArrayList<ResultProducto> listaProductos) {
+	public String guardarProductoSyn(ArrayList<ResultProducto> listaProductos, long time_sincronizacion) {
 
 		SQLiteDatabase db = getWritableDatabase();
 		db.beginTransaction();
 		String msgError="";
 		try {
-			db.delete(Producto.TAG, null, null);
-			db.delete(Politica_precio2.TAG, null, null);
+
+			if(time_sincronizacion<=0){
+				db.delete(DBtables.MTA_kardex.TAG, null, null);
+				db.delete(DBtables.Producto.TAG, null, null);
+				db.delete(DBtables.Unidad_medida.TAG, null, null);
+				db.delete(DBtables.Politica_precio2.TAG, null, null);
+				db.delete(DBtables.Politica_precio1.TAG, null, null);
+			}
 
 			ContentValues values=null;
+			//-------------------------------insert precio politica 1----------------------------------------------------------------
+			int secuenciaPolitica=0;
+			values=new ContentValues();
+			values.put("secuencia", secuenciaPolitica);
+			values.put("orden", 1);
+			values.put("descripcion", "politica de vendedor");
+			db.insertWithOnConflict(DBtables.Politica_precio1.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
 
 			for (ResultProducto producto : listaProductos) {
 				values = new ContentValues();
+				values.put("time_sync", time_sincronizacion);
 				values.put(Producto.CODPRO, producto.getCodigo_producto());
 				values.put("despro", producto.getNombre_producto());
 				values.put("abrevpro", producto.getDescripcion());
@@ -13994,6 +14046,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 //				values.put("codigo_familia", producto.getCodigoFamilia());
 //				values.put("codigo_subfamilia", producto.getCodigoSubfamilia());
 				values.put("codunimed", producto.getUnidad_medida());
+				values.put("codunimed_almacen", producto.getUnidad_medida());
 				values.put("estado", producto.getEstado());
 				// Si en SQLite los manejas como texto
 				values.put("factor_conversion", producto.getFactor_conversion());
@@ -14018,21 +14071,34 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					values.put( "volumen", logistica.getVolumen());
 					values.put( "peso", logistica.getPeso_unitario());
 				}
-				db.insert(Producto.TAG,null,values);
+				db.insertWithOnConflict(DBtables.Producto.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
+
 //				-------------------------------unidad medida----------------------------------------------------------------
 				values=new ContentValues();
 				values.put("codunimed", producto.getUnidad_medida());
 				values.put("desunimed", producto.getUnidad_medida());
-				db.insertWithOnConflict(DBtables.Unidad_medida.TAG,null,values, SQLiteDatabase.CONFLICT_IGNORE);
+				db.insertWithOnConflict(DBtables.Unidad_medida.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
 
-				//-------------------------------ahora insertamos precios fakse----------------------------------------------------------------+
-//				values=new ContentValues();
-//				values.put("secuencia", 1);
-//				values.put("item", 1);
-//				values.put("codpro", producto.getCodigo_producto());
-//				values.put("prepro", producto.getPrecio_base_sin_igv());
-//				values.put("prepro_unidad", producto.getPrecio_base_sin_igv());
-//				db.insertWithOnConflict(Politica_precio2.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
+//				-------------------------------stock precio----------------------------------------------------------------
+				values=new ContentValues();
+				values.put("kardex", "VENTAS");
+				values.put("codalm", "00");
+				values.put("nombre_almacen", "ALMACEN PRINCIPAL DE VENTAS");
+				values.put("codpro", producto.getCodigo_producto());
+				values.put("stock", producto.getStock().getStock());
+				values.put("xtemp", producto.getStock().getComprometido());
+				values.put("transito", producto.getStock().getTransito());
+				values.put("disponible", producto.getStock().getDisponible());
+				db.insertWithOnConflict(DBtables.MTA_kardex.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
+
+//				-------------------------------ahora insertamos precios----------------------------------------------------------------+
+				values=new ContentValues();
+				values.put("secuencia", secuenciaPolitica);
+				values.put("item", 1);
+				values.put("codpro", producto.getCodigo_producto());
+				values.put("prepro", producto.getPrecio_base_sin_igv());
+				values.put("prepro_unidad", producto.getPrecio_base_sin_igv());
+				db.insertWithOnConflict(Politica_precio2.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
 			}
 
 			db.setTransactionSuccessful();
@@ -14387,5 +14453,36 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
+	public String guardarSyncFormaPagoMasivo(ArrayList<ResultCondicionVenta> listaCondicionVenta) {
+
+		SQLiteDatabase db = getWritableDatabase();
+
+
+		try {
+			db.beginTransaction();
+			long d = db.delete(DBtables.FormaPago.TAG, null, null);
+			Log.i(TAG, "CANT ELIMINADO condicion venta "+d);
+
+			ContentValues values=null;
+			for (ResultCondicionVenta item : listaCondicionVenta) {
+				values = new ContentValues();
+				values.put("codforpag", item.getCodigo_condicion_pago());
+				values.put("desforpag", item.getCondicion_pago());
+				values.put("codigoCliente", "TODOS");
+				values.put("dias_credito", item.getDias_credito());
+				values.put("flagTipo", DAO_RegistrosGeneralesMovil.CONDICION_VENTA);
+				long a = db.insertWithOnConflict(DBtables.FormaPago.TAG, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+				a=1;
+			}
+			db.setTransactionSuccessful();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "No se pudo sincronizar los datos de lista condicion venta";
+		} finally {
+			db.endTransaction();
+			db.close();
+		}
+	}
 }
 

@@ -366,7 +366,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="2.5"
-                                    android:text="Canal Venta:"
+                                    android:text="Categoria Venta:"
                                     android:textSize="15sp" />
                                 <Spinner
                                     android:id="@+id/spn_subCanalCategoria"
@@ -377,6 +377,16 @@
                                     style="@android:style/Widget.Holo.Light.Spinner"
                                     />
                             </LinearLayout>
+                            <TextView
+                                android:id="@+id/tvMensajeCambioCategoria"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:textStyle="italic"
+                                android:textColor="@color/orange_900"
+                                android:text="Cambio de categoria, comisión penalizada según política vigente"
+                                android:textSize="15sp" />
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -666,14 +676,16 @@
                                     android:text="Transportista:"
                                     android:textSize="15sp" />
 
-                                <Spinner
-                                    android:id="@+id/spn_transportista"
+                                <EditText
+                                    android:id="@+id/edt_transportista"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="1.5"
-                                    style="@android:style/Widget.Holo.Light.Spinner"
-                                    android:entries="@array/datos_spinner" />
+                                    android:focusable="false"
+                                    android:drawableEnd="@drawable/ic_tres_puntos_grey"
+                                    android:text="" />
+
                             </LinearLayout>
 
 

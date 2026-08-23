@@ -63,7 +63,7 @@ public class VARIABLES {
                 "fuerzaventas_v2.6", //at 2025-11-04
                 "fuerzaventas_v2.7", //at 2026-04-25
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.111";// at 2026-08-11
+        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.1";// at 2026-08-11
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
@@ -72,7 +72,7 @@ public class VARIABLES {
                 "fuerzaventas_prueba_v2.2",//end 2025-01-03
                 "fuerzaventas_prueba_v2.3",//at 2025-01-03
         };
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.111";// at 2026-08-11
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.1";// at 2026-08-11
         private static final  int DATABASA_VERSION_prueba       =1;
 
         public static String[] getDatabaseNameOld() {
@@ -259,7 +259,7 @@ public class VARIABLES {
 
     public static long GetFechaActua_long(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-05"));
         Date date = new Date();
         return date.getTime();
     }

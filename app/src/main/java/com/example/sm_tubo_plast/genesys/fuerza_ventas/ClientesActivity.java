@@ -310,7 +310,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         // itemSelectedListener no funciona
         // cargo los clientes directamente
 
-        sincronizarClienteCartera();
+        GestionCargarCliente(0, "");
 
         /* ***************ENVIAR MENSAJE DE SINCRONIZACION************** */
         SharedPreferences preferencias_configuracion;
@@ -2225,91 +2225,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         }
     }
 
-    private void sincronizarClienteCartera(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando clientes 1 de  2...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        String urlReq=RetrofilClientCantol.UrlPeticiones.listaCliente(codven);
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.lista(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            ClientesActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultClienteCantol>>() {}.getType();
-                final ArrayList<ResultClienteCantol> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant cliente "+lista.size());
-                String msgError= obj_dbclasses.guardarSyncClientesMasivo(lista);
-                if(msgError!=null){
-                    GlobalFunctions.showCustomToast(
-                            ClientesActivity.this,
-                            msgError,
-                            GlobalFunctions.TOAST_ERROR);
-                }
-                sincronizarClienteLugarEntrega();
-            }
-        });
-    }
-    private void sincronizarClienteLugarEntrega(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando clientes 2 de 2...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        String urlReq=RetrofilClientCantol.UrlPeticiones.listaLugarEntregaCliente(codven);
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaLugarEntrega(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            ClientesActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultClienteLugarEntrega>>() {}.getType();
-                final ArrayList<ResultClienteLugarEntrega> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant cliente "+lista.size());
-                String msgError= obj_dbclasses.guardarSyncLugarEntregaClientesMasivo(lista);
-                if(msgError!=null){
-                    GlobalFunctions.showCustomToast(
-                            ClientesActivity.this,
-                            msgError,
-                            GlobalFunctions.TOAST_ERROR);
-                }
-                GestionCargarCliente(0, "");
-            }
-        });
-    }
 
     @Override
     public void onRequestPermissionsResult( int requestCode, String permissions[], int[] grantResults) {

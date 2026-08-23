@@ -32,10 +32,17 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.Retrofit.GetDataControlAcceso;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.DataRetrofit;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteLugarEntrega;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCondicionVenta;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCuentasXcobrar;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPromocionDetalle;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultTransporte;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClient;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
@@ -200,7 +207,7 @@ public class DBSync_soap_manager {
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 		Request.addProperty("url", url); 
 		Request.addProperty("catalog", catalog); 
-		Request.addProperty("user", user); 
+		Request.addProperty("user", user);
 		Request.addProperty("password", contrasena);  
 	    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
 	    Soapenvelope.dotNet=true;
@@ -781,7 +788,6 @@ public class DBSync_soap_manager {
 	    }
 	}
  
- 
  public void Sync_tabla_familia( String url, String catalog, String user, String contrasena) throws Exception{
 	 	ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<HeaderProperty>();
 	    headerPropertyArrayList.add(new HeaderProperty("Connection", "open"));
@@ -1336,7 +1342,22 @@ public void Sync_tabla_pedido_detalle(){
 	    }  
 
 	}
- 
+
+	public String Sync_tabla_productoV2(Activity activity, String codven) throws Exception {
+
+	 	String urlRe=RetrofilClientCantol.UrlPeticiones.catalogoProducto;
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.catalogo(urlRe, codven, ""));
+		Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultProducto>>() {}.getType();
+			final ArrayList<ResultProducto> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarProductoSyn(lista,-VARIABLES.getFechaHora_actual_long());
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
  
  public void Sync_tabla_promocion_clientes(String url, String catalog, String user, String contrasena) throws Exception{
 		
@@ -3636,6 +3657,22 @@ public void Sync_tabla_PromocionDetalle( String codven,String url, String catalo
 
 }
 
+public String Sync_tabla_PromocionDetalleV2(Activity activity, String codven) throws Exception {
+
+	String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPromociones();
+	RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
+	Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+			.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultPromocionDetalle>>() {}.getType();
+			final ArrayList<ResultPromocionDetalle> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncPromocionDetalle(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
+
 public void verificarDepositosEnviados() throws Exception{
  
 	try 
@@ -5852,7 +5889,21 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	throw new Exception(e);
 	    }			 
 	}
-	
+
+	public String Sync_tabla_formasPagoV2(Activity activity) throws Exception{
+		String urlReq=RetrofilClientCantol.UrlPeticiones.getCondicionVenta();
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
+		Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultCondicionVenta>>() {}.getType();
+			final ArrayList<ResultCondicionVenta> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncFormaPagoMasivo(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
 	public void Sync_tabla_Nro_letras(String codCli, String cond_ven) throws Exception {
 		
 //		String SOAP_ACTION= "http://tempuri.org/obtenerTBNroLetras_json";
@@ -5948,7 +5999,23 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	throw new Exception(e);
 	    }   		
 	}
-	
+
+	public String Sync_tabla_lugarEntregaV2(Activity activity, String codven) throws Exception {
+
+		String urlReq=RetrofilClientCantol.UrlPeticiones.listaLugarEntregaCliente(codven);
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaLugarEntrega(urlReq));
+		Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultClienteLugarEntrega>>() {}.getType();
+			final ArrayList<ResultClienteLugarEntrega> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncLugarEntregaClientesMasivo(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
+
 	public void Sync_tabla_obra(String codigoVendedor, String url, String catalog, String user, String contrasena ) throws Exception{	
 		String SOAP_ACTION= "http://tempuri.org/obtenerObras";
 		String METHOD_NAME="obtenerObras";
@@ -6008,7 +6075,24 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	throw new Exception(e);
 	    }		
 	}
-	
+
+	public String Sync_tabla_transporteV2(Activity activity, String codven) throws Exception {
+
+		String urlReq= RetrofilClientCantol.UrlPeticiones.getListaTransportes();
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
+		Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultTransporte>>() {}.getType();
+			final ArrayList<ResultTransporte> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncTransportes(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
+
+
 	public void Sync_tabla_almacenes(String url, String catalog, String user, String contrasena) throws Exception{
 		String SOAP_ACTION= "http://tempuri.org/obtener_lista_almacenes";
 		String METHOD_NAME="obtener_lista_almacenes";
@@ -6473,6 +6557,22 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		    }
 
 		}
+
+	public String Sync_tabla_cta_ingresosV2(Activity activity, String codven) throws Exception {
+
+		String urlReq= RetrofilClientCantol.UrlPeticiones.getListaEstadoCuentasXCobrar(codven);
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaCuentaXcobrar(urlReq));
+		Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = call.execute();
+		if (response.isSuccessful()) {
+			final Type malla = new TypeToken<ArrayList<ResultCuentasXcobrar>>() {}.getType();
+			final ArrayList<ResultCuentasXcobrar> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			return dbclass.guardarSyncCuentasxCobrarMasivo(lista);
+		}
+		return "El servidor ha devuelto un mensaje de error";
+	}
 	 
 	 public void Sync_tabla_RegistroBonificacionesPendientes(String codven, String url, String catalog, String user, String contrasena) throws Exception{
 			

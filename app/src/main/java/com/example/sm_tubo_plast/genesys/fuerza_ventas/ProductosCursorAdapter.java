@@ -94,7 +94,7 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             }
         });
 
-        sincronizarProducto();
+        new async_MostrarProductos().execute();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -486,48 +486,6 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             return convertView;
         }
 
-    }
-
-    private void sincronizarProducto(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando productos...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.catalogo());
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getProducto(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            ProductosCursorAdapter.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultProducto>>() {}.getType();
-                final ArrayList<ResultProducto> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant producto "+lista.size());
-                String msgError= database.guardarProductoSyn(lista);
-                if(msgError!=null){
-                    GlobalFunctions.showCustomToast(
-                            ProductosCursorAdapter.this,
-                            msgError,
-                            GlobalFunctions.TOAST_ERROR);
-                }
-                new async_MostrarProductos().execute();
-            }
-        });
     }
 
 }

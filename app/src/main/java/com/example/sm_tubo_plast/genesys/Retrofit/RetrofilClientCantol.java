@@ -24,7 +24,7 @@ public class RetrofilClientCantol {
     public static final String BASE_URL_CANTOL = "http://181.224.227.52:8088/";
 
     public static class UrlPeticiones{
-        public static String catalogoProducto=BASE_URL_CANTOL+"ComercialCantol/productos/catalogo/";
+        public static String catalogoProducto=BASE_URL_CANTOL+"ComercialCantol/productos/catalogo";
         public static String listaCliente(String codigVendedor){
             return BASE_URL_CANTOL+"ComercialCantol/vendedor/comercial_clientes/"+codigVendedor;
         }
@@ -55,6 +55,10 @@ public class RetrofilClientCantol {
         }
         public static String getListaPromociones(){
             return BASE_URL_CANTOL+"ComercialCantol/promociones/vigente";
+        }
+
+        public static String getCondicionVenta(){
+            return BASE_URL_CANTOL+"ComercialCantol/general/condiciones-venta";
         }
     }
 

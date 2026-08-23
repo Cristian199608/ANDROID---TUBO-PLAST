@@ -131,7 +131,7 @@ public class CobranzaActivity2 extends AppCompatActivity {
 
         soap_manager = new DBSync_soap_manager(getApplicationContext());
 
-        sincronizarListaCuentaXcobrar();
+        new cargarCobranzas().execute("");
 
         ActionItem addItem 		= new ActionItem(ID_AMORTIZAR, "Amortizar", (R.drawable.pagar));
         ActionItem acceptItem 	= new ActionItem(ID_DETALLE, "Ver Detalle", (R.drawable.detalle2));
@@ -558,49 +558,6 @@ public class CobranzaActivity2 extends AppCompatActivity {
             new cargarCobranzas().execute("");
         }
 
-    }
-
-    private void sincronizarListaCuentaXcobrar(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando Cuentas por cobrar...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaEstadoCuentasXCobrar(codven);
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.listaCuentaXcobrar(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            CobranzaActivity2.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultCuentasXcobrar>>() {}.getType();
-                final ArrayList<ResultCuentasXcobrar> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant cliente "+lista.size());
-                String msgError= obj_dbclasses.guardarSyncCuentasxCobrarMasivo(lista);
-                if(msgError!=null){
-                    GlobalFunctions.showCustomToast(
-                            CobranzaActivity2.this,
-                            msgError,
-                            GlobalFunctions.TOAST_ERROR);
-                }
-                new cargarCobranzas().execute("");
-            }
-        });
     }
 
 }

@@ -18,7 +18,8 @@ data class ResultProducto(
     val precio_base_sin_igv: String,
     val foto_url: String,
     val ficha_tecnica_pdf_url: String,
-    val informacion_logistica: InformacionLogistica
+    val informacion_logistica: InformacionLogistica,
+    val stock: StockData
 )
 
 data class InformacionLogistica(
@@ -26,4 +27,11 @@ data class InformacionLogistica(
     val Cantidad_Pallet: String,
     val volumen: String,
     val peso_unitario: String
+)
+
+data class StockData(
+    val disponible: Int,
+    val stock: Int,
+    val transito: Int,
+    val comprometido: Int,
 )

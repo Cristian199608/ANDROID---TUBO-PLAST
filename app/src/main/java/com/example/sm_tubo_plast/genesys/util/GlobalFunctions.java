@@ -292,21 +292,24 @@ public class GlobalFunctions {
 	
 	
 	public static String obtenerNombreWEB(String entrada){
-		StringTokenizer st = new StringTokenizer(entrada, "/");
-       String nombre="";
-    //   Log.w("ObtenerNombre",""+ st.toString() + "--" + st.countTokens() + "--"+ st.nextElement());
-		   while(st.hasMoreTokens()) {
-               
-		   nombre = st.nextToken();
+		try {
+			StringTokenizer st = new StringTokenizer(entrada, "/");
+			String nombre="";
+			//   Log.w("ObtenerNombre",""+ st.toString() + "--" + st.countTokens() + "--"+ st.nextElement());
+			while(st.hasMoreTokens()) {
 
-		   }
-		Log.w("ObtenerNombreWEB",""+ entrada.substring(1,(entrada.length()-nombre.length())));
-		Log.w("aaaaaa",""+ entrada.substring(0,(entrada.length()-nombre.length())-1) );
-	//	GlobalVar.NombreWEB = entrada.substring(1,(entrada.length()-nombre.length()));
-	//	Log.w("ObtenerNombre", GlobalVar.NombreWEB);
-		return entrada.substring(0,(entrada.length()-nombre.length())-1) ;
-		
-		
+				nombre = st.nextToken();
+
+			}
+			Log.w("ObtenerNombreWEB",""+ entrada.substring(1,(entrada.length()-nombre.length())));
+			Log.w("aaaaaa",""+ entrada.substring(0,(entrada.length()-nombre.length())-1) );
+			//	GlobalVar.NombreWEB = entrada.substring(1,(entrada.length()-nombre.length()));
+			//	Log.w("ObtenerNombre", GlobalVar.NombreWEB);
+			return entrada.substring(0,(entrada.length()-nombre.length())-1) ;
+		}catch (Exception e){
+			e.printStackTrace();
+			return "";
+		}
 	}
 	
 	public static BigDecimal redondear(double val){

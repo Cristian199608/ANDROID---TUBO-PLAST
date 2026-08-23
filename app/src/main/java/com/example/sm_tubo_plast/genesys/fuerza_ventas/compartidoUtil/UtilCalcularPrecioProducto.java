@@ -3,6 +3,7 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas.compartidoUtil;
 import android.widget.Toast;
 
 import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroCategoriaDescuento;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPolitica_Precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
@@ -22,9 +23,9 @@ public class UtilCalcularPrecioProducto {
         this.codigoMoneda = codigoMoneda;
     }
 public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double pcjDesc2,
-                                       MaestroCanalCategoriaDescuento maestroCanalCategoriaDescuento) {
+                                       MaestroCategoriaDescuento maestroCategoriaDescuento) {
         if(codprod.startsWith("COMBO")
-        || maestroCanalCategoriaDescuento==null) {
+        || maestroCategoriaDescuento==null) {
             return new ResultPrecios(
                     "0.000",
                     "0.000",
@@ -48,7 +49,7 @@ public ResultPrecios  consultarPrecios(String codprod, double pcjDesc1, double p
             valor_cambio  = 1;//Double.parseDouble(tipo_de_cambio);
         }
 
-        DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio, maestroCanalCategoriaDescuento);
+        DBPolitica_Precio2 politica_precio2=obj_dbclasses.GetPoliticaPrecio2ByCliente(codcli, codprod, valor_cambio);
         if(politica_precio2!=null){
             double porcentajeDescuentoManual=pcjDesc1;
             double porcentajeDescuentoExtra= pcjDesc2;

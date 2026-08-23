@@ -418,6 +418,8 @@ public class DBtables {
 		public static final String PK_CODPRO = "codpro";
 		public static final String STOCK = "stock";
 		public static final String XTEMP = "xtemp";
+		public static final String transito = "transito";
+		public static final String disponible = "disponible";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_KARDEX + " VARCHAR(8)," + PK_CODALM + " CHAR(2),"
@@ -563,6 +565,7 @@ public class DBtables {
 		public static final String NUMERO_DEVOLUCION = "numeroDevolucion";
 		public static final String sec_promo_prioridad = "sec_promo_prioridad";
 		public static final String item_promo_prioridad = "item_promo_prioridad";
+		public static final String volumenTotal = "volumenTotal";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" 
@@ -683,6 +686,8 @@ public class DBtables {
 		public static final String cantidad_master = "cantidad_master";
 		public static final String cantidad_pallet = "cantidad_pallet";
 		public static final String volumen = "volumen";
+		public static final String marca = "marca";
+		public static final String time_sync = "time_sync";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO

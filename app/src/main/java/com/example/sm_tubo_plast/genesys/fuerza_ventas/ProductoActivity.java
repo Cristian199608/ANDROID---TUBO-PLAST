@@ -47,11 +47,12 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.Opcion;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
-import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultStockArticulo;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
@@ -59,6 +60,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProduc
 import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.adapters.CH_Adapter_bonificacionesPendientes;
 import com.example.sm_tubo_plast.genesys.adapters.ModelBonificacionPendiente;
+import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
@@ -75,9 +77,13 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.inject.Singleton;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -106,7 +112,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     private int clienteTienePercepcion;
     private int clienteTienePercepcionEspecial;
     private double clienteValorPercepcion;
-    private String canalYSubCanalVenta;
+    private String canalYCategoriaVenta;
 
     boolean PROMOCION = true;
     DBclasses obj_dbclasses;
@@ -122,7 +128,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     LinearLayout lnPrecUnt, lnPolPrec;
     TextView tv_monedaPrecio;
 
-    String codcli = "", codven = "", codprod = "", origen = "", oc_numero = "";
+    String codcli = "", codven = "", codprod = "", marcaProd="", origen = "", oc_numero = "";
     String codigoMoneda,codigoCondicionVenta,codigoLetraCondicionVenta,fechaEntrega,descuento,codigoSucursal,codigoLugarEntrega,codigoTipoDespacho,flagDescuento,codigoAlmacenDespacho,estado;
     ItemProducto[] productos;
 
@@ -177,7 +183,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     String SEC_POLITICA = "-1";
     String afecto_igv="0";
     UtilCalcularPrecioProducto utilCaclularPrecioProductoUnit;
-    MaestroCanalCategoriaDescuento maestroCanalCategoriaDescuento=null;
+    MaestroCategoriaDescuento maestroCategoriaDescuento =null;
 
 
 
@@ -206,12 +212,12 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         clienteTienePercepcion			= bundle.getInt("clienteTienePercepcion");
         clienteTienePercepcionEspecial	= bundle.getInt("clienteTienePercepcionEspecial");
-        canalYSubCanalVenta	= bundle.getString("canalYSubCanalVenta");
+        canalYCategoriaVenta = bundle.getString("canalYCategoriaVenta");
 
-        for (MaestroCanalCategoriaDescuento canalCategoriaDescuento : MaestroCanalCategoriaDescuento.getDataListDscto()) {
-            if((canalCategoriaDescuento.getCanal()+"||"+canalCategoriaDescuento.getSub_canal())
-                    .equals(canalYSubCanalVenta)){
-                maestroCanalCategoriaDescuento= canalCategoriaDescuento;
+        for (MaestroCategoriaDescuento canalCategoriaDescuento : MaestroCategoriaDescuento.getDataListDscto()) {
+            if((canalCategoriaDescuento.getKeyUnico())
+                    .equals(canalYCategoriaVenta)){
+                maestroCategoriaDescuento = canalCategoriaDescuento;
                 break;
             }
         }
@@ -222,7 +228,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         Log.d("fechaEntrega",bundle.getString("fechaEntrega"));
         // variables importante para calcular percepcion
 
-        if(REQUEST_ACCION_PRODUCTO_VALUE==null || REQUEST_DATA_PRODUCTO_VALUE==null || maestroCanalCategoriaDescuento==null){
+        if(REQUEST_ACCION_PRODUCTO_VALUE==null || REQUEST_DATA_PRODUCTO_VALUE==null || maestroCategoriaDescuento ==null){
             Toast.makeText(this, "Uno o mas parametros no recibidos", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -285,7 +291,6 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         check_precio.setChecked(true);
         check_precio.setClickable(false);
         swAgregarComoNuevoProducto.setVisibility(View.GONE);
-        if(VARIABLES.isProduccion_prueba) edtBusqueda.setText("ME0122405010");
         if (codigoMoneda.equals(PedidosActivity.MONEDA_SOLES_IN)) {
             tv_monedaPrecio.setText("S/.");
         }else{
@@ -417,6 +422,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             @Override
             public void onClick(View v) {
                 edtBusqueda.setText("");
+                if(VARIABLES.isProduccion_prueba) edtBusqueda.setText("ME0122405010");
                 edtCantidad.setText("");
                 edtPrecioUnt.setText("");
                 edt_descuento.setText("");
@@ -429,6 +435,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 totalStockDisponible = 0.0;
 
                 codprod = "";
+                marcaProd = "";
                 swt_afecto.setChecked(false);
                 btn_consultarProducto.setEnabled(true);
 
@@ -507,6 +514,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         tv_fechaUltimaVenta.setText("");
                         tv_precioUltimaVenta.setText("");
                         codprod = "";
+                        marcaProd="";
                         totalStockConfirmar = 0.0;
                         totalStockDisponible = 0.0;
 
@@ -530,6 +538,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         tv_fechaUltimaVenta.setText("");
                         tv_precioUltimaVenta.setText("");
                         codprod = "";
+                        marcaProd="";
                         totalStockConfirmar = 0.0;
                         totalStockDisponible = 0.0;
 
@@ -553,6 +562,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         tv_fechaUltimaVenta.setText("");
                         tv_precioUltimaVenta.setText("");
                         codprod = "";
+                        marcaProd = "";
                         totalStockConfirmar = 0.0;
                         totalStockDisponible = 0.0;
 
@@ -576,6 +586,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                         tv_fechaUltimaVenta.setText("");
                         tv_precioUltimaVenta.setText("");
                         codprod = "";
+                        marcaProd = "";
                         totalStockConfirmar = 0.0;
                         totalStockDisponible = 0.0;
 
@@ -901,7 +912,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }
         double porcentajeDescuentoManual=edt_descuento.getText().toString().trim().length()>0?Double.parseDouble(edt_descuento.getText().toString()):0;
         double porcentajeDescuentoExtra= edtDescuentoExtra.getText().toString().trim().length()>0?Double.parseDouble(edtDescuentoExtra.getText().toString()):0;
-        UtilCalcularPrecioProducto.ResultPrecios resulPrecio=utilCaclularPrecioProductoUnit.consultarPrecios(codprod, porcentajeDescuentoManual, porcentajeDescuentoExtra, maestroCanalCategoriaDescuento);
+        UtilCalcularPrecioProducto.ResultPrecios resulPrecio=utilCaclularPrecioProductoUnit.consultarPrecios(codprod, porcentajeDescuentoManual, porcentajeDescuentoExtra, maestroCategoriaDescuento);
         if(resulPrecio.errorMensaje!=null){
             Toast.makeText(ProductoActivity.this, resulPrecio.errorMensaje, Toast.LENGTH_SHORT).show();
             return;
@@ -1008,12 +1019,15 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         tv_precioSinIGV.setError(null);
         tv_precioIncIGV.setError(null);
     }
-    private void respuestConsultarProducto(ArrayList<ResultStockArticulo> listaStcokx)  {
+    private void respuestConsultarProducto(DBMta_Kardex listaStcokx)  {
 
         if (true) {
             //final JSONArray listMap2 = new JSONArray(respuestaStock.toString());
             if (true) {
-                final Adapter_consultaStock adapter = new Adapter_consultaStock(ProductoActivity.this, listaStcokx);
+                final Adapter_consultaStock adapter = new Adapter_consultaStock(
+                        ProductoActivity.this,
+                        new ArrayList<>(Collections.singletonList(listaStcokx))
+                );
                 lv_consultaStock.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
                 totalStockConfirmar = 0.0;
@@ -1079,13 +1093,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         }
     }
     private void asyncBuscarProducto(){
-        new async_busqueda().execute();
+        sincronizarProductoConPrecioYStock();
     }
 
-    public void _buscarDatosProductoDB() {
+    public void _buscarDatosProductoDB(long time_sincronizacion) {
         if (flag == 0 || flag == 1) {
             String text="%"+edtBusqueda.getText().toString().replace(" ", "%")+"%";
-            if (flag == 0)productos = obj_dbclasses.getProductosXcliente(codcli,text);
+            if (flag == 0)productos = obj_dbclasses.getProductosXcliente(codcli,text, time_sincronizacion);
             else productos = obj_dbclasses.getProductosXclienteYdescrip_comercial(codcli,text);
         }else if (flag == 3) {
             productos = obj_dbclasses.getProductosXProveedor(codcli,edtBusqueda.getText().toString());
@@ -1132,6 +1146,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         precUnd_act = Math.round(productos[position].getPrecioUnidad() * 100) / 100.0;
         codigo_act 	= productos[position].getCodprod();
         codprod 	= productos[position].getCodprod();
+        marcaProd 	= obj_dbclasses.getProductosxCodpro(codprod).getMarca();
         stock 		= productos[position].getStock();
         sec_politica= productos[position].getSec_politica();
         estado 		= productos[position].getEstado();//Discontinuo
@@ -1168,9 +1183,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
 
         edtCantidad.requestFocus();
-        //ConsultarProducto();//Consulta el stcok en linea
-        sincronizarProductoPrecio();
-        sincronizarProductoStock();
+        ConsultarProductoPrecios();
+        DBMta_Kardex dbMtaKardex = obj_dbclasses.getStockInfoProducto(codprod);
+        respuestConsultarProducto(dbMtaKardex);
     }
 
     private void setDataProductoSiIsModificar(){
@@ -1452,6 +1467,12 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
     class async_busqueda extends AsyncTask<Void, String, String> {
 
+        long time_sincronizacion;
+
+        public async_busqueda(long time_sincronizacion) {
+            this.time_sincronizacion = time_sincronizacion;
+        }
+
         protected void onPreExecute() {
             pDialog = new ProgressDialog(ProductoActivity.this);
             pDialog.setMessage("Buscando....");
@@ -1583,9 +1604,9 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     public class Adapter_consultaStock extends BaseAdapter {
 
         protected Activity activity;
-        protected ArrayList<ResultStockArticulo> lista;
+        protected ArrayList<DBMta_Kardex> lista;
 
-        public Adapter_consultaStock(Activity activity, ArrayList<ResultStockArticulo> lista){
+        public Adapter_consultaStock(Activity activity, ArrayList<DBMta_Kardex> lista){
             this.activity = activity;
             this.lista = lista;
         }
@@ -1628,13 +1649,14 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
             }
 
 
-            ResultStockArticulo dataStock = lista.get(position);
-            String nombre=  dataStock.getNombre_almacen();//database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
+            DBMta_Kardex dataStock = lista.get(position);
+            String nombre=  dataStock.getCodalm();//database.getAlmacenDescripcionResumen((String) jsonData.get("codigoAlmacen"));
             holder.tv_almacen.setText(nombre);
-            holder.tv_stock_actual.setText(dataStock.getEn_stock());
-            holder.tv_stock_separado.setText(dataStock.getComprometido());
-            holder.tv_stock_xConfirmar.setText(dataStock.getEn_pedido());
-            holder.tv_stockDisponible.setText(dataStock.getDisponible());
+            holder.tv_almacen.setVisibility(View.GONE);
+            holder.tv_stock_actual.setText(VARIABLES.formater_integer.format(dataStock.getStock()));
+            holder.tv_stock_separado.setText(VARIABLES.formater_integer.format(dataStock.getXtemp()));
+            holder.tv_stock_xConfirmar.setText(VARIABLES.formater_integer.format(dataStock.getTransito()));
+            holder.tv_stockDisponible.setText(VARIABLES.formater_integer.format(dataStock.getDisponible()));
 
             try {
                 totalStockConfirmar += Double.parseDouble(holder.tv_stock_xConfirmar.getText().toString());
@@ -1890,17 +1912,19 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     }
 
 
-    private void sincronizarProductoPrecio(){
+    private void sincronizarProductoConPrecioYStock(){
         ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando precios...");
+        pDialog.setMessage("Consultando productos en línea...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
 
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPreciosProducto(codprod);
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.getDataByUrl(urlReq));
+        String busquedaOnline = edtBusqueda.getText().toString().replace(" ", "%");
+        String urlRe=RetrofilClientCantol.UrlPeticiones.catalogoProducto;
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.catalogo(urlRe, codven, busquedaOnline));
         Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
                 .create(GetDataCantol.class).getCliente(body);
+
         WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
         ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
             @Override
@@ -1918,62 +1942,66 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                     return;
                 }
                 Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultPrecioArticulo>>() {}.getType();
-                final ArrayList<ResultPrecioArticulo> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant precios "+lista.size());
-                for (ResultPrecioArticulo resultStockArticulo : lista) {
-                    if (resultStockArticulo.getListaPreciosNombre().equals(maestroCanalCategoriaDescuento.getNombreLitaPrecio())) {
-                        obj_dbclasses.guardarSyncPreciosProducto(resultStockArticulo);
-                        break;
+                final Type malla = new TypeToken<ArrayList<ResultProducto>>() {}.getType();
+                final ArrayList<ResultProducto> lista = gson.fromJson(gson.toJson(data), malla);
+                Log.i(TAG, "cant producto "+lista.size());
+                long time_sincronizacion=VARIABLES.GetFechaActua_long();
+                String errorMensaje = obj_dbclasses.guardarProductoSyn(lista, time_sincronizacion);
+                if(errorMensaje!=null){
+                    GlobalFunctions.showCustomToast(
+                            ProductoActivity.this,
+                            mensaje,
+                            GlobalFunctions.TOAST_ERROR);
+                }
+                edt_descuento.setText(""+obtenerPorcentajeDsctoByCondicion());
+                edt_descuento.setEnabled(false);
+                new async_busqueda(time_sincronizacion).execute();
+            }
+        });
+    }
+
+    private double obtenerPorcentajeDsctoByCondicion(){
+        double addAdcional=0.0;
+        if (maestroCategoriaDescuento.getAdicional()!=null) {
+            Opcion opcion =maestroCategoriaDescuento.getAdicional();
+            boolean isInNotIcluded=false;
+            for (String s : opcion.getCondicion().getMarca_not()) {
+                if (s.toLowerCase().contains(marcaProd.toLowerCase())) {
+                    isInNotIcluded=true;
+                    break;
+                }
+            }
+            if(!isInNotIcluded){
+                for (String s : opcion.getCondicion().getMarca_inc()) {
+                    if (s.toLowerCase().contains(marcaProd.toLowerCase())
+                            || s.equalsIgnoreCase("todos")) {
+                        addAdcional = opcion.getCondicion().getDsct_pct();
                     }
                 }
-                edt_descuento.setText(""+maestroCanalCategoriaDescuento.getDscto_pct());
-                edt_descuento.setEnabled(false);
-                ConsultarProductoPrecios();
             }
-        });
-    }
-    private void sincronizarProductoStock(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando stock...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
+        }
+        for (Opcion opcion : maestroCategoriaDescuento.getOpciones()) {
+            boolean isInNotIcluded=false;
+            for (String s : opcion.getCondicion().getMarca_not()) {
+                if (s.toLowerCase().contains(marcaProd.toLowerCase())) {
+                    isInNotIcluded=true;
+                    break;
+                }
+            }
+            if(isInNotIcluded) continue;
 
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaStockByProducto(codprod);
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.getListaStock(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            ProductoActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
+            for (String s : opcion.getCondicion().getMarca_inc()) {
+                if (s.toLowerCase().contains(marcaProd.toLowerCase())
+                || s.equalsIgnoreCase("todos")) {
+
+                    return opcion.getCondicion().getDsct_pct()+addAdcional;
                 }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultStockArticulo>>() {}.getType();
-                final ArrayList<ResultStockArticulo> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant stock "+lista.size());
-                if(lista.size()==0){
-                    GlobalFunctions.showCustomToast(
-                            ProductoActivity.this,
-                            "No hay lista de stock",
-                            GlobalFunctions.TOAST_WARNING);
-                }
-                respuestConsultarProducto(lista);
             }
-        });
+
+        }
+        return 0.0;
     }
+
 
 }
 

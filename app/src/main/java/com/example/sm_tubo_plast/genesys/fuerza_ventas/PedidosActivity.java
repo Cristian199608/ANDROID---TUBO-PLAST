@@ -54,7 +54,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
-import com.example.sm_tubo_plast.constans.pedidos.MaestroCanalCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroCategoriaDescuento;
+import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.Opcion;
 import com.example.sm_tubo_plast.genesys.BEAN.Almacen;
 import com.example.sm_tubo_plast.genesys.BEAN.ClienteCondicionVenta;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
@@ -79,8 +80,6 @@ import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistrosGeneralesMovil;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCondicionVenta;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
-import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPromocionDetalle;
-import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultTransporte;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
@@ -110,11 +109,13 @@ import com.example.sm_tubo_plast.genesys.hardware.TaskCheckUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.Dialog.AlertViewSimpleConEdittext;
+import com.example.sm_tubo_plast.genesys.util.Dialog.SingleSelectOptionDialog;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SharePrefencia.PreferenciaConfiguracion;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
+import com.example.sm_tubo_plast.genesys.util.spinner.ArrayAdapterSpinnerCustom;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.LocationRequest;
 import com.google.gson.Gson;
@@ -276,17 +277,18 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     /* Cabecera Pedido -------------- */
     private AutoCompleteTextView autocomplete;
     private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_disponibleCredito, edt_direccionFiscal, edt_fechaPedido,edt_observacion1NombreContacto, edt_observacion1Telefono,
-            edt_observacion2NombreTrasporte,edt_observacion2DireccionTransporte, edt_observacion2Proyecto, edt_observacion3, edt_observacion4,edt_docAdicional;
+            edt_observacion2NombreTrasporte,edt_observacion2DireccionTransporte, edt_observacion2Proyecto, edt_observacion3, edt_observacion4,edt_docAdicional,
+            edt_transportista;
     private LinearLayout linear_obra;
     private RadioButton rButton_boleta,rButton_factura;
     private RadioButton rButtonSoles,rButtonDolares;
 
     private RadioButton rButtonDescuentoSi,rButtonDescuentoNo;
     private RadioGroup rGroup_tipoDocumento,  rGroup_moneda,rGroup_aplicaDescuento;
-    private Spinner spn_prioridad, spn_sucursal, spn_puntoEntrega,spn_tipoDespacho, spn_obra, spn_transportista, spn_almacenDespacho
+    private Spinner spn_prioridad, spn_sucursal, spn_puntoEntrega,spn_tipoDespacho, spn_obra, spn_almacenDespacho
             ,spn_condicionVenta, spn_subCanalCategoria,spn_turno, spn_numeroletra;
     private Spinner spn_despacho;
-    private TextView tv_moneda,tvTipoCambio, tv_cantidadItems;
+    private TextView tv_moneda,tvTipoCambio, tv_cantidadItems, tvMensajeCambioCategoria;
     private TextView tv_subTotal,tv_total,tv_totalCompleto,tv_IGV,tv_percepcion;
     private TextView tv_descuento,tv_descuentoPorcentaje,tvPrecioPorKilo;
     //Cotizacion
@@ -443,11 +445,12 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         spn_obra 			= (Spinner) findViewById(R.id.spn_obra);
         chkBox_embalaje 	= (CheckBox) findViewById(R.id.chkBox_embalaje);
         chkBox_pedidoAnticipo = (CheckBox) findViewById(R.id.chkBox_pedidoAnticipo);
-        spn_transportista 	= (Spinner) findViewById(R.id.spn_transportista);
+        edt_transportista = (EditText) findViewById(R.id.edt_transportista);
         spn_almacenDespacho = (Spinner) findViewById(R.id.spn_almacenDespacho);
         rGroup_moneda 		= (RadioGroup) findViewById(R.id.rGroup_moneda);
         spn_condicionVenta 	= (Spinner) findViewById(R.id.spn_condicionVenta);
         spn_subCanalCategoria 	= (Spinner) findViewById(R.id.spn_subCanalCategoria);
+        tvMensajeCambioCategoria 	= (TextView) findViewById(R.id.tvMensajeCambioCategoria);
         spn_numeroletra		= (Spinner) findViewById(R.id.spn_numeroletra);
         linearLayoutNumeroLetras	= (LinearLayout)findViewById(R.id.linearLayoutNumeroLetras);
         linearLayoutObservacion3	= (LinearLayout)findViewById(R.id.linearLayoutObservacion3);
@@ -550,6 +553,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                                 fechaEntrega = pickerDay+"/"+pickerMonth+"/"+year;
                             }
                         }, year, month, day+1);
+                dpd.getDatePicker().setMinDate(VARIABLES.GetFechaActua_long());
                 dpd.show();
             }
         });
@@ -648,7 +652,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                                                                 nrletra.add(listaNumeroLetra.get(i).getDescripcionNroLetras());
                                                             }
                                                             ArrayAdapter<CharSequence> spin_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,nrletra);
-                                                            spin_adapter.setDropDownViewResource(R.layout.spinner_item);
+                                                            spin_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                                                             spn_numeroletra.setAdapter(spin_adapter);
                                                         }else
                                                             listaNumeroLetra=null;
@@ -717,6 +721,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         spn_subCanalCategoria.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tvMensajeCambioCategoria.setVisibility(position>maestroCanalCategoriaDescuentoIndex?View.VISIBLE:View.GONE);
                 validarSelccionCondicionVentaCanal();
             }
 
@@ -786,7 +791,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                                     lugaresEntrega.add(listaLugarEntrega.get(i).getDireccionEntrega());
                                 }
                                 ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,lugaresEntrega);
-                                spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+                                spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                                 spn_puntoEntrega.setAdapter(spinner_adapter);
                                 //Log.w("PedidosActivity", "adapter punto entrega setted");
                             }else{
@@ -1175,17 +1180,19 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         });
         Log.v("Pedidos", "-------------------------");
 
+        mostrarSpinnerTransporte();
         sincronizarCondicionVentaCliente();
         //finish metodo oncreate
     }
 
     private boolean validarSelccionCondicionVentaCanal() {
+        int positicionSpiner=spn_subCanalCategoria.getSelectedItemPosition()-1;// menos 1, el primero es vacio o emtpy
         if(
                 maestroCanalCategoriaDescuentoIndex<0
-                        || spn_subCanalCategoria.getSelectedItemPosition()>maestroCanalCategoriaDescuentoIndex+1
+                        || positicionSpiner>maestroCanalCategoriaDescuentoIndex+1
         ){
             //spn_condicionVenta.setSelection(maestroCanalCategoriaDescuentoIndex);
-            GlobalFunctions.showCustomToast(PedidosActivity.this, "Canal de venta no permitido", GlobalFunctions.TOAST_ERROR);
+            GlobalFunctions.showCustomToast(PedidosActivity.this, "Categoria de venta no permitido", GlobalFunctions.TOAST_ERROR);
             return false;
         }
         return true;
@@ -1199,7 +1206,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     lista.add("Envio por agencia");
 
     ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,lista);
-    spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+    spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
     spn_despacho.setAdapter(spinner_adapter);
 
     for (int i=0; i<lista.size();i++){
@@ -1222,7 +1229,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         spn_obra.setEnabled(true);
         chkBox_embalaje.setEnabled(true);
         chkBox_pedidoAnticipo.setEnabled(true);
-        spn_transportista.setEnabled(true);
+        edt_transportista.setEnabled(true);
         edt_observacion1NombreContacto.setEnabled(true);
         edt_observacion1Telefono.setEnabled(true);
         edt_observacion2NombreTrasporte.setEnabled(true);
@@ -1261,7 +1268,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         chkBox_embalaje.setEnabled(flag);
         chkBox_pedidoAnticipo.setEnabled(flag);
-        spn_transportista.setEnabled(flag);
+        edt_transportista.setEnabled(flag);
         spn_almacenDespacho.setEnabled(flag);
         spn_numeroletra.setEnabled(flag);
         rGroup_aplicaDescuento.setEnabled(flag);
@@ -1293,7 +1300,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             prioridades.add(listaPrioridades.get(i).getValor());
         }
         ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,prioridades);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_prioridad.setAdapter(spinner_adapter);
 
 
@@ -1303,7 +1310,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             tiposDespacho.add(listaTipoDespacho.get(i).getValor());
         }
         spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,tiposDespacho);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_tipoDespacho.setAdapter(spinner_adapter);
 
         //LISTA TURNOO
@@ -1313,7 +1320,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             codTurno.add(listaTurnos.get(i).getTurno());
         }
         spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,codTurno);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_turno.setAdapter(spinner_adapter);
         //FIN
 
@@ -1323,7 +1330,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             almacenes.add(listaAlmacenes.get(i).getDescripcion());
         }
         spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,almacenes);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_almacenDespacho.setAdapter(spinner_adapter);
         for (int i = 0; i < listaAlmacenes.size(); i++) {
             String descripcion = listaAlmacenes.get(i).getDescripcion();
@@ -1368,7 +1375,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 sucursales.add(listaSucursales.get(i).getItem() + " - " + listaSucursales.get(i).getDescripcionCorta());
             }
             ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,sucursales);
-            spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+            spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spn_sucursal.setAdapter(spinner_adapter);
 
             llenarSpinnerDespacho("");
@@ -1383,7 +1390,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                     lugaresEntrega.add(listaLugarEntrega.get(i).getDireccionEntrega());
                 }
                 spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,lugaresEntrega);
-                spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+                spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                 spn_puntoEntrega.setAdapter(spinner_adapter);
 
 				/*for (int i = 0; i < listaLugarEntrega.size(); i++) {
@@ -1406,7 +1413,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 numeroletra.add(listaNumeroLetra.get(i).getDescripcionNroLetras());
             }
             spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(),R.layout.spinner_item,numeroletra);
-            spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+            spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spn_numeroletra.setAdapter(spinner_adapter);
 
 			/*for (int i = 0; i < listaNumeroLetra.size(); i++) {
@@ -1453,36 +1460,66 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             obras.add(listaObras.get(i).getObra());
         }
         ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,obras);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_obra.setAdapter(spinner_adapter);
         //spn_obra.setVisibility(View.GONE);
     }
     private void mostrarSpinnerTransporte(){
         listaTransportes = DAO_cliente.getTransportes(codcli);
-        ArrayList<CharSequence> transportes = new ArrayList<>();
+        ArrayList<SingleSelectOptionDialog.SinglechoiceCustom> sinlgeChoiceTransp = new ArrayList<>();
         for (int i = 0; i < listaTransportes.size(); i++) {
-            transportes.add(listaTransportes.get(i).getDescripcion());
+            sinlgeChoiceTransp.add(new SingleSelectOptionDialog.SinglechoiceCustom(
+                    listaTransportes.get(i).getCodigoTransporte(),
+                    listaTransportes.get(i).getDescripcion(),
+                    listaTransportes.get(i)
+            ));
         }
-        ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,transportes);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
-        spn_transportista.setAdapter(spinner_adapter);
+        SingleSelectOptionDialog singleSelectOptionDialog=new SingleSelectOptionDialog(this, "Transporte", sinlgeChoiceTransp);
+        edt_transportista.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                singleSelectOptionDialog.show(new SingleSelectOptionDialog.MyListener() {
+                    @Override
+                    public void Result(SingleSelectOptionDialog.SinglechoiceCustom listaSelected) {
+                        edt_transportista.setText(listaSelected.opcion);
+                    }
+
+                    @Override
+                    public void dismis() {
+
+                    }
+                });
+            }
+        });
+
     }
     private void mostrarCondicionYCanalVentaSpinner(){
         ArrayList<CharSequence> formasPago = new ArrayList<>();
         ArrayList<CharSequence> canalesVentaDscto = new ArrayList<>();
+
         maestroCanalCategoriaDescuentoIndex =-1;
-        ArrayList<MaestroCanalCategoriaDescuento> listaMestroDsctoCanal = MaestroCanalCategoriaDescuento.getDataListDscto();
+        ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal= MaestroCategoriaDescuento.getDataListDscto();
+        //ArrayList<MaestroCanalCategoriaDescuento> listaMestroDsctoCanal = MaestroCanalCategoriaDescuento.getDataListDscto();
         for (int i = 0; i < listaFormaPago.size(); i++) {
             formasPago.add(listaFormaPago.get(i).getNombre_cond_venta());
         }
         for (int i = 0; i < listaMestroDsctoCanal.size(); i++) {
-            MaestroCanalCategoriaDescuento maestroItem= listaMestroDsctoCanal.get(i);
+            MaestroCategoriaDescuento maestroItem= listaMestroDsctoCanal.get(i);
             if (listaFormaPago.size()>0
+                    && maestroCanalCategoriaDescuentoIndex<0
                     && listaFormaPago.get(0).getCanal().contains(maestroItem.getCanal())
-                    && listaFormaPago.get(0).getSub_canal().contains(maestroItem.getSub_canal())) {
+                    && listaFormaPago.get(0).getSub_canal().contains(maestroItem.getCategoria())) {
                 maestroCanalCategoriaDescuentoIndex =i;
             }
-            canalesVentaDscto.add(maestroItem.getCanal()+"-"+maestroItem.getSub_canal()+" Dscto "+maestroItem.getDscto_pct()+" %");
+            StringBuilder txtDscto= new StringBuilder();
+            for (Opcion opcione : maestroItem.getOpciones()) {
+                if(txtDscto.length()>0) txtDscto.append(" Ó ");
+                txtDscto.append("").append(opcione.getCondicion().getDsct_pct()).append(" %");
+            }
+            if (maestroItem.getAdicional()!=null) {
+                txtDscto.append(" | + adicional dscto de ").append(maestroItem.getAdicional().getCondicion().getDsct_pct()).append(" %");
+            }
+            canalesVentaDscto.add(maestroItem.getCanal()+"-"+maestroItem.getCategoria()+" Dscto "+txtDscto.toString());
             if(maestroCanalCategoriaDescuentoIndex>=0 && maestroCanalCategoriaDescuentoIndex+1==i) break;
 
         }
@@ -1495,12 +1532,34 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 spn_condicionVenta.setSelection(i);
             }
         }
+        validarExistenciaCategoriaMatch();
+        spinner_adapter = new ArrayAdapterSpinnerCustom(this,  maestroCanalCategoriaDescuentoIndex)
+                .get(canalesVentaDscto);
 
-        spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,canalesVentaDscto);
-        spinner_adapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_subCanalCategoria.setAdapter(spinner_adapter);
         spn_subCanalCategoria.setSelection(maestroCanalCategoriaDescuentoIndex);
-
+    }
+    public void validarExistenciaCategoriaMatch(){
+        if(maestroCanalCategoriaDescuentoIndex<0){
+            String mensajeErrorCategoria="";
+            if(listaFormaPago.size()==0 || listaFormaPago.get(0).getCanal().length()==0
+                    || listaFormaPago.get(0).getSub_canal().length()==0){
+                mensajeErrorCategoria="No tiene asignado una categoria este cliente";
+            }else {
+                mensajeErrorCategoria="La categoria "+listaFormaPago.get(0).getCanal()+":"+listaFormaPago.get(0).getSub_canal()
+                        +" no se encontró en la data de maestro categorias";
+            }
+            if(mensajeErrorCategoria.length()>0){
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("Atención")
+                        .setIcon(R.drawable.icon_error)
+                        .setMessage(mensajeErrorCategoria)
+                        .setPositiveButton("Entendido", null)
+                        .create().show();
+            }
+        }
     }
     public void cargarDatosDocumento(DBPedido_Cabecera cabecera){
         if (cabecera.getTipoRegistro().equals(TIPO_COTIZACION)) {
@@ -1589,11 +1648,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         String codigoTranspor = item.getCodigoTransportista();
-        for (int i = 0; i < listaTransportes.size(); i++) {
-            if (listaTransportes.get(i).getCodigoTransporte().equals(codigoTranspor)) {
-                spn_transportista.setSelection(i);
-            }
-        }
+        //TODO edt_transportista SET VALOR MODIFICANDO
 
         String codigoAlmacenD = item.getCodigoAlmacen();
         Log.d("ALMACEN RECUPERADOOO", ""+codigoAlmacenD);
@@ -2004,10 +2059,9 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                     intent.putExtra("codigoTipoDespacho", codigoTipoDespacho);
                     intent.putExtra("codigoAlmacenDespacho", codigoAlmacenDespacho);
                     intent.putExtra("flagMsPack", flagMsPackAux);
-                    ArrayList<MaestroCanalCategoriaDescuento> listaMestroDsctoCanal = MaestroCanalCategoriaDescuento.getDataListDscto();
-                    MaestroCanalCategoriaDescuento clienteCondicionVenta = listaMestroDsctoCanal.get(spn_subCanalCategoria.getSelectedItemPosition());
-                    intent.putExtra("canalYSubCanalVenta", clienteCondicionVenta.getCanal()+"||"+clienteCondicionVenta.getSub_canal());
-
+                    ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal = MaestroCategoriaDescuento.getDataListDscto();
+                    MaestroCategoriaDescuento clienteCondicionVenta = listaMestroDsctoCanal.get(spn_subCanalCategoria.getSelectedItemPosition());
+                    intent.putExtra("canalYCategoriaVenta", clienteCondicionVenta.getKeyUnico());
                     Log.w("INTENT","cond venta "+codigoCondicionVenta+" flag dscto "+flagDescuento+" cod suc "+codigoSucursal+" codlugar "+codigoLugarEntrega+ " codAlm "+codigoAlmacenDespacho);
                     startActivityForResult(intent, 1);
 
@@ -2041,7 +2095,7 @@ private void EnvalularMoneda(){
 }
     private void GuardarFormularioCabecera(){
         nroOrdenCompra 			= edt_nroOrdenCompra.getText().toString();
-        codigoPrioridad 		= listaPrioridades.get(spn_prioridad.getSelectedItemPosition()).getCodValor();
+        codigoPrioridad 		= "PRI";//listaPrioridades.get(spn_prioridad.getSelectedItemPosition()).getCodValor();
         codigoSucursal 			= listaSucursales.get(spn_sucursal.getSelectedItemPosition()).getItem();
         if(listaLugarEntrega.size()>0){
             codigoLugarEntrega		= listaLugarEntrega.get(spn_puntoEntrega.getSelectedItemPosition()).getCodigoLugar();
@@ -2054,11 +2108,9 @@ private void EnvalularMoneda(){
         }
         //Toast.makeText(getApplicationContext(), "codigoLugarEntrega es "+codigoLugarEntrega, Toast.LENGTH_SHORT).show();
         codigoUbigeo			= dbclass.getCodigoUbigeo(codcli,codigoSucursal,codigoLugarEntrega);
-        codigoTipoDespacho		= listaTipoDespacho.get(spn_tipoDespacho.getSelectedItemPosition()).getCodValor();
+        codigoTipoDespacho		= "";//listaTipoDespacho.get(spn_tipoDespacho.getSelectedItemPosition()).getCodValor();
 
-        codigoTransportista="";
-        if(spn_transportista.getSelectedItemPosition()>=0)
-        codigoTransportista		= listaTransportes.get(spn_transportista.getSelectedItemPosition()).getCodigoTransporte();
+        codigoTransportista="";//TODO VALIDAR SELECCION TRANSPORTE
 
         codigoAlmacenDespacho	= listaAlmacenes.get(spn_almacenDespacho.getSelectedItemPosition()).getCodigoAlmacen();
         codigoTurno				= listaTurnos.get(spn_turno.getSelectedItemPosition()).getCodTurno();
@@ -6068,7 +6120,7 @@ private void EnvalularMoneda(){
             spn_almacenDespacho.setEnabled(false);
             rButtonDescuentoSi.setEnabled(false);
             rButtonDescuentoNo.setEnabled(false);
-            spn_subCanalCategoria.setEnabled(false);
+            if(VARIABLES.isProduccion_prueba)spn_subCanalCategoria.setEnabled(false);
 
         }else{
             rButtonSoles.setEnabled(true);
@@ -6995,14 +7047,14 @@ private void EnvalularMoneda(){
                 itemEntrada);
 
 
-        ArrayList<DBProductos> listProduc = dbclass.getProductosxCodpro(cipSalida);
+        DBProductos listProduc = dbclass.getProductosxCodpro(cipSalida);
         double porcentajeDesc= detalleOrigen.getPorcentaje_desc();
         double porcentajeDescExtra= detalleOrigen.getPorcentaje_desc_extra();
-        if(listProduc.size()==0){
+        if(listProduc==null){
             GlobalFunctions.showCustomToast(this,  "Producto promoción codigo: "+cipSalida+" no se agregó, pues no está en el catalogo de artículos.", GlobalFunctions.TOAST_ERROR);
             return;
         }
-        if(listProduc.get(0).isFlg_bonificacion()){
+        if(listProduc.isFlg_bonificacion()){
             porcentajeDesc= 0;
             porcentajeDescExtra= 0;
         }
@@ -7744,15 +7796,15 @@ private void EnvalularMoneda(){
 
 
         for (PromocionDetalleProducto promDetCombo : listaBon) {
-            ArrayList<DBProductos> listProduc = dbclass.getProductosxCodpro(promDetCombo.getCodpro_bonificacion());
+            DBProductos listProduc = dbclass.getProductosxCodpro(promDetCombo.getCodpro_bonificacion());
             double porcentajeDesc= itemDetalleGlobal.getPorcentaje_desc();
             double porcentajeDescExtra= itemDetalleGlobal.getPorcentaje_desc_extra();
-            if(listProduc.size()==0){
+            if(listProduc==null){
                 GlobalFunctions.showCustomToast(this,  "Producto promociónXcombo codigo: "+promDetCombo.getCodpro_bonificacion()+" no se agregó, pues no está en el catalogo de artículos.", GlobalFunctions.TOAST_ERROR);
                 listaPedidoDeta2.clear();
                 break;
             }
-            if(listProduc.get(0).isFlg_bonificacion()){
+            if(listProduc.isFlg_bonificacion()){
                 porcentajeDesc= 0;
                 porcentajeDescExtra= 0;
             }
@@ -7963,7 +8015,7 @@ private void EnvalularMoneda(){
                 for (int i = 0; i < lista.size(); i++) {
                     listaFormaPago.add(new ClienteCondicionVenta(
                             lista.get(i).getCanal(),
-                            lista.get(i).getSub_canal(),
+                            "REGIONAL",//lista.get(i).getSub_canal(),
                             ""+lista.get(i).getCondicion_pago().getCodigo_codigo_pago(),
                             lista.get(i).getCondicion_pago().getDescripcion()
                     ));
@@ -8006,87 +8058,9 @@ private void EnvalularMoneda(){
                 Log.i(TAG, "cant ResultClienteObras "+lista.size()+" codcli "+codcli);
                 dbclass.guardarSyncObrasCliente(codcli, lista);
                 mostrarSpinnerObras();
-                sincronizarTransporteCliente();
             }
         });
     }
-    private void sincronizarTransporteCliente(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando transporte...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaTransportes();
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            PedidosActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultTransporte>>() {}.getType();
-                final ArrayList<ResultTransporte> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant ResultClienteTransporte "+lista.size()+" codcli "+codcli);
-                dbclass.guardarSyncTransportes(lista);
-                mostrarSpinnerTransporte();
-                sincronizarPromocionesVigentes();
-
-            }
-        });
-    }
-
-    private void sincronizarPromocionesVigentes(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultado lista promociones...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
-
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPromociones();
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            PedidosActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultPromocionDetalle>>() {}.getType();
-                final ArrayList<ResultPromocionDetalle> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i(TAG, "cant ResultPromocionDetalle "+lista.size()+" codcli "+codcli);
-                dbclass.guardarSyncPromocionDetalle(lista);
-                mostrarSpinnerTransporte();
-
-            }
-        });
-    }
-
 
 }
 

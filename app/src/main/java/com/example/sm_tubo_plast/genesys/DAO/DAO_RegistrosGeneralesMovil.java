@@ -20,8 +20,8 @@ import java.util.ArrayList;
 public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
 	public static final String TAG = "DAO_Configuracion";
 
-    private static final String CONDICION_VENTA = "CV";
-    private static final String FORMA_PAGO = "FP";
+    public static final String CONDICION_VENTA = "CV";
+    public static final String FORMA_PAGO = "FP";
     
     Context context;
 

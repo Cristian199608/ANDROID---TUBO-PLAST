@@ -288,11 +288,15 @@ public class LoginActivity extends AppCompatActivity {
         boolean prueba = VARIABLES.isSetDataPruebas;
         if(!prueba) return;
         dbusuarios.setDataPruebas();
+//        testMapa();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
 //        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
 
         txtUsuario.setText("SAEMOVIL");
         txtPassword.setText("XQC2WYG");
+//
+//        txtUsuario.setText("SAEMOVIL_INST");
+//        txtPassword.setText("5QUOLZU");
 //        sincronizarProductoPrecio();
         //testMapa();
 
@@ -716,8 +720,8 @@ public class LoginActivity extends AppCompatActivity {
     private void testMapa(){
         final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
         i.putExtra("origen", "CLIENTES");
-        i.putExtra("nombreCliente", "AVILA CASAS JANETH MAGALY");
-        i.putExtra("codcli", "C10421390687");
+        i.putExtra("nombreCliente", "COMERCIAL CASA FUERTE S.A.C.");
+        i.putExtra("codcli", "C20610544461");
         i.putExtra("codigoVendedor", "33");
         i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
         startActivity(i);

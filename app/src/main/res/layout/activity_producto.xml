@@ -110,7 +110,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:visibility="visible" >
+                android:visibility="gone"
+                tools:visibility="visible" >
                 <!--
                 <Switch
                     android:id="@+id/swt_afecto"
@@ -261,6 +262,8 @@
                     android:id="@+id/swAgregarComoNuevoProducto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:background="@drawable/edittext_rounded_corners6"
                     android:backgroundTint="@color/cyan_100"
                     android:text="Producto ya registrado, ¿Agregar como nuevo producto? "
@@ -269,6 +272,8 @@
                     />
                 <Switch
                     android:id="@+id/swAgregarComoBonificacion"
+                    android:visibility="gone"
+                    tools:visibility="visible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_rounded_corners6"
