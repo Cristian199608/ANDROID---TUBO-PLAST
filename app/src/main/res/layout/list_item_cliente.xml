@@ -1,213 +1,373 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rl_row"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_selector"
-    android:orientation="horizontal"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-    android:paddingEnd="5dp"
     >
 
-    <!--  ListRow Left sied Thumbnail image -->
-    <LinearLayout android:id="@+id/thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dp">
-        <TextView
-            android:id="@+id/txt_flag_pedido"
-            android:layout_width="10dp"
-            android:layout_height="match_parent"
-            android:background="@color/grey_600"
-            android:text=" " />
-
-        <ImageView
-            android:id="@+id/item_cliente_iv_foto"
-            android:layout_gravity="center"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/icon_cliente_gris"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_cliente"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="3dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="3dp">
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_weight="3"
-                android:layout_height="wrap_content">
+            android:orientation="horizontal">
 
+            <!-- Indicador lateral (Franja de color) -->
+            <View
+                android:id="@+id/txt_flag_pedido"
+                android:layout_width="6dp"
+                android:layout_height="match_parent"
+                android:background="#757575" />
 
+            <!-- Contenido principal con mayor padding -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-                <!-- Title Of Song-->
-                <TextView
-                    android:id="@+id/tv_cliente"
+                <!-- Cabecera: Foto, Nombre, Observación y Flecha -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="Rihanna Love the way lie"
-                    android:textColor="#040404"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:typeface="sans" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <!-- Artist Name -->
-               <LinearLayout
-                   android:id="@+id/layout_container_ruc"
-                   android:layout_below="@id/tv_cliente"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:orientation="horizontal"
-                   >
-                   <TextView
-                       android:id="@+id/tv_ruc"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:text="DATOS RUC"
-                       android:textColor="@color/grey_700"
-                       android:textSize="12sp"
-                       android:textStyle="bold" />
-                   <TextView
-                       android:id="@+id/item_sistema_registrado"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_marginStart="10dp"
-                       android:text="DATOS RUC"
-                       android:textColor="@color/grey_700"
-                       android:textSize="12sp"
-                       android:textStyle="bold" />
-               </LinearLayout>
+                    <ImageView
+                        android:id="@+id/item_cliente_iv_foto"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:src="@drawable/icon_cliente_gris" />
 
-                <!-- Rightend Duration -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
+                        <TextView
+                            android:id="@+id/tv_cliente"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textColor="#0F172A"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            tools:text="BRAIMFER S.A.C." />
 
+                        <LinearLayout
+                            android:id="@+id/layout_container_ruc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_ruc"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#64748B"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                tools:text="RUC: 20606787678" />
+
+                            <TextView
+                                android:id="@+id/item_sistema_registrado"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:textColor="#0284C7"
+                                android:textSize="11sp"
+                                tools:text="• REGISTRADO" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Observación -->
+                    <TextView
+                        android:id="@+id/list_item_cliente_observacion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="end"
+                        android:maxLines="2"
+                        android:textColor="@color/color_red"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        tools:text="OBSERVACION" />
+
+                    <ImageView
+                        android:id="@+id/flecha"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/arrow" />
+                </LinearLayout>
+
+                <!-- Dirección -->
                 <TextView
                     android:id="@+id/list_item_direccion"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/layout_container_ruc"
-                    android:text="direccion cliente" />
-            </RelativeLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:orientation="vertical"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                    android:layout_marginTop="6dp"
+                    android:textColor="#475569"
+                    android:textSize="11sp"
+                    tools:text="CALLAO - PROV. CONST. DEL CALLAO - BELLAVISTA" />
 
+                <!-- Línea divisora -->
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@color/grey_400" />
 
+                <!-- Última Compra -->
+                <LinearLayout
+                    android:id="@+id/layout_container_ultima_compra"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Última Compra: "
+                        android:textColor="#343434"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/list_item_cliente_fecha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:text="2025-07-09" />
+
+                    <TextView
+                        android:id="@+id/list_item_ultima_compra"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0F172A"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="2025-07-09 S/. 171.21" />
+                </LinearLayout>
+
+                <!-- Fila 1: Línea de Crédito y Crédito Disponible -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Línea Crédito: "
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/list_item_linea_credito"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#0F172A"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            tools:text="S/. 00.00" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Crédito Dis: "
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/list_item_disponible_credito"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#16A34A"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            tools:text="S/. 00.00" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Fila 2: Historial Crediticio -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Historial Crediticio: "
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/list_item_estado_credito"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0F172A"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="Normal" />
+                </LinearLayout>
+
+                <!-- Fila 2: deuda x vencer -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Deuda por vencer: "
+                        android:textColor="#64748B"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/list_item_deuda_x_vencer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0F172A"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="0" />
+                </LinearLayout>
+
+                <!-- Fila 3: Deudas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Deuda &lt; 30 d: "
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/list_item_deuda_meno30dias"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#0F172A"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            tools:text="S/ 0.0" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Deuda &gt;= 30 d: "
+                            android:textColor="#64748B"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/list_item_deuda_mayorIgual30dias"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#DC2626"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            tools:text="S/ 0.0" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Motivo de baja / Alerta -->
                 <TextView
-                    android:id="@+id/list_item_cliente_observacion"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/itemMotivoBajaCliente"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/tv_cliente"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="5dp"
-                    android:gravity="right"
-                    android:maxLines="2"
-                    android:text="OBSERVACION"
-                    android:textColor="@color/color_red"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="6dp"
+                    android:textColor="#DC2626"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    tools:text="Motivo de baja de cliente" />
 
-                <!-- Rightend Arrow -->
-                <ImageView
-                    android:id="@+id/flecha"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_width="wrap_content"
+                <!-- Fila final: Visitas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/arrow"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/item_fecha_visitado"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="#D97706"
+                        android:textSize="11sp"
+                        tools:text="Visitado: 2021/02/25" />
+
+                    <TextView
+                        android:id="@+id/item_fecha_programada"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#0D9488"
+                        android:textSize="11sp"
+                        tools:text="Por Visitar: 2021/02/25" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/layout_container_ultima_compra"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/layout_container_ruc"
-                android:layout_toRightOf="@+id/list_item_cliente_fecha"
-                android:text="Ultima Compra:"
-                android:textColor="#343434"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/list_item_ultima_compra"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="5dp"
-                android:layout_below="@+id/layout_container_ruc"
-                android:layout_alignLeft="@+id/layout_container_ruc"
-                android:text="12/12/12"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="normal"/>
+    </androidx.cardview.widget.CardView>
 
-
-        </LinearLayout>
-        <TextView
-            android:id="@+id/itemMotivoBajaCliente"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Motivo de baja de cliente"
-            android:gravity="start|center"
-            android:layout_gravity="center"
-            android:textColor="@color/red_500"
-            android:textSize="13sp"
-            android:textStyle="normal"/>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/item_fecha_visitado"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="wrap_content"
-                android:text="Visitado: 2021/02/25"
-                android:gravity="start|center"
-                android:layout_gravity="center"
-                android:textColor="@color/orange_700"
-                android:textSize="12sp"
-                android:textStyle="normal"/>
-
-            <TextView
-                android:id="@+id/item_fecha_programada"
-                android:layout_width="0dp"
-                android:layout_weight="2"
-                android:layout_height="wrap_content"
-                android:text="Por Visitar: 2021/02/25"
-                android:gravity="end|center"
-                android:layout_gravity="center"
-                android:textColor="@color/teal_700"
-                android:textSize="12sp"
-                android:textStyle="normal"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
-
-
-
-
-
-
-
-
+</RelativeLayout>

@@ -109,7 +109,14 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 		return item;
 	}
 	public String getLimiteCreditoDisponible(String codigoCliente) {
-		String rawQuery = "SELECT ifnull(disponible_credito,0) FROM cliente WHERE codcli = '"+codigoCliente+"'";
+		String rawQuery = "SELECT ifnull(disponible_credito,0) -" +
+				"ifnull(" +
+				"(select \n" +
+				"sum(case when date('now', 'localtime') < date(x.fecha_vencimiento) then total else 0 end) as dexudax\n" +
+				"from cta_ingresos x\n" +
+				"where x.codcli= cliente.codcli" +
+				"),0)" +
+				" FROM cliente WHERE codcli = '"+codigoCliente+"'";
 		Log.i(TAG, rawQuery);
 
 		SQLiteDatabase db = getReadableDatabase();

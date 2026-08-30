@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -234,6 +235,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         dia = obj_dbclasses.getDiaConfiguracion();
         Fecha = obj_dbclasses.getFecha2();
 
+        list.setDivider(new ColorDrawable(Color.TRANSPARENT));
+        list.setDividerHeight(0);
+
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         _usuario = prefs.getString("usuario", "0");
         _pass = prefs.getString("pass", "0");
@@ -406,8 +410,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                     }
 
                 });
-
-
         // ///////////////////////////////////////////////////////////////////////
 
         // ///////////////Acciones para mQuickAction2////////////////////////
@@ -437,7 +439,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 mSelectedRow = position; // set the selected row
 
                // mMoreIv = (ImageView) view.findViewById(R.id.i_more);
-                ruc = ((TextView) view.findViewById(R.id.tv_ruc)).getText().toString();
+                TextView tvRuc= ((TextView) view.findViewById(R.id.tv_ruc));
+                ruc = tvRuc.getText().toString();
                 String nomcli2 = ((TextView) view.findViewById(R.id.tv_cliente)).getText().toString();
                 String dir = ((TextView) view.findViewById(R.id.list_item_direccion)).getHint().toString();
 
@@ -459,7 +462,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 //                        mQuickAction.show(tv_fecha_filtrado_de);
                     //} 7//else {
 //                    mQuickAction2.show(tv_fecha_filtrado_de);
-                    mQuickAction3.show(view);
+                    mQuickAction3.show(tvRuc);
 //                        mQuickAction2.show(view);
                     //}
                 }
@@ -640,7 +643,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
         private class ViewHolder {
 
-            TextView txt_flag_pedido,name, ruc, item_sistema_registrado, list_item_ultima_compra, observacion,itemMotivoBajaCliente,   direccion,item_fecha_visitado, item_fecha_programada;
+            View txt_flag_pedido;
+            TextView name, ruc, item_sistema_registrado, list_item_ultima_compra, observacion,itemMotivoBajaCliente,   direccion,item_fecha_visitado, item_fecha_programada;
+            TextView list_item_linea_credito,list_item_disponible_credito, list_item_estado_credito,list_item_deuda_x_vencer, list_item_deuda_meno30dias, list_item_deuda_mayorIgual30dias;
             LinearLayout layout_container_ultima_compra;
             ImageView foto;
 
@@ -659,7 +664,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 // cache the views moneda_ultima_compra
 
                 viewHolder.name = (TextView) convertView .findViewById(R.id.tv_cliente);
-                viewHolder.txt_flag_pedido = (TextView) convertView .findViewById(R.id.txt_flag_pedido);
+                viewHolder.txt_flag_pedido = (View) convertView .findViewById(R.id.txt_flag_pedido);
                 viewHolder.ruc = (TextView) convertView .findViewById(R.id.tv_ruc);
                 viewHolder.item_sistema_registrado = (TextView) convertView .findViewById(R.id.item_sistema_registrado);
                 viewHolder.foto = (ImageView) convertView
@@ -672,6 +677,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 viewHolder.direccion = (TextView) convertView.findViewById(R.id.list_item_direccion);
                 viewHolder.item_fecha_visitado = (TextView) convertView.findViewById(R.id.item_fecha_visitado);
                 viewHolder.item_fecha_programada = (TextView) convertView.findViewById(R.id.item_fecha_programada);
+
+                viewHolder.list_item_linea_credito=(TextView) convertView.findViewById(R.id.list_item_linea_credito);
+                viewHolder.list_item_disponible_credito=(TextView) convertView.findViewById(R.id.list_item_disponible_credito);
+                viewHolder.list_item_estado_credito=(TextView) convertView.findViewById(R.id.list_item_estado_credito);
+                viewHolder.list_item_deuda_meno30dias =(TextView) convertView.findViewById(R.id.list_item_deuda_meno30dias);
+                viewHolder.list_item_deuda_mayorIgual30dias=(TextView) convertView.findViewById(R.id.list_item_deuda_mayorIgual30dias);
+                viewHolder.list_item_deuda_x_vencer=(TextView) convertView.findViewById(R.id.list_item_deuda_x_vencer);
                 // link the cached views to the convertview
                 convertView.setTag(viewHolder);
 
@@ -766,12 +778,24 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
                 String ultima_compra=searchResults.get(position).get("fecha").toString();
                 viewHolder.layout_container_ultima_compra.setVisibility(ultima_compra.isEmpty()?View.GONE:View.VISIBLE);
-                viewHolder.list_item_ultima_compra.setText(ultima_compra+" " +
-                                 "S/. "+searchResults.get(position).get("monto").toString()
+                viewHolder.list_item_ultima_compra.setText(ultima_compra+"  S/. "+searchResults.get(position).get("monto").toString()
                 );
                 viewHolder.direccion.setText(searchResults.get(position).get("direccion").toString());
                 viewHolder.direccion.setHint(searchResults.get(position).get("item_direccion").toString());
 
+                double deudaXvender= Double.parseDouble(searchResults.get(position).get("deuda_x_vencer").toString());
+                double creditoDis = Double.parseDouble(searchResults.get(position).get("disponible_credito").toString()) - deudaXvender;
+
+                viewHolder.list_item_linea_credito.setText("S/ "+searchResults.get(position).get("limite_credito").toString());
+                viewHolder.list_item_disponible_credito.setText("S/ "+VARIABLES.getStringFormaterTwoDecimal(creditoDis));
+                viewHolder.list_item_estado_credito.setText(searchResults.get(position).get("estadoDeuda").toString());
+                viewHolder.list_item_deuda_meno30dias .setText("S/ "+searchResults.get(position).get("deuda_menor_30_dias").toString());
+                viewHolder.list_item_deuda_mayorIgual30dias.setText("S/ "+searchResults.get(position).get("deuda_mayor_igual_30_dias").toString());
+                viewHolder.list_item_deuda_x_vencer.setText("S/ "+VARIABLES.getStringFormaterTwoDecimal(deudaXvender));
+
+                viewHolder.list_item_disponible_credito.setTextColor(
+                        getResources().getColor(creditoDis>0?R.color.green_500:R.color.red_500)
+                );
 
                 San_Visitas visitas = DAO_San_Visitas.getSan_VisitasByFecha(
                         obj_dbclasses.getReadableDatabase(),
@@ -1514,6 +1538,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
 
     public static boolean validarClienteCarteraSIDIGE(Activity activity, DBclasses _dBclasses, String _codcli){
+        if(true) return true;
         SessionManager prefer=new SessionManager(activity);
         if(!prefer.getCodigoNivel().equals("NIVEL3")){//si es diferente a nivel3 (vendedor), permitimos
             return true;

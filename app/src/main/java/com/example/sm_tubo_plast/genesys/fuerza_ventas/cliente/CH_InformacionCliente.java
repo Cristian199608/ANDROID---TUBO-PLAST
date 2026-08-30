@@ -39,7 +39,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
     DBclasses dBclasses;
 
     EditText tv_ruc,tv_sector, tv_rubro,tv_razonSocial,tv_direccionFiscal,tv_tipo_cliente,tv_telefono,
-            tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito,tv_unidadNegocio,tv_monedaFacturacion;
+            tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito, tv_disponibleCreditoSae,tv_unidadNegocio,tv_monedaFacturacion;
     EditText tv_direccion_sucursal, tv_telefono_sucursal, tvVendedoresAsignados,
             tvFechaNacimiento, tvDNI, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
     Spinner spn_direccion, spn_puntoEntrega, SpinnerContacto;
@@ -70,6 +70,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         tv_moneda = (EditText) findViewById(R.id.tv_moneda);
         tv_montoCredito = (EditText) findViewById(R.id.tv_montoCredito);
         tv_disponibleCredito = (EditText) findViewById(R.id.tv_disponibleCredito);
+        tv_disponibleCreditoSae = (EditText) findViewById(R.id.tv_disponibleCreditoSae);
         tv_unidadNegocio = (EditText) findViewById(R.id.tv_unidadNegocio);
         tv_monedaFacturacion = (EditText) findViewById(R.id.tv_monedaFacturacion);
         spn_direccion = findViewById(R.id.spn_direccion);
@@ -109,6 +110,9 @@ public class CH_InformacionCliente extends AppCompatActivity {
 
             tv_montoCredito.setText(moneda+" "+VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getLimiteCredito())));
             tv_disponibleCredito.setText(moneda+" "+VARIABLES.formater_thow_decimal.format(Double.parseDouble(cliente.getDisponible_credido())));
+            String disponibleCreditoSae = dao_Cliente.getLimiteCreditoDisponible(codigoCliente);
+            tv_disponibleCreditoSae.setText(""+VARIABLES.formater_thow_decimal.format(Double.parseDouble(disponibleCreditoSae)));
+
             tv_unidadNegocio.setText(cliente.getUnidadNegocio());
             tv_monedaFacturacion.setText(cliente.getMonedaDocumento());
             tv_email.setText(cliente.getEmail());

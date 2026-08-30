@@ -30,8 +30,8 @@ public class VARIABLES {
     public static final  String SEPARADOR_OBSERVACION="_#_";
 
 
-    public static final  boolean isProduccion=false;
-    public static final  boolean isProduccion_prueba=true;
+    public static final  boolean isProduccion=true;
+    public static final  boolean isProduccion_prueba=false;
     public static final  boolean isSetDataPruebas=true;
 
     public static String CARPERTA_CONTENEDOR="SAE_TUBO_PLAST";
@@ -416,13 +416,13 @@ public class VARIABLES {
 
     public static String GetFechaActual(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-05"));
         Date date = new Date();
         return dateFormat.format(date);
     }
     public static String GetFechaHoraActual(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-14"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-05"));
         Date date = new Date();
         return dateFormat.format(date);
     }
@@ -440,6 +440,13 @@ public class VARIABLES {
        DecimalFormat formater = new DecimalFormat("#,##0.000");
         formater.setRoundingMode(RoundingMode.HALF_UP);
        return  formater.format(numero);
+    }
+
+    public static String getStringFormaterTwoDecimal(double numero)
+    {
+        DecimalFormat formater = new DecimalFormat("#,##0.00");
+        formater.setRoundingMode(RoundingMode.HALF_UP);
+        return  formater.format(numero);
     }
     public static double getDoubleFormaterThreeDecimal(double numero)
     {

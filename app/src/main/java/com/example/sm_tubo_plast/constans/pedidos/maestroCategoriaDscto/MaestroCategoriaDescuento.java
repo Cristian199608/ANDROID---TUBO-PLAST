@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MaestroCategoriaDescuento {
     public static String NOMBRE_CANAL_FERRETERIA="FERRETERIAS";
-    public static String NOMBRE_CANAL_INSTITUCIONAL="INSTITUCIONALES";
+    public static String NOMBRE_CANAL_INSTITUCIONAL="INSTITUCIONAL";
     public static String NOMBRE_CANAL_CLIENT="ATENCION AL CLIENTE";
 
     public static String KEY_NOMBRE_FERRETERIA_PRECIO="Lista de Venta Ferreterías";
@@ -46,23 +46,30 @@ public class MaestroCategoriaDescuento {
             return opciones;
         }
 
-    public static ArrayList<MaestroCategoriaDescuento> getDataListDscto(){
+    public static ArrayList<MaestroCategoriaDescuento> getDataListDscto(String nombreCanal){
         ArrayList<MaestroCategoriaDescuento> lista =new ArrayList<>();
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "Sin Categoria",0.0));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA C",5.00));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA B",6.50));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA A",7.50));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "MAYORISTA",9.00));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "DISTRIBUIDOR",10.50));
-        lista.add(Util.getDataREGIONAL(false));
-        lista.add(Util.getDataREGIONAL(true));
+        if(nombreCanal.contains(NOMBRE_CANAL_FERRETERIA) || nombreCanal.equals("TODOS")){
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "Sin Categoria",0.0));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA C",5.00));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA B",6.50));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "FERRETERIA A",7.50));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "MAYORISTA",9.00));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_FERRETERIA, "DISTRIBUIDOR",10.50));
+            lista.add(Util.getDataREGIONAL(false));
+            lista.add(Util.getDataREGIONAL(true));
+        }
 
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "Sin Categoria",0.0));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA C", 5.00));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA B", 5.50));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA A", 10.00));
-        lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "INMOBILIARIA", 15));
-        lista.add(Util.getDataCONSORCIO_INMOBILIARIO());
+        if(nombreCanal.contains(NOMBRE_CANAL_INSTITUCIONAL) || nombreCanal.equals("TODOS")){
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "Sin Categoria",0.0));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA C", 5.00));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA B", 7.50));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "CONSTRUCTORA A", 10.00));
+            lista.add(Util.getDataParaTodoBy(NOMBRE_CANAL_INSTITUCIONAL, "INMOBILIARIA", 15));
+            lista.add(Util.getDataCONSORCIO_INMOBILIARIO());
+        }
+        if(lista.size()==0){
+            lista.add(Util.getDataParaTodoBy(nombreCanal, "Sin Categoria",0.0));
+        }
         return lista;
     }
     }

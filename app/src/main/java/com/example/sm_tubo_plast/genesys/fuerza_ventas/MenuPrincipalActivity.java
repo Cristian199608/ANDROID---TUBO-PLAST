@@ -56,6 +56,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
     AccesosOpciones.OptionMenuPrincipal accesoMenuPrincipal;
 
 
+    View mostrarSincronizar;
     //Parametros de configuracion
     SharedPreferences preferencias_configuracion;
     SharedPreferences.Editor editor_preferencias;
@@ -107,7 +108,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         contrasenaid = prefs.getString("contrasenaid", "0");
         servicio = prefs.getString("servicio","0");
         servicio_local = prefs.getString("servicio_local","0");
-
+        mostrarSincronizar = findViewById(R.id.iv_sincronizar);
         tv_welcomeUser.setText("Bienvenido "+ sessionManager.getNombreVendedor());
 
         configurarDatosVendedorParaCrashlytics(codven, sessionManager.getNombreVendedor());
@@ -161,16 +162,8 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             alertDialog.setPositiveButton("Aceptar",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-
-                            Intent i = new Intent(getApplicationContext(),
-                                    SincronizarActivity.class);
-                            i.putExtra("ORIGEN", "MENU");
-                            // agregado 06-07-2013 (solucion para las ventanas
-                            // multiples al salir de la aplicacion)
+                            goMenuSincronizar(false);
                             finish();
-                            //
-                            startActivity(i);
-
                         }
                     });
             alertDialog.show();
@@ -298,24 +291,25 @@ public class MenuPrincipalActivity extends AppCompatActivity {
                 final Intent ireportes = new Intent(activity, ReportesActivity.class);
                 ireportes.putExtra("ORIGEN", "MENU_PRINCIPAL");
                 // ipedido.putExtra("codven",codven);
-                activity.startActivityForResult(ireportes, 0);
+//                activity.startActivityForResult(ireportes, 0);
             }
         });
 
-        View mostrarSincronizar= window.findViewById(R.id.iv_sincronizar);
         mostrarSincronizar.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
 
-                final Intent isincronizar = new Intent(activity,SincronizarActivity.class);
-                // ipedido.putExtra("codven",codven);
-                isincronizar.putExtra("ORIGEN", "MENU");
-                //agregado 06-07-2013 (solucion para las ventanas multiples al salir de la aplicacion)
                 finish();
-                //
-                activity.startActivityForResult(isincronizar, 0);
-                //activity.startActivity(isincronizar);
+                goMenuSincronizar(false);
+            }
+        });
+
+        mostrarSincronizar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                goMenuSincronizar(true);
+                return true;
             }
         });
 
@@ -343,21 +337,23 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             }
         });
+        verificarFechaSincronizacion();
         /* ***************ENVIAR MENSAJE DE SINCRONIZACION************** */
         boolean sincronizacionCorrecta = preferencias_configuracion.getBoolean("preferencias_sincronizacionCorrecta", false);
         if (sincronizacionCorrecta == false) {
             android.app.AlertDialog.Builder alerta = new android.app.AlertDialog.Builder(this);
             alerta.setTitle("Sincronizacion incompleta");
-            alerta.setMessage("Los datos estan incompletos, sincronice correctamente");
             alerta.setIcon(R.drawable.icon_warning);
             alerta.setCancelable(false);
-            alerta.setPositiveButton("Ir a Sincronizar", new DialogInterface.OnClickListener() {
+            alerta.setMessage("Los datos estan incompletos, sincronice todas las categorias correctamente." +
+                    "\n\n¿Que tipo de sincronización desea?");
+            alerta.setNegativeButton("Manual", null);
+            alerta.setPositiveButton("Automático", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    mostrarSincronizar.performClick();
+                    mostrarSincronizar.performLongClick();
                 }
             });
-            alerta.setNegativeButton("Omitir", null);
             alerta.show();
         }
         /****************************************************************/
@@ -423,6 +419,24 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 //        DisableOrEnableOpcion(binding.lContainerMenuSincronizar, optiones.getMenuSincronizar());
 
     }
+
+    private void goMenuSincronizar(boolean syncRobot){
+        final Intent isincronizar = new Intent(this, SincronizarActivity.class);
+        isincronizar.putExtra("ORIGEN", "MENU");
+        isincronizar.putExtra("SYNC_ROBOT", syncRobot);
+        finish();
+        startActivityForResult(isincronizar, 0);
+    }
+
+    private void verificarFechaSincronizacion(){
+        String fecCelular= VARIABLES.GetFechaActual();
+        String fecConfiguracion= database.getFecha2();
+        if (!fecCelular.equals(fecConfiguracion)){
+            goMenuSincronizar(true);
+        }
+
+    }
+
     private void DisableOrEnableOpcion(LinearLayout linearLayout, boolean enabled){
         if (enabled)return;
         linearLayout.setAlpha(0.3f);

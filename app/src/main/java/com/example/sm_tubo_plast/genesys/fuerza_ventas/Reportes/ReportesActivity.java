@@ -4,6 +4,7 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -315,6 +317,32 @@ public class ReportesActivity extends TabActivity {
         getTabHost().setCurrentTab(1);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                requestOnBackPressed();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        requestOnBackPressed();
+    }
+    private void requestOnBackPressed(){
+        new android.app.AlertDialog.Builder(this)
+                .setMessage("¿Seguro que desea salir de la ventana reportes?")
+                .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ReportesActivity.this.finish();
+                    }
+                })
+                .setNegativeButton("NO", null)
+                .create().show();
+    }
 
     public void setSearchPOIContent() {
         search_poi.setContent(new Intent(this, ReportesPedidosCotizacionYVisitaActivity.class));

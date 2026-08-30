@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
@@ -16,7 +17,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 import java.util.ArrayList;
 
 public class DAO_ReportePedido extends SQLiteAssetHelper {
-
+    private static final String TAG ="DAO_ReportePedido";
     Context context;
     DAO_Pedido_detalle2 daopedido2;
 
@@ -151,7 +152,7 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     objCursor.close();
 
 
-                    if(VARIABLES.isProduccion_prueba){
+                    if(VARIABLES.isProduccion_prueba && false){
                         int forhasta15 = 15 - objDbPedidoCabeceraDetalleArrayList.size();
                         if(forhasta15 > 0){
                             for (int i = 0; i < forhasta15; i++) {
@@ -194,7 +195,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "V.codven, C.nomcli, " +
                     "C.telefono as telefonoCliente, V.nomven, " +
                     "dc.direccion, C.email as emailCliente, " +
-                    "V.email as emailVendedor, T.descripcion, " +
+                    "V.email as emailVendedor, " +
+                    "ifnull(T.descripcion, '') as descripcion, " +
                     "FP.desforpag, PC.monto_total, " +
                     "PC.valor_igv, PC.subTotal as subtotal, " +
                     "PC.peso_total, PC.fecha_oc, " +
@@ -215,20 +217,18 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "CROSS JOIN " +
                     "vendedor V " +
                     "CROSS JOIN " +
-                    "transporte T " +
-                    "CROSS JOIN " +
                     "forma_pago FP " +
+                    "LEFT JOIN " +
+                    "transporte T " +
+                    "on PC.codigoTransportista = T.codigoTransporte " +
+                    "AND (C.codcli = T.codigoCliente or T.codigoCliente='TODOS') " +
                     "WHERE " +
-                    "PC.oc_numero like '%" + oc_num + "%' " +
+                    "PC.oc_numero = '" + oc_num + "' " +
                     "AND " +
                     "PC.cod_cli = C.codcli " +
                     "AND PC.codigoSucursal =  dc.item and c.codcli=dc.codcli " +
                     "AND " +
                     "V.codven = PC.cod_emp " +
-                    "AND " +
-                    "PC.codigoTransportista = T.codigoTransporte " +
-                    "AND " +
-                    "C.codcli = T.codigoCliente " +
                     "AND " +
                     "PC.cond_pago = FP.codforpag " +
                     "AND " +
@@ -236,6 +236,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "'"+ PedidosActivity.TIPO_PEDIDO+ "'," +
                     "'"+ PedidosActivity.TIPO_COTIZACION+ "'" +
                     ")";
+
+            Log.i(TAG, "getCabecera sql"+sql);
             Cursor objCursor = objSqLiteDatabase.rawQuery(sql
                     , null);
 

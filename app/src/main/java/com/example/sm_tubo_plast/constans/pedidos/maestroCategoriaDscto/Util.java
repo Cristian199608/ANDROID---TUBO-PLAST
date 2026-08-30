@@ -15,14 +15,15 @@ public class Util {
                                 new Condicion(
                                         Collections.singletonList("TODOS"),
                                         new ArrayList<String>(),
-                                        0+dscto_pct
+                                        0+dscto_pct,
+                                        null
                                 )
                         )
                 )
         );
 
         return new MaestroCategoriaDescuento(
-                "REGIONAL",
+                categoria,
                 ""+nombrePrincipal,
                 ""+categoria,
                 null,
@@ -36,7 +37,14 @@ public class Util {
                 new Condicion(
                         Collections.singletonList("CANTOL"),
                         new ArrayList<>(),
-                        2.00
+                        2.00,
+                        new Condicion(
+                                Collections.singletonList("CONTADO"),
+                                new ArrayList<>(),
+                                //Collections.singletonList("CONTADO"),
+                                2.00,
+                                null
+                                )
                 )
         );
 
@@ -46,14 +54,16 @@ public class Util {
                                 new Condicion(
                                         Collections.singletonList("TODOS"),
                                         Collections.singletonList("LGO"),
-                                        11.50
+                                        11.50,
+                                        null
                                 )
                         ),
                         new Opcion("DESCUENTO CATEGORIA MARCA LGO",
                                 new Condicion(
                                         Collections.singletonList("LGO"),
                                         new ArrayList<String>(),
-                                        15.50
+                                        15.50,
+                                        null
                                 )
                         )
                 )
@@ -76,14 +86,16 @@ public class Util {
                                 new Condicion(
                                         Collections.singletonList("TODOS"),
                                         new ArrayList<>(),
-                                        20.00
+                                        20.00,
+                                        null
                                 )
                         ),
                         new Opcion("DESCUENTO ADICIONAL SOLO MARCA CANTOL",
                                 new Condicion(
                                         Collections.singletonList("CANTOL"),
                                         new ArrayList<>(),
-                                        2.00
+                                        2.00,
+                                        null
                                 )
                         )
                 )

@@ -50,13 +50,13 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 			holder = new ViewHolder();
 
 			holder.txtIsPrioridad = (TextView) item.findViewById(R.id.txtIsPrioridad);
-			holder.txtCodigo = (TextView) item.findViewById(R.id.tv_codigoBonificacion);
 			holder.txtDescripcion = (TextView) item.findViewById(R.id.tv_descripcionBonificacion);
 			holder.txtPrecio = (TextView) item.findViewById(R.id.tv_precioBonificacion);
 			holder.txtUnidadMedida = (TextView) item.findViewById(R.id.tv_unidadMedida);
 			holder.txtEntrada = (TextView) item.findViewById(R.id.tvCantidad);
 			holder.txtCantidadBonificada = (TextView) item.findViewById(R.id.tv_cantidadBonificacion);
 			holder.txtFactorConversion = (TextView) item.findViewById(R.id.tv_factorConversion);
+			holder.tvAddProductoPromo = (TextView) item.findViewById(R.id.tvAddProductoPromo);
 			item.setTag(holder);
 
 		} else {
@@ -64,13 +64,19 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 		}
 		
 		Model_bonificacion bonificacion = listaBonificaciones.get(position);
-		holder.txtCodigo.setText(bonificacion.getCodigo());
-		holder.txtDescripcion.setText(bonificacion.getDescripcion());
+		holder.txtDescripcion.setText(bonificacion.getCodigo()+" - "+ bonificacion.getDescripcion());
 		int cantidad = bonificacion.getCantidad();
 		holder.txtCantidadBonificada.setText(cantidad+"");
 		holder.txtPrecio.setText(bonificacion.getPrecio());
 		holder.txtUnidadMedida.setText(""+bonificacion.getUnidadMedida());
 		holder.txtFactorConversion.setText(""+bonificacion.getFactorConversion());
+		holder.tvAddProductoPromo.setId(position);
+		holder.tvAddProductoPromo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mylistener.onClikItem(v.getId());
+			}
+		});
 
 		if (bonificacion.getPrioridad()==1){
 			holder.txtIsPrioridad.setVisibility(View.VISIBLE);
@@ -83,10 +89,19 @@ public class CH_Adapter_bonificaciones extends BaseAdapter {
 	}
 	
 	public class ViewHolder {
-		TextView txtCodigo,txtIsPrioridad;
+		TextView txtIsPrioridad;
 		TextView txtDescripcion,txtCantidadBonificada;
 		TextView txtEntrada, txtPrecio, txtUnidadMedida;
-		TextView txtFactorConversion;
+		TextView txtFactorConversion, tvAddProductoPromo;
 	}
 
+
+	Mylistener mylistener;
+	public void setOnMyCallback(Mylistener mylistener){
+		this.mylistener=mylistener;
+	}
+
+	public interface Mylistener{
+		void onClikItem(int position);
+	}
 }

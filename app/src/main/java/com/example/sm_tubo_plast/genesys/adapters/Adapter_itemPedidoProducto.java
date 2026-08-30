@@ -95,13 +95,13 @@ public class Adapter_itemPedidoProducto extends ArrayAdapter<ItemProducto>{
 		holder.precioLista.setText(String.valueOf(precioLista));
 		holder.cantidad.setText(String.valueOf(cantidad));
 		holder.tv_subtotal.setText(String.valueOf(subTotal));
-		holder.precioUnitario.setText(VARIABLES.getStringFormaterThreeDecimal( precioUnidad));
+		holder.precioUnitario.setText(VARIABLES.getStringFormaterTwoDecimal( precioUnidad));
 		holder.percepcion.setText(String.valueOf(percepcion));
 
-		holder.precioKiloDolar.setText(VARIABLES.getStringFormaterThreeDecimal(precioKilo));
+		holder.precioKiloDolar.setText(VARIABLES.getStringFormaterTwoDecimal(precioKilo));
 
 		holder.tv_descuentoPorcentaje.setText(""+porcenajeDescuento+"%"+(porcenajeDescuentoExtra>0?" + "+porcenajeDescuentoExtra+"%":""));
-		holder.imgCampanaYellow.setVisibility(porcenajeDescuento>3.00?View.VISIBLE:View.GONE);
+		holder.imgCampanaYellow.setVisibility(porcenajeDescuento>=100?View.VISIBLE:View.GONE);
 		OnClickCustom(holder.imgCampanaYellow);
 		holder.tipoProducto.setText(""+(datos.size()-posicion));
 		if(flagTipo == null){

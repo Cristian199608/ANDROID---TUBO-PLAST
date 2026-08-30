@@ -30,18 +30,6 @@
             android:padding="5dp">
 
             <TextView
-                android:id="@+id/tv_codigoBonificacion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/tvCantidad"
-                android:layout_alignParentTop="true"
-                android:maxLines="2"
-                android:text="Codigo"
-                android:textColor="#040404"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:typeface="sans" />
-            <TextView
                 android:id="@+id/tv_factorConversion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -57,21 +45,25 @@
                 android:id="@+id/txtUnidadMedida2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_unidadMedida"
+                android:layout_below="@+id/layoutUndMedudaMinima"
                 android:layout_toLeftOf="@+id/tv_factorConversion"
                 android:gravity="left"
                 android:text="pack:"
                 android:textColor="#343434"
                 android:textSize="14sp" />
+
             <TextView
                 android:id="@+id/tv_descripcionBonificacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:layout_alignParentTop="true"
-                android:layout_alignRight="@+id/tv_unidadMedida"
-                android:layout_toRightOf="@+id/tv_codigoBonificacion"
-                android:maxLines="2"
+                android:layout_marginStart="5dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:maxLines="2"
                 android:text="BONIF. Producto X"
                 android:textColor="#040404"
                 android:textSize="14sp"
@@ -82,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tvCantidad"
-                android:layout_below="@+id/tv_codigoBonificacion"
+                android:layout_below="@+id/tv_descripcionBonificacion"
                 android:gravity="left"
                 android:text="S/."
                 android:textColor="#343434"
@@ -120,16 +112,40 @@
                 android:textColor="#10bcc9"
                 android:textSize="14sp"
                 android:textStyle="bold" />
-            <TextView
-                android:id="@+id/tv_unidadMedida"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+
+            <LinearLayout
+                android:id="@+id/layoutUndMedudaMinima"
                 android:layout_above="@+id/tv_cantidadBonificacion"
                 android:layout_alignParentRight="true"
-                android:gravity="left"
-                android:text="CAJAS"
-                android:textColor="#343434"
-                android:textSize="14sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
+                <TextView
+                    android:id="@+id/tv_unidadMedida"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="left"
+                    android:text="CAJAS"
+                    android:textColor="#343434"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvAddProductoPromo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_rounded_corners"
+                    android:backgroundTint="@color/blue_500"
+                    android:text="Aceptar"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tv_pendientes"
                 android:layout_width="match_parent"

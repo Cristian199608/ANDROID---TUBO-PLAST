@@ -182,7 +182,9 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
     public ArrayList<FormaPago> getCondicionVenta(String codigoCliente){
 		String rawQuery;		
 		//rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta, // CV -> CondicionVenta
-		rawQuery = "SELECT * from "+ DBtables.FormaPago.TAG+" where flagTipo = '"+FORMA_PAGO+"' and codigoCliente = '' " +
+		rawQuery = "SELECT * from "+ DBtables.FormaPago.TAG+" " +
+                "where flagTipo = '"+CONDICION_VENTA+"' " +
+                "and (codigoCliente = '"+codigoCliente+"' or codigoCliente = 'TODOS') " +
                 "order by desforpag";
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -202,6 +204,38 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
 		db.close();
 		return lista;
 	}
+
+    public ArrayList<FormaPago> getCondicionVentaCONTADOS_CREDITOS(String codigoCliente){
+        String rawQuery;
+        //rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta, // CV -> CondicionVenta
+        rawQuery = "SELECT * from "+ DBtables.FormaPago.TAG+" " +
+                "where flagTipo = '"+CONDICION_VENTA+"' " +
+                "and (desforpag like '%contado%' " +
+                "or desforpag like '%credito%'" +
+                "or desforpag like '%crédito%' " +
+                "or cast(dias_credito as integer) >0 " +
+                ")" +
+                "and (codigoCliente = '"+codigoCliente+"' or codigoCliente = 'TODOS') " +
+                "order by desforpag";
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cur = db.rawQuery(rawQuery, null);
+
+        ArrayList<FormaPago> lista = new ArrayList<>();
+
+        cur.moveToFirst();
+        while (!cur.isAfterLast()) {
+            FormaPago formaPago = new FormaPago();
+            formaPago.setCodigoFormaPago(cur.getString(0));
+            formaPago.setDescripcionFormaPago(cur.getString(1));
+            formaPago.setDias_credito(cur.getInt(cur.getColumnIndex("dias_credito")));
+            lista.add(formaPago);
+            cur.moveToNext();
+        }
+        Log.w(TAG,"getFormasPago:"+lista.size());
+        cur.close();
+        db.close();
+        return lista;
+    }
 
     public String getDescrCondicionVentaByCod(String codformaPago){
         String rawQuery;

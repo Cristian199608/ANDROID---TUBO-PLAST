@@ -1,5 +1,7 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
+import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
+
 public class Producto {
 	private String codigo;
 	private String descripcion;
@@ -9,6 +11,7 @@ public class Producto {
 	private String color;
 	private double peso;
 	private double precio_base;
+	private DBMta_Kardex stockDetalle;
 
 	public String getCodigo() {
 		return codigo;
@@ -63,5 +66,13 @@ public class Producto {
 
 	public void setDesc_comercial(String desc_comercial) {
 		this.desc_comercial = desc_comercial;
+	}
+
+	public DBMta_Kardex getStockDetalle() {
+		return stockDetalle;
+	}
+
+	public void setStockDetalle(DBMta_Kardex stockDetalle) {
+		this.stockDetalle = stockDetalle;
 	}
 }

@@ -589,6 +589,30 @@ public class DBtables {
 
 	}
 
+	public class Pedido_detalle_descuento{
+		/*
+		create table pedido_detalle_descuento(
+			oc_numero VARCHAR(20),
+			codpro VARCHAR(20),
+			item integer,
+			pcjt_desc numeric(18,2),
+			monto_desc numeric(18,3),
+			tipo_desc VARCHAR(20),
+			primary key (oc_numero, item, tipo_desc)
+			)
+		 */
+	}
+	public class Workflow_pedido{
+//		CREATE TABLE workflow_pedido(
+//				oc_numero text NOT NULL,
+//				codigo_bloqueo text NULL,
+//				estado int NULL,
+//				fecha_aprobacion text NULL,
+//				usuario_aprobacion text NULL,
+//				primary key (oc_numero, codigo_bloqueo)
+//)
+	}
+
 	public static final class Pedido_devolucion implements BaseColumns {
 
 		private Pedido_devolucion() {
@@ -1326,6 +1350,7 @@ public class DBtables {
 		public static final String DESCRIPCION = "desforpag";	
 		public static final String CODIGO_CLIENTE = "codigoCliente";
 		public static final String FLAG_TIPO = "flagTipo";
+		public static final String dias_credito = "dias_credito";
 	}
 	
 	public static final class NroLetras implements BaseColumns {

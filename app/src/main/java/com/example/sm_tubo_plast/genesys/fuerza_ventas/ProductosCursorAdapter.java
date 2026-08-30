@@ -41,6 +41,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -448,7 +449,8 @@ public class ProductosCursorAdapter extends AppCompatActivity {
         }
 
         private class ViewHolder {
-            TextView nombre, codigo, stock, tvProducto_desc_comercial;
+            TextView nombre,stock, tvProducto_desc_comercial;
+            TextView tvStockSeparado, tvStockEnTransito, tvStockDisponible;
         }
 
         ViewHolder viewHolder;
@@ -461,9 +463,11 @@ public class ProductosCursorAdapter extends AppCompatActivity {
 
                 // cache the views
                 viewHolder.nombre = (TextView) convertView.findViewById(R.id.producto_info_descripcion);
-                viewHolder.codigo = (TextView) convertView.findViewById(R.id.producto_info_codpro);
                 viewHolder.tvProducto_desc_comercial = (TextView) convertView.findViewById(R.id.tvProducto_desc_comercial);
                 viewHolder.stock = (TextView) convertView.findViewById(R.id.producto_info_stock);
+                viewHolder.tvStockSeparado =convertView.findViewById(R.id.tvStockSeparado);
+                viewHolder.tvStockEnTransito =convertView.findViewById(R.id.tvStockEnTransito);
+                viewHolder.tvStockDisponible =convertView.findViewById(R.id.tvStockDisponible);
                 convertView.setTag(viewHolder);
 
             } else{
@@ -471,14 +475,23 @@ public class ProductosCursorAdapter extends AppCompatActivity {
             }
 
             try {
-                viewHolder.nombre.setText(listaBusqueda.get(position).getDescripcion());
-                viewHolder.tvProducto_desc_comercial.setText(listaBusqueda.get(position).getDesc_comercial().length()>0? listaBusqueda.get(position).getDesc_comercial() :"--");
-                viewHolder.codigo.setText(listaBusqueda.get(position).getCodigo());
+                viewHolder.nombre.setText(listaBusqueda.get(position).getCodigo()+" - "+listaBusqueda.get(position).getDescripcion());
+                //viewHolder.tvProducto_desc_comercial.setText(listaBusqueda.get(position).getDesc_comercial().length()>0? listaBusqueda.get(position).getDesc_comercial() :"--");
+                double precioUnit= VARIABLES.getDoubleFormaterThreeDecimal((listaBusqueda.get(position).getPrecio_base()));
+                viewHolder.tvProducto_desc_comercial.setText("S/ "+precioUnit);
 
-                DBMta_Kardex mta_kardex = dao_mtaKardex.GetStockProducto(  listaBusqueda.get(position).getCodigo());
-                if (mta_kardex!=null){
-                    viewHolder.stock.setText(""+mta_kardex.getStock()+", Separado: "+mta_kardex.getXtemp()+", Disponibe: "+(mta_kardex.getStock()-mta_kardex.getXtemp())+"");
-                }else viewHolder.stock.setText("Sin stock");
+                viewHolder.stock.setText((int)(listaBusqueda.get(position).getStockDetalle().getStock())+ " "+ listaBusqueda.get(position).getUnidadMedida());
+                viewHolder.tvStockSeparado.setText((int)(listaBusqueda.get(position).getStockDetalle().getXtemp())+ " "+ listaBusqueda.get(position).getUnidadMedida());
+                viewHolder.tvStockEnTransito.setText((int)(listaBusqueda.get(position).getStockDetalle().getTransito())+ " "+ listaBusqueda.get(position).getUnidadMedida());
+                viewHolder.tvStockDisponible.setText((int)(listaBusqueda.get(position).getStockDetalle().getDisponible())+ " "+ listaBusqueda.get(position).getUnidadMedida());
+                //if(producto.getStock()<=0){
+                viewHolder.stock.setTextColor(getContext().getResources().getColor(listaBusqueda.get(position).getStockDetalle().getStock()>0?R.color.grey_900:R.color.red_500));
+                viewHolder.tvStockDisponible.setTextColor(getContext().getResources().getColor(listaBusqueda.get(position).getStockDetalle().getDisponible()>0?R.color.green_500:R.color.red_500));
+
+//                DBMta_Kardex mta_kardex = dao_mtaKardex.GetStockProducto(  listaBusqueda.get(position).getCodigo());
+//                if (mta_kardex!=null){
+//                    viewHolder.stock.setText(""+mta_kardex.getStock()+", Separado: "+mta_kardex.getXtemp()+", Disponibe: "+(mta_kardex.getStock()-mta_kardex.getXtemp())+"");
+//                }else viewHolder.stock.setText("Sin stock");
             } catch (Exception e) {
                 Log.e(TAG, "ProductoAdapter "+e.getMessage());
                 e.printStackTrace();

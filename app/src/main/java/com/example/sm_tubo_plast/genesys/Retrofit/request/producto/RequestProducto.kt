@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.Retrofit.request.producto
 
+import android.util.Log
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCantol
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente
 import okhttp3.MediaType
@@ -19,6 +20,7 @@ class RequestProducto{
                     "        \"vendedor\": \"$codven\"\n" +
                     "    }\n" +
                     "}";
+            Log.i("RequestProducto: ", "PETICION DATA $jsonBody")
             return jsonBody;
         }
 

@@ -683,6 +683,10 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
         ArrayList<DataCabeceraPDF> lista=dao_reportePedido.getCabecera(""+oc_numero);
         if (lista.size()==0){
+            GlobalFunctions.showCustomToast(
+                    this,
+                    "No se encontró dato principal de cliente",
+                    GlobalFunctions.TOAST_ERROR);
             return;
         }
 
@@ -694,6 +698,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
     private void GenerarPdf(DataCabeceraPDF dataCab, ArrayList<ReportePedidoDetallePDF> listaDetalle ) {
 
+        Generate_pdf_by_ocumero( 1, dataCab, listaDetalle);//1 Cliente
+        if(true)return;
         AlertDialog.Builder elegir = new AlertDialog.Builder(ReportesPedidosCotizacionYVisitaActivity.this);
         elegir.setTitle("Seleccionar");
         elegir.setMessage("Seleccione el tipo de envío");
@@ -895,15 +901,15 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         double tipoCambio = Double.parseDouble(obj_dbclasses.getCambio("Tipo_cambio"));
         totalPrecioKiloDolar = 0;
 
-        if (tipo.equalsIgnoreCase("cliente")) {
-            lista_pedidos = obj_dbclasses.getPedidosCabeceraxNombreCliente(valor);
-        } else if (tipo.equalsIgnoreCase("documento")) {
-            lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
-        } else {
+//        if (tipo.equalsIgnoreCase("cliente")) {
+//            lista_pedidos = obj_dbclasses.getPedidosCabeceraxNombreCliente(valor);
+//        } else if (tipo.equalsIgnoreCase("documento")) {
+//            lista_pedidos = obj_dbclasses.getPedidosCabeceraxDocumento(valor);
+//        } else {
             lista_pedidos = obj_dbclasses.getPedidosCabecera(
                     TIPO_VISTA,
                     edtBuscarPedidos.getText().toString());
-        }
+//        }
 
         Iterator<DBPedido_Cabecera> it = lista_pedidos.iterator();
         Log.w("Elementos de la lista", "tamaño: " + lista_pedidos.size());

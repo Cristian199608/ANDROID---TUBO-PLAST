@@ -550,8 +550,13 @@ public class DAO_San_Visitas {
     public  static  boolean isSan_VisitasByOc_visitadoAndOc_numero_visitar(SQLiteDatabase _db,String oc_visitado, String oc_visitar){
 
         String sql="select * from "+DBtables.San_Visitas.TAG+" v "+
-                "where  v."+DBtables.San_Visitas.oc_numero_visitado+" = '"+oc_visitado+"' " +
-                "and v."+DBtables.San_Visitas.oc_numero_visitar+" = '"+oc_visitar+"' ";
+                "where  " +
+                "(" +
+                "   length(oc_numero_visitado)>0 and  v."+DBtables.San_Visitas.oc_numero_visitado+" = '"+oc_visitado+"'" +
+                ") " +
+                "or (" +
+                "   length(oc_numero_visitar)>0 and v."+DBtables.San_Visitas.oc_numero_visitar+" = '"+oc_visitar+"' " +
+                ") ";
 
         Cursor cursor=_db.rawQuery(sql, null, null);
 

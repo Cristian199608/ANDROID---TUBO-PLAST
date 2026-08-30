@@ -106,7 +106,7 @@ public class AdapterAgendaActividades extends RecyclerView.Adapter<AdapterAgenda
 
         holder.txt_fecha.setText(""+cumpleTXT);
         if (item.getOc_numero_visitar().contains("TPLAST")) {
-            holder.txtNombreInstitucion.setText("TUBO PLAST - SIDIGE");
+            holder.txtNombreInstitucion.setText("CANTOL");
         }else{
             holder.txtNombreInstitucion.setText(item.getPromotor());
         }

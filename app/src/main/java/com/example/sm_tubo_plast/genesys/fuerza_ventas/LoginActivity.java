@@ -41,6 +41,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetMapDialog;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
@@ -288,13 +289,13 @@ public class LoginActivity extends AppCompatActivity {
         boolean prueba = VARIABLES.isSetDataPruebas;
         if(!prueba) return;
         dbusuarios.setDataPruebas();
-//        testMapa();
+        testMapa();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
 //        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
 
         txtUsuario.setText("SAEMOVIL");
         txtPassword.setText("XQC2WYG");
-//
+
 //        txtUsuario.setText("SAEMOVIL_INST");
 //        txtPassword.setText("5QUOLZU");
 //        sincronizarProductoPrecio();
@@ -302,8 +303,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public void GoSincronizarInicial(View view){
-        Intent iconfig = new Intent(getApplicationContext(),
-                SincronizarActivity.class);
+        Intent iconfig = new Intent(getApplicationContext(),SincronizarActivity.class);
         // Guardo el origen de la SincronizacionActivity, para luego
         // poder saber a que activity regresar 06-07-2013
         iconfig.putExtra("ORIGEN", "LOGIN");
@@ -445,6 +445,7 @@ public class LoginActivity extends AppCompatActivity {
         session.setNombreVendedor(nombreVendedor);
         session.setToken(token);
 
+        dbusuarios.registrarDatosUsuarioLogin(codVendedor, nombreVendedor);
         SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
 
         Intent intentVendedor = new Intent(getApplicationContext(),
@@ -681,41 +682,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    private void sincronizarProductoPrecio(){
-        ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando precios...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
 
-        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPreciosProducto("ME0102060002");
-        RequestBody body = RetrofilClientCantol.createBodyJson(RequestProducto.Companion.getDataByUrl(urlReq));
-        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(this)
-                .create(GetDataCantol.class).getCliente(body);
-        WS_RetrofitCustom ws_retrofitCustom= new WS_RetrofitCustom(this);
-        ws_retrofitCustom.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
-            @Override
-            public void StartFinish(boolean isFinish) {
-                if (!isFinish) pDialog.show();
-                else pDialog.dismiss();
-            }
-            @Override
-            public void Result(boolean isOk, String mensaje, Object data) {
-                if(!isOk){
-                    GlobalFunctions.showCustomToast(
-                            LoginActivity.this,
-                            mensaje,
-                            GlobalFunctions.TOAST_ERROR);
-                    return;
-                }
-                Gson gson=new Gson();
-                final Type malla = new TypeToken<ArrayList<ResultPrecioArticulo>>() {}.getType();
-                final ArrayList<ResultPrecioArticulo> lista = gson.fromJson(gson.toJson(data), malla);
-                Log.i("TAG", "cant precios "+lista.size());
-
-            }
-        });
-    }
 
     private void testMapa(){
         final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
@@ -725,6 +692,9 @@ public class LoginActivity extends AppCompatActivity {
         i.putExtra("codigoVendedor", "33");
         i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
         startActivity(i);
+//        BottomSheetDialogBuscarProductoVenta dd=BottomSheetDialogBuscarProductoVenta.newInstance(
+//                "33", "oc_numero", "FERRETERIA A");
+//        dd.show(getSupportFragmentManager(), "ddd");
     }
 
 }

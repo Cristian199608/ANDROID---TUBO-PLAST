@@ -17,6 +17,7 @@ import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.adapters.CH_Adapter_bonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
+import com.example.sm_tubo_plast.genesys.util.Dialog.AlertDialogButtonCustom;
 
 import java.util.ArrayList;
 
@@ -103,11 +104,9 @@ public interface DialogListener {
         //Adapter_bonificaciones adapter = new Adapter_bonificaciones(getActivity(), listaBonificaciones);
         CH_Adapter_bonificaciones adapter = new CH_Adapter_bonificaciones(getActivity(), listaBonificaciones);
         lv_bonificaciones.setAdapter(adapter);
-        lv_bonificaciones.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+        adapter.setOnMyCallback(new CH_Adapter_bonificaciones.Mylistener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+            public void onClikItem(int position) {
                 listener.onItemClick(position,
                         false,
                         listaBonificaciones, listaPromociones,
@@ -118,7 +117,21 @@ public interface DialogListener {
             }
         });
 
-        alertBuilder.setNegativeButton("Cancelar",
+//        lv_bonificaciones.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view,
+//                                    int position, long id) {
+//                listener.onItemClick(position,
+//                        false,
+//                        listaBonificaciones, listaPromociones,
+//                        listaCantidades, listaPromocionesCompuestas,
+//                        items_tipoAgrupado, listaCantidadesUsadas,
+//                        listaMontosUsados);
+//                dismiss();
+//            }
+//        });
+
+        alertBuilder.setNegativeButton("Eliminar",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -134,7 +147,9 @@ public interface DialogListener {
 
                     }
                 });
-        alertBuilder.create();
+//        AlertDialog dialog = alertBuilder.create();
+//        alertBuilder.show();
+//        AlertDialogButtonCustom.setCustomButon(dialog);
         return alertBuilder.show();
     }
 

@@ -538,7 +538,7 @@ public class DBSync_soap_manager {
 		if (response.isSuccessful()) {
 			final Type malla = new TypeToken<ArrayList<ResultClienteCantol>>() {}.getType();
 			final ArrayList<ResultClienteCantol> lista = gson.fromJson(gson.toJson(response.body()), malla);
-			return dbclass.guardarSyncClientesMasivo(lista);
+			return dbclass.guardarSyncClientesMasivo(lista, codven);
 		}
 		return "El servidor ha devuelto un mensaje de error";
 	}
@@ -5143,8 +5143,8 @@ public int Sync_tabla_ObjPedido(String codven, String url, String catalog, Strin
 	
 	SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 	Request.addProperty("codven", codven);
-	Request.addProperty("url", url); 
-	Request.addProperty("catalog", catalog); 
+	Request.addProperty("serv", url);
+	Request.addProperty("catalog", catalog);
 	Request.addProperty("user", user); 
 	Request.addProperty("password", contrasena);
 	Request.addProperty("start", start);
@@ -5900,7 +5900,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		if (response.isSuccessful()) {
 			final Type malla = new TypeToken<ArrayList<ResultCondicionVenta>>() {}.getType();
 			final ArrayList<ResultCondicionVenta> lista = gson.fromJson(gson.toJson(response.body()), malla);
-			return dbclass.guardarSyncFormaPagoMasivo(lista);
+			return dbclass.guardarSyncFormaPagoMasivo(lista, true);
 		}
 		return "El servidor ha devuelto un mensaje de error";
 	}

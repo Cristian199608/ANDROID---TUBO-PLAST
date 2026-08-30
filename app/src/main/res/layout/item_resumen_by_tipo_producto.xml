@@ -43,7 +43,7 @@
             android:gravity="center"
             android:text="volumen"
             android:textColor="@color/grey_300"
-            android:textSize="@dimen/text_resumen_pedido" />
+            android:textSize="@dimen/tittle_item_pedido_producto" />
         <TextView
             android:id="@+id/tvSubTotal"
             android:layout_width="0dp"
@@ -53,9 +53,9 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="2"
             android:gravity="end"
-            android:text="Sub Total"
+            android:text="SubTot"
             android:textColor="@color/grey_300"
-            android:textSize="@dimen/text_resumen_pedido" />
+            android:textSize="@dimen/tittle_item_pedido_producto" />
         <TextView
             android:id="@+id/tvPrecioKilo"
             android:layout_width="0dp"
@@ -68,7 +68,7 @@
             android:gravity="end"
             android:text="PK($)"
             android:textColor="@color/grey_300"
-            android:textSize="@dimen/text_resumen_pedido" />
+            android:textSize="@dimen/tittle_item_pedido_producto" />
         <TextView
             android:id="@+id/tvIgvTotal"
             android:layout_width="0dp"
@@ -80,7 +80,7 @@
             android:gravity="end"
             android:text="IGV"
             android:textColor="@color/grey_300"
-            android:textSize="@dimen/text_resumen_pedido" />
+            android:textSize="@dimen/tittle_item_pedido_producto" />
         <TextView
             android:id="@+id/tvTotal"
             android:layout_width="0dp"
@@ -92,6 +92,6 @@
             android:gravity="end"
             android:text="Total"
             android:textColor="@color/grey_300"
-            android:textSize="@dimen/text_resumen_pedido" />
+            android:textSize="@dimen/tittle_item_pedido_producto" />
     </LinearLayout>
 </RelativeLayout>

@@ -107,7 +107,12 @@ public class Cobranza_LazyAdapter extends BaseAdapter {
 
         long lonVencimiento=VARIABLES.convertirFecha_to_longFromYYYY_MM_DD(song.getFecha_vencimiento());
         long lonActual=VARIABLES.GetFechaActua_long();
-        if (lonVencimiento>=lonActual){
+        if(Double.parseDouble(song.getSaldo())<=0){
+            txtTipoSaldo.setText("Deuda");
+            txtEstadoVencimiento.setText("Estado: Sin deuda");
+            txtEstadoVencimiento.setTextColor(activity.getResources().getColor(R.color.green_500));
+        }
+        else if (lonVencimiento>=lonActual){
             txtTipoSaldo.setText("Obligación");
             txtEstadoVencimiento.setText("Estado: Por vencer");
             txtEstadoVencimiento.setTextColor(activity.getResources().getColor(R.color.primaryColor));

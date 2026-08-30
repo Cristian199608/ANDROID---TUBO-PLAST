@@ -580,7 +580,37 @@ public class DBclasses extends SQLiteAssetHelper {
 				+") result "
 				+ "order by nomcli asc  ";
 
-		rawQuery = "select * from (" +
+		rawQuery="WITH consultaDeudas AS (\n" +
+				"\n" +
+				"SELECT\n" +
+				"    codcli as codclix,\n" +
+				"\n" +
+				"    SUM(case " +
+				"		when date('now', 'localtime') < date(fecha_vencimiento) then total else 0 end" +
+				"    ) AS deuda_x_vencer,\n" +
+				"\n" +
+				"    SUM(\n" +
+				"        CASE\n" +
+				"            WHEN julianday('now') - julianday(date(fecha_vencimiento)) > 0\n" +
+				"             AND julianday('now') - julianday(date(fecha_vencimiento)) < 30\n" +
+				"            THEN saldo\n" +
+				"            ELSE 0\n" +
+				"        END\n" +
+				"    ) AS deuda_menor_30_dias,\n" +
+				"\n" +
+				"    SUM(\n" +
+				"        CASE\n" +
+				"            WHEN julianday('now') - julianday(date(fecha_vencimiento)) >= 30\n" +
+				"            THEN saldo\n" +
+				"            ELSE 0\n" +
+				"        END\n" +
+				"    ) AS deuda_mayor_igual_30_dias\n" +
+				"\n" +
+				"FROM cta_ingresos\n" +
+				"GROUP BY codcli \n" +
+				"\n" +
+				")";
+		rawQuery += "\nselect * from (" +
 				"select distinct(nomcli) as nomcli," +
 				"ruccli," +
 				"fecha_compra," +
@@ -593,9 +623,22 @@ public class DBclasses extends SQLiteAssetHelper {
 				"1 as estado_cli," +
 				"'' as motivoBajaCliente," +
 				"1 as sistema, " +
-				"'1' as moneda_ultima_compra " +
-				" from cliente "
-				+"where (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
+				"'1' as moneda_ultima_compra," +
+				"limite_credito," +
+				"disponible_credito," +
+				"ifnull(deuda_menor_30_dias, 0) as deuda_menor_30_dias, " +
+				"ifnull(deuda_mayor_igual_30_dias, 0) as deuda_mayor_igual_30_dias, " +
+				"ifnull(deuda_x_vencer, 0) as deuda_x_vencer, " +
+				"case when (ifnull(deuda_mayor_igual_30_dias, 0) + ifnull(deuda_menor_30_dias, 0))>0 " +
+				"then 'Con deuda' else 'Sin deudas' end as estadoDeuda " +
+				" from cliente \n"
+				+"left join consultaDeudas on consultaDeudas.codclix=cliente.codcli "
+				+"where " +
+				"cliente.codcli in (" +
+				"select x.codcli from znf_programacion_clientes x " +
+				"where x.codven= '"+codven+"' " +
+				")\n " +
+				"and (nomcli like '%"+txtBusqueda+"%' or ruccli like '%"+txtBusqueda+"%' or direccion like '%"+txtBusqueda+"%' ) "
 				+ " limit "+start+", "+end+" "
 				+") result "
 				+ "order by nomcli asc  ";
@@ -635,7 +678,12 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbc.put("estado_cli", cur.getString(cur.getColumnIndex("estado_cli")));
 			dbc.put("motivoBajaCliente", cur.getString(cur.getColumnIndex("motivoBajaCliente")));
 			dbc.put("sistema", cur.getString(cur.getColumnIndex("sistema")));
-
+			dbc.put("limite_credito", cur.getDouble(cur.getColumnIndex("limite_credito")));
+			dbc.put("disponible_credito", cur.getDouble(cur.getColumnIndex("disponible_credito")));
+			dbc.put("deuda_menor_30_dias", cur.getDouble(cur.getColumnIndex("deuda_menor_30_dias")));
+			dbc.put("deuda_mayor_igual_30_dias", cur.getDouble(cur.getColumnIndex("deuda_mayor_igual_30_dias")));
+			dbc.put("estadoDeuda", cur.getString(cur.getColumnIndex("estadoDeuda")));
+			dbc.put("deuda_x_vencer", cur.getDouble(cur.getColumnIndex("deuda_x_vencer")));
 			dbcliente.add(dbc);
 		}
 		cur.close();
@@ -878,6 +926,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					+" Estado_Cobranza  as tipo,"
 					+"NroUnicoBanco "
 				    + "from cta_ingresos "
+				///saldo>0
 				    + "where cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -1035,8 +1084,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 
 	public ItemProducto[] getProductosXcliente(String codigoCliente,
-											   String descripcion,
-											   long time_sincronizacion) {
+											   String descripcion) {
 
 		int sec_politica = getSecPoliticaConfiguracion();
 
@@ -1330,6 +1378,114 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
+	public ItemProducto[] getProductosXTIME_SYNC(String timeSincronizacion) {
+
+			int sec_politica = getSecPoliticaConfiguracion();
+
+			String rawQuery;
+			Log.i("getProductosXTIME_SYNC", timeSincronizacion);
+
+			rawQuery = "select * from "
+					+ "("
+					+ "select "
+					+ "politica_precio2.secuencia,"
+					+ "producto.codpro,"
+					+ "producto.despro,"
+					+ "politica_precio2.prepro,"
+					+ "politica_precio2.prepro_unidad,"
+					+ "producto.percepcion,"
+					+ "producto.factor_conversion,"
+					+ "producto.peso,"
+					+ "ifnull(mta_kardex.stock,0) as stock,"
+					+ "producto.cod_rapido, "
+					+ "producto.afecto, "
+					+ "producto.estado,"
+					+ "producto.desc_comercial,  "
+					+ "producto.codunimed_almacen,  "
+					+ "producto.marca,  "
+					+ "ifnull(mta_kardex.xtemp,0) as xtemp,"
+					+ "ifnull(mta_kardex.transito,0) as transito,"
+					+ "ifnull(mta_kardex.disponible,0) as disponible "
+					+ "from producto "
+					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
+					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+					+ "where politica_precio2.secuencia=0 "
+					+ "and producto.time_sync = '"+timeSincronizacion+"' "
+					+
+
+					"union all select "
+					+ "politica_precio2.secuencia,"
+					+ "producto.codpro,"
+					+ "producto.despro,"
+					+ "politica_precio2.prepro,"
+					+ "politica_precio2.prepro_unidad,"
+					+ "producto.percepcion,"
+					+ "producto.factor_conversion,"
+					+ "producto.peso,"
+					+ "ifnull(mta_kardex.stock,0) as stock,"
+					+ "producto.cod_rapido, "
+					+ "producto.afecto, "
+					+ "producto.estado,"
+					+ "producto.desc_comercial,  "
+					+ "producto.codunimed_almacen,  "
+					+ "producto.marca,  "
+					+ "ifnull(mta_kardex.xtemp,0) as xtemp,"
+					+ "ifnull(mta_kardex.transito,0) as transito,"
+					+ "ifnull(mta_kardex.disponible,0) as disponible "
+					+ "from producto "
+					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
+					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+					+ "where producto.time_sync = '"+timeSincronizacion+"' "
+					+ ") " + "group by codpro order by despro";
+
+			Log.i(TAG, "rawQuery => "+rawQuery);
+			SQLiteDatabase db = getReadableDatabase();
+			Cursor cursor = db.rawQuery(rawQuery, null);
+
+			ItemProducto[] productos = new ItemProducto[cursor.getCount()];
+
+			if (cursor.moveToFirst()) {
+				int i = 0;
+				do {
+					productos[i] = new ItemProducto();
+					productos[i].setSec_politica(cursor.getString(0));
+					productos[i].setCodprod(cursor.getString(1));
+					productos[i].setDescripcion(cursor.getString(2));
+					productos[i].setPrecio(cursor.getDouble(3));
+					productos[i].setPrecioUnidad(cursor.getDouble(4));
+					productos[i].setPercepcion(cursor.getDouble(5));
+					productos[i].setFact_conv(cursor.getInt(6));
+					productos[i].setPeso(cursor.getDouble(7));
+					productos[i].setStock(cursor.getInt(8));
+					productos[i].setCodProveedor(cursor.getString(9));
+					productos[i].setAfecto(cursor.getString(10));
+					productos[i].setEstado(cursor.getString(11));
+					productos[i].setDesc_comercial(cursor.getString(cursor.getColumnIndex("desc_comercial")));
+					productos[i].setCodunimed(cursor.getString(cursor.getColumnIndex("codunimed_almacen")));
+					productos[i].setPrecio_base(cursor.getDouble(cursor.getColumnIndex("prepro")));
+					productos[i].setPrecioLista(cursor.getDouble(cursor.getColumnIndex("prepro")));
+					productos[i].setMarca(cursor.getString(cursor.getColumnIndex("marca")));
+
+					DBMta_Kardex stockDet= new DBMta_Kardex();
+					stockDet.setCodpro(productos[i].getCodprod());
+					stockDet.setStock(cursor.getInt(cursor.getColumnIndex("stock")));
+					stockDet.setXtemp(cursor.getInt(cursor.getColumnIndex("xtemp")));
+					stockDet.setTransito(cursor.getInt(cursor.getColumnIndex("transito")));
+					stockDet.setDisponible(cursor.getInt(cursor.getColumnIndex("disponible")));
+					productos[i].setStockDetalle(stockDet);
+					i++;
+
+					Log.i("DBclasses ::getProductosXProveedor::",
+							"CodProd: " + cursor.getString(1) + "\nDescripcion: "
+									+ cursor.getString(2) + "\nPercepcion: "
+									+ cursor.getDouble(5));
+				} while (cursor.moveToNext());
+			}
+
+			cursor.close();
+			db.close();
+			return productos;
+	}
 	public ItemProducto[] getProductosXProveedor(String codigoCliente,
 			String codigoProveedor) {
 		// TODO Auto-generated method stub
@@ -1751,8 +1907,8 @@ public class DBclasses extends SQLiteAssetHelper {
 		int nro_item=getNextNroItemPedido(item.getOc_numero());
 		AgregarPedidoDetallePrincipal(item, nro_item);
 	}
-	public void AgregarPedidoDetallePromocion(DBPedido_Detalle item) {
-		AgregarPedidoDetallePrincipal(item, item.getItem());
+	public boolean AgregarPedidoDetallePromocion(DBPedido_Detalle item) {
+		return AgregarPedidoDetallePrincipal(item, item.getItem());
 	}
 
 
@@ -1818,6 +1974,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			return a>0;
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			Log.i("PEDIDO_DETALLES", "Error registro insertado");
 			return false;
 		}
@@ -3639,9 +3796,13 @@ public class DBclasses extends SQLiteAssetHelper {
 					"from pedido_cabecera pc left join "+
 					"cliente c on c.codcli= pc.cod_cli "+
 					"where pc.oc_numero <> 0 " +
-				addWHere+" "+
-				"and pc.cod_cli !='TPLAST-VISITA' and pc.cod_emp='"+codven+"' " +
-				"order by pc.oc_numero DESC";
+					"and pc.cod_cli in (" +
+					"select x.codcli from znf_programacion_clientes x " +
+					"where x.codven= '"+codven+"' " +
+					")\n " +
+					addWHere+" "+
+					"and pc.cod_cli !='TPLAST-VISITA' and pc.cod_emp='"+codven+"' " +
+					"order by pc.oc_numero DESC";
 
 		Log.d("QUERY REPORTE", " :::::> " + rawQuery);
 
@@ -7280,8 +7441,9 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 		String rawQuery;
 
-		rawQuery = "select * from pedido_cabecera where oc_numero='"
-				+ oc_numero + "'";
+		rawQuery = "select * from pedido_cabecera " +
+				"where oc_numero='"+ oc_numero + "'" +
+				"or '"+oc_numero+"' like 'TPLAST%' ";
 
 		DBPedido_Cabecera item =null;
 
@@ -14083,7 +14245,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values=new ContentValues();
 				values.put("kardex", "VENTAS");
 				values.put("codalm", "00");
-				values.put("nombre_almacen", "ALMACEN PRINCIPAL DE VENTAS");
+				//values.put("nombre_almacen", "ALMACEN PRINCIPAL DE VENTAS");
 				values.put("codpro", producto.getCodigo_producto());
 				values.put("stock", producto.getStock().getStock());
 				values.put("xtemp", producto.getStock().getComprometido());
@@ -14112,7 +14274,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
-	public String guardarSyncClientesMasivo(ArrayList<ResultClienteCantol> listaClientes) {
+	public String guardarSyncClientesMasivo(ArrayList<ResultClienteCantol> listaClientes, String codven) {
 
 		SQLiteDatabase db = getWritableDatabase();
 
@@ -14128,7 +14290,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("codcli", cliente.getCodigoCliente());
 				values.put("tipo_documento", cliente.getTipoDocumento());
 				values.put("comprobante",
-						cliente.getTipoDocumento().equals("RUC")
+						(cliente.getTipoDocumento()!=null && cliente.getTipoDocumento().equals("RUC"))
 						?PedidosActivity.FACTURA
 						:PedidosActivity.BOLETA);
 				values.put("ruccli", cliente.getNumeroDocumento());
@@ -14176,22 +14338,16 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("monedaLimCred", PedidosActivity.MONEDA_NACIONAL);
 
 				long a = db.insertWithOnConflict(DBtables.Cliente.TAG, null,values, SQLiteDatabase.CONFLICT_IGNORE);
-				//-------------------------------direccion cliente----------------------------------------------------------------
-				values=new ContentValues();
-				values.put(DBtables.Direccion_cliente.PK_CODCLI, cliente.getCodigoCliente());
-				values.put(DBtables.Direccion_cliente.PK_ITEM, 0);
-				values.put(DBtables.Direccion_cliente.DIRECCION, txtUbigeo);
-				values.put(DBtables.Direccion_cliente.DES_CORTA, txtUbigeo);
-				values.put(DBtables.Direccion_cliente.TELEFONO,cliente.getTelefonoPrincipal());
-				values.put(DBtables.Direccion_cliente.CODDEP,"");
-				values.put(DBtables.Direccion_cliente.CODPRV,"");
-				values.put(DBtables.Direccion_cliente.UBIGEO,"");
-				values.put(DBtables.Direccion_cliente.LATITUD,"0.0");
-				values.put(DBtables.Direccion_cliente.LONGITUD,"0.0");
-				values.put(DBtables.Direccion_cliente.DOC_ADICIONAL,"");
-				values.put(DBtables.Direccion_cliente.ESTADO,"S");
-				values.put(Direccion_cliente.altitud,"0.0");
-				db.insertWithOnConflict(DBtables.Direccion_cliente.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+				//-------------------------------zonificacion----------------------------------------------------------------
+				values = new ContentValues();
+				values.put("secuencia", 1);
+				values.put("codven", codven);
+				values.put("n_dia", 1);
+				values.put("sec_zona", 1);
+				values.put("codcli", cliente.getCodigoCliente());
+				values.put("item_dircli", 0);
+				values.put("sec_ruta", 0);
+				long ax = db.insertWithOnConflict(DBtables.ZnfProgramacionClientes.TAG, null,values, SQLiteDatabase.CONFLICT_IGNORE);
 			}
 			db.setTransactionSuccessful();
 			return null;
@@ -14212,11 +14368,34 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		try {
 			String where = "estado != ?";
 			String[] args = { "P" };
+			long dd = db.delete(DBtables.Direccion_cliente.TAG, where, args);
 			long d = db.delete(DBtables.LugarEntrega.TAG, where, args);
 			Log.i(TAG, "CANT ELIMINADO LUGAR ENTREGA "+d);
 
 			ContentValues values=null;
 			for (ResultClienteLugarEntrega cliente : listaLugarEntrega) {
+
+				values = new ContentValues();
+				if(cliente.getCodigo_punto_entrega().toUpperCase().equals("DOMICILIO FISCAL")
+				|| cliente.getCodigo_punto_entrega().toUpperCase().equals("DOMICILIO_FISCAL")
+				){
+					values.put(DBtables.Direccion_cliente.PK_CODCLI, cliente.getCodigo_cliente());
+					values.put(DBtables.Direccion_cliente.PK_ITEM,"0");
+					values.put(DBtables.Direccion_cliente.DIRECCION, cliente.getDireccion());
+					values.put(DBtables.Direccion_cliente.TELEFONO,cliente.getTelefono());
+					values.put(DBtables.Direccion_cliente.CODPRV,cliente.getProvincia());
+					values.put(DBtables.Direccion_cliente.CODDEP,cliente.getDepartamento());
+					values.put(DBtables.Direccion_cliente.UBIGEO,cliente.getDistrito());
+					values.put(DBtables.Direccion_cliente.DES_CORTA, cliente.getDireccion());
+
+					values.put(Direccion_cliente.LATITUD, cliente.getLatitud().trim().isEmpty()?"0.0":cliente.getLatitud());
+					values.put(Direccion_cliente.LONGITUD, cliente.getLongitud().trim().isEmpty()?"0.0":cliente.getLongitud());
+					values.put(DBtables.Direccion_cliente.DOC_ADICIONAL,"");
+					values.put(DBtables.Direccion_cliente.ESTADO,"P");
+					values.put(Direccion_cliente.altitud,"0");
+					long az = db.insertWithOnConflict(DBtables.Direccion_cliente.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+				}
+				else {
 					values = new ContentValues();
 					values.put("codigoCliente", cliente.getCodigo_cliente());
 					values.put("itemSucursal", "0");
@@ -14229,16 +14408,26 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					values.put("codigoDistrito", cliente.getDistrito());
 					values.put("codigo_provincia", cliente.getProvincia());
 					values.put("codigo_departamento", cliente.getDepartamento());
-					values.put("latitud", cliente.getLatitud().trim().isEmpty()?"0.0":cliente.getLatitud());
-					values.put("longitud", cliente.getLongitud().trim().isEmpty()?"0.0":cliente.getLongitud());
+					values.put("latitud", cliente.getLatitud().trim().isEmpty() ? "0.0" : cliente.getLatitud());
+					values.put("longitud", cliente.getLongitud().trim().isEmpty() ? "0.0" : cliente.getLongitud());
 					values.put("telefono", cliente.getTelefono());
 					values.put("contacto", cliente.getContacto());
 					values.put("cargo_contacto", cliente.getCargo_contacto());
-					values.put("estado", cliente.getLatitud().trim().isEmpty()?"O":"E");
+					values.put("estado", cliente.getLatitud().trim().isEmpty() ? "O" : "E");
 
-					long a = db.insertWithOnConflict(DBtables.LugarEntrega.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
-					a=1;
+					long a = db.insertWithOnConflict(DBtables.LugarEntrega.TAG, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+					a = 1;
+				}
 			}
+			//-------------------------------actualizamos direccion fiscal----------------------------------------------------------------
+			db.execSQL("UPDATE cliente\n" +
+					"SET direccionFiscal = ifnull((\n" +
+					"    SELECT dc.direccion\n" +
+					"    FROM direccion_cliente dc\n" +
+					"    WHERE dc.codcli = cliente.codcli \n" +
+					"\tlimit 1\n" +
+					"), 'No se encontró dirección fiscal')");
+
 			db.setTransactionSuccessful();
 			return null;
 		} catch (Exception e) {
@@ -14453,15 +14642,17 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
-	public String guardarSyncFormaPagoMasivo(ArrayList<ResultCondicionVenta> listaCondicionVenta) {
+	public String guardarSyncFormaPagoMasivo(ArrayList<ResultCondicionVenta> listaCondicionVenta, boolean deleteAll) {
 
 		SQLiteDatabase db = getWritableDatabase();
 
 
 		try {
 			db.beginTransaction();
-			long d = db.delete(DBtables.FormaPago.TAG, null, null);
-			Log.i(TAG, "CANT ELIMINADO condicion venta "+d);
+			if(deleteAll){
+				long d = db.delete(DBtables.FormaPago.TAG, null, null);
+				Log.i(TAG, "CANT ELIMINADO condicion venta "+d);
+			}
 
 			ContentValues values=null;
 			for (ResultCondicionVenta item : listaCondicionVenta) {
@@ -14483,6 +14674,29 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			db.endTransaction();
 			db.close();
 		}
+	}
+
+	public void registrarDatosUsuarioLogin(String codven, String nombreVendedor){
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues cv =new ContentValues();
+		cv.put(DBtables.Usuarios.PK_USECOD, codven);
+		cv.put(DBtables.Usuarios.USEPAS, "");
+		cv.put(DBtables.Usuarios.USENAM, nombreVendedor);
+		cv.put(DBtables.Usuarios.USEUSR, "");
+		cv.put(DBtables.Usuarios.USESGL, "");
+		cv.put(DBtables.Usuarios.codigoRol,"");
+		db.insertWithOnConflict(DBtables.Usuarios.TAG, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+
+		cv = new ContentValues();
+		cv.put(DBtables.Vendedor.CODVEN, codven);
+		cv.put(DBtables.Vendedor.NOMVEN, nombreVendedor);
+		cv.put(DBtables.Vendedor.FK_CODUSER,codven);
+		cv.put(DBtables.Vendedor.FLG_MODIFICAPRECIO, "0");
+		cv.put(DBtables.Vendedor.EMAIL, "");
+		cv.put(DBtables.Vendedor.telefono, "");
+		cv.put(DBtables.Vendedor.text_area, "VENDEDOR");
+		db.insertWithOnConflict(DBtables.Vendedor.TAG, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+
 	}
 }
 

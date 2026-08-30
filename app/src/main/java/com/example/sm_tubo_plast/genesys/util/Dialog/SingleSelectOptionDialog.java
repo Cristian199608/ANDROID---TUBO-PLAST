@@ -198,7 +198,12 @@ class FaseSingleActividadAdapter extends RecyclerView.Adapter<FaseSingleActivida
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final SingleSelectOptionDialog.SinglechoiceCustom item=lista.get(position);
-        viewHolder.tvTitulo.setText(item.titulo);
+
+        viewHolder.tvTitulo.setVisibility(View.GONE);
+        if(item.titulo!=null && item.titulo.length()>0){
+            viewHolder.tvTitulo.setText(item.titulo);
+            viewHolder.tvTitulo.setVisibility(View.VISIBLE);
+        }
         viewHolder.tvOrden.setText(String.valueOf(position+1));
         viewHolder.tvOpcion.setText(item.opcion);
         boolean isSelected=false;

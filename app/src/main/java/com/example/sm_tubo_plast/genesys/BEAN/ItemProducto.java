@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
+import com.example.sm_tubo_plast.genesys.datatypes.DBMta_Kardex;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.io.Serializable;
@@ -39,9 +40,11 @@ public class ItemProducto {
 	private String familia;
 	private String subfamilia;
 	private String sec_promo;
+	private String marca;
 	private int sec_promo_prioridad;
+	private DBMta_Kardex stockDetalle;
 
-	
+
 	public String getGrupo() {
 		return grupo;
 	}
@@ -246,6 +249,22 @@ public class ItemProducto {
 
 	public void setSec_promo_prioridad(int sec_promo_prioridad) {
 		this.sec_promo_prioridad = sec_promo_prioridad;
+	}
+
+	public String getMarca() {
+		return this.marca;
+	}
+
+	public void setMarca(String marca) {
+		this.marca = marca;
+	}
+
+	public DBMta_Kardex getStockDetalle() {
+		return stockDetalle;
+	}
+
+	public void setStockDetalle(DBMta_Kardex stockDetalle) {
+		this.stockDetalle = stockDetalle;
 	}
 
 	public static class DataEdit implements Serializable{

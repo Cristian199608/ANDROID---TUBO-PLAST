@@ -111,6 +111,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
                 android:layout_toEndOf="@+id/textView"
+                android:visibility="invisible"
                 android:src="@drawable/new_logo_saemovil" />
 
             <TextView

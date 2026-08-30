@@ -112,6 +112,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
     String spn_Texto_local;
     public int result = 0;
     public int result_local = 0;
+    private boolean SYNC_ROBOT =false;
     String origen;
     DBclasses database;
 
@@ -158,7 +159,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         edt_servidor.setEnabled(false);
         edt_nombrebd.setEnabled(false);
         edt_usuario.setEnabled(false);
-
+        settings_spn_servicio.setVisibility(View.GONE);
         edt_contrasenia_local.setEnabled(false);
         edt_servidor_local.setEnabled(false);
         edt_nombrebd_local.setEnabled(false);
@@ -209,6 +210,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
         Bundle bundle = getIntent().getExtras();
         origen = bundle.getString("ORIGEN");
+        SYNC_ROBOT = bundle.getBoolean("SYNC_ROBOT", false);
 
         settings_spn_servicio
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -417,29 +419,14 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
             @Override
             public void onClick(View arg0) {
-                // DBSync_soap_manager soap_manager1 = new
-                // DBSync_soap_manager(getApplicationContext());
-
-                if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
-
-                    AlertDialog.Builder dialogo = new AlertDialog.Builder(SincronizarActivity.this);
-                    dialogo.setMessage("Debe seleccionar almenos un servicio");
-                    dialogo.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-                    dialogo.create();
-                    dialogo.show();
-
-                } else {
-                    new async_verificarServicio().execute();
-                }
+                verificarServicioParaSincronizar(false);
+            }
+        });
+        btn_sincronizar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                verificarServicioParaSincronizar(true);
+                return false;
             }
         });
 
@@ -489,124 +476,23 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 });
 
 
+        btn_guardar.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showDialogPreferenciaServicio(true);
+                return false;
+            }
+        });
+
         btn_guardar.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 // TODO Auto-generated method stub
-
-                if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
-
-                    AlertDialog.Builder dialogo = new AlertDialog.Builder(
-                            SincronizarActivity.this);
-                    dialogo.setMessage("Debe seleccionar almenos un servicio");
-                    dialogo.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-                    dialogo.create();
-                    dialogo.show();
-
-                } else {
-                    cargarDialogoPreferencias();
-                }
-
+                showDialogPreferenciaServicio(false);
             }
 
-            private void cargarDialogoPreferencias() {
-                // TODO Auto-generated method stub
-                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
-                        SincronizarActivity.this);
-                alertDialog.setTitle("PREFERENCIAS");
-                alertDialog.setMessage("Se guardaran los siguientes datos: \n"
-                                + "Servicio:  " + spn_Texto + "\n" + "Base Datos:  "
-                                + edt_nombrebd.getText().toString() + "\n"
-                                + "Usuario:  " + edt_usuario.getText().toString()
-                                + "\n"
-                        /* + "Contrase�a:  "+ edt_contrasenia.getText().toString() */);
-                alertDialog.setIcon(R.drawable.ic_alert);
-                alertDialog.setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                editor = prefs.edit();
 
-                                editor.putString("url", edt_servidor.getText().toString());
-                                editor.putString("catalog", edt_nombrebd.getText().toString());
-                                editor.putString("userid", edt_usuario.getText().toString());
-                                editor.putString("contrasenaid", edt_contrasenia.getText().toString());
-                                editor.putString("servicio", spn_servicio.getSelectedItem().toString());
-
-                                editor.putString("url_local",edt_servidor_local.getText().toString());
-                                editor.putString("catalog_local",edt_nombrebd_local.getText().toString());
-                                editor.putString("userid_local",edt_usuario_local.getText().toString());
-                                editor.putString("contrasenaid_local",edt_contrasenia_local.getText().toString());
-                                editor.putString("servicio_local",spn_servicio_local.getSelectedItem().toString());
-
-                                editor.commit();
-
-                                GlobalVar.NombreWEB = GlobalFunctions.obtenerNombreWEB(spn_Texto);
-                                GlobalVar.direccion_servicio = spn_servicio.getSelectedItem().toString();
-                                GlobalVar.direccion_servicio_local = spn_servicio_local.getSelectedItem().toString();
-
-                                Log.i("Global var direccion_servicio",GlobalVar.direccion_servicio);
-                                Log.i("Global var direccion_servicio_local",GlobalVar.direccion_servicio_local);
-
-                                catalog = edt_nombrebd.getText().toString();
-                                userid = edt_usuario.getText().toString();
-                                contrasenaid = edt_contrasenia.getText().toString();
-                                url = edt_servidor.getText().toString();
-                                catalog_local = edt_nombrebd_local.getText().toString();
-                                userid_local = edt_usuario_local.getText().toString();
-                                contrasenaid_local = edt_contrasenia_local.getText().toString();
-                                url_local = edt_servidor_local.getText().toString();
-
-                                if (settings_spn_servicio.isChecked()) {
-                                    editor.putBoolean("check_web", true);
-                                    editor.putBoolean("check_local", false);
-                                    GlobalVar.urlService = GlobalVar.direccion_servicio;
-                                    GlobalVar.id_servicio = GlobalVar.INTERNET;
-                                    servidorBD = url;
-                                    nombreBD = catalog;
-                                    usuarioBD = userid;
-                                    contrasenaBD = contrasenaid;
-                                } else {
-                                    editor.putBoolean("check_web", false);
-                                    editor.putBoolean("check_local", true);
-                                    GlobalVar.urlService = GlobalVar.direccion_servicio_local;
-                                    GlobalVar.id_servicio = GlobalVar.LOCAL;
-                                    servidorBD = url_local;
-                                    nombreBD = catalog_local;
-                                    usuarioBD = userid_local;
-                                    contrasenaBD = contrasenaid_local;
-                                }
-
-                                Log.i("GLOBAl var urlService", ""
-                                        + GlobalVar.urlService);
-                                Log.i("SincronizarActivity",
-                                        "servicio (local=0,internet=1) "
-                                                + GlobalVar.id_servicio);
-
-                                // Solo si se da en aceptar se activa el boton
-                                // sincronizar para evitar error
-                                // de mala sincronizacion
-                                btn_sincronizar.setEnabled(true);
-                            }
-                        });
-                alertDialog.setNegativeButton("Cancelar",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogo1, int id) {
-
-                            }
-                        });
-                alertDialog.show();
-            }
 
         });
 
@@ -627,6 +513,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
                 cargarCampos(codServicio[codigo]);
                 spn_servicio_local.setSelection(pos);
+                if (SYNC_ROBOT) {
+                    btn_guardar.performLongClick();
+                }
 
             }
 
@@ -713,7 +602,155 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         showRequestPermisionToAccesStorage();
     }
 
-    private void SeleccionarTablas(){
+    private void verificarServicioParaSincronizar(boolean forzarSincronizacion) {
+        if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
+
+            AlertDialog.Builder dialogo = new AlertDialog.Builder(SincronizarActivity.this);
+            dialogo.setMessage("Debe seleccionar almenos un servicio");
+            dialogo.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            // TODO Auto-generated method stub
+
+                        }
+                    });
+            dialogo.create();
+            dialogo.show();
+
+        } else {
+            new async_verificarServicio(forzarSincronizacion).execute();
+        }
+    }
+
+    private void showDialogPreferenciaServicio(boolean forzarSelection) {
+        if (!settings_spn_servicio.isChecked() && !chk_secundario.isChecked()) {
+
+            AlertDialog.Builder dialogo = new AlertDialog.Builder(
+                    SincronizarActivity.this);
+            dialogo.setMessage("Debe seleccionar almenos un servicio");
+            dialogo.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            // TODO Auto-generated method stub
+
+                        }
+                    });
+            dialogo.create();
+            dialogo.show();
+
+        } else {
+            cargarDialogoPreferencias(forzarSelection);
+        }
+    }
+
+    private void cargarDialogoPreferencias(boolean forzarSelection) {
+        if (forzarSelection) {
+            guardarPreferenciasServicio(forzarSelection);
+            return;
+        }
+
+        // TODO Auto-generated method stub
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+                SincronizarActivity.this);
+        alertDialog.setTitle("PREFERENCIAS");
+        alertDialog.setMessage("Se guardaran los siguientes datos: \n"
+                        + "Servicio:  " + spn_Texto + "\n" + "Base Datos:  "
+                        + edt_nombrebd.getText().toString() + "\n"
+                        + "Usuario:  " + edt_usuario.getText().toString()
+                        + "\n"
+                /* + "Contrase�a:  "+ edt_contrasenia.getText().toString() */);
+        alertDialog.setMessage("Se guardaran los datos");
+        alertDialog.setIcon(R.drawable.ic_alert);
+        alertDialog.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        guardarPreferenciasServicio(forzarSelection);
+                    }
+                });
+        alertDialog.setNegativeButton("Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogo1, int id) {
+
+                    }
+                });
+        alertDialog.show();
+    }
+
+    private void guardarPreferenciasServicio(boolean forzarSelection) {
+
+        editor = prefs.edit();
+
+        editor.putString("url", edt_servidor.getText().toString());
+        editor.putString("catalog", edt_nombrebd.getText().toString());
+        editor.putString("userid", edt_usuario.getText().toString());
+        editor.putString("contrasenaid", edt_contrasenia.getText().toString());
+        editor.putString("servicio", spn_servicio.getSelectedItem().toString());
+
+        editor.putString("url_local",edt_servidor_local.getText().toString());
+        editor.putString("catalog_local",edt_nombrebd_local.getText().toString());
+        editor.putString("userid_local",edt_usuario_local.getText().toString());
+        editor.putString("contrasenaid_local",edt_contrasenia_local.getText().toString());
+        editor.putString("servicio_local",spn_servicio_local.getSelectedItem().toString());
+
+        editor.commit();
+
+        GlobalVar.NombreWEB = GlobalFunctions.obtenerNombreWEB(spn_Texto);
+        GlobalVar.direccion_servicio = spn_servicio.getSelectedItem().toString();
+        GlobalVar.direccion_servicio_local = spn_servicio_local.getSelectedItem().toString();
+
+        Log.i("Global var direccion_servicio",GlobalVar.direccion_servicio);
+        Log.i("Global var direccion_servicio_local",GlobalVar.direccion_servicio_local);
+
+        catalog = edt_nombrebd.getText().toString();
+        userid = edt_usuario.getText().toString();
+        contrasenaid = edt_contrasenia.getText().toString();
+        url = edt_servidor.getText().toString();
+        catalog_local = edt_nombrebd_local.getText().toString();
+        userid_local = edt_usuario_local.getText().toString();
+        contrasenaid_local = edt_contrasenia_local.getText().toString();
+        url_local = edt_servidor_local.getText().toString();
+
+        if (settings_spn_servicio.isChecked()) {
+            editor.putBoolean("check_web", true);
+            editor.putBoolean("check_local", false);
+            GlobalVar.urlService = GlobalVar.direccion_servicio;
+            GlobalVar.id_servicio = GlobalVar.INTERNET;
+            servidorBD = url;
+            nombreBD = catalog;
+            usuarioBD = userid;
+            contrasenaBD = contrasenaid;
+        } else {
+            editor.putBoolean("check_web", false);
+            editor.putBoolean("check_local", true);
+            GlobalVar.urlService = GlobalVar.direccion_servicio_local;
+            GlobalVar.id_servicio = GlobalVar.LOCAL;
+            servidorBD = url_local;
+            nombreBD = catalog_local;
+            usuarioBD = userid_local;
+            contrasenaBD = contrasenaid_local;
+        }
+
+        Log.i("GLOBAl var urlService", ""
+                + GlobalVar.urlService);
+        Log.i("SincronizarActivity",
+                "servicio (local=0,internet=1) "
+                        + GlobalVar.id_servicio);
+
+        // Solo si se da en aceptar se activa el boton
+        // sincronizar para evitar error
+        // de mala sincronizacion
+        btn_sincronizar.setEnabled(true);
+        if (forzarSelection) btn_sincronizar.performLongClick();
+    }
+
+    private void SeleccionarTablas(boolean forzarSincronizacion){
         alt_bld.setTitle("Seleccione tablas a Sincronizar");
 
         //
@@ -755,6 +792,15 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         }
         //
 
+        if (forzarSincronizacion) {
+            StringBuilder sb=new StringBuilder();
+            for (int i = 0; i < lista.length; i++) {
+                if (sb.length() > 0)sb.append(",");
+                sb.append(i);
+            }
+            evaluarListSeleccionTablas(sb);
+            return;
+        }
         alt_bld.setPositiveButton("Aceptar",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int whichButton) {
@@ -771,26 +817,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                             }
                         }
 
-                        Log.w("TABLAS SINCRONIZAR","" + sb.toString());
-                        modulos_seleccionados = sb.toString();
-
-                        //Toast.makeText(getApplicationContext(),"Selected digit: " + sb.toString(),Toast.LENGTH_SHORT).show();
-                        StringTokenizer stTexto = new StringTokenizer(sb.toString(), ",");
-
-                        tablas = new String[stTexto.countTokens()];
-                        int a = 0;
-                        while (stTexto.hasMoreTokens()) {
-                            tablas[a] = stTexto.nextToken()
-                                    .toString();
-                            String as = tablas[a].toString();
-
-                            a = a + 1;
-                            Log.w("TABLAS", "" + as);
-                        }
-
-                        // Generar backup antes de la sincornizacion
-                        GlobalFunctions.backupdDatabaseFromExternalView(SincronizarActivity.this);
-                        new asynclogin().execute("", "");
+                        evaluarListSeleccionTablas(sb);
 
                     }
                 })
@@ -802,6 +829,31 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                             }
                         }).show();
     }
+
+    private void evaluarListSeleccionTablas(StringBuilder sb ) {
+        Log.w("TABLAS SINCRONIZAR","" + sb.toString());
+        modulos_seleccionados = sb.toString();
+
+        //Toast.makeText(getApplicationContext(),"Selected digit: " + sb.toString(),Toast.LENGTH_SHORT).show();
+        StringTokenizer stTexto = new StringTokenizer(sb.toString(), ",");
+
+        tablas = new String[stTexto.countTokens()];
+        int a = 0;
+        while (stTexto.hasMoreTokens()) {
+            tablas[a] = stTexto.nextToken()
+                    .toString();
+            String as = tablas[a].toString();
+
+            a = a + 1;
+            Log.w("TABLAS", "" + as);
+        }
+
+        // Generar backup antes de la sincornizacion
+        GlobalFunctions.backupdDatabaseFromExternalView(SincronizarActivity.this);
+        new asynclogin().execute("", "");
+
+    }
+
     private void buscarServicios() {
         mostrarServicios();
         result = buscarSecuenciaxServicio(servicio);
@@ -1012,6 +1064,12 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
     // ***************************************************************************************************************************
     class async_verificarServicio extends AsyncTask<Void, Void, Boolean>{
         ProgressDialog proDialog;
+        boolean forzarSincronizacion;
+
+        public async_verificarServicio(boolean forzarSincronizacion) {
+            this.forzarSincronizacion = forzarSincronizacion;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -1052,7 +1110,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
             super.onPostExecute(result);
             proDialog.dismiss();
             if (result==true) {
-                SeleccionarTablas();
+                SeleccionarTablas(forzarSincronizacion);
             }else{
                 AlertDialog.Builder alerta = new AlertDialog.Builder(SincronizarActivity.this);
                 alerta.setTitle("Importante");
@@ -1102,7 +1160,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
         protected void onPreExecute() {
             // para el progress dialog
             pDialog = new ProgressDialog(SincronizarActivity.this);
-            pDialog.setTitle(GlobalVar.urlService);
+            //pDialog.setTitle(GlobalVar.urlService);
             pDialog.setMessage("Sincronizando....");
             pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             pDialog.setIndeterminate(false);
@@ -1612,7 +1670,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                             }
                                         });//15151
                                         NombreMetodo=valor+") Sync_tabla_ObjPedido";
-                                        int lista_tamanio=0;//soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
+                                        int lista_tamanio=soap_manager.Sync_tabla_ObjPedido(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD, start, paginacion);
                                         lista_tamanio=0;
 
 
@@ -1874,17 +1932,29 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                         sms_cuerpo+=".\n\nAVISO:\n"+controlAcceso.getMensjae();
                     }
                 }
+                boolean isActualizado=false;
                 if(!origen.equals("LOGIN")){
-                    boolean isActualizado=_helper.VersionAppActualizadoCheck(SincronizarActivity.this);
+                    isActualizado=_helper.VersionAppActualizadoCheck(SincronizarActivity.this);
                 }
+                final boolean finalisActualizado=isActualizado;
                 AlertDialog.Builder alerta = new AlertDialog.Builder(
                         SincronizarActivity.this);
                 alerta.setTitle(sms);
                 alerta.setMessage(sms_cuerpo);
                 alerta.setIcon(R.drawable.check);
                 alerta.setCancelable(false);
-                alerta.setPositiveButton("OK", null);
+                alerta.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (SYNC_ROBOT) {
+                            if (finalisActualizado) {
+                                ConfirmarServicios();
+                            }
+                        }
+                    }
+                });
                 alerta.show();
+
 
                 editor_preferencias = preferencias_configuracion.edit();
                 editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", true);
@@ -2089,8 +2159,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                 // vuelvo al LOGIN 06-07-2013
                 if (origen.equals("MENU") || origen.equals("LOGIN_FIRST")) {
                     finish();
-                    Intent i = new Intent(getApplicationContext(),
-                            MenuPrincipalActivity.class);
+                    Intent i = new Intent(getApplicationContext(), MenuPrincipalActivity.class);
                     i.putExtra("codven", codven);
 
                     startActivity(i);

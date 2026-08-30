@@ -91,7 +91,7 @@ public class PDF {
         /***
          * PRINCIPAL IMAGE
          */
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.tuboplast_baner_logo);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.banner_cantol_empresa);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] bitmapData = stream.toByteArray();
@@ -110,9 +110,9 @@ public class PDF {
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
 
-        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(""+dataCabecera.getTipoRegistro()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        table.addCell(new Cell().setBold().setBackgroundColor(gray).add(new Paragraph("N°").setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
-        table.addCell(new Cell().setBackgroundColor(yellow).add(new Paragraph(dataCabecera.getOc_numero()).setTextAlignment(TextAlignment.CENTER)).setBorder(Border.NO_BORDER));
+        table.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph(""+dataCabecera.getTipoRegistro()).setTextAlignment(TextAlignment.CENTER)));
+        table.addCell(new Cell().setBold().setBackgroundColor(gray).add(new Paragraph("N°").setTextAlignment(TextAlignment.CENTER)));
+        table.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph(dataCabecera.getOc_numero()).setTextAlignment(TextAlignment.CENTER)));
 
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
         table.addCell(new Cell().setBorder(Border.NO_BORDER));
@@ -315,7 +315,7 @@ public class PDF {
         }
         else if (tipo_de_envio == ENVIO_A_INTERNO)
         {
-            float columnWidthItems[] = {20, 105, 75, 40, 340, 70, 50, 50,50,50, 100};
+            float columnWidthItems[] = {20, 105, 75, 40, 340, 120, 50,50,50, 100};
             Table tableItems = new Table(columnWidthItems);
 
             //TABLE ITEMS ----- 01
@@ -325,7 +325,7 @@ public class PDF {
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("UM").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESCRIPCION").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PRECIO UNITARIO").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
-            tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK ($)").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
+            //tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("PK ($)").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC1\n%").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC2\n%").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
             tableItems.addCell(new Cell().setBackgroundColor(blue).add(new Paragraph("DESC \n MONTO").setTextAlignment(TextAlignment.CENTER).setFontSize(6.2f)));
@@ -342,8 +342,8 @@ public class PDF {
                 tableItems.addCell(new Cell().add(new Paragraph(dataPedidoCabeceraDetalles.get(i).getDespro())).setTextAlignment(TextAlignment.LEFT).setFontSize(6.2f));
                 String precio_bruto = FormateadorNumero.formatter3decimal(dataPedidoCabeceraDetalles.get(i).getPrecio_bruto());
                 tableItems.addCell(new Cell().add(new Paragraph(precio_bruto).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
-                String precioKilo = FormateadorNumero.formatter3decimal((Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto())/tipoCambio);
-                tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
+                //String precioKilo = FormateadorNumero.formatter3decimal((Double.parseDouble(dataPedidoCabeceraDetalles.get(i).getPrecio_neto())/dataPedidoCabeceraDetalles.get(i).getPesoTotalProducto())/tipoCambio);
+                //tableItems.addCell(new Cell().add(new Paragraph(precioKilo).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimalFromString(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f));
                 tableItems.addCell(new Cell().add(new Paragraph(String.valueOf(FormateadorNumero.formatter2decimal(dataPedidoCabeceraDetalles.get(i).getPorcentaje_desc_extra())))).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f));
                 String montoDescFormated = getMontoDescuentoIfIsValid(dataPedidoCabeceraDetalles.get(i).getMontoDsctTotal());
@@ -387,8 +387,7 @@ public class PDF {
             //TABLE DATA ----- 0.5
             double pkDolar=Double.parseDouble(dataCabecera.getSubtotal())/Double.parseDouble(dataCabecera.getPeso_total())/tipoCambio;
             tableData.addCell(new Cell().add(
-                    new Paragraph("Precio Kilo (sin igv $) "+FormateadorNumero.formatter2decimal(pkDolar)
-                    +" | "+obsPesoTotalTxt).setTextAlignment(TextAlignment.LEFT).setFontSize(6.2f)));
+                    new Paragraph("").setTextAlignment(TextAlignment.LEFT).setFontSize(6.2f)));
             tableData.addCell(new Cell().add(new Paragraph("DESC TOTAL(Sin Igv)").setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
             tableData.addCell(new Cell().add(new Paragraph(moneda + totalDescuentoformateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
             obsPesoTotalTxt="";//limpiamos
@@ -399,7 +398,7 @@ public class PDF {
         tableData.addCell(new Cell().add(new Paragraph(moneda + totalDsctEnBonif).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
 
         tableData.addCell(new Cell());
-        tableData.addCell(new Cell().add(new Paragraph("Sub Total").setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
+        tableData.addCell(new Cell().add(new Paragraph("SUB TOTAL").setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
         tableData.addCell(new Cell().add(new Paragraph(moneda + subtotalFormateado).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
 
         //TABLE DATA ----- 01
@@ -420,42 +419,42 @@ public class PDF {
         /***
          * BANCO
          */
-        float[] columnWidthBanco = {192, 170, 250, 170, 380};
+        float[] columnWidthBanco = {192, 420, 170, 380};
         Table tableBanco = new Table(columnWidthBanco);
 
         //TABLE BANCO ----- 01
         tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("BANCO").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("CUENTA DÓLARES ($)").setFontSize(6.2f)));
+        //tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("CUENTA DÓLARES ($)").setFontSize(6.2f)));
         tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("CUENTA SOLES (S/").setFontSize(6.2f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
-        tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("CONSIDERACIONEs").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().setBackgroundColor(gray).add(new Paragraph("ACEPTADO").setFontSize(6.2f)));
 
         //TABLE BANCO -----02
-        tableBanco.addCell(new Cell().add(new Paragraph("Banco de Crédito").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("194-2009913-1-60").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("194-2012209-0-42").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("Cta. Cte. BCP").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("194-1553314-0-39").setFontSize(6.2f)));
+        //tableBanco.addCell(new Cell().add(new Paragraph("194-2012209-0-42").setFontSize(6.2f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
-        tableBanco.addCell(new Cell().add(new Paragraph("Garantía por 50 años").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("").setFontSize(6.2f)));
 
         //TABLE BANCO -----03
-        tableBanco.addCell(new Cell().add(new Paragraph("Banco Continental").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. USD 7198").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. S/. 7197").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("BancCta. Cte. Interbank").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("0593000717425").setFontSize(6.2f)));
+//        tableBanco.addCell(new Cell().add(new Paragraph("CUENTA REC. S/. 7197").setFontSize(6.2f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
-        tableBanco.addCell(new Cell().add(new Paragraph("Asistencia Técnica Constante").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("").setBorder(Border.NO_BORDER)));
 
         //TABLE BANCO -----04
-        tableBanco.addCell(new Cell().add(new Paragraph("Banco de la Nación").setFontSize(6.2f)));
-        tableBanco.addCell(new Cell().add(new Paragraph("")));
-        tableBanco.addCell(new Cell().add(new Paragraph("00-000-310514").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("Cta. Cte. BBVA").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("00110109630100053821").setFontSize(6.2f)));
+//        tableBanco.addCell(new Cell().add(new Paragraph("00-000-310514").setFontSize(6.2f)));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
-        tableBanco.addCell(new Cell().add(new Paragraph("Certificaciones ISO 9001, ISO 14001").setFontSize(6.2f)));
+        tableBanco.addCell(new Cell().add(new Paragraph("Fecha, Nombre, Firma y Sello").setFontSize(6.2f)));
 
         //TABLE BANCO ----- 05
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
-        tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
+//        tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
         tableBanco.addCell(new Cell().setBorder(Border.NO_BORDER));
 
         document.add(image);
@@ -471,12 +470,11 @@ public class PDF {
         document.add(tableData);
         document.add(new Paragraph("\n"));
         document.add(tableBanco);
-        document.add(new Paragraph("OBSERVACIONES EN SUMINISTRO").setBold());
-        document.add(new Paragraph("1. PARA PEDIDOS PUESTOS EN OBRA, SE ENVIARÁN LOS CAMIONES CON MATERIAL CUBICADO, CLIENTE ASUME COSTO DEL FLETE POR \n" +
-                "LOS PRODUCTOS SOBRANTES (O SALDOS) QUE SE ENVIARÁN POR AGENCIA").setFontSize(6.2f));
-        document.add(new Paragraph("2. LA MERCADERIA VIAJA POR CUENTA Y RIESGO DEL CLIENTE, NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES").setFontSize(6.2f));
-        document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(6.2f));
-        document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130 - 111").setTextAlignment(TextAlignment.CENTER));
+//        document.add(new Paragraph("OBSERVACIONES EN SUMINISTRO").setBold());
+        document.add(new Paragraph("Asesora Comercial:  "+dataCabecera.getNomven()+"  / 000 000 000 / xxxxxx@distrimax.com.pe").setFontSize(6.2f));
+//        document.add(new Paragraph("2. LA MERCADERIA VIAJA POR CUENTA Y RIESGO DEL CLIENTE, NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES").setFontSize(6.2f));
+//        document.add(new Paragraph("3. INDICAR N° RUC O DNI HAL HACER EL DEPÓSITO EN LAS CUENTAS DE TUBOPLAST").setFontSize(6.2f));
+//        document.add(new Paragraph("www.tuboplastperu.com | 01 326-1146 | Anexo 127 - 130 - 111").setTextAlignment(TextAlignment.CENTER));
         document.close();
     }
     public static String getMontoDescuentoIfIsValid(double montoDesct){

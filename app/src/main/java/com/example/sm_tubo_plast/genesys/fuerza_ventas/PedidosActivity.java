@@ -46,6 +46,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,6 +59,7 @@ import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroC
 import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.Opcion;
 import com.example.sm_tubo_plast.genesys.BEAN.Almacen;
 import com.example.sm_tubo_plast.genesys.BEAN.ClienteCondicionVenta;
+import com.example.sm_tubo_plast.genesys.BEAN.FormaPago;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
@@ -99,6 +101,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_Pedido_Detalle_Promocion;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.compartidoUtil.UtilCalcularPrecioProducto;
@@ -279,20 +282,22 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_disponibleCredito, edt_direccionFiscal, edt_fechaPedido,edt_observacion1NombreContacto, edt_observacion1Telefono,
             edt_observacion2NombreTrasporte,edt_observacion2DireccionTransporte, edt_observacion2Proyecto, edt_observacion3, edt_observacion4,edt_docAdicional,
             edt_transportista;
-    private LinearLayout linear_obra;
+    private LinearLayout linear_obra, layoutServicioInstalacion, layoutTransporte,
+            layoutDespachoCliente, layoutServicioEmbalaje, layoutPuntoEntrega;
     private RadioButton rButton_boleta,rButton_factura;
     private RadioButton rButtonSoles,rButtonDolares;
 
     private RadioButton rButtonDescuentoSi,rButtonDescuentoNo;
     private RadioGroup rGroup_tipoDocumento,  rGroup_moneda,rGroup_aplicaDescuento;
     private Spinner spn_prioridad, spn_sucursal, spn_puntoEntrega,spn_tipoDespacho, spn_obra, spn_almacenDespacho
-            ,spn_condicionVenta, spn_subCanalCategoria,spn_turno, spn_numeroletra;
+            ,spn_subCanalCategoria,spn_turno, spn_numeroletra;
     private Spinner spn_despacho;
+    private Switch swAplicaDsctoProntoPago;
     private TextView tv_moneda,tvTipoCambio, tv_cantidadItems, tvMensajeCambioCategoria;
     private TextView tv_subTotal,tv_total,tv_totalCompleto,tv_IGV,tv_percepcion;
     private TextView tv_descuento,tv_descuentoPorcentaje,tvPrecioPorKilo;
     //Cotizacion
-    private EditText edt_diasVigencia;
+    private EditText edt_diasVigencia, edt_condicionVenta;
     private LinearLayout linear_diasVigencia;
     private LinearLayout linearLayoutNumeroLetras	;
     private LinearLayout linearLayoutObservacion3;
@@ -448,9 +453,10 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         edt_transportista = (EditText) findViewById(R.id.edt_transportista);
         spn_almacenDespacho = (Spinner) findViewById(R.id.spn_almacenDespacho);
         rGroup_moneda 		= (RadioGroup) findViewById(R.id.rGroup_moneda);
-        spn_condicionVenta 	= (Spinner) findViewById(R.id.spn_condicionVenta);
+        edt_condicionVenta = (EditText) findViewById(R.id.edt_condicionVenta);
         spn_subCanalCategoria 	= (Spinner) findViewById(R.id.spn_subCanalCategoria);
         tvMensajeCambioCategoria 	= (TextView) findViewById(R.id.tvMensajeCambioCategoria);
+        swAplicaDsctoProntoPago =  findViewById(R.id.swAplicaDsctoProntoPago);
         spn_numeroletra		= (Spinner) findViewById(R.id.spn_numeroletra);
         linearLayoutNumeroLetras	= (LinearLayout)findViewById(R.id.linearLayoutNumeroLetras);
         linearLayoutObservacion3	= (LinearLayout)findViewById(R.id.linearLayoutObservacion3);
@@ -471,6 +477,11 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         rButtonDescuentoSi 	= (RadioButton)findViewById(R.id.rButton_descuentoSi);
         rButtonDescuentoNo 	= (RadioButton)findViewById(R.id.rButton_descuentoNo);
         linear_obra			= (LinearLayout)findViewById(R.id.linear_obra);
+        layoutServicioInstalacion= (LinearLayout)findViewById(R.id.layoutServicioInstalacion);
+        layoutTransporte	= (LinearLayout) findViewById(R.id.layoutTransporte);
+        layoutDespachoCliente	= (LinearLayout) findViewById(R.id.layoutDespachoCliente);
+        layoutPuntoEntrega	= (LinearLayout) findViewById(R.id.layoutPuntoEntrega);
+        layoutServicioEmbalaje	= (LinearLayout) findViewById(R.id.layoutServicioEmbalaje);
         edt_docAdicional	= (EditText)findViewById(R.id.edt_docAdicional);
         edt_diasVigencia	= (EditText)findViewById(R.id.edt_diasVigencia);
         linear_diasVigencia = (LinearLayout)findViewById(R.id.linear_diasVigencia);
@@ -549,11 +560,15 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                                 if (monthOfYear_true<10) {
                                     pickerMonth = "0"+(monthOfYear_true);
                                 }
+                                edt_fechaPedido.setError(null);
                                 edt_fechaPedido.setText(pickerDay+"/"+pickerMonth+"/"+year);
                                 fechaEntrega = pickerDay+"/"+pickerMonth+"/"+year;
                             }
                         }, year, month, day+1);
-                dpd.getDatePicker().setMinDate(VARIABLES.GetFechaActua_long());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                dpd.getDatePicker().setMinDate(calendar.getTimeInMillis());
                 dpd.show();
             }
         });
@@ -585,143 +600,15 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 			}
 		});*/
 
-        spn_condicionVenta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> arg0, View arg1,int arg2, long arg3) {
-                //String desc = spn_condicionVenta.getSelectedItem().toString();
-                if (listaFormaPago!=null) {
-                    if (listaFormaPago.size()>0) {
-                        final String codigo = listaFormaPago.get(spn_condicionVenta.getSelectedItemPosition()).getCodigo_cond_venta()+"";
-                        String descripcion = listaFormaPago.get(spn_condicionVenta.getSelectedItemPosition()).getNombre_cond_venta();
-                        Log.d("PedidoActivity", "Codigo de cliente: "+codcli);
-                        Log.d("PedidoActivity", "onItemSelected:CodigoFormaPago: "+codigo);
-                        Log.d("PedidoActivity", "onItemSelected:CodigoFormaPago: "+descripcion);
-
-                        String forma_pago="";
-
-                        try {forma_pago = descripcion.substring(0, 5);}
-                        catch (Exception e) {	Log.e(TAG, "Error, no se puedo obtener los caracteres. "+e.getMessage());}
-
-                        if(false && forma_pago.equalsIgnoreCase("LETRA")){
-                            linearLayoutNumeroLetras.setVisibility(View.VISIBLE);
-                            linearLayoutObservacion3.setVisibility(View.VISIBLE);
-
-                            SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-
-                            preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
-
-                            codven = new SessionManager(PedidosActivity.this).getCodigoVendedor();
-
-
-                            final String url = prefs.getString("url", "0");
-                            final String catalog = prefs.getString("catalog", "0");
-                            final String userid = prefs.getString("userid", "0");
-                            final String contrasenaid = prefs.getString("contrasenaid", "0");
-                            String servicio = prefs.getString("servicio", "0");
-                            boolean chk_principal_estado = prefs.getBoolean("servicio_principal_activo",
-                                    true);
-                            String cond_ven="";
-
-                            final DBSync_soap_manager soap_manager = new DBSync_soap_manager(getApplicationContext());
-
-                            AsyncTask.execute(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    ConnectionDetector cd = new ConnectionDetector(getApplicationContext());
-
-                                    if (cd.hasActiveInternetConnection(getApplicationContext())) {
-                                        Log.i(TAG, "entrando a la sincronizacion d letras");
-
-                                        try {
-                                            Log.w("mira el codcli ::", codcli);
-                                            Log.w("mira el condicion_venta ::", codigo);
-                                            soap_manager.Sync_tabla_Nro_letras(codcli, codigo);
-
-                                            runOnUiThread(new Runnable() {
-
-                                                @Override
-                                                public void run() {
-                                                    if (variablemodificar == 0){
-
-                                                        listaNumeroLetra = DAO_registrosGeneralesMovil.getNroLetras();
-                                                        if (listaNumeroLetra.size()>0){
-                                                            ArrayList<CharSequence> nrletra = new ArrayList<>();
-                                                            for (int i = 0; i < listaNumeroLetra.size(); i++) {
-                                                                nrletra.add(listaNumeroLetra.get(i).getDescripcionNroLetras());
-                                                            }
-                                                            ArrayAdapter<CharSequence> spin_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,nrletra);
-                                                            spin_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-                                                            spn_numeroletra.setAdapter(spin_adapter);
-                                                        }else
-                                                            listaNumeroLetra=null;
-
-                                                    }else{
-                                                    }
-                                                }
-
-                                            });
-
-                                        } catch (Exception e) {
-                                            Log.e(TAG, "No se pudo sincronizar las letras "+e.getMessage());
-                                        }
-
-                                    }else{
-                                        Log.e(TAG, "No hay conexion a internet");
-                                    }
-                                }
-                            });
-
-
-                        }else{
-                            dbclass.eliminarAll_Nroletras();
-                            listaNumeroLetra=null;
-                            observacion4="";
-                            codigoLetraCondicionVenta="0";
-                            linearLayoutNumeroLetras.setVisibility(View.GONE);
-                            linearLayoutObservacion3.setVisibility(View.GONE);
-                        }
-
-                        if (DAO_registrosGeneralesMovil.getHabilitaDescuentoCondicion(codigo) == true) {
-                            if (!origen.equals("REPORTES-MODIFICAR") && !origen.equals("REPORTES-PEDIDO")) {
-                                rButtonDescuentoSi.setEnabled(true);
-                                rButtonDescuentoNo.setEnabled(true);
-                            }
-
-                            //if (codigo.equals("FCAS") || codigo.equals("CEDJ")){
-
-                        }else{
-                            rButtonDescuentoSi.setEnabled(false);
-                            rButtonDescuentoNo.setEnabled(false);
-                            rButtonDescuentoSi.setChecked(false);
-                            rButtonDescuentoNo.setChecked(true);
-                        }
-
-                    }
-                }
-
-				/*if (desc.indexOf("CONTADO") != -1 || desc.indexOf("Contado") != -1 || desc.indexOf("contado") != -1) {//la palabra obra esta dentro del desc
-					rButtonDescuentoSi.setEnabled(true);
-					rButtonDescuentoNo.setEnabled(true);
-					rButtonDescuentoSi.setChecked(false);
-				}else{
-					rButtonDescuentoSi.setEnabled(false);
-					rButtonDescuentoNo.setEnabled(false);
-					rButtonDescuentoSi.setChecked(false);
-					rButtonDescuentoNo.setChecked(true);
-				}*/
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-
-            }
-        });
         spn_subCanalCategoria.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tvMensajeCambioCategoria.setVisibility(position>maestroCanalCategoriaDescuentoIndex?View.VISIBLE:View.GONE);
+                boolean visible = position>maestroCanalCategoriaDescuentoIndex;
+                int positionCategoria = spn_subCanalCategoria.getSelectedItemPosition();
+                if(positionCategoria==0){
+                    tvMensajeCambioCategoria.setVisibility(View.GONE);
+                }
+                else tvMensajeCambioCategoria.setVisibility(visible?View.VISIBLE:View.GONE);
                 validarSelccionCondicionVentaCanal();
             }
 
@@ -730,6 +617,9 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
+
+
+
 
         spn_numeroletra.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -759,7 +649,20 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             public void onItemSelected(AdapterView<?> arg0, View arg1,int arg2, long arg3) {
                 String desc = spn_tipoDespacho.getSelectedItem().toString();
                 String palabra = "obra";
-                if (desc.indexOf(palabra) != -1 || desc.indexOf("Obra") != -1 || desc.indexOf("OBRA") != -1) {//la palabra obra esta dentro del desc
+                if(desc.toUpperCase().contains("CLIENTE RECOGE")){
+                    layoutTransporte.setVisibility(View.VISIBLE);
+                    layoutDespachoCliente.setVisibility(View.VISIBLE);
+                    layoutPuntoEntrega.setVisibility(View.VISIBLE);
+                    layoutServicioEmbalaje.setVisibility(View.VISIBLE);
+                }else{
+                    codigoTransportista="";
+                    layoutDespachoCliente.setVisibility(View.GONE);
+                    layoutPuntoEntrega.setVisibility(View.GONE);
+                    layoutTransporte.setVisibility(View.GONE);
+                    layoutServicioEmbalaje.setVisibility(View.GONE);
+                }
+                if (desc.indexOf(palabra) != -1 || desc.indexOf("Obra") != -1 || desc.indexOf("OBRA") != -1) {
+                    //la palabra obra esta dentro del desc
                     //linear_obra.setVisibility(View.VISIBLE);
                     //Toast.makeText(getApplicationContext(), "OBRA !", Toast.LENGTH_SHORT).show();
                     flagMsPackAux = "0";
@@ -851,7 +754,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             ActionItem infoItem_ELIMINAR_ITEM_PROMO = new ActionItem(ELIMINAR_ITEM_PROMO, "ELIMINAR PROMOCION",R.drawable.ic_anular);
 
             mQuickAction1.addActionItem(infoItemEDIT_ENTRA);
-            mQuickAction1.addActionItem(infoItemEDIT_PRODUC);
+            //mQuickAction1.addActionItem(infoItemEDIT_PRODUC);
             mQuickAction1.addActionItem(infoItemDELET_PRO);
             mQuickAction1.addActionItem(infoItem_EDIT_ENTREGA);
 
@@ -1200,10 +1103,11 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
     private  void llenarSpinnerDespacho(String valor){
     ArrayList<CharSequence> lista=new ArrayList<>();
-    lista.add("Cliente recoje");
-    lista.add("Cronogrma");
-    lista.add("Despacho normal");
+    lista.add("Almacén Cliente");
+    lista.add("Proyecto Inmobiliario / Obra");
+    lista.add("Entrega en Agencia de Transporte");
     lista.add("Envio por agencia");
+    lista.add("Otros");
 
     ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,lista);
     spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -1214,6 +1118,24 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             spn_despacho.setSelection(i);
         }
     }
+        linear_obra.setVisibility(View.GONE);
+        layoutServicioInstalacion.setVisibility(View.GONE);
+
+        spn_despacho.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                codigoObra=spn_obra.getSelectedItem().toString();
+                if(spn_despacho.getSelectedItem().toString().toLowerCase().contains("obra")){
+                    linear_obra.setVisibility(View.VISIBLE);
+                    layoutServicioInstalacion.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 }
     private void HabilitarCamposEditables() {		;
         rGroup_tipoDocumento.setEnabled(true);
@@ -1263,7 +1185,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             spn_tipoDespacho.setEnabled(true);
             spn_despacho.setEnabled(true);
             spn_obra.setEnabled(true);
-            spn_condicionVenta.setEnabled(true);
+            edt_condicionVenta.setEnabled(true);
         }
 
         chkBox_embalaje.setEnabled(flag);
@@ -1293,7 +1215,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private void inicializarFormulario() {
         rButtonDescuentoSi.setEnabled(false);
         rButtonDescuentoNo.setEnabled(false);
-
+        tvMensajeCambioCategoria.setVisibility(View.GONE);
         listaPrioridades = DAO_registrosGeneralesMovil.getPrioridades();
         ArrayList<CharSequence> prioridades = new ArrayList<CharSequence>();
         for (int i = 0; i < listaPrioridades.size(); i++) {
@@ -1462,14 +1384,54 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,obras);
         spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_obra.setAdapter(spinner_adapter);
+
         //spn_obra.setVisibility(View.GONE);
     }
+    private void mostrarSpinnerFormaPago(){
+        ArrayList<SingleSelectOptionDialog.SinglechoiceCustom> sinlgeChoiceTransp = new ArrayList<>();
+        for (int i = 0; i < listaFormaPago.size(); i++) {
+            sinlgeChoiceTransp.add(new SingleSelectOptionDialog.SinglechoiceCustom(
+                    "",//listaFormaPago.get(i).getCodigo_cond_venta(),
+                    listaFormaPago.get(i).getNombre_cond_venta(),
+                    listaFormaPago.get(i)
+            ));
+        }
+        SingleSelectOptionDialog singleSelectOptionDialog=new SingleSelectOptionDialog(this, "Condición de Venta", sinlgeChoiceTransp);
+        edt_condicionVenta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                singleSelectOptionDialog.show(new SingleSelectOptionDialog.MyListener() {
+                    @Override
+                    public void Result(SingleSelectOptionDialog.SinglechoiceCustom listaSelected) {
+                        ClienteCondicionVenta trans =(ClienteCondicionVenta)listaSelected.tag;
+                        codigoCondicionVenta=trans.getCodigo_cond_venta();
+                        edt_condicionVenta.setText(trans.getNombre_cond_venta());
+
+                        swAplicaDsctoProntoPago.setVisibility(View.GONE);
+                        swAplicaDsctoProntoPago.setChecked(false);
+                        if(trans.getNombre_cond_venta().toLowerCase().contains("contado")
+                                && listaFormaPago.size()>0 && listaFormaPago.get(0).getCanal().toUpperCase().contains(MaestroCategoriaDescuento.NOMBRE_CANAL_FERRETERIA)
+                        ){
+                            swAplicaDsctoProntoPago.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void dismis() {
+
+                    }
+                });
+            }
+        });
+
+    }
+
     private void mostrarSpinnerTransporte(){
         listaTransportes = DAO_cliente.getTransportes(codcli);
         ArrayList<SingleSelectOptionDialog.SinglechoiceCustom> sinlgeChoiceTransp = new ArrayList<>();
         for (int i = 0; i < listaTransportes.size(); i++) {
             sinlgeChoiceTransp.add(new SingleSelectOptionDialog.SinglechoiceCustom(
-                    listaTransportes.get(i).getCodigoTransporte(),
+                    "",//listaTransportes.get(i).getCodigoTransporte(),
                     listaTransportes.get(i).getDescripcion(),
                     listaTransportes.get(i)
             ));
@@ -1481,6 +1443,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 singleSelectOptionDialog.show(new SingleSelectOptionDialog.MyListener() {
                     @Override
                     public void Result(SingleSelectOptionDialog.SinglechoiceCustom listaSelected) {
+                        Transporte trans =(Transporte)listaSelected.tag;
+                        codigoTransportista=trans.getCodigoTransporte();
                         edt_transportista.setText(listaSelected.opcion);
                     }
 
@@ -1493,16 +1457,26 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         });
 
     }
+
+    private ArrayList<MaestroCategoriaDescuento> getListaMaestroCategoriaDsct(){
+        String nombreCanalSegunCliente= listaFormaPago.size()>0?listaFormaPago.get(0).getCanal():"";
+        ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal= MaestroCategoriaDescuento.getDataListDscto(nombreCanalSegunCliente);
+        return listaMestroDsctoCanal;
+    }
+
     private void mostrarCondicionYCanalVentaSpinner(){
-        ArrayList<CharSequence> formasPago = new ArrayList<>();
         ArrayList<CharSequence> canalesVentaDscto = new ArrayList<>();
 
         maestroCanalCategoriaDescuentoIndex =-1;
-        ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal= MaestroCategoriaDescuento.getDataListDscto();
-        //ArrayList<MaestroCanalCategoriaDescuento> listaMestroDsctoCanal = MaestroCanalCategoriaDescuento.getDataListDscto();
-        for (int i = 0; i < listaFormaPago.size(); i++) {
-            formasPago.add(listaFormaPago.get(i).getNombre_cond_venta());
+        ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal= getListaMaestroCategoriaDsct();
+        for (int i = 0; i < listaMestroDsctoCanal.size(); i++) {
+            if (listaFormaPago.size()==0
+            || (!listaFormaPago.get(0).getCanal().toLowerCase().contains(listaMestroDsctoCanal.get(i).getCanal().toLowerCase()))) {
+                listaMestroDsctoCanal.remove(i);
+                i--;
+            }
         }
+
         for (int i = 0; i < listaMestroDsctoCanal.size(); i++) {
             MaestroCategoriaDescuento maestroItem= listaMestroDsctoCanal.get(i);
             if (listaFormaPago.size()>0
@@ -1524,21 +1498,16 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         }
 
-        ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,formasPago);
-        spn_condicionVenta.setAdapter(spinner_adapter);
-        for (int i = 0; i < listaFormaPago.size(); i++) {
-            String descripcion = listaFormaPago.get(i).getNombre_cond_venta();
-            if (descripcion.indexOf("CONTADO")!=-1 || descripcion.indexOf("Contado")!=-1) {
-                spn_condicionVenta.setSelection(i);
-            }
-        }
         validarExistenciaCategoriaMatch();
-        spinner_adapter = new ArrayAdapterSpinnerCustom(this,  maestroCanalCategoriaDescuentoIndex)
+        mostrarSpinnerFormaPago();
+        ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapterSpinnerCustom(this,  maestroCanalCategoriaDescuentoIndex)
                 .get(canalesVentaDscto);
 
         spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_subCanalCategoria.setAdapter(spinner_adapter);
         spn_subCanalCategoria.setSelection(maestroCanalCategoriaDescuentoIndex);
+
+
     }
     public void validarExistenciaCategoriaMatch(){
         if(maestroCanalCategoriaDescuentoIndex<0){
@@ -1668,7 +1637,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         String codigoCondicionV = item.getCond_pago();
         for (int i = 0; i < listaFormaPago.size(); i++) {
             if (listaFormaPago.get(i).getCodigo_cond_venta().equals(codigoCondicionV)) {
-                spn_condicionVenta.setSelection(i);
+                edt_condicionVenta.setSelection(i);
             }
         }
 
@@ -2001,6 +1970,22 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 
+        if(layoutTransporte.getVisibility()==View.VISIBLE && (codigoTransportista==null || codigoTransportista.length()==0)){
+            GlobalFunctions.showCustomToast(this,"Seleccione un transporte",GlobalFunctions.TOAST_ERROR);
+            return false;
+        }else{
+            codigoTransportista="";
+        }
+//        if(codigoObra==null || codigoObra.length()==0){
+//            GlobalFunctions.showCustomToast(this,"Seleccione una obra",GlobalFunctions.TOAST_ERROR);
+//            return false;
+//        }
+
+        if(codigoCondicionVenta==null || codigoCondicionVenta.trim().length()==0){
+            GlobalFunctions.showCustomToast(this,"Seleccione una condición de venta",GlobalFunctions.TOAST_ERROR);
+            return false;
+        }
+
         if (!validarSelccionCondicionVentaCanal()) {
             return false;
         }
@@ -2059,11 +2044,21 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                     intent.putExtra("codigoTipoDespacho", codigoTipoDespacho);
                     intent.putExtra("codigoAlmacenDespacho", codigoAlmacenDespacho);
                     intent.putExtra("flagMsPack", flagMsPackAux);
-                    ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal = MaestroCategoriaDescuento.getDataListDscto();
+                    ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal = getListaMaestroCategoriaDsct();
                     MaestroCategoriaDescuento clienteCondicionVenta = listaMestroDsctoCanal.get(spn_subCanalCategoria.getSelectedItemPosition());
                     intent.putExtra("canalYCategoriaVenta", clienteCondicionVenta.getKeyUnico());
                     Log.w("INTENT","cond venta "+codigoCondicionVenta+" flag dscto "+flagDescuento+" cod suc "+codigoSucursal+" codlugar "+codigoLugarEntrega+ " codAlm "+codigoAlmacenDespacho);
-                    startActivityForResult(intent, 1);
+//                    startActivityForResult(intent, 1);
+
+                    BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
+                            codven, Oc_numero, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
+                    ddx.show(getSupportFragmentManager(), "dddx");
+                    ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
+                        @Override
+                        public void result(Intent data) {
+                            onActivityResult(1, RESULT_OK, data);
+                        }
+                    });
 
                 } catch (Exception e) {
                     Log.e(TAG, "Error "+e.getMessage());
@@ -2095,7 +2090,7 @@ private void EnvalularMoneda(){
 }
     private void GuardarFormularioCabecera(){
         nroOrdenCompra 			= edt_nroOrdenCompra.getText().toString();
-        codigoPrioridad 		= "PRI";//listaPrioridades.get(spn_prioridad.getSelectedItemPosition()).getCodValor();
+        codigoPrioridad 		= listaPrioridades.get(spn_prioridad.getSelectedItemPosition()).getCodValor();
         codigoSucursal 			= listaSucursales.get(spn_sucursal.getSelectedItemPosition()).getItem();
         if(listaLugarEntrega.size()>0){
             codigoLugarEntrega		= listaLugarEntrega.get(spn_puntoEntrega.getSelectedItemPosition()).getCodigoLugar();
@@ -2108,9 +2103,9 @@ private void EnvalularMoneda(){
         }
         //Toast.makeText(getApplicationContext(), "codigoLugarEntrega es "+codigoLugarEntrega, Toast.LENGTH_SHORT).show();
         codigoUbigeo			= dbclass.getCodigoUbigeo(codcli,codigoSucursal,codigoLugarEntrega);
-        codigoTipoDespacho		= "";//listaTipoDespacho.get(spn_tipoDespacho.getSelectedItemPosition()).getCodValor();
+        codigoTipoDespacho		= listaTipoDespacho.get(spn_tipoDespacho.getSelectedItemPosition()).getCodValor();
 
-        codigoTransportista="";//TODO VALIDAR SELECCION TRANSPORTE
+        codigoTransportista= codigoTransportista;
 
         codigoAlmacenDespacho	= listaAlmacenes.get(spn_almacenDespacho.getSelectedItemPosition()).getCodigoAlmacen();
         codigoTurno				= listaTurnos.get(spn_turno.getSelectedItemPosition()).getCodTurno();
@@ -2159,7 +2154,7 @@ private void EnvalularMoneda(){
         fechaEntregaCompleta	= edt_fechaPedido.getText().toString();
 
 
-        codigoCondicionVenta 	= listaFormaPago.get(spn_condicionVenta.getSelectedItemPosition()).getCodigo_cond_venta();
+        codigoCondicionVenta 	= codigoCondicionVenta;//;listaFormaPago.get(edt_condicionVenta.getSelectedItemPosition()).getCodigo_cond_venta();
 
         if(listaNumeroLetra==null){
             Log.i(TAG, "listaNumeroLetra es:: "+listaNumeroLetra);
@@ -2169,7 +2164,7 @@ private void EnvalularMoneda(){
         }
         else {
             Log.i(TAG, "lista de numero letras no son vacios");
-            codigoLetraCondicionVenta 	=listaNumeroLetra.get(spn_numeroletra.getSelectedItemPosition()).getNumeroLetras();
+            codigoLetraCondicionVenta 	="";//listaNumeroLetra.get(spn_numeroletra.getSelectedItemPosition()).getNumeroLetras();
             observacion4			= edt_observacion4.getText().toString();
             Log.d("GuardarFormularioCabecera", "observacion4: "+observacion4);
             Log.i(TAG, "listaNumeroLetra "+listaNumeroLetra+", valor seleccionado es "+codigoLetraCondicionVenta+", Tamaño de lista NRO_LETRA "+listaNumeroLetra.size());
@@ -3403,9 +3398,9 @@ private void EnvalularMoneda(){
 
         tvTipoProducto.setText(itemRes.getTipoProducto());
 
-        DecimalFormat formaterText = new DecimalFormat("###0."+(isCabecera?"00":"000"));
+        DecimalFormat formaterText = new DecimalFormat("###0."+(isCabecera?"00":"00"));
         formaterText.setRoundingMode(RoundingMode.HALF_UP);
-        DecimalFormat formatDouble = new DecimalFormat("0."+(isCabecera?"00":"000"));
+        DecimalFormat formatDouble = new DecimalFormat("0."+(isCabecera?"00":"00"));
         formatDouble.setRoundingMode(RoundingMode.HALF_UP);
 
         tvPesoTotal.setText(""+ VARIABLES.formater_thow_decimal.format(itemRes.getPesoTotal()));
@@ -4057,6 +4052,11 @@ private void EnvalularMoneda(){
                         if(!isOK){
                             UtilViewMensaje.MENSAJE_simple(this, "Error", "No se ha podido registrar el producto. Vuelva intentarlo nuevamente");
                             return;
+                        }else{
+                            GlobalFunctions.showCustomToast(
+                                    this,
+                                    "Producto agregado correctamente",
+                                    GlobalFunctions.TOAST_DONE);
                         }
                     }
                     ObtenerBonificaciones(w_codpro_inser, nro_item, descripcion);
@@ -7061,7 +7061,10 @@ private void EnvalularMoneda(){
         UtilCalcularPrecioProducto utilCaclularPrecioProductoUnit= new UtilCalcularPrecioProducto(
                 dbclass, codcli, codigoMoneda
         );
-        UtilCalcularPrecioProducto.ResultPrecios resulPrecio =utilCaclularPrecioProductoUnit.consultarPrecios(cipSalida, porcentajeDesc, porcentajeDescExtra, null);
+
+        ArrayList<MaestroCategoriaDescuento> listaMestroDsctoCanal = getListaMaestroCategoriaDsct();
+        MaestroCategoriaDescuento clienteCondicionVenta = listaMestroDsctoCanal.get(spn_subCanalCategoria.getSelectedItemPosition());
+        UtilCalcularPrecioProducto.ResultPrecios resulPrecio =utilCaclularPrecioProductoUnit.consultarPrecios(cipSalida, porcentajeDesc, porcentajeDescExtra, clienteCondicionVenta);
         if(resulPrecio.errorMensaje!=null) {
             GlobalFunctions.showCustomToast(this,  "Producto promoción no se agregó motivo a: \n\n"+resulPrecio.errorMensaje, GlobalFunctions.TOAST_ERROR);
             return;
@@ -7098,7 +7101,18 @@ private void EnvalularMoneda(){
             itemDetalle.setItem_promo(itemPromo);
         }
         itemDetalle.setItem(nroItemDetalle);
-        dbclass.AgregarPedidoDetallePromocion(itemDetalle);
+        boolean isOK= dbclass.AgregarPedidoDetallePromocion(itemDetalle);
+        if(isOK){
+            GlobalFunctions.showCustomToast(
+                    this,
+                    "Bonificación agregado correctamente",
+                    GlobalFunctions.TOAST_DONE);
+        }else{
+            GlobalFunctions.showCustomToast(
+                    this,
+                    "No se pudo agregar la bonficación. Intenta de nuevo",
+                    GlobalFunctions.TOAST_ERROR);
+        }
 
     }
 
@@ -8011,13 +8025,26 @@ private void EnvalularMoneda(){
                 final Type malla = new TypeToken<ArrayList<ResultClienteCondicionVenta>>() {}.getType();
                 final ArrayList<ResultClienteCondicionVenta> lista = gson.fromJson(gson.toJson(data), malla);
                 Log.i(TAG, "cant ResultClienteCondicionVenta "+lista.size()+" codcli "+codcli);
+
                 listaFormaPago=new ArrayList<>();
-                for (int i = 0; i < lista.size(); i++) {
+                ArrayList<FormaPago>  listx = DAO_registrosGeneralesMovil.getCondicionVentaCONTADOS_CREDITOS(codcli);
+                String disponibleCredito = DAO_cliente.getLimiteCreditoDisponible(codcli);
+                if(Double.parseDouble(disponibleCredito)<=0){
+                    for (int i = 0; i < listx.size(); i++) {
+                        if(listx.get(i).getDias_credito()>0){
+                            listx.remove(i);
+                            i--;
+                        }
+                    }
+                }
+
+                for (FormaPago formaPago : listx) {
+                    if(lista.size()==0) continue;
                     listaFormaPago.add(new ClienteCondicionVenta(
-                            lista.get(i).getCanal(),
-                            "REGIONAL",//lista.get(i).getSub_canal(),
-                            ""+lista.get(i).getCondicion_pago().getCodigo_codigo_pago(),
-                            lista.get(i).getCondicion_pago().getDescripcion()
+                            lista.get(0).getCanal(),
+                            lista.get(0).getSub_canal(),//"REGIONAL",//
+                            ""+formaPago.getCodigoFormaPago(),
+                            formaPago.getDescripcionFormaPago()
                     ));
                 }
                 mostrarCondicionYCanalVentaSpinner();
@@ -8027,7 +8054,7 @@ private void EnvalularMoneda(){
     }
     private void sincronizarObrasCliente(){
         ProgressDialog pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Consultando obras...");
+        pDialog.setMessage("Consultando datos...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();

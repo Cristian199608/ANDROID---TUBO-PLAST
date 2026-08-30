@@ -214,7 +214,8 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         clienteTienePercepcionEspecial	= bundle.getInt("clienteTienePercepcionEspecial");
         canalYCategoriaVenta = bundle.getString("canalYCategoriaVenta");
 
-        for (MaestroCategoriaDescuento canalCategoriaDescuento : MaestroCategoriaDescuento.getDataListDscto()) {
+
+        for (MaestroCategoriaDescuento canalCategoriaDescuento : MaestroCategoriaDescuento.getDataListDscto("TODOS")) {
             if((canalCategoriaDescuento.getKeyUnico())
                     .equals(canalYCategoriaVenta)){
                 maestroCategoriaDescuento = canalCategoriaDescuento;
@@ -683,6 +684,10 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         AtomicReference<AlertViewSimpleConEdittext> dialg=new AtomicReference<>();
 
         tvGetPctDescuentoPorPrecio.setOnClickListener(v -> {
+            if(true){
+                GlobalFunctions.showCustomToast(ProductoActivity.this, "No tienes permiso", GlobalFunctions.TOAST_DONE);
+                return;
+            }
             double precioSinIgv=Double.parseDouble(tv_precioSinIGV.getText().toString().replace(",", ""));
             dialg.set(new AlertViewSimpleConEdittext(this));
             dialg.get().cancelable = false;
@@ -1099,7 +1104,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     public void _buscarDatosProductoDB(long time_sincronizacion) {
         if (flag == 0 || flag == 1) {
             String text="%"+edtBusqueda.getText().toString().replace(" ", "%")+"%";
-            if (flag == 0)productos = obj_dbclasses.getProductosXcliente(codcli,text, time_sincronizacion);
+            if (flag == 0)productos = obj_dbclasses.getProductosXcliente(codcli,text);
             else productos = obj_dbclasses.getProductosXclienteYdescrip_comercial(codcli,text);
         }else if (flag == 3) {
             productos = obj_dbclasses.getProductosXProveedor(codcli,edtBusqueda.getText().toString());
@@ -1483,10 +1488,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         @Override
         protected String doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
-            _buscarDatosProductoDB();
-
+            _buscarDatosProductoDB(time_sincronizacion);
             return "ok";
         }
 
