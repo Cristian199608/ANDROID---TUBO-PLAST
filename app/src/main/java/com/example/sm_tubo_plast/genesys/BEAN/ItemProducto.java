@@ -42,6 +42,7 @@ public class ItemProducto {
 	private String sec_promo;
 	private String marca;
 	private int sec_promo_prioridad;
+	private double volumen;
 	private DBMta_Kardex stockDetalle;
 
 
@@ -267,6 +268,15 @@ public class ItemProducto {
 		this.stockDetalle = stockDetalle;
 	}
 
+	public double getVolumen() {
+		return volumen;
+	}
+
+	public void setVolumen(double volumen) {
+		this.volumen = volumen;
+	}
+
+	//-------------------------------FIN ATRIBUTO----------------------------------------------------------------
 	public static class DataEdit implements Serializable{
 
 		private String Codprod;
@@ -325,6 +335,7 @@ public class ItemProducto {
 		public void setPorcentaje_desc_extra(double porcentaje_desc_extra) {
 			this.porcentaje_desc_extra = porcentaje_desc_extra;
 		}
+
 	}
 
 }

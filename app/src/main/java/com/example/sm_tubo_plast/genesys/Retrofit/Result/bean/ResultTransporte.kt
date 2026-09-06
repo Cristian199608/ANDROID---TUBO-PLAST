@@ -7,5 +7,13 @@ val ruc: String,
 val telefono: String,
 val email: String,
 val activo: String,
-val sucursal: List<Any>
+val sucursal: List<SucursalTransportista>
+)
+data class SucursalTransportista(
+    val codigo_sucursal: String,
+    val nombre: String,
+    val direccion: String,
+    val departamento: String,
+    val provincia: String,
+    val distrito: String
 )

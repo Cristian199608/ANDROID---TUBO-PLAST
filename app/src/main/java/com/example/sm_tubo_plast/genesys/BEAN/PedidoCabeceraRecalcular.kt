@@ -8,7 +8,8 @@ data class PedidoCabeceraRecalcular(
     var total: Double,
     var percepcion: Double,
     var totalSujetoPercepcion: Double,
-    var montoDsctBonificacion: Double
+    var montoDsctBonificacion: Double,
+    var volumenTotal: Double
 ) {
     constructor(
         oc_numero: String,
@@ -20,10 +21,11 @@ data class PedidoCabeceraRecalcular(
         totalSujetoPercepcion: Double,
         descuento: Double,
         descuentoPercent: Double,
-        montoDsctBonificacion: Double
+        montoDsctBonificacion: Double,
+        volumenTotal: Double
     ) : this(oc_numero, peso_total, subtotal, IGV, total, percepcion,
         totalSujetoPercepcion,
-        montoDsctBonificacion) {
+        montoDsctBonificacion, volumenTotal) {
 
     }
 }

@@ -210,8 +210,7 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
         //rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta, // CV -> CondicionVenta
         rawQuery = "SELECT * from "+ DBtables.FormaPago.TAG+" " +
                 "where flagTipo = '"+CONDICION_VENTA+"' " +
-                "and (desforpag like '%contado%' " +
-                "or desforpag like '%credito%'" +
+                "and ( desforpag like '%credito%'" +
                 "or desforpag like '%crédito%' " +
                 "or cast(dias_credito as integer) >0 " +
                 ")" +
@@ -240,7 +239,7 @@ public class DAO_RegistrosGeneralesMovil extends SQLiteAssetHelper {
     public String getDescrCondicionVentaByCod(String codformaPago){
         String rawQuery;
         //rawQuery = "SELECT * from forma_pago where flagTipo = '"+CONDICION_VENTA+"' and codigoCliente = '"+codigoCliente+"'";// CV -> CondicionVenta
-        rawQuery = "SELECT * from forma_pago where flagTipo = '"+FORMA_PAGO+"' and codforpag = '"+codformaPago+"'";// CV -> CondicionVenta
+        rawQuery = "SELECT * from forma_pago where codforpag = '"+codformaPago+"'";// CV -> CondicionVenta
         SQLiteDatabase db = getReadableDatabase();
         Cursor cur = db.rawQuery(rawQuery, null);
 

@@ -555,12 +555,14 @@
                                     android:orientation="horizontal">
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaServiInstalaSI"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
                                         android:text="Si" />
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaServiInstalaNO"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
@@ -702,12 +704,14 @@
                                     android:orientation="horizontal">
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaEmbalajeSI"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
                                         android:text="Si" />
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaEmbalajeNO"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
@@ -740,36 +744,6 @@
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="1.5"
                                     android:text="" />
-                            </LinearLayout>
-
-                            <!-- Embalaje / Pedido Anticipo -->
-                            <LinearLayout
-                                android:visibility="gone"
-                                tools:visibility="gone"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@color/grey_200"
-                                android:orientation="horizontal"
-                                android:paddingTop="5dp"
-                                android:paddingBottom="5dp">
-
-                                <CheckBox
-                                    android:id="@+id/chkBox_embalaje"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2"
-                                    android:text="Embalaje"
-                                    android:textSize="14sp" />
-
-                                <CheckBox
-                                    android:id="@+id/chkBox_pedidoAnticipo"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_weight="2"
-                                    android:text="Pedido por anticipo"
-                                    android:textSize="14sp" />
                             </LinearLayout>
 
                             <!-- ==================================================== -->
@@ -852,8 +826,35 @@
                             </LinearLayout>
 
 
-                            <!-- Condición Venta + Descuento Pronto Pago -->
+                            <!-- Forma contado o crédito -->
                             <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@color/grey_200"
+                                android:orientation="horizontal"
+                                android:paddingTop="5dp"
+                                android:paddingBottom="5dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Condición de Venta:"
+                                    android:textSize="15sp" />
+
+                                <Spinner
+                                    android:id="@+id/spnTipoCondicionVenta"
+                                    style="@android:style/Widget.Holo.Light.Spinner"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5" />
+                            </LinearLayout>
+
+                            <!-- Condición de tipo de credito -->
+                            <LinearLayout
+                                android:id="@+id/layoutCondicionVentaOpc"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -864,7 +865,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="2.5"
-                                    android:text="Condición Venta:"
+                                    android:text="Tipo de Crédito:"
                                     android:textSize="15sp" />
 
                                 <EditText
@@ -1049,12 +1050,14 @@
                                     android:orientation="horizontal">
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaNcSI"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
                                         android:text="Si" />
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaNcNO"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
@@ -1074,7 +1077,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="1.5"
-                                    android:text="Aplica Anticipios:"
+                                    android:text="Aplica Anticipo:"
                                     android:textSize="15sp" />
 
                                 <RadioGroup
@@ -1085,12 +1088,14 @@
                                     android:orientation="horizontal">
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaAnticipoSI"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"
                                         android:text="Si" />
 
                                     <RadioButton
+                                        android:id="@+id/rGroupAplicaAnticipoNO"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="5dp"

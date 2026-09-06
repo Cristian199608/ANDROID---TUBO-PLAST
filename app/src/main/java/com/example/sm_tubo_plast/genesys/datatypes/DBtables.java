@@ -506,6 +506,19 @@ public class DBtables {
 		public static final String CODIGO_TURNO = "CodTurno";
 		public static final String DSCTO_BONIFICACION = "dsctoBonificacion";
 
+		public static final String isAplicaInstalacion= "isAplicaInstalacion";
+		public static final String obsDespacho= "obsDespacho";
+		public static final String categoriaClienteVenta= "categoriaClienteVenta";
+		public static final String isAplica_dsc_sig_categoria= "isAplica_dsc_sig_categoria";
+		public static final String isAplicaNC= "isAplicaNC";
+		public static final String volumenTotal= "volumenTotal";
+		public static final String dsctProntoPagoContado = "dsctProntoPagoContado ";
+
+		public static final String descFormaPago = "descFormaPago";
+		public static final String sucursalTransportista = "sucursalTransportista";
+		public static final String direccionTransportista = "direccionTransportista";
+		public static final String ubigeoTransportista = "ubigeoTransportista";
+
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_OC_NUMERO + " CHAR(21) PRIMARY KEY, " + SITIO_ENFA
 				+ " VARCHAR(100), " + MONTO_TOTAL + " DECIMAL(12,4), "
@@ -565,7 +578,11 @@ public class DBtables {
 		public static final String NUMERO_DEVOLUCION = "numeroDevolucion";
 		public static final String sec_promo_prioridad = "sec_promo_prioridad";
 		public static final String item_promo_prioridad = "item_promo_prioridad";
-		public static final String volumenTotal = "volumenTotal";
+		public static final String flagStockValido = "flagStockValido";
+		public static final String peso_unitario = "peso_unitario";
+		public static final String volumen_unitario = "volumen_unitario";
+		public static final String volumen_total = "volumen_total";
+		public static final String despro = "despro";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" 
@@ -589,20 +606,34 @@ public class DBtables {
 
 	}
 
-	public class Pedido_detalle_descuento{
-		/*
-		create table pedido_detalle_descuento(
-			oc_numero VARCHAR(20),
-			codpro VARCHAR(20),
-			item integer,
-			pcjt_desc numeric(18,2),
-			monto_desc numeric(18,3),
-			tipo_desc VARCHAR(20),
-			primary key (oc_numero, item, tipo_desc)
-			)
-		 */
+	public static final class Pedido_detalle_descuento{
+
+		public static final String TAG ="pedido_detalle_descuento";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						Pedido_detalle_descuento.oc_numero,
+						Pedido_detalle_descuento.item,
+						Pedido_detalle_descuento.tipo_desc
+				)) ;
+
+		public static final String oc_numero ="oc_numero";
+		public static final String codpro ="codpro";
+		public static final String item ="item";
+		public static final String pcjt_desc ="pcjt_desc";
+		public static final String monto_desc ="monto_desc";
+		public static final String tipo_desc ="tipo_desc";
 	}
-	public class Workflow_pedido{
+	public static final class Workflow_pedido{
+		public static final String TAG = "workflow_pedido";
+		public static final List<String> pks = new ArrayList<>(
+				Arrays.asList(
+						Workflow_pedido.oc_numero,
+						Workflow_pedido.codigo_bloqueo
+				)) ;
+
+		public static final String oc_numero = "oc_numero";
+		public static final String codigo_bloqueo = "codigo_bloqueo";
+		public static final String estado = "estado";
 //		CREATE TABLE workflow_pedido(
 //				oc_numero text NOT NULL,
 //				codigo_bloqueo text NULL,
@@ -1416,6 +1447,10 @@ public class DBtables {
 		public static final String ITEM_SUCURSAL = "itemSucursal";
 		public static final String CODIGO_TRANSPORTE = "codigoTransporte";
 		public static final String DESCRIPCION_TRANSPORTE = "descripcion";		
+		public static final String direccion = "direccion";
+		public static final String ditrito="distrito";//CORREGIR DB, esta como ditrito
+		public static final String provincia="provincia";
+		public static final String departamento="departamento";
 	}
 	
 	public static final class Obra implements BaseColumns {

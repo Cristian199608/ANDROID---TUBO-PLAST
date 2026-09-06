@@ -160,11 +160,12 @@ public class BottomSheetDialogBuscarProductoVenta
                         lista,
                         maestroCategoriaDescuento,
                         swAplicaDsctoProntoPago,
-                        (producto, cantidad, pctjDscto) -> {
+                        (producto, cantidad, pctjDscto, flagStockValido) -> {
                             agregarProducto(
                                     producto,
                                     cantidad,
-                                    pctjDscto
+                                    pctjDscto,
+                                    flagStockValido
                             );
                         }
                 );
@@ -221,7 +222,8 @@ public class BottomSheetDialogBuscarProductoVenta
     private void agregarProducto(
             ItemProducto producto,
             int cantidad,
-            double pctjDscto) {
+            double pctjDscto,
+            int flagStockValido) {
 
         if(dBclasses.isRegistradoProducto(oc_numero, producto.getCodprod())  ){
             GlobalFunctions.showCustomToast(
@@ -243,6 +245,7 @@ public class BottomSheetDialogBuscarProductoVenta
         returnIntent.putExtra("desunimed", producto.getCodunimed());
         returnIntent.putExtra("Cantidad", cantidad);
         returnIntent.putExtra("peso", producto.getPeso());
+        returnIntent.putExtra("volumen", producto.getVolumen());
         returnIntent.putExtra("fact_conv", producto.getFact_conv());
         returnIntent.putExtra("precioUnidad",precioUnit);
         returnIntent.putExtra("precioLista",""+producto.getPrecioLista());
@@ -254,6 +257,7 @@ public class BottomSheetDialogBuscarProductoVenta
         returnIntent.putExtra("agregarComoBonificacion", false);
         returnIntent.putExtra("codigoProducto", producto.getCodprod());
         returnIntent.putExtra("item", nro_item);
+        returnIntent.putExtra("flagStockValido", flagStockValido);
         returnIntent.putExtra(ProductoActivity.REQUEST_ACCION_PRODUCTO_KEY, "REQUEST_ACCION_PRODUCTO_VALUE");
         myCallback.result(returnIntent);
     }

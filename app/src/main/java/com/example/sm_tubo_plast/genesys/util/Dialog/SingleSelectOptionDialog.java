@@ -47,14 +47,14 @@ public class SingleSelectOptionDialog {
 
     }
 
-    public void setDataSelected(ArrayList<SinglechoiceCustom> lista){
+    public void setDataSelected(SinglechoiceCustom itemS){
 
         for (int i = 0; i < listaSingleChoice.size(); i++) {
-            for (SinglechoiceCustom itemS : lista) {
+            //for (SinglechoiceCustom itemS : lista) {
                 if((listaSingleChoice.get(i).titulo+ listaSingleChoice.get(i).opcion).equalsIgnoreCase(itemS.titulo+itemS.opcion)){
                     singleChoiceSelected= listaSingleChoice.get(i);
                 }
-            }
+            //}
         }
     }
 
@@ -199,11 +199,12 @@ class FaseSingleActividadAdapter extends RecyclerView.Adapter<FaseSingleActivida
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final SingleSelectOptionDialog.SinglechoiceCustom item=lista.get(position);
 
+
         viewHolder.tvTitulo.setVisibility(View.GONE);
-        if(item.titulo!=null && item.titulo.length()>0){
-            viewHolder.tvTitulo.setText(item.titulo);
-            viewHolder.tvTitulo.setVisibility(View.VISIBLE);
-        }
+//        if(item.titulo!=null && item.titulo.length()>0){
+//            viewHolder.tvTitulo.setText(item.titulo);
+//            viewHolder.tvTitulo.setVisibility(View.VISIBLE);
+//        }
         viewHolder.tvOrden.setText(String.valueOf(position+1));
         viewHolder.tvOpcion.setText(item.opcion);
         boolean isSelected=false;

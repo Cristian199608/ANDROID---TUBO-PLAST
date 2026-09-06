@@ -14,9 +14,6 @@ public interface GetDataCantol {
     @POST("ComercialCantol/seguridad/")
     Call<Object> getLoginToken(@Body RequestBody jsonBody) ;
 
-    @Headers("Content-Type: application/json")
-    @POST("ws_cantol/producto.php")
-    Call<Object> getProducto(@Body RequestBody jsonBody) ;
 
     @Headers("Content-Type: application/json")
     @POST("ws_cantol/cliente.php")

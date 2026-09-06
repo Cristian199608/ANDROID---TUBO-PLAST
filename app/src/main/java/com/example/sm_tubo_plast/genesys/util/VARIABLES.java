@@ -49,6 +49,28 @@ public class VARIABLES {
         return fechaHora.format(date);
     }
 
+    public static boolean estaDentroHorario(String horario) {
+
+        try {
+            String[] partes = horario.split("-");
+
+            String horaInicio = partes[0]; // 07:10
+            String horaFin = partes[1];    // 16:15
+
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            sdf.setTimeZone(GetTimeZone());
+            Date inicio = sdf.parse(horaInicio);
+            Date fin = sdf.parse(horaFin);
+            Date actual = sdf.parse(sdf.format(new Date()));
+
+            return !actual.before(inicio) && !actual.after(fin);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static final class ConfigDatabase {
 
 //        private static final String DATABASA_NAME_OLD ="fuerzaventas";
@@ -63,7 +85,7 @@ public class VARIABLES {
                 "fuerzaventas_v2.6", //at 2025-11-04
                 "fuerzaventas_v2.7", //at 2026-04-25
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.1";// at 2026-08-11
+        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.12";// at 2026-08-11
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
@@ -72,7 +94,7 @@ public class VARIABLES {
                 "fuerzaventas_prueba_v2.2",//end 2025-01-03
                 "fuerzaventas_prueba_v2.3",//at 2025-01-03
         };
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.1";// at 2026-08-11
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.12";// at 2026-08-11
         private static final  int DATABASA_VERSION_prueba       =1;
 
         public static String[] getDatabaseNameOld() {
@@ -395,6 +417,17 @@ public class VARIABLES {
         return cc;
     }
 
+    public static String GetFechaStringFrom_dd_mm_yyyy_hhmmssTO_yyyy_mm_dd_hhmmss(String fecha) {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        String cc= ""+fecha;
+        try {
+            cc = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(formatter.parse(""+fecha));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return cc;
+    }
+
     public static long GetFechaLongFrom_yyyy_mm_dd(String fecha) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         try {
@@ -451,6 +484,14 @@ public class VARIABLES {
     public static double getDoubleFormaterThreeDecimal(double numero)
     {
         return Math.round(numero * 1000.0) / 1000.0;
+//        DecimalFormat formater = new DecimalFormat("0.000");
+//        formater.setRoundingMode(RoundingMode.HALF_UP);  // Redondeo hacia el valor más cercano
+//        return  Double.parseDouble(formater.format(numero));
+    }
+
+    public static double getDoubleFormaterFiveDecimal(double numero)
+    {
+        return Math.round(numero * 100000.0) / 100000.0;
 //        DecimalFormat formater = new DecimalFormat("0.000");
 //        formater.setRoundingMode(RoundingMode.HALF_UP);  // Redondeo hacia el valor más cercano
 //        return  Double.parseDouble(formater.format(numero));

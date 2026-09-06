@@ -1,7 +1,9 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,7 @@ public class DB_ObjPedido{
 	private String fecha_oc;
 	private String fecha_mxe;
 	private String cond_pago;
+	private String descFormaPago;
 	private String cod_cli;
 	private String cod_emp;
 	private String estado;
@@ -62,7 +65,22 @@ public class DB_ObjPedido{
 	private String CodTurno;
 	private String nroletra;
 	private double dsctoBonificacion;
+	private int isAplicaInstalacion;
+	private String obsDespacho;
+	private String categoriaClienteVenta;
+	private int isAplica_dsc_sig_categoria;
+	private int isAplicaNC;
+	private double volumenTotal;
+	private double dsctProntoPagoContado;
+	private String versionApp;
+
+	private String sucursalTransportista;
+	private String direccionTransportista;
+	private String ubigeoTransportista;
+
 	private ArrayList<San_Visitas> san_visitas;
+	private ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento;
+	private ArrayList<WorkflowPedido> listaWorkflow_pedido;
 
 	
 	public String getNroletra() {
@@ -474,5 +492,117 @@ public class DB_ObjPedido{
 
 	public void setDsctoBonificacion(double dsctoBonificacion) {
 		this.dsctoBonificacion = dsctoBonificacion;
+	}
+
+	public int getIsAplicaInstalacion() {
+		return isAplicaInstalacion;
+	}
+
+	public void setIsAplicaInstalacion(int isAplicaInstalacion) {
+		this.isAplicaInstalacion = isAplicaInstalacion;
+	}
+
+	public String getObsDespacho() {
+		return obsDespacho;
+	}
+
+	public void setObsDespacho(String obsDespacho) {
+		this.obsDespacho = obsDespacho;
+	}
+
+	public String getCategoriaClienteVenta() {
+		return categoriaClienteVenta;
+	}
+
+	public void setCategoriaClienteVenta(String categoriaClienteVenta) {
+		this.categoriaClienteVenta = categoriaClienteVenta;
+	}
+
+	public int getIsAplica_dsc_sig_categoria() {
+		return isAplica_dsc_sig_categoria;
+	}
+
+	public void setIsAplica_dsc_sig_categoria(int isAplica_dsc_sig_categoria) {
+		this.isAplica_dsc_sig_categoria = isAplica_dsc_sig_categoria;
+	}
+
+	public int getIsAplicaNC() {
+		return isAplicaNC;
+	}
+
+	public void setIsAplicaNC(int isAplicaNC) {
+		this.isAplicaNC = isAplicaNC;
+	}
+
+	public double getVolumenTotal() {
+		return volumenTotal;
+	}
+
+	public void setVolumenTotal(double volumenTotal) {
+		this.volumenTotal = volumenTotal;
+	}
+
+	public double getDsctProntoPagoContado() {
+		return dsctProntoPagoContado;
+	}
+
+	public void setDsctProntoPagoContado(double dsctProntoPagoContado) {
+		this.dsctProntoPagoContado = dsctProntoPagoContado;
+	}
+
+	public ArrayList<PedidoDetalleDescuento> getListaPedido_detalle_descuento() {
+		return listaPedido_detalle_descuento;
+	}
+
+	public void setListaPedido_detalle_descuento(ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento) {
+		this.listaPedido_detalle_descuento = listaPedido_detalle_descuento;
+	}
+
+	public ArrayList<WorkflowPedido> getListaWorkflow_pedido() {
+		return listaWorkflow_pedido;
+	}
+
+	public void setListaWorkflow_pedido(ArrayList<WorkflowPedido> listaWorkflow_pedido) {
+		this.listaWorkflow_pedido = listaWorkflow_pedido;
+	}
+
+	public String getVersionApp() {
+		return versionApp;
+	}
+
+	public void setVersionApp(String versionApp) {
+		this.versionApp = versionApp;
+	}
+
+	public String getSucursalTransportista() {
+		return sucursalTransportista;
+	}
+
+	public void setSucursalTransportista(String sucursalTransportista) {
+		this.sucursalTransportista = sucursalTransportista;
+	}
+
+	public String getDireccionTransportista() {
+		return direccionTransportista;
+	}
+
+	public void setDireccionTransportista(String direccionTransportista) {
+		this.direccionTransportista = direccionTransportista;
+	}
+
+	public String getUbigeoTransportista() {
+		return ubigeoTransportista;
+	}
+
+	public void setUbigeoTransportista(String ubigeoTransportista) {
+		this.ubigeoTransportista = ubigeoTransportista;
+	}
+
+	public String getDescFormaPago() {
+		return descFormaPago;
+	}
+
+	public void setDescFormaPago(String descFormaPago) {
+		this.descFormaPago = descFormaPago;
 	}
 }

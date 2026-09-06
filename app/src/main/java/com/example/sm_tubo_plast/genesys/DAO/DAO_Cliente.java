@@ -250,7 +250,11 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				item.setItemSucursal(cursor.getString(1));
 				item.setCodigoTransporte(cursor.getString(2));
 				item.setDescripcion(cursor.getString(3));				
-				lista.add(item);				
+				item.setDireccion(cursor.getString(cursor.getColumnIndex("direccion")));
+				item.setDitrito(cursor.getString(cursor.getColumnIndex("ditrito")));
+				item.setProvincia(cursor.getString(cursor.getColumnIndex("provincia")));
+				item.setDepartamento(cursor.getString(cursor.getColumnIndex("departamento")));
+				lista.add(item);
 			} while (cursor.moveToNext());
 
 		}
@@ -332,7 +336,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				" email, rubro_cliente, " +
 				"disponible_credito," +
 				"tipo_cliente," +
-						"codven_asginados "+
+						"codven_asginados, " +
+						"monto_compra "+
     			"FROM cliente "+
     			"WHERE codcli like '"+codigoCliente+"'";
 		Log.i(TAG, rawQuery);
@@ -360,6 +365,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				cliente.setDisponible_credido(""+cursor.getDouble(cursor.getColumnIndex("disponible_credito")));
 				cliente.setRubro_cliente(cursor.getString(cursor.getColumnIndex("rubro_cliente")));
 				cliente.setCodven_asginados(cursor.getString(cursor.getColumnIndex("codven_asginados")));
+				cliente.setMonto_compra(cursor.getDouble(cursor.getColumnIndex("monto_compra")));
 			} while (cursor.moveToNext());
 
 		}		

@@ -20,6 +20,7 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String fecha_oc;
 	private String fecha_mxe;
 	private String cond_pago;
+	private String descFormaPago;
 	private String nroletra;
 	private String cod_cli;
 	private String cod_emp;
@@ -71,6 +72,17 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String pedidoAnterior;
 	private String CodTurno;
 	private double dsctoBonificacion;
+
+	private int isAplicaInstalacion;
+	private String obsDespacho;
+	private String categoriaClienteVenta;
+	private int isAplica_dsc_sig_categoria;
+	private int isAplicaNC;
+	private double volumenTotal;
+	private double dsctProntoPagoContado;
+	private String sucursalTransportista;
+	private String direccionTransportista;
+	private String ubigeoTransportista;
 
 	Cliente cliente;
 			
@@ -830,6 +842,96 @@ public class DBPedido_Cabecera implements KvmSerializable {
 		this.dsctoBonificacion = dsctoBonificacion;
 	}
 
+	public int getIsAplicaInstalacion() {
+		return isAplicaInstalacion;
+	}
+
+	public void setIsAplicaInstalacion(int isAplicaInstalacion) {
+		this.isAplicaInstalacion = isAplicaInstalacion;
+	}
+
+	public String getObsDespacho() {
+		return obsDespacho;
+	}
+
+	public void setObsDespacho(String obsDespacho) {
+		this.obsDespacho = obsDespacho;
+	}
+
+	public String getCategoriaClienteVenta() {
+		return categoriaClienteVenta;
+	}
+
+	public void setCategoriaClienteVenta(String categoriaClienteVenta) {
+		this.categoriaClienteVenta = categoriaClienteVenta;
+	}
+
+	public int getIsAplica_dsc_sig_categoria() {
+		return isAplica_dsc_sig_categoria;
+	}
+
+	public void setIsAplica_dsc_sig_categoria(int isAplica_dsc_sig_categoria) {
+		this.isAplica_dsc_sig_categoria = isAplica_dsc_sig_categoria;
+	}
+
+	public int getIsAplicaNC() {
+		return isAplicaNC;
+	}
+
+	public void setIsAplicaNC(int isAplicaNC) {
+		this.isAplicaNC = isAplicaNC;
+	}
+
+
+	public double getVolumenTotal() {
+		return volumenTotal;
+	}
+
+	public void setVolumenTotal(double volumenTotal) {
+		this.volumenTotal = volumenTotal;
+	}
+
+	public double getDsctProntoPagoContado() {
+		return dsctProntoPagoContado;
+	}
+
+	public void setDsctProntoPagoContado(double dsctoProntoContado) {
+		this.dsctProntoPagoContado = dsctoProntoContado;
+	}
+
+	public String getSucursalTransportista() {
+		return sucursalTransportista;
+	}
+
+	public void setSucursalTransportista(String sucursalTransportista) {
+		this.sucursalTransportista = sucursalTransportista;
+	}
+
+	public String getDireccionTransportista() {
+		return direccionTransportista;
+	}
+
+	public void setDireccionTransportista(String direccionTransportista) {
+		this.direccionTransportista = direccionTransportista;
+	}
+
+	public String getUbigeoTransportista() {
+		return ubigeoTransportista;
+	}
+
+	public void setUbigeoTransportista(String ubigeoTransportista) {
+		this.ubigeoTransportista = ubigeoTransportista;
+	}
+
+	public String getDescFormaPago() {
+		return descFormaPago;
+	}
+
+	public void setDescFormaPago(String descFormaPago) {
+		this.descFormaPago = descFormaPago;
+	}
+
+	//-------------------------------fin atributo----------------------------------------------------------------
 	public boolean convertirMonedaFrom(double tipoCambio){
 		if(this.moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){//si actual es soles entonces convertir a dolares
 			convertirMonedaToDolar(tipoCambio);

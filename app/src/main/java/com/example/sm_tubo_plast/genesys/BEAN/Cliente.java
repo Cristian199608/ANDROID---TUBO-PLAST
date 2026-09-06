@@ -21,6 +21,7 @@ public class Cliente {
 	private DB_DireccionClientes db_direccionClientes;
 	private String rubro_cliente;
 	private String codven_asginados;
+	private double monto_compra;
 
 	public String getCodigoCliente() {
 		return codigoCliente;
@@ -141,5 +142,13 @@ public class Cliente {
 
 	public void setCodven_asginados(String codven_asginados) {
 		this.codven_asginados = codven_asginados;
+	}
+
+	public double getMonto_compra() {
+		return monto_compra;
+	}
+
+	public void setMonto_compra(double monto_compra) {
+		this.monto_compra = monto_compra;
 	}
 }

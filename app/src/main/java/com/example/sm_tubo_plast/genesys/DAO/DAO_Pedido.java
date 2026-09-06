@@ -288,6 +288,14 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_cabecera.TIPO_REGISTRO, cabecera.getTipoRegistro());
 			Nreg.put(DBtables.Pedido_cabecera.DIAS_VIGENCIA, cabecera.getDiasVigencia());
 			Nreg.put(DBtables.Pedido_cabecera.PEDIDO_ANTERIOR, cabecera.getPedidoAnterior());
+			Nreg.put("isAplicaInstalacion", cabecera.getIsAplicaInstalacion());
+			Nreg.put("obsDespacho", cabecera.getObsDespacho());
+			Nreg.put("categoriaClienteVenta", cabecera.getCategoriaClienteVenta());
+			Nreg.put("isAplica_dsc_sig_categoria", cabecera.getIsAplica_dsc_sig_categoria());
+			Nreg.put("isAplicaNC", cabecera.getIsAplicaNC());
+			Nreg.put("volumenTotal", cabecera.getVolumenTotal());
+			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
+
 			
 			db.insert("pedido_cabecera", null, Nreg);
 			db.close();
@@ -305,6 +313,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			double montoTotalDsc = 0;
 			double percepcion = 0;
 			double totalSujetoPercepcion = 0;
+			double valumen = 0;
 
 			for (int i = 0; i < listaDetalle.size(); i++) {
 				//La lista a clonar aun mantiene el ocnumero del pedido anterior, se debe acambiar por el actual
@@ -314,6 +323,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 					dbPedido_Detalle.convertirMonedaTo(cabecera.getMoneda(), tipocambio);
 				}
 				peso_total += VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPeso_bruto()));
+				valumen += VARIABLES.getDoubleFormaterFiveDecimal((dbPedido_Detalle.getVolumen_total()));
 
 				if(dbPedido_Detalle.getTipo_producto().equals("C")){
 					montoDsctBonificacion+=VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(dbPedido_Detalle.getPrecio_neto()));
@@ -351,6 +361,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			if(convertirMoneda){
 				subtotal = VARIABLES.getDoubleFormaterThowDecimal(subtotal);
 				double totalIGV = VARIABLES.getDoubleFormaterThowDecimal(subtotal*valorIgv);
+				double volumentTotal = VARIABLES.getDoubleFormaterThowDecimal(valumen);
 				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(
 						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
 								+VARIABLES.getDoubleFormaterThowDecimal(totalIGV)
@@ -365,7 +376,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 						totalSujetoPercepcion,
 						montoTotalDsc,
 						0,
-						montoDsctBonificacion
+						montoDsctBonificacion,
+						volumentTotal
 				);
 				_dbClases.guardarPedidoTotales(dataRecalculo);
 			}

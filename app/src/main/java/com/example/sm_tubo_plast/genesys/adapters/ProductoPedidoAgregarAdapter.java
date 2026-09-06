@@ -22,7 +22,7 @@ import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoPedidoAgregarAdapter.ViewHolder> {
 
     public interface OnAgregarProductoListener {
-        void onAgregarProducto(ItemProducto producto, int cantidad, double pctjDscto);
+        void onAgregarProducto(ItemProducto producto, int cantidad, double pctjDscto, int flagStockValido);
     }
 
     MaestroCategoriaDescuento maestroCategoriaDescuento =null;
@@ -67,11 +67,9 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             @NonNull ViewHolder holder,
             int position) {
 
+        holder.edtCantidad.setText("");
         ItemProducto producto = lista[position];
-
-        holder.tvNombreProducto.setText(
-                producto.getCodprod()+" - "+producto.getDescripcion()
-        );
+        holder.tvNombreProducto.setText(producto.getCodprod()+" - "+producto.getDescripcion());
 
         double dsctoCategoria=obtenerPorcentajeDsctoByCondicion(producto.getMarca());
         holder.tvDsctoCategoria.setText(dsctoCategoria>0?(dsctoCategoria+"%"):"--");
@@ -137,7 +135,8 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                                         listener.onAgregarProducto(
                                                 producto,
                                                 cantidad,
-                                                dsctoCategoria
+                                                dsctoCategoria,
+                                                0
                                         );
                                     }
                                 })
@@ -150,7 +149,8 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             listener.onAgregarProducto(
                     producto,
                     cantidad,
-                    dsctoCategoria
+                    dsctoCategoria,
+                    1
             );
 
         });

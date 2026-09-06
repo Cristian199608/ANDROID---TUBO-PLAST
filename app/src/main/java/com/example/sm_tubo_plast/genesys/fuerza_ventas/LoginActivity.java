@@ -30,11 +30,13 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCantol;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
 import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
@@ -290,6 +292,7 @@ public class LoginActivity extends AppCompatActivity {
         if(!prueba) return;
         dbusuarios.setDataPruebas();
         testMapa();
+        testDoc();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
 //        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
 
@@ -691,10 +694,16 @@ public class LoginActivity extends AppCompatActivity {
         i.putExtra("codcli", "C20610544461");
         i.putExtra("codigoVendedor", "33");
         i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
-        startActivity(i);
+//        startActivity(i);
 //        BottomSheetDialogBuscarProductoVenta dd=BottomSheetDialogBuscarProductoVenta.newInstance(
 //                "33", "oc_numero", "FERRETERIA A");
 //        dd.show(getSupportFragmentManager(), "ddd");
+    }
+
+    private void testDoc(){
+        Intent i= new Intent(this, ConsultaComprobantesOnlineActivity.class);
+        i.putExtra("codcli", "C00006063131");
+        startActivity(i);
     }
 
 }

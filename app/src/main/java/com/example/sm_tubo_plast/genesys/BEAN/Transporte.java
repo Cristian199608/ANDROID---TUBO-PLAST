@@ -5,7 +5,11 @@ public class Transporte {
 	private String itemSucursal;
 	private String codigoTransporte;
 	private String descripcion;
-	
+	private String direccion;
+	private String ditrito;
+	private String provincia;
+	private String departamento;
+
 	public String getCodigoCliente() {
 		return codigoCliente;
 	}
@@ -30,6 +34,36 @@ public class Transporte {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	
-	
+
+	public String getDireccion() {
+		return direccion;
+	}
+
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
+	}
+
+	public String getDitrito() {
+		return ditrito;
+	}
+
+	public void setDitrito(String ditrito) {
+		this.ditrito = ditrito;
+	}
+
+	public String getProvincia() {
+		return provincia;
+	}
+
+	public void setProvincia(String provincia) {
+		this.provincia = provincia;
+	}
+
+	public String getDepartamento() {
+		return departamento;
+	}
+
+	public void setDepartamento(String departamento) {
+		this.departamento = departamento;
+	}
 }

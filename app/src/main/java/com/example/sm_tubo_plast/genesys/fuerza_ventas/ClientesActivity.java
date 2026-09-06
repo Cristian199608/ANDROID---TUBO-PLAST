@@ -161,6 +161,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
     private static final int ID_PROGRAMACION_VISITA_CLIENTE = 10;
     private static final int ID_LOCALIZACION = 11;
     private static final int ID_BAJA_OR_ALTA_ClIENTE = 12;
+    private static final int ID_CONSULTA_COMPROBANTES = 13;
 
 
     Boolean isInternetPresent = false;
@@ -353,6 +354,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
         ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización", R.drawable.ic_ubicacion_grey);
         ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_OR_ALTA_ClIENTE, "Baja/Alta de Cliente", R.drawable.icon_man_24dp);
+        ActionItem itemComprobantes = new ActionItem(ID_CONSULTA_COMPROBANTES, "Consulta Comprobantes", R.drawable.icon_man_24dp);
 
         final QuickAction mQuickAction = new QuickAction(this);
         final QuickAction mQuickAction3 = new QuickAction(this);
@@ -364,6 +366,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         mQuickAction3.addActionItem(itemPedido);
         mQuickAction3.addActionItem(gestionVisita);
         mQuickAction3.addActionItem(programar_visita);
+        mQuickAction3.addActionItem(itemComprobantes);
 
         mQuickAction.addActionItem(infoItem);
         mQuickAction.addActionItem(geolocalizacion);

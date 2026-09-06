@@ -42,6 +42,8 @@ import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClient;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.RequestPedidoSAP;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util.PedidoAppConvertTo_PedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -4730,8 +4732,8 @@ public void Sync_tabla_usuarios_Online(String url, String catalog, String user, 
 
 public int actualizarObjPedido() throws Exception{
 	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
-	String METHOD_NAME="actualizarObjpedido_v4_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v5_json";
+	String METHOD_NAME="actualizarObjpedido_v5_json";
 
 	ArrayList<DB_ObjPedido> listaCabecera = dbclass.getTodosObjPedido_json_flagp();
     if(listaCabecera.size() == 0){
@@ -4832,20 +4834,32 @@ private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaC
 		listaCabecera.get(i).setRegistroBonificaciones(registroBonificaciones);
 		ArrayList<San_Visitas> listaVisitas= DAO_San_Visitas.getSan_VisitasByOc_numero(dbclass, listaCabecera.get(i).getOc_numero());
 		listaCabecera.get(i).setSan_visitas(listaVisitas);
+		//-------------------------------PEDIDO DET DSCTO------------------------------------------
+
+		listaCabecera.get(i).setListaPedido_detalle_descuento(
+				dbclass.obtenerPedidoDetalleDescuento(listaCabecera.get(i).getOc_numero().trim())
+		);
+		//-------------------------------work flow pedido----------------------------------------------------------------
+		listaCabecera.get(i).setListaWorkflow_pedido(
+				dbclass.obtenerWorkflowPedido(listaCabecera.get(i).getOc_numero().trim())
+		);
 
 	}
 	return listaCabecera;
 }
 public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
    	
-   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v4_json";
-	String METHOD_NAME="actualizarObjpedido_v4_json";
+   	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v5_json";
+	String METHOD_NAME="actualizarObjpedido_v5_json";
 	
 	String flag = "";
 	ArrayList<DB_ObjPedido>  listaCabecera = dbclass.getObjPedido_jsons(Oc_numero);
 	ArrayList<DB_ObjPedido>  lista_obj_pedido = getDataParaEnviar(listaCabecera);
-    
+
     Gson gson = new Gson();
+	PedidoAppConvertTo_PedidoSAP converSAP=new PedidoAppConvertTo_PedidoSAP();
+	RequestPedidoSAP data= converSAP.generarTramaPedidoToSAP(lista_obj_pedido.get(0));
+	String jsonSAP =gson.toJson(data);
     String cadena = gson.toJson(lista_obj_pedido);
     
     Log.i("ENVIO PEDIDO","JSON: "+cadena.toString());
@@ -5137,8 +5151,8 @@ public String actualizarDetallePromocion(String oc_numero) throws Exception {
 
 public int Sync_tabla_ObjPedido(String codven, String url, String catalog, String user, String contrasena, int start, int paginacion) throws Exception{
 	
-	String SOAP_ACTION= "http://tempuri.org/obtenerObjpedido_json";
-	String METHOD_NAME="obtenerObjpedido_json";
+	String SOAP_ACTION= "http://tempuri.org/obtenerObjpedido_v2_json";
+	String METHOD_NAME="obtenerObjpedido_v2_json";
 	long beforecall;
 	
 	SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);

@@ -1025,7 +1025,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
     }
 
     public String obtenerCond_Pago(String cond) {
-        String cond_pag=dao_registrosGeneralesMovil.getDescrCondicionVentaByCod(cond);
+        String cond_pag=obj_dbclasses.getDescrCondicionVentaByCod(cond);
 
         return cond_pag;
     }

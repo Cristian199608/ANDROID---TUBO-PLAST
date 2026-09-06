@@ -60,6 +60,13 @@ public class RetrofilClientCantol {
         public static String getCondicionVenta(){
             return BASE_URL_CANTOL+"ComercialCantol/general/condiciones-venta";
         }
+        public static String getConsultaComprobanteCliente(){
+            return BASE_URL_CANTOL+"ComercialCantol/general/comprobantes-x-cliente";
+        }
+
+        public static String getConsultaDescargaBytePDF(){
+            return BASE_URL_CANTOL+"ComercialCantol/comprobantes/descargar";
+        }
     }
 
     public static RequestBody createBodyJson(String jsonRequest){

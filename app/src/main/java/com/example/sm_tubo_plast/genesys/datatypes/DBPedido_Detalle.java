@@ -13,6 +13,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 	private String oc_numero;
 	private String ean_item;
 	private String cip;
+	private String despro;
 	private String precio_bruto;
 	private String precio_neto;
 	private String percepcion;
@@ -44,9 +45,12 @@ public class DBPedido_Detalle implements KvmSerializable {
 
 	private int sec_promo_prioridad;
 	private int item_promo_prioridad;
+	private int flagStockValido;
+	private double peso_unitario;
+	private double volumen_unitario;
+	private double volumen_total;
 
-	
-	
+
 	public String getMotivoDevolucion() {
 		return motivoDevolucion;
 	}
@@ -457,6 +461,47 @@ public class DBPedido_Detalle implements KvmSerializable {
 		this.item_promo_prioridad = item_promo_prioridad;
 	}
 
+	public int getFlagStockValido() {
+		return flagStockValido;
+	}
+
+	public void setFlagStockValido(int flagStockValido) {
+		this.flagStockValido = flagStockValido;
+	}
+
+	public double getPeso_unitario() {
+		return peso_unitario;
+	}
+
+	public void setPeso_unitario(double peso_unitario) {
+		this.peso_unitario = peso_unitario;
+	}
+
+	public double getVolumen_unitario() {
+		return volumen_unitario;
+	}
+
+	public void setVolumen_unitario(double volumen_unitario) {
+		this.volumen_unitario = volumen_unitario;
+	}
+
+	public double getVolumen_total() {
+		return volumen_total;
+	}
+
+	public void setVolumen_total(double volumen_total) {
+		this.volumen_total = volumen_total;
+	}
+
+	public String getDespro() {
+		return despro;
+	}
+
+	public void setDespro(String despro) {
+		this.despro = despro;
+	}
+
+	//-------------------------------FIN ATRIBUTOS----------------------------------------------------------------
 	public boolean convertirMonedaTo(String moneda, double tipoCambio){
 		if(moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){
 			convertirMonedaToSoles(tipoCambio);
@@ -524,6 +569,11 @@ public class DBPedido_Detalle implements KvmSerializable {
 		neww.setPorcentaje_desc_extra(itemDetalle_ok.getPorcentaje_desc_extra());
 		neww.setSec_promo_prioridad(itemDetalle_ok.getSec_promo_prioridad());
 		neww.setItem_promo_prioridad(itemDetalle_ok.getItem_promo_prioridad());
+		neww.setFlagStockValido(itemDetalle_ok.getFlagStockValido());
+		neww.setPeso_unitario(itemDetalle_ok.getPeso_unitario());
+		neww.setVolumen_unitario(itemDetalle_ok.getVolumen_unitario());
+		neww.setVolumen_total(itemDetalle_ok.getVolumen_total());
+		neww.setDespro(itemDetalle_ok.getDespro());
 
 		return neww;
 	}
