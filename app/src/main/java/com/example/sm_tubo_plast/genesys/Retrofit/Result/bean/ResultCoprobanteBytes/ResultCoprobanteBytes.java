@@ -1,4 +1,4 @@
-package com.example.sm_tubo_plast.genesys.Retrofit.Result.bean;
+package com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCoprobanteBytes;
 
 import java.util.List;
 

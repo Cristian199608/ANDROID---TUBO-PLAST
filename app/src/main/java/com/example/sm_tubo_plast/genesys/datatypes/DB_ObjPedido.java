@@ -2,6 +2,7 @@ package com.example.sm_tubo_plast.genesys.datatypes;
 
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
+import com.example.sm_tubo_plast.genesys.BEAN.ResultPedidoEnvioSAP;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 
@@ -33,9 +34,11 @@ public class DB_ObjPedido{
 	private String codigo_familiar;
 	private String DT_PEDI_FECHASERVIDOR;
 	private String totalSujetoPercepcion;
+	private String numdoc;
 	private ArrayList<DBPedido_Detalle> detalles;
 	private ArrayList<Pedido_detalle2> pedidoDetalle2;
 	private ArrayList<DB_RegistroBonificaciones> bonificaciones;
+	private ResultPedidoEnvioSAP resultPedidoSap;
 	
 	private String numeroOrdenCompra;
 	
@@ -77,6 +80,7 @@ public class DB_ObjPedido{
 	private String sucursalTransportista;
 	private String direccionTransportista;
 	private String ubigeoTransportista;
+	private int flg_aprobacion;
 
 	private ArrayList<San_Visitas> san_visitas;
 	private ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento;
@@ -604,5 +608,29 @@ public class DB_ObjPedido{
 
 	public void setDescFormaPago(String descFormaPago) {
 		this.descFormaPago = descFormaPago;
+	}
+
+	public int getFlg_aprobacion() {
+		return flg_aprobacion;
+	}
+
+	public void setFlg_aprobacion(int flg_aprobacion) {
+		this.flg_aprobacion = flg_aprobacion;
+	}
+
+	public ResultPedidoEnvioSAP getResultPedidoSap() {
+		return resultPedidoSap;
+	}
+
+	public void setResultPedidoSap(ResultPedidoEnvioSAP resultPedidoSap) {
+		this.resultPedidoSap = resultPedidoSap;
+	}
+
+	public String getNumdoc() {
+		return numdoc;
+	}
+
+	public void setNumdoc(String numdoc) {
+		this.numdoc = numdoc;
 	}
 }

@@ -83,6 +83,7 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String sucursalTransportista;
 	private String direccionTransportista;
 	private String ubigeoTransportista;
+	private int flg_aprobacion;
 
 	Cliente cliente;
 			
@@ -929,6 +930,14 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setDescFormaPago(String descFormaPago) {
 		this.descFormaPago = descFormaPago;
+	}
+
+	public int getFlg_aprobacion() {
+		return flg_aprobacion;
+	}
+
+	public void setFlg_aprobacion(int flg_aprobacion) {
+		this.flg_aprobacion = flg_aprobacion;
 	}
 
 	//-------------------------------fin atributo----------------------------------------------------------------

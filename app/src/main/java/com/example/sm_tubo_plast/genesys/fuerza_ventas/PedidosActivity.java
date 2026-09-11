@@ -1248,6 +1248,16 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         edt_observacion2DireccionTransporte.setEnabled(flag);
         edt_observacion2Proyecto.setEnabled(flag);
         edt_observacion3.setEnabled(flag);
+        spn_tipoDespacho.setEnabled(flag);
+        spn_despacho.setEnabled(flag);
+        rGroupAplicaEmbalajeSI.setEnabled(flag);
+        rGroupAplicaEmbalajeNO.setEnabled(flag);
+        rGroupAplicaAnticipoSI.setEnabled(flag);
+        rGroupAplicaAnticipoNO.setEnabled(flag);
+        rGroupAplicaNcSI.setEnabled(flag);
+        rGroupAplicaNcNO.setEnabled(flag);
+        edt_observacionDespacho.setEnabled(flag);
+
         rButtonDescuentoSi.setEnabled(flag);
         rButtonDescuentoNo.setEnabled(flag);
         linear_obra.setEnabled(flag);
@@ -1428,9 +1438,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             if(obras.size()==0)obras.add("");
             obras.add(listaObras.get(i).getObra());
             if(ped_cab!=null && ped_cab.getCodigoObra().equalsIgnoreCase(listaObras.get(i).getCodigoObra()))
-                positionObras=i;
+                positionObras=i+1;
         }
-        if(obras.size()>1)obras.add("");
         ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,obras);
         spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_obra.setAdapter(spinner_adapter);
@@ -1539,6 +1548,17 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void mostrarViewTransporteSeleccionado(Transporte trans){
+        if(trans!=null && trans.getDitrito().length()<=2){
+            tranporteSelected =null;
+            edt_transportista.setText("");
+
+            GlobalFunctions.showCustomToast(
+                    this,
+                    "Seleccione un transporte con dirección válida",
+                    GlobalFunctions.TOAST_ERROR);
+            return;
+        }
+        //-----------------------------------------------------------------------------------------------
         tranporteSelected =trans;
         edt_transportista.setText(trans.getDescripcion());
     }
@@ -1740,6 +1760,16 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         }else{
             rGroupAplicaEmbalajeNO.setChecked(true);
         }
+
+        boolean aplicaInstalacion = item.getIsAplicaInstalacion()==1;
+        if (aplicaInstalacion) {
+            rGroupAplicaServiInstalaSI.setChecked(true);
+        }else{
+            rGroupAplicaServiInstalaNO.setChecked(true);
+        }
+        boolean aplicaNC = item.getIsAplicaNC()==1;
+        if(aplicaNC)rGroupAplicaNcSI.setChecked(true);
+        else rGroupAplicaNcNO.setChecked(true);
 
 
         String flagPedidoAnti = item.getFlagPedido_Anticipo();
@@ -2113,10 +2143,15 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
 
-        if(layoutTransporte.getVisibility()==View.VISIBLE && tranporteSelected ==null){
+        if(layoutTransporte.getVisibility()==View.VISIBLE && tranporteSelected ==null
+        ){
             GlobalFunctions.showCustomToast(this,"Seleccione un transporte",GlobalFunctions.TOAST_ERROR);
             return false;
         }
+        else if(layoutTransporte.getVisibility()==View.VISIBLE && tranporteSelected.getDitrito().length()<=2){
+            GlobalFunctions.showCustomToast(this,"Seleccione un transporte con dirección",GlobalFunctions.TOAST_ERROR);
+        }
+
 //        if(codigoObra==null || codigoObra.length()==0){
 //            GlobalFunctions.showCustomToast(this,"Seleccione una obra",GlobalFunctions.TOAST_ERROR);
 //            return false;
@@ -2197,7 +2232,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 //                    startActivityForResult(intent, 1);
                     deshabilitarFormularioPostGuardarPedido();
                     BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
-                            codven, Oc_numero, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
+                            codven, codcli, Oc_numero, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
                     ddx.show(getSupportFragmentManager(), "dddx");
                     ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
                         @Override
@@ -2207,6 +2242,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                     });
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                     Log.e(TAG, "Error "+e.getMessage());
                     GlobalFunctions.showCustomToast(this, "Verificar que esten cargados los datos y no haya campos vacios", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_BOTTOM);
                 }
@@ -2267,7 +2303,7 @@ private void EnvalularMoneda(){
 
 
         if (linear_obra.getVisibility() == View.VISIBLE) {
-            codigoObra	= listaObras.get(spn_obra.getSelectedItemPosition()+1).getCodigoObra();
+            codigoObra	= listaObras.get(spn_obra.getSelectedItemPosition()-1).getCodigoObra();
         }else codigoObra="";
 
         if (rGroupAplicaEmbalajeSI.isChecked()) {
@@ -2339,7 +2375,9 @@ private void EnvalularMoneda(){
         Log.d(TAG, "GuardarFormularioCabecera:codigoDespacho-> "+spn_despacho.getSelectedItem().toString());
         Log.d(TAG, "GuardarFormularioCabecera:flagEmbalaje-> "+flagEmbalaje);
         Log.d(TAG, "GuardarFormularioCabecera:flagAnticipo-> "+flagPedidoAnticipo);
-        Log.d(TAG, "GuardarFormularioCabecera:codigoTranspor-> "+ tranporteSelected.getItemSucursal()+"-"+ tranporteSelected.getCodigoTransporte());
+        if(tranporteSelected!=null){
+            Log.d(TAG, "GuardarFormularioCabecera:codigoTranspor-> "+ tranporteSelected.getItemSucursal()+"-"+ tranporteSelected.getCodigoTransporte());
+        }else Log.d(TAG, "GuardarFormularioCabecera:codigoTranspor-> null data");
         Log.d(TAG, "GuardarFormularioCabecera:codigoNroLetra-> "+codigoLetraCondicionVenta);
         Log.d(TAG, "GuardarFormularioCabecera:diasVigencia-> "+diasVigencia);
     }
@@ -4281,10 +4319,11 @@ private void EnvalularMoneda(){
         itemCabecera.setCodigoTipoDespacho(codigoTipoDespacho);
         itemCabecera.setFlagEmbalaje(flagEmbalaje);
         itemCabecera.setFlagPedido_Anticipo(flagPedidoAnticipo);
-        itemCabecera.setCodigoTransportista(tranporteSelected.getCodigoTransporte());
-        itemCabecera.setSucursalTransportista(tranporteSelected.getItemSucursal());
-        itemCabecera.setDireccionTransportista(tranporteSelected.getDireccion());
+        itemCabecera.setCodigoTransportista(tranporteSelected!=null?tranporteSelected.getCodigoTransporte():"");
+        itemCabecera.setSucursalTransportista(tranporteSelected!=null?tranporteSelected.getItemSucursal():"");
+        itemCabecera.setDireccionTransportista(tranporteSelected!=null?tranporteSelected.getDireccion():"");
         itemCabecera.setUbigeoTransportista(
+                tranporteSelected==null?"":
                 tranporteSelected.getDitrito()+VARIABLES.SEPARADOR_OBSERVACION+
                 tranporteSelected.getProvincia()+VARIABLES.SEPARADOR_OBSERVACION+
                 tranporteSelected.getDepartamento()
@@ -4316,6 +4355,7 @@ private void EnvalularMoneda(){
         itemCabecera.setIsAplicaNC(Integer.parseInt(isAplicaNC));
         itemCabecera.setVolumenTotal(0);
         itemCabecera.setDsctProntoPagoContado(dsctoProntoContado);
+        itemCabecera.setFlg_aprobacion(1);//requeiere aprobacion por default
 
         if (origen.equals("CLIENTESAC")) {
             dbclass.Actualizar_pedido_cabecera(itemCabecera);
@@ -4634,6 +4674,7 @@ private void EnvalularMoneda(){
     }
 
     class async_envio_pedido extends AsyncTask<Void, Integer, String> {
+        String flagSAP="";
         protected void onPreExecute() {
             // para el progress dialog
 
@@ -4661,7 +4702,9 @@ private void EnvalularMoneda(){
 
                 try {
 
-                    valor = soap_manager.actualizarObjPedido_directo(Oc_numero);
+                    ArrayList<String> flags = soap_manager.actualizarObjPedido_directo(Oc_numero, PedidosActivity.this);
+                    valor=flags.get(0);
+                    flagSAP=flags.get(1);
 
                 } catch (JsonParseException ex) {
 
@@ -4700,17 +4743,32 @@ private void EnvalularMoneda(){
             // AlertDialog alertDialog = new
             // AlertDialog.Builder(PedidosActivity.this).create();
             // alertDialog.setCancelable(false);
-
-            if (result.equals("E")) {
-
+            if (result.equals("E") && flagSAP.equalsIgnoreCase("T")){
                 crear_dialogo_post_envio("ENVIO CORRECTO",
-                        "El pedido fue registrado correctamente", R.drawable.check);
+                        "El pedido fue registrado correctamente en SAEMOVIL y en SAP", R.drawable.check);
 
-            } else if (result.equals("I")) {
+            }
+            else if (result.equals("E") &&  flagSAP.trim().length()==0) {
+                crear_dialogo_post_envio("ENVIO CORRECTO",
+                        "El pedido fue registrado correctamente en SAEMOVIL", R.drawable.check);
+            }
+            else if (!result.equals("E") && flagSAP.length()==0) {
+                crear_dialogo_post_envio("Advertencia",
+                        "El pedido no se pudo registrar en SAEMOVIL", R.drawable.alert);
+            }
+            else if (result.equals("E") && !flagSAP.equalsIgnoreCase("T")){
+                crear_dialogo_post_envio("Advertencia",
+                        "El pedido fue registrado correctamente en SAEMOVIL, pero no se guardó en SAP", R.drawable.alert);
 
+            }
+            else if (!result.equals("E") && flagSAP.equalsIgnoreCase("T")) {
+                crear_dialogo_post_envio("Advertencia",
+                        "El pedido fue registrado correctamente en SAP, pero no se pudo guardar en SAEMOVIL", R.drawable.alert);
+            }
+            else if (result.equals("I")) {
                 crear_dialogo_post_envio("ATENCION",
                         "No se pudieron guardar todos los datos",
-                        R.drawable.alert);
+                        R.drawable.ic_alert);
 
             } else if (result.equals("P")) {
 
@@ -6276,6 +6334,7 @@ private void EnvalularMoneda(){
         double totalSujetoPercepcion = 0.0d;
         double descuento = 0.0d;
         double montoTotalBonif = 0;
+        double montoTotalBonifReal = 0.0d;
         double descuentoPercent = 0.0d;
         double volumenTotal = 0.0d;
 
@@ -6289,11 +6348,12 @@ private void EnvalularMoneda(){
             volumenTotal 	+= producto[i].getVolumen();
             if(producto[i].getTipo().equals("C")){
                 montoTotalBonif += producto[i].getSubtotal();
+                montoTotalBonifReal += producto[i].getDescuento();
             }
             else{
                 subtotal	+= producto[i].getSubtotal(); //Sin IGV
                 percepcion 	+= producto[i].getPercepcionPedido();
-                descuento	+= (producto[i].getPrecioLista() - producto[i].getPrecio())*producto[i].getCantidad();
+                descuento	+= producto[i].getDescuento();//(producto[i].getPrecioLista() - producto[i].getPrecio())*producto[i].getCantidad();
                 Log.d("DESCUENTO", producto[i].getPrecioLista() + " - " + producto[i].getPrecio()+ " * " + producto[i].getCantidad());
                 descuentoPercent += 0;
                 if (producto[i].getPercepcionPedido() != 0) {
@@ -6327,6 +6387,8 @@ private void EnvalularMoneda(){
         percepcion		= GlobalFunctions.redondear_toDouble(percepcion);
         totalCompleto	= GlobalFunctions.redondear_toDouble(total + percepcion);
         descuento		= GlobalFunctions.redondear_toDouble(descuento);
+        volumenTotal	= GlobalFunctions.redondear_toDouble(volumenTotal);
+        double dsctoVenta_YdsctoBonif = GlobalFunctions.redondear_toDouble(descuento+montoTotalBonifReal);
 
         //dbclass.GuardarMontoPeso_Pedido(total, peso_total, Oc_numero);
         //COLOREES
@@ -6366,9 +6428,7 @@ private void EnvalularMoneda(){
                 total,
                 percepcion,
                 totalSujetoPercepcion,
-                descuento,
-                descuentoPercent,
-                dsctoBonifi,
+                dsctoVenta_YdsctoBonif,
                 volumenTotal
         );
         dbclass.guardarPedidoTotales(dataRecalculo);
@@ -7245,6 +7305,8 @@ private void EnvalularMoneda(){
 
 
         DBProductos listProduc = dbclass.getProductosxCodpro(cipSalida);
+        DBProductos producto = dbclass.getProductosxCodpro(cipSalida);
+        String despro=producto.getDespro();
         double porcentajeDesc= detalleOrigen.getPorcentaje_desc();
         double porcentajeDescExtra= detalleOrigen.getPorcentaje_desc_extra();
         if(listProduc==null){
@@ -7271,10 +7333,39 @@ private void EnvalularMoneda(){
         //-----------------------------------------------------------------------------------------------
         double precioLista= Double.parseDouble(resulPrecio.precioLista.replace(",", ""));
         double precioVentaSinIgv= Double.parseDouble(resulPrecio.precioVentaPreSinIGV.replace(",", ""));
-        double precioVentaConIgv= Double.parseDouble(resulPrecio.precioVentaPreConIGV.replace(",", ""));
         String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioVentaSinIgv).replace(",","");
         String precioSutotalSinDscto= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioLista).replace(",","");
         double pesoProducto = dbclass.getPesoProducto(codproEntrada);
+
+        //*****insertamos descuento detallado-----------------
+        ArrayList<PedidoDetalleDescuento> listDsctoMotivo=new ArrayList<>();
+        //-------------------------------inset dscto detallado----------------------------------------------------------------
+        listDsctoMotivo.add(new PedidoDetalleDescuento(
+                Oc_numero,
+                salida,
+                nroItemDetalle,
+                porcentajeDesc,
+                VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioSutotalSinDscto) - Double.parseDouble(precioSutotal)),
+                PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
+        ));
+        listDsctoMotivo.add(new PedidoDetalleDescuento(
+                Oc_numero,
+                salida,
+                nroItemDetalle,
+                VARIABLES.getDoubleFormaterThreeDecimal(100-porcentajeDesc),
+                Double.parseDouble(precioSutotal),
+                PedidoDetalleDescuento.TIPO_DSCTO_BONIFICACION
+        ));
+        dbclass.registrarPedidoDetalleDescuento(listDsctoMotivo);
+
+        double dsctoDetalladoMonto=0.0;
+        double dsctoDetalladoPct=0.0;
+        for (PedidoDetalleDescuento pedidoDetalleDescuento : listDsctoMotivo) {
+            dsctoDetalladoPct+=pedidoDetalleDescuento.getPcjt_desc();
+            dsctoDetalladoMonto+=pedidoDetalleDescuento.getMonto_desc();
+        }
+
+        //insertamos el pedido como bonificacion
 
         DBPedido_Detalle itemDetalle = new DBPedido_Detalle();
         itemDetalle.setOc_numero(edt_nroPedido.getText().toString());
@@ -7282,9 +7373,9 @@ private void EnvalularMoneda(){
         itemDetalle.setEan_item("");
         itemDetalle.setPrecioLista(String.valueOf(precioLista));
         itemDetalle.setPercepcion("0");
-        itemDetalle.setPorcentaje_desc(porcentajeDesc);
+        itemDetalle.setPorcentaje_desc(VARIABLES.getDoubleFormaterThowDecimal(dsctoDetalladoPct));
         itemDetalle.setPorcentaje_desc_extra(porcentajeDescExtra);
-        itemDetalle.setDescuento(String.valueOf(precioVentaConIgv));
+        itemDetalle.setDescuento(String.valueOf(VARIABLES.getDoubleFormaterThreeDecimal(dsctoDetalladoMonto)));
         itemDetalle.setPrecio_bruto(String.valueOf(precioVentaSinIgv));
         itemDetalle.setPrecio_neto(precioSutotal);
         itemDetalle.setCantidad(cantidadProducto);
@@ -7301,28 +7392,9 @@ private void EnvalularMoneda(){
         }
         itemDetalle.setItem(nroItemDetalle);
         itemDetalle.setFlagStockValido(1);//flagStockValido para promociones
+        itemDetalle.setDespro("BONIF:: "+despro);//flagStockValido para promociones
         boolean isOK= dbclass.AgregarPedidoDetallePromocion(itemDetalle);
         if(isOK){
-            ArrayList<PedidoDetalleDescuento> listDsctoMotivo=new ArrayList<>();
-            //-------------------------------inset dscto detallado----------------------------------------------------------------
-            listDsctoMotivo.add(new PedidoDetalleDescuento(
-                    Oc_numero,
-                    salida,
-                    nroItemDetalle,
-                    porcentajeDesc,
-                    VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioSutotalSinDscto) - Double.parseDouble(precioSutotal)),
-                    PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
-            ));
-            listDsctoMotivo.add(new PedidoDetalleDescuento(
-                    Oc_numero,
-                    salida,
-                    nroItemDetalle,
-                    VARIABLES.getDoubleFormaterThreeDecimal(100-porcentajeDesc),
-                    Double.parseDouble(itemDetalle.getPrecio_neto()),
-                    PedidoDetalleDescuento.TIPO_DSCTO_BONIFICACION
-            ));
-            dbclass.registrarPedidoDetalleDescuento(listDsctoMotivo);
-
             GlobalFunctions.showCustomToast(
                     this,
                     "Bonificación agregado correctamente",
@@ -7694,6 +7766,10 @@ private void EnvalularMoneda(){
                 index++;
                 mensajeAdd+="\n"+index+") "+workflowAprobaciones.getCriterio();
             }
+        }
+        int cantidad = dbclass.cantidadProductosSinStock(Oc_numero);
+        if(cantidad>0){
+            mensajeAdd+=(mensajeAdd.length()>0?"\n\n":"")+"Este "+TIPO_REGISTRO.toLowerCase()+" tiene "+cantidad+" productos sin stok se guardará como almacen virtual";
         }
         dbclass.guardarWorkFlowPedido(Oc_numero, listaWorkflowPedido);
 

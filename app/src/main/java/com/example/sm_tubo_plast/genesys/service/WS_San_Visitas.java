@@ -57,7 +57,7 @@ public class WS_San_Visitas {
                     ConnectionDetector cd = new ConnectionDetector(activity);
 
                    // if (cd.hasActiveInternetConnection(activity)) {
-                        return soap_manager.actualizarObjPedido_directo(oc_numero);
+                        return soap_manager.actualizarObjPedido_directo(oc_numero, activity).get(0);
                     //}else{
                      //   return "error_1";
                     //}

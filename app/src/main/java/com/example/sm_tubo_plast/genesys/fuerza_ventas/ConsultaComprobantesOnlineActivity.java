@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,16 +10,17 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultComprobante;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultComprobantesDTO;
-import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCoprobanteBytes;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCoprobanteBytes.ResultCoprobanteBytes;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCoprobanteBytes.ResultCoprobanteBytesError;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
@@ -41,7 +43,7 @@ import retrofit2.Call;
 
 public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
     private static final String TAG = "ConsultaComprobantesOnlineActivity";
-    String codcli="";
+    String codcli="", nomcli="";
 
     private RecyclerView rvComprobantes;
     private ProgressBar progressBar;
@@ -67,6 +69,7 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
     private void getParmetros(){
         Bundle bundle = getIntent().getExtras();
         codcli = bundle.getString("codcli", null);
+        nomcli = bundle.getString("nomcli", null);
     }
     private void configView(){
         rvComprobantes = findViewById(R.id.rvComprobantes);
@@ -85,7 +88,7 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         toolbar.setTitle("Consulta Comprobante");
-        toolbar.setSubtitle("Cliente los rosales sac");
+        toolbar.setSubtitle(""+nomcli);
 
         seleccionarFecha(etFechaDesde);
         seleccionarFecha(etFechaHasta);
@@ -99,7 +102,6 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
         adapter = new ComprobantesRecyclerAdapter(
                 listaComprobantes,
                 new ComprobantesRecyclerAdapter.OnComprobanteClickListener() {
-
                     @Override
                     public void onProcesarClick(
                             ResultComprobante comprobante) {
@@ -249,20 +251,31 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
             }
             @Override
             public void Result(boolean isOk, String mensaje, Object data) {
+
                 if(!isOk){
                     pDialog.dismiss();
                     GlobalFunctions.showCustomToast(
                             ConsultaComprobantesOnlineActivity.this,
-                            mensaje,
+                            "API: "+mensaje,
                             GlobalFunctions.TOAST_ERROR);
                     return;
                 }
                 Gson gson=new Gson();
+                ResultCoprobanteBytesError resultComprobError=gson.fromJson(gson.toJson(data), ResultCoprobanteBytesError.class);
                 ResultCoprobanteBytes resultComprobantes=gson.fromJson(gson.toJson(data), ResultCoprobanteBytes.class);
-                if (!resultComprobantes.isSuccess()) {
+                String errorMSG=null;
+                if(resultComprobError!=null && !resultComprobError.getDetail().getSuccess()
+                        && resultComprobError.getDetail().getCodigo()!=null ){
+                    errorMSG= "Api: "+resultComprobError.getDetail().getMensaje();
+                }
+                else if (!resultComprobantes.isSuccess()) {
+                    errorMSG="Api de consultas ha devuelto un error: "+resultComprobantes.getMensaje();
+                }
+                if (errorMSG!=null) {
+                    pDialog.dismiss();
                     GlobalFunctions.showCustomToast(
                             ConsultaComprobantesOnlineActivity.this,
-                            "Api de consultas ha devuelto un error: "+resultComprobantes.getMensaje(),
+                            errorMSG,
                             GlobalFunctions.TOAST_ERROR);
                     return;
                 }
@@ -296,11 +309,18 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
                         Log.e("PDF", "Error: " + mensaje);
                         GlobalFunctions.showCustomToast(
                                 ConsultaComprobantesOnlineActivity.this,
-                                "Error "+mensaje,
+                                "Error SAE "+mensaje,
                                 GlobalFunctions.TOAST_ERROR);
                     }
                 }
         );
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId()==android.R.id.home){
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

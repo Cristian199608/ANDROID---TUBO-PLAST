@@ -3,12 +3,12 @@ package com.example.sm_tubo_plast.genesys.BEAN;
 public class WorkflowPedido {
     private String oc_numero;
     private String codigo_bloqueo;
-    private String estado;
+    private int estado;
 
     public WorkflowPedido() {
     }
 
-    public WorkflowPedido(String oc_numero, String codigo_bloqueo, String estado) {
+    public WorkflowPedido(String oc_numero, String codigo_bloqueo, int estado) {
         this.oc_numero = oc_numero;
         this.codigo_bloqueo = codigo_bloqueo;
         this.estado = estado;
@@ -30,11 +30,11 @@ public class WorkflowPedido {
         this.codigo_bloqueo = codigo_bloqueo;
     }
 
-    public String getEstado() {
+    public int getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(int estado) {
         this.estado = estado;
     }
 }

@@ -15,6 +15,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestTran
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequetDescuentoPedidoSAP;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 import java.nio.charset.CoderMalfunctionError;
@@ -22,16 +23,22 @@ import java.util.ArrayList;
 
 public class PedidoAppConvertTo_PedidoSAP {
     private String[] _separadorData(String texto){
-        String [] data=texto.split(VARIABLES.SEPARADOR_OBSERVACION);
+        String [] data=texto.split(VARIABLES.SEPARADOR_OBSERVACION, -1);
         return data;
     }
     public RequestPedidoSAP generarTramaPedidoToSAP(DB_ObjPedido ped){
+        String tipoPedidoSAP= ped.getTipoRegistro();
+        if(ped.getTipoRegistro().equalsIgnoreCase(PedidosActivity.TIPO_PEDIDO))
+            tipoPedidoSAP="PED";
+        else if(ped.getTipoRegistro().equalsIgnoreCase(PedidosActivity.TIPO_COTIZACION))
+            tipoPedidoSAP="PRO";
+
         RequestPedidoSAP data=new RequestPedidoSAP();
         data.setVersion_api("1.0");
         data.setSistema_origen("SAEMOVIL");
         data.setSistema_origen("SAEMOVIL");
         data.setOc_numero(ped.getOc_numero());
-        data.setTipo_registro(ped.getTipoRegistro());
+        data.setTipo_registro(tipoPedidoSAP);
         data.setTipo_documento(ped.getTipoDocumento().equals("01")?"FACT":"BOL");
         data.setFecha_pedido(VARIABLES.GetFechaStringFrom_dd_mm_yyyy_hhmmssTO_yyyy_mm_dd_hhmmss(ped.getFecha_oc()));
         data.setEstado("NUEVO");
@@ -63,8 +70,8 @@ public class PedidoAppConvertTo_PedidoSAP {
     private RequestClientePedidoSAP getParserDataCliente(DB_ObjPedido ped){
         RequestClientePedidoSAP cli=new RequestClientePedidoSAP();
         cli.setCod_cliente(ped.getCod_cli());
-        cli.setCodigo_sucursal_cliente(ped.getCodigoSucursal());
-        cli.setCodigo_punto_entrega(ped.getCodigoPuntoEntrega());
+        cli.setCodigo_sucursal_cliente(ped.getCodigoPuntoEntrega());
+        cli.setCodigo_punto_entrega(ped.getFlagDespacho());
         cli.setCodigo_obra(ped.getCodigoObra());
         cli.setLista_precio(ped.getCategoriaClienteVenta());
         return cli;
@@ -73,7 +80,7 @@ public class PedidoAppConvertTo_PedidoSAP {
     private RequestEntregaPedidoSAP getParserDataEntrega(DB_ObjPedido ped){
         RequestEntregaPedidoSAP entr= new RequestEntregaPedidoSAP();
         entr.setFecha_entrega(VARIABLES.GetFechaStringFrom_dd_mm_yyyy_TO_yyyy_mm_dd(ped.getFecha_mxe()));
-        entr.setCodigo_punto_entrega(ped.getFlagDespacho());
+        //entr.setCodigo_punto_entrega(ped.getFlagDespacho());
         entr.setCodigo_turno(ped.getCodTurno().equals("01")?"M":"T");
         entr.setCodigo_prioridad(ped.getCodigoPrioridad());
         entr.setCodigo_tipo_despacho(ped.getCodigoTipoDespacho());
@@ -88,11 +95,18 @@ public class PedidoAppConvertTo_PedidoSAP {
         RequestTransportePedidoSAP tra= new RequestTransportePedidoSAP();
         tra.setCodigo_transporte(ped.getCodigoTransportista());
         tra.setCodigo_sucursal_transporte(ped.getSucursalTransportista());
+        tra.setDireccion_agencia_transporte(ped.getDireccionTransportista());
         tra.setDireccion_entrega_transporte(ped.getDireccionTransportista());
-        String[] ubigeos= _separadorData(ped.getUbigeoTransportista());
-        tra.setDistrito(ubigeos[0]);
-        tra.setProvincia(ubigeos[1]);
-        tra.setDepartamento(ubigeos[2]);
+        if(ped.getUbigeoTransportista().contains(VARIABLES.SEPARADOR_OBSERVACION)){
+            String[] ubigeos= _separadorData(ped.getUbigeoTransportista());
+            tra.setDistrito(ubigeos[0]);
+            tra.setProvincia(ubigeos[1]);
+            tra.setDepartamento(ubigeos[2]);
+        }else{
+            tra.setDistrito("");
+            tra.setProvincia("");
+            tra.setDepartamento("");
+        }
         return tra;
     }
 
@@ -162,6 +176,9 @@ public class PedidoAppConvertTo_PedidoSAP {
             aud.setCod_producto(det.getCip());
             aud.setDescripcion_producto(det.getDespro());
             aud.setCantidad(det.getCantidad());
+            aud.setUnidad_medida(det.getUnidad_medida());
+            aud.setPrecio_lista(Double.parseDouble(det.getPrecioLista()));
+            aud.setPrecio_unitario(Double.parseDouble(det.getPrecio_bruto()));
             aud.setPorcentaje_descuento(det.getPorcentaje_desc());
             aud.setImporte_descuento(Double.parseDouble(det.getDescuento()));
 
@@ -177,7 +194,7 @@ public class PedidoAppConvertTo_PedidoSAP {
                 }
             }
             aud.setDescuentos(lisDscto);
-            aud.setSubtotal(Double.parseDouble(ped.getSubtotal()));
+            aud.setSubtotal(det.getTipo_producto().equals("V")?Double.parseDouble(det.getPrecio_neto()):0.0);
             aud.setTipo_afectacion_igv(det.getTipo_producto().equals("V")?"IGV_18":"IGV_EXE");
             aud.setPercepcion(0);
             aud.setTipo_producto(!det.getTipo_producto().equals("V")?"B":"V");
@@ -188,6 +205,7 @@ public class PedidoAppConvertTo_PedidoSAP {
             aud.setPeso_total(Double.parseDouble(det.getPeso_bruto()));
             aud.setVolumen_unitario(det.getVolumen_unitario());
             aud.setVolumen_total(det.getVolumen_total());
+            listaDet.add(aud);
         }
         return listaDet;
     }

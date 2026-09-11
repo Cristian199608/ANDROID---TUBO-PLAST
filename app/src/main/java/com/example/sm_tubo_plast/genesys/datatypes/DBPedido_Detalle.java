@@ -502,6 +502,12 @@ public class DBPedido_Detalle implements KvmSerializable {
 	}
 
 	//-------------------------------FIN ATRIBUTOS----------------------------------------------------------------
+	public String getCodproOriginal(){
+		String codpro=this.getTipo_producto().equals("V") && this.getCip().startsWith("B")
+				?this.getCip().substring(1)
+				:this.getCip();
+		return codpro;
+	}
 	public boolean convertirMonedaTo(String moneda, double tipoCambio){
 		if(moneda.equals(PedidosActivity.MONEDA_SOLES_IN)){
 			convertirMonedaToSoles(tipoCambio);

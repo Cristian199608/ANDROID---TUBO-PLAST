@@ -180,7 +180,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
     AlertDialog.Builder dialogo1, dialogo2;
     String codcli, codSucursal, estadoLocalizacion;
-    int arti = 0, item_direccion = 0;
+    int arti = 0;
+    String item_direccion = "";
 
     FloatingActionButton myFAB;
 
@@ -354,7 +355,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
         ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización", R.drawable.ic_ubicacion_grey);
         ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_OR_ALTA_ClIENTE, "Baja/Alta de Cliente", R.drawable.icon_man_24dp);
-        ActionItem itemComprobantes = new ActionItem(ID_CONSULTA_COMPROBANTES, "Consulta Comprobantes", R.drawable.icon_man_24dp);
+        ActionItem itemComprobantes = new ActionItem(ID_CONSULTA_COMPROBANTES, "Consulta Comprobantes", R.drawable.ic_search_grey);
 
         final QuickAction mQuickAction = new QuickAction(this);
         final QuickAction mQuickAction3 = new QuickAction(this);
@@ -449,10 +450,13 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
                 nomcli = nomcli2;
 
-                item_direccion = Integer.parseInt(dir);
+                item_direccion = dir;
                 codcli = ""+searchResults.get(position).get("codcli");
-                codSucursal = obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
-                estadoLocalizacion = obj_dbclasses.obtenerEstadoSucursalCliente(codcli, codSucursal);
+                codSucursal = ""+searchResults.get(position).get("item_direccion");//obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
+
+                //estadoLocalizacion=searchResults.get(position).get("estado_localizacion").toString();
+                //if(estadoLocalizacion.trim().length()==0)
+                estadoLocalizacion=obj_dbclasses.obtenerEstadoGelocalizacioCliente(codcli);
 
                 if (REQUEST_TYPPE.equals(REQUEST_SELECCION_CLIENTE)) {
                     Intent returnIntent=new Intent();
@@ -1165,7 +1169,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
             if (cd.hasActiveInternetConnection(getApplicationContext())) {
 
                 try {
-                    soap_manager.actualizarObjPedido_directo(oc_numero);
+                    soap_manager.actualizarObjPedido_directo(oc_numero, ClientesActivity.this);
                 } catch (JsonParseException ex) {
                     // exception al parsear json
                     valor = "error_2";
@@ -1782,20 +1786,25 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 }
 
                 @Override
-                public void onChanged(int itemDirCli) {
+                public void onChanged(String itemDirCli) {
                     adapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onEnvioServer() {
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(ClientesActivity.this, "Falta guardar en el servidor", Toast.LENGTH_SHORT).show();
-
-                    //new asyncEnviarGeolocalizacionCliente().execute();
+                    //Toast.makeText(ClientesActivity.this, "Falta guardar en el servidor", Toast.LENGTH_SHORT).show();
+                    new asyncEnviarGeolocalizacionCliente().execute();
                 }
             });
             bottomSheetGeolocalizarCliente.show(getSupportFragmentManager(), bottomSheetGeolocalizarCliente.getTag());
 
+        }
+        else if(actionId==ID_CONSULTA_COMPROBANTES){
+            Intent i= new Intent(this, ConsultaComprobantesOnlineActivity.class);
+            i.putExtra("codcli", codcli);
+            i.putExtra("nomcli", nomcli);
+            startActivity(i);
         }
         else {
 
@@ -2149,9 +2158,9 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 try {
                     String flag="0";
                     if(flagTipoEnvio.equals("P")){//Envio de todos las direcciones cliente
-                        flag=soap_manager.actualizarDireccionCliente("ninguno","");
+                        flag=soap_manager.actualizarDireccionCliente(codven,"ninguno","");
                     }else{
-                        flag=soap_manager.actualizarDireccionCliente(codcli,codSucursal);
+                        flag=soap_manager.actualizarDireccionCliente(codven, codcli,codSucursal);
                     }
                     if (flag.equalsIgnoreCase("1")){
                         mensaje = "Envio completo";

@@ -85,7 +85,7 @@ public class VARIABLES {
                 "fuerzaventas_v2.6", //at 2025-11-04
                 "fuerzaventas_v2.7", //at 2026-04-25
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.12";// at 2026-08-11
+        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.13";// at 2026-08-11
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
@@ -94,7 +94,7 @@ public class VARIABLES {
                 "fuerzaventas_prueba_v2.2",//end 2025-01-03
                 "fuerzaventas_prueba_v2.3",//at 2025-01-03
         };
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.12";// at 2026-08-11
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.13";// at 2026-08-11
         private static final  int DATABASA_VERSION_prueba       =1;
 
         public static String[] getDatabaseNameOld() {
@@ -453,9 +453,10 @@ public class VARIABLES {
         Date date = new Date();
         return dateFormat.format(date);
     }
-    public static String GetFechaHoraActual(){
+
+    public static String getFechaHoraActual(){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:mm");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT-05"));
+        dateFormat.setTimeZone(GetTimeZone());
         Date date = new Date();
         return dateFormat.format(date);
     }

@@ -46,6 +46,7 @@ public class RequestEntregaPedidoSAP {
         return codigo_punto_entrega;
     }
 
+    @Deprecated //no se debe usar
     public void setCodigo_punto_entrega(String codigo_punto_entrega) {
         this.codigo_punto_entrega = codigo_punto_entrega;
     }

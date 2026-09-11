@@ -597,7 +597,7 @@
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="1.5"
                                     android:entries="@array/datos_spinner"
-                                    android:prompt="@string/prompt_puntoEntrega"
+                                    android:prompt="@string/prompt_direccionEntrega"
                                     android:spinnerMode="dialog" />
                             </LinearLayout>
 
@@ -990,6 +990,8 @@
 
                             <!-- Aplica Descuento -->
                             <LinearLayout
+                                android:visibility="gone"
+                                tools:visibility="visble"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"

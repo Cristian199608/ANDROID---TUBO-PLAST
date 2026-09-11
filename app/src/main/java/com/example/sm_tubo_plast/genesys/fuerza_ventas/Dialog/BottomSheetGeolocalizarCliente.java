@@ -55,17 +55,17 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
 
 
     String codven, codcli, nomcli;
-    int item_dircli;
+    String item_dircli;
 
     public static BottomSheetGeolocalizarCliente newInstance(
-            String codven, String codcli, String nomcli, int item_dircli
+            String codven, String codcli, String nomcli, String item_dircli
     ) {
         BottomSheetGeolocalizarCliente fragment = new BottomSheetGeolocalizarCliente();
         Bundle args = new Bundle();
         args.putString("codven", codven);
         args.putString("codcli", codcli);
         args.putString("nomcli", nomcli);
-        args.putInt("item_dircli", item_dircli);
+        args.putString("item_dircli", item_dircli);
 
         fragment.setArguments(args);
         return fragment;
@@ -107,7 +107,7 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
     public interface MyGeolocaliacionListener {
         LatLng getLastUbicacion();
         void onCancel();
-        void onChanged(int itemDireccion);
+        void onChanged(String itemDireccion);
         void onEnvioServer();
     }
 
@@ -120,7 +120,7 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
             codven= getArguments().getString("codven", "");
             codcli= getArguments().getString("codcli", "");
             nomcli= getArguments().getString("nomcli", "");
-            item_dircli= getArguments().getInt("item_dircli", -1);
+            item_dircli= getArguments().getString("item_dircli", "");
         }
 
         //View alertLayout = inflater.inflate(R.layout.dialog_geolocalizar,null);

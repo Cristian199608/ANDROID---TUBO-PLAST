@@ -1567,7 +1567,7 @@ public class PedidosActivityVentana2 extends AppCompatActivity {
             if (cd.hasActiveInternetConnection(getApplicationContext())) {
 
                 try {
-                    valor = soap_manager.actualizarObjPedido_directo(Oc_numero);
+                    valor = soap_manager.actualizarObjPedido_directo(Oc_numero, PedidosActivityVentana2.this).get(0);
                 } catch (JsonParseException ex) {
                     //exception al parsear json
                     valor = "error_2";

@@ -12,11 +12,13 @@ import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
 import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.BEAN.PromocionDetalleProducto;
+import com.example.sm_tubo_plast.genesys.BEAN.ResultPedidoEnvioSAP;
 import com.example.sm_tubo_plast.genesys.BEAN.Roles_accesos_app;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.ViewSeguimientoPedidoDetalle;
+import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoCabeceraRespose;
@@ -35,6 +37,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteCanto
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteLugarEntrega;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCondicionVenta;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultCuentasXcobrar;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPedido.ResultPedidoSap;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultProducto;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPromocionDetalle;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultTransporte;
@@ -43,8 +46,10 @@ import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.RequestPedidoSAP;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.ReservaPedido;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util.PedidoAppConvertTo_PedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
+import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.gson.Gson;
@@ -4847,19 +4852,129 @@ private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaC
 	}
 	return listaCabecera;
 }
-public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
+
+private ResultPedidoEnvioSAP enviarPedidoSAP(String oc_numero, String jsonData, Activity activity){
+	String urlReq = RetrofilClientCantol.UrlPeticiones.enviarPedidoOrCotizacionSAP();
+	RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.enviarDATA(urlReq, jsonData));
+	Call<Object> call = RetrofilClientCantol
+			.getRetrofitInstanceCantolWithToken(activity)
+			.create(GetDataCantol.class).getCliente(body);
+
+	Response<Object> response = null;
+	ResultPedidoEnvioSAP resultPedidoSap=null;
+	try {
+		response = call.execute();
+		if (response.isSuccessful()) {
+			ResultPedidoSap result = gson.fromJson(gson.toJson(response.body()), ResultPedidoSap.class);
+			resultPedidoSap=new ResultPedidoEnvioSAP(
+					result.getResultado().getEstado(),
+					result.getResultado().getCodigo(),
+					result.getResultado().getMensaje(),
+					result.getPedido().getOc_numero(),
+					result.getPedido().getNumero_pedido_sap(),
+					result.getPedido().getDocentry(),
+					result.getPedido().getFecha_procesamiento()
+			);
+		}
+	} catch (Exception e) {
+		resultPedidoSap=new ResultPedidoEnvioSAP(
+				"EXCEPCION",
+				"-1",
+				"Error al enviar a sap: "+e.getMessage(),
+				oc_numero,
+				0,
+				0,
+				VARIABLES.getFechaHoraActual()
+		);
+		e.printStackTrace();
+	}
+	return resultPedidoSap;
+
+}
+	private boolean enviarPedidoComoReserva(DB_ObjPedido dbPedido, Activity activity){
+
+	 ArrayList<ReservaPedido> listaReserva=new ArrayList<>();
+		for (DBPedido_Detalle detalle : dbPedido.getDetalles()) {
+			if (detalle.getFlagStockValido()==1) continue;
+			listaReserva.add(new ReservaPedido(
+					detalle.getCodproOriginal(),
+					detalle.getCantidad(),
+					dbPedido.getCategoriaClienteVenta(),
+					dbPedido.getCod_emp(),
+					dbPedido.getOc_numero(),
+					dbPedido.getUsername(),
+					dbPedido.getMoneda(),
+					dbPedido.getCodigoAlmacen()
+			));
+		}
+		if(listaReserva.size()==0) return true;
+		//-----------------------------------------------------------------------------------------------
+	 	String jsonData=gson.toJson(listaReserva);
+		String urlReq = RetrofilClientCantol.UrlPeticiones.enviarPedidoComoReserva();
+		RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.enviarDATA(urlReq, jsonData));
+		Call<Object> call = RetrofilClientCantol
+				.getRetrofitInstanceCantolWithToken(activity)
+				.create(GetDataCantol.class).getCliente(body);
+
+		Response<Object> response = null;
+		try {
+			response = call.execute();
+			if (response.isSuccessful()) {
+				//String jsonData = gson.toJson(response.body());
+//			final Type malla = new TypeToken<ArrayList<ResultClienteCantol>>() {}.getType();
+//			final ArrayList<ResultClienteCantol> lista = gson.fromJson(gson.toJson(response.body()), malla);
+//			return dbclass.guardarSyncClientesMasivo(lista, codven);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+
+	}
+public ArrayList<String> actualizarObjPedido_directo(String Oc_numero, Activity activity) throws Exception{
    	
    	String SOAP_ACTION= "http://tempuri.org/actualizarObjpedido_v5_json";
 	String METHOD_NAME="actualizarObjpedido_v5_json";
 	
-	String flag = "";
+	ArrayList<String> flags=new ArrayList<>();
+	flags.add(0, "P");//saemovil
+	flags.add(1, "");//sap
 	ArrayList<DB_ObjPedido>  listaCabecera = dbclass.getObjPedido_jsons(Oc_numero);
 	ArrayList<DB_ObjPedido>  lista_obj_pedido = getDataParaEnviar(listaCabecera);
 
     Gson gson = new Gson();
 	PedidoAppConvertTo_PedidoSAP converSAP=new PedidoAppConvertTo_PedidoSAP();
-	RequestPedidoSAP data= converSAP.generarTramaPedidoToSAP(lista_obj_pedido.get(0));
-	String jsonSAP =gson.toJson(data);
+	if(lista_obj_pedido.get(0).getCod_noventa()!=GlobalVar.CODIGO_VISITA_CLIENTE){
+		boolean isStockOK=true;
+		boolean isWorkFlowOK=true;
+		for (DBPedido_Detalle detalle : lista_obj_pedido.get(0).getDetalles()) {
+			if(detalle.getFlagStockValido()!=1){
+				isStockOK=false;
+				break;
+			}
+		}
+		for (WorkflowPedido workflowPedido : lista_obj_pedido.get(0).getListaWorkflow_pedido()) {
+			if (workflowPedido.getEstado()!=1) {
+				isWorkFlowOK=false;
+				break;
+			}
+		}
+		if(isStockOK && isWorkFlowOK){
+			RequestPedidoSAP data= converSAP.generarTramaPedidoToSAP(lista_obj_pedido.get(0));
+			String jsonSAP =gson.toJson(data);
+			ResultPedidoEnvioSAP envioPedido = enviarPedidoSAP(data.getOc_numero(), jsonSAP, activity);
+			if(envioPedido.isEnvioAceptado()){
+				dbclass.updateFlagPedidoCabecera(data.getOc_numero(), "T");
+				lista_obj_pedido.get(0).setNumdoc(""+envioPedido.getNumero_pedido_sap());
+				flags.set(1,"T");//sap
+			}
+			lista_obj_pedido.get(0).setResultPedidoSap(envioPedido);
+			Log.i("ENVIO PEDIDO","actualizarObjPedido_directo JSON: "+jsonSAP);
+		}
+		if(!isStockOK){
+			enviarPedidoComoReserva(lista_obj_pedido.get(0), activity);
+		}
+	}
     String cadena = gson.toJson(lista_obj_pedido);
     
     Log.i("ENVIO PEDIDO","JSON: "+cadena.toString());
@@ -4905,7 +5020,8 @@ public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
 			Log.i("ENVIO PEDIDO","Respuesta: "+res);
 			
 			JSONArray jsonstring = new JSONArray(res);
-			flag = dbclass.guardar_respuesta_objpedido_flag(jsonstring);
+			String flag = dbclass.guardar_respuesta_objpedido_flag(jsonstring);
+			flags.set(0,flag);//saemovil
 			
 	    }
 	    catch(JSONException ex){
@@ -4916,12 +5032,11 @@ public String actualizarObjPedido_directo(String Oc_numero) throws Exception{
 	    	ex.printStackTrace();
 	    	throw new Exception(ex);
 	    }
-	    
-	    
+
 	    actualizarDetallePromocion(Oc_numero);
 	    actualizarDetalleEntrega(Oc_numero);
 	    
-	return flag; 
+	return flags;
 }
 
 	public String actualizarObjPedido_San_visitas(DB_ObjPedido pedido_Cabecera) {
@@ -5982,8 +6097,8 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		return codven+"#"+fecha;
 	}
 	public int Sync_tabla_lugarEntrega(String codigoVendedor, String fecha, String url, String catalog, String user, String contrasena, int start, int paginacion ) throws Exception{
-		String SOAP_ACTION= "http://tempuri.org/obtenerLugarEntrega_json";
-		String METHOD_NAME="obtenerLugarEntrega_json";
+		String SOAP_ACTION= "http://tempuri.org/obtenerTBLugarEntrega_v2_json";
+		String METHOD_NAME="obtenerTBLugarEntrega_v2_json";
 
 		String w_fecha= fecha!=null?fecha:"TODOS";
 
@@ -6005,7 +6120,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 	    	transporte.call(SOAP_ACTION, Soapenvelope);
 	    	SoapPrimitive result =(SoapPrimitive)Soapenvelope.getResponse();
 	    	JSONArray jsonstring = new JSONArray(result.toString());
-	    	int tamanio=dbclass.sincronizar_lugarEntrega(jsonstring, w_fecha, start);
+	    	int tamanio=dbclass.sincronizar_lugarEntregaGeolocalizacion(jsonstring, w_fecha, start);
 	    	Log.i(TAG, "Sync_tabla_lugarEntrega done");
 	    	return  tamanio;
 	    }catch(Exception e){
@@ -6798,11 +6913,12 @@ public int actualizarRegistroBonificaciones() throws Exception{
 
 	}
 
-    public String actualizarDireccionCliente(String codcli, String item) throws Exception { //**Nuevo Localizacion
+    public String actualizarDireccionCliente(String codven,
+											 String codcli,
+											 String item) throws Exception { //**Nuevo Localizacion
 
-        String SOAP_ACTION = "http://tempuri.org/actualizarDireccionClienteGiro";
-        String METHOD_NAME = "actualizarDireccionClienteGiro";
-        //String METHOD_NAME = "geolocalizarCliente_json";
+        String SOAP_ACTION = "http://tempuri.org/actualizarDireccionClienteGiro_v2_json";
+        String METHOD_NAME = "actualizarDireccionClienteGiro_v2_json";
 
         String flag = "";
 
@@ -6823,6 +6939,7 @@ public int actualizarRegistroBonificaciones() throws Exception{
 
 
 
+        request.addProperty("codven", codven);
         request.addProperty("cadena", cadena);
         request.addProperty("url", url);
         request.addProperty("catalog", catalog);
@@ -6850,6 +6967,9 @@ public int actualizarRegistroBonificaciones() throws Exception{
 
             SoapPrimitive resultado_xml = (SoapPrimitive) Soapenvelope.getResponse();
             flag = resultado_xml.toString();
+			if(flag.equals("1")){
+				dbclass.updateGeolocalizacionClienteFlag(codcli, item);
+			}
             Log.i("actualizarDireccionCliente", "Respuesta: " + flag);
         } catch (Exception ex) {
             Log.w("SYNC MANAGER", "actualizarDireccionCliente", ex);

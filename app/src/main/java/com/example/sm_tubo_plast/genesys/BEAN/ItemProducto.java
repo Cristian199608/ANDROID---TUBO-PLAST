@@ -43,6 +43,7 @@ public class ItemProducto {
 	private String marca;
 	private int sec_promo_prioridad;
 	private double volumen;
+	private int flagStockValido;
 	private DBMta_Kardex stockDetalle;
 
 
@@ -274,6 +275,14 @@ public class ItemProducto {
 
 	public void setVolumen(double volumen) {
 		this.volumen = volumen;
+	}
+
+	public int getFlagStockValido() {
+		return flagStockValido;
+	}
+
+	public void setFlagStockValido(int flagStockValido) {
+		this.flagStockValido = flagStockValido;
 	}
 
 	//-------------------------------FIN ATRIBUTO----------------------------------------------------------------

@@ -1586,6 +1586,9 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     errorMotivo =soap_manager.Sync_tabla_lugarEntregaV2(SincronizarActivity.this, codven);
                                     if(errorMotivo !=null) throw new Exception(errorMotivo);
                                     publishProgress("90");
+                                    NombreMetodo=valor+") Sync_tabla_lugarEntregaGeol";
+                                    int lista_tamanio=soap_manager.Sync_tabla_lugarEntrega(codven, null,servidorBD, nombreBD, usuarioBD,contrasenaBD,  start, paginacion);
+
                                     //SERVER 212
 
 //                                    existeDatos=true;

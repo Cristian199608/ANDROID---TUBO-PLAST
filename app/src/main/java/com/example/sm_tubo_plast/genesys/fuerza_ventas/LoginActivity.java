@@ -37,11 +37,14 @@ import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.RequestPedidoSAP;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util.PedidoAppConvertTo_PedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
 import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
+import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
@@ -51,6 +54,7 @@ import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
+import com.example.sm_tubo_plast.genesys.util.GlobalVar;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.maps.model.LatLng;
@@ -690,8 +694,8 @@ public class LoginActivity extends AppCompatActivity {
     private void testMapa(){
         final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
         i.putExtra("origen", "CLIENTES");
-        i.putExtra("nombreCliente", "COMERCIAL CASA FUERTE S.A.C.");
-        i.putExtra("codcli", "C20610544461");
+        i.putExtra("nombreCliente", "CUEVA CHUQUIZUTA TEODOCIA");
+        i.putExtra("codcli", "C00006063131");
         i.putExtra("codigoVendedor", "33");
         i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
 //        startActivity(i);
@@ -701,10 +705,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void testDoc(){
-        Intent i= new Intent(this, ConsultaComprobantesOnlineActivity.class);
-        i.putExtra("codcli", "C00006063131");
-        startActivity(i);
+//        Intent i= new Intent(this, ConsultaComprobantesOnlineActivity.class);
+//        i.putExtra("codcli", "C00006063131");
+//        i.putExtra("nomcli", "C00006063131");
+//        startActivity(i);
+        try {
+//            String Oc_numero="3326091001";
+//            DBSync_soap_manager dbsoap=new DBSync_soap_manager(this);
+//            dbsoap.actualizarObjPedido_directo(Oc_numero);
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
     }
 
 }
-//0199631

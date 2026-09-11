@@ -1441,7 +1441,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             if (connection.hasActiveInternetConnection(getApplicationContext())) {
 
                 try {
-                    soap_manager.actualizarObjPedido_directo(oc_numero);
+                    soap_manager.actualizarObjPedido_directo(oc_numero, ReportesPedidosCotizacionYVisitaActivity.this);
                 } catch (JsonParseException ex) {
                     // exception al parsear json
                     valor = "error_2";

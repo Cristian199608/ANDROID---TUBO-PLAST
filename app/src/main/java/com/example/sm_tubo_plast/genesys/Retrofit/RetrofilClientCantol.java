@@ -67,6 +67,14 @@ public class RetrofilClientCantol {
         public static String getConsultaDescargaBytePDF(){
             return BASE_URL_CANTOL+"ComercialCantol/comprobantes/descargar";
         }
+
+        public static String enviarPedidoOrCotizacionSAP(){
+            return BASE_URL_CANTOL+"ComercialCantol/pedido-sae/";
+        }
+
+        public static String enviarPedidoComoReserva(){
+            return BASE_URL_CANTOL+"ComercialCantol/pedido-sae/reservar";
+        }
     }
 
     public static RequestBody createBodyJson(String jsonRequest){

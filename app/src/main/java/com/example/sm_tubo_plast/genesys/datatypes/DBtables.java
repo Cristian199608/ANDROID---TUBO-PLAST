@@ -518,6 +518,8 @@ public class DBtables {
 		public static final String sucursalTransportista = "sucursalTransportista";
 		public static final String direccionTransportista = "direccionTransportista";
 		public static final String ubigeoTransportista = "ubigeoTransportista";
+		public static final String flg_aprobacion = "flg_aprobacion";
+		public static final String numdoc = "numdoc";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_OC_NUMERO + " CHAR(21) PRIMARY KEY, " + SITIO_ENFA

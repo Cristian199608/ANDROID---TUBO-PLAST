@@ -470,15 +470,15 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             }
             DBPedido_Cabecera dbPedido_cabecera=dBclasses.getPedido_cabecera(FINAL_OC_NUMERO);
             fechaOcOriginal=dbPedido_cabecera.getFecha_oc();
-            int sitio_enfa=0;
+            String sitio_enfa="";
             if (dbPedido_cabecera!=null){
-                sitio_enfa=Integer.parseInt(dbPedido_cabecera.getSitio_enfa());
+                sitio_enfa=dbPedido_cabecera.getSitio_enfa();
             }
             PoblarSpinnersDireccion(SpinnerDirecciones, sitio_enfa);
 
         }else{
             txt_oc_numero.setText(COD_VEND + calcularSecuencia(numOc));
-            PoblarSpinnersDireccion(SpinnerDirecciones, 0);
+            PoblarSpinnersDireccion(SpinnerDirecciones, "");
             PoblarSpinnersTIPO_VISITA( "", "");
             PoblarSpinnersCliente_Contacto( 0);
 
@@ -669,13 +669,13 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         }
         spinnerLocal.setSelection(index);
     }
-    private void PoblarSpinnersDireccion(Spinner spinnerLocal, int itemDireccion){
+    private void PoblarSpinnersDireccion(Spinner spinnerLocal, String itemDireccion){
         ArrayList<DB_DireccionClientes> dirs=dBclasses.getDireccionesxCliente(""+ID_RRHH);
         int index=0;
         int forInt=0;
         final ArrayList<String> listaString=new ArrayList<>();
         for (DB_DireccionClientes item:dirs){
-            if (itemDireccion==Integer.parseInt(item.getItem())){
+            if (itemDireccion.equals(item.getItem())){
                 index=forInt;
             }
             listaString.add(item.getItem()+"-"+item.getDireccion());
@@ -909,7 +909,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         try {
             String direccion=SpinnerDirecciones.getSelectedItem().toString();
             String [] dir=direccion.split("-");
-            int item=Integer.parseInt(dir[0]);
+            String item=dir[0];
             DAO_Cliente dao_cliente=new DAO_Cliente(GestionVisita3Activity.this);
             DB_DireccionClientes dircli=dao_cliente.getDireccionClienteByItem(""+ID_RRHH,""+item);
             //ArrayList<DB_DireccionClientes> dirCliente=dBclasses.getDireccionesxCliente(""+ID_RRHH);
@@ -1274,7 +1274,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         String direccion=SpinnerDirecciones.getSelectedItem().toString();
         String [] dir=direccion.split("-");
-        int item_direccion=Integer.parseInt(dir[0]);
+        String item_direccion=dir[0];
 
         DB_ObjPedido itemCabecera=new DB_ObjPedido();
         itemCabecera.setOc_numero(oc_numero);
@@ -1289,6 +1289,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         itemCabecera.setUsername(dBclasses.getNombreUsuarioXcodvend(COD_VEND));
         itemCabecera.setRuta("ruta");
         itemCabecera.setCond_pago("");
+        itemCabecera.setDescFormaPago("");
         itemCabecera.setCod_cli(ID_RRHH);
         itemCabecera.setCod_emp(COD_VEND);
         itemCabecera.setObserv("");
@@ -1311,13 +1312,23 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         itemCabecera.setFlagEmbalaje("0");
         itemCabecera.setFlagPedido_Anticipo("0");
         itemCabecera.setCodigoTransportista("0");
+        itemCabecera.setSucursalTransportista("");
+        itemCabecera.setDireccionTransportista("");
+        itemCabecera.setUbigeoTransportista("");
+
         itemCabecera.setCodigoAlmacen("0");
         itemCabecera.setObservacion2("");
         itemCabecera.setObservacion3("");
         itemCabecera.setObservacionDescuento("");
         itemCabecera.setObservacionTipoProducto("");
 
-
+        itemCabecera.setIsAplicaInstalacion(0);
+        itemCabecera.setObsDespacho("");
+        itemCabecera.setCategoriaClienteVenta("");
+        itemCabecera.setIsAplica_dsc_sig_categoria(0);
+        itemCabecera.setIsAplicaNC(0);
+        itemCabecera.setVolumenTotal(0);
+        itemCabecera.setDsctProntoPagoContado(0);
 
         itemCabecera.setSan_visitas(list_visitas);
 

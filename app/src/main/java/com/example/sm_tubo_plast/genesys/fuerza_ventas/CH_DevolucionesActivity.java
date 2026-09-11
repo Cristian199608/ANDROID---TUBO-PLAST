@@ -1999,7 +1999,7 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
             if (cd.hasActiveInternetConnection(getApplicationContext())) {
 
                 try {
-                    valor = soap_manager.actualizarObjPedido_directo(Oc_numero);
+                    valor = soap_manager.actualizarObjPedido_directo(Oc_numero, CH_DevolucionesActivity.this).get(0);
                 } catch (JsonParseException ex) {
                     // exception al parsear json
                     valor = "error_2";
@@ -3628,8 +3628,6 @@ public class CH_DevolucionesActivity extends AppCompatActivity {
         dbclass.guardarPedidoTotales(new PedidoCabeceraRecalcular(
                 Oc_numero,
                 peso_total,
-                0,
-                0,
                 0,
                 0,
                 0,

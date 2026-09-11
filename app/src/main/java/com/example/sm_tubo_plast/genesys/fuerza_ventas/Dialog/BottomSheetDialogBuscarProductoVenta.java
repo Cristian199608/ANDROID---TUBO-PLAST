@@ -56,16 +56,18 @@ public class BottomSheetDialogBuscarProductoVenta
 
     private static final String TAG = "BottomSheetDialogBuscarProductoVenta";
 
-    String codven=null, oc_numero=null;
+    String codven=null,codcli=null, oc_numero=null;
     MaestroCategoriaDescuento maestroCategoriaDescuento =null;
     boolean swAplicaDsctoProntoPago=false;
     public static BottomSheetDialogBuscarProductoVenta newInstance(String codven,
+                                                                   String codcli,
                                                                    String oc_numero,
                                                                    String canalYCategoriaVenta,
                                                                    boolean swAplicaDsctoProntoPago) {
         BottomSheetDialogBuscarProductoVenta fragment = new BottomSheetDialogBuscarProductoVenta();
         Bundle args = new Bundle();
         args.putString("codven", codven);
+        args.putString("codcli", codcli);
         args.putString("oc_numero", oc_numero);
         args.putString("canalYCategoriaVenta", canalYCategoriaVenta);
         args.putBoolean("swAplicaDsctoProntoPago", swAplicaDsctoProntoPago);
@@ -108,6 +110,7 @@ public class BottomSheetDialogBuscarProductoVenta
 
         if (getArguments()!=null) {
             codven= getArguments().getString("codven", null);
+            codcli= getArguments().getString("codcli", null);
             oc_numero = getArguments().getString("oc_numero");
             swAplicaDsctoProntoPago = getArguments().getBoolean("swAplicaDsctoProntoPago");
             String canalYCategoriaVenta = getArguments().getString("canalYCategoriaVenta");
@@ -160,6 +163,9 @@ public class BottomSheetDialogBuscarProductoVenta
                         lista,
                         maestroCategoriaDescuento,
                         swAplicaDsctoProntoPago,
+                        dBclasses,
+                        codven,
+                        codcli,
                         (producto, cantidad, pctjDscto, flagStockValido) -> {
                             agregarProducto(
                                     producto,

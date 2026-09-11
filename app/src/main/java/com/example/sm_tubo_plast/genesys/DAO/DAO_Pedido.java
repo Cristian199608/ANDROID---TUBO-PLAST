@@ -251,6 +251,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_cabecera.FECHA_OC, cabecera.getFecha_oc());
 			Nreg.put(DBtables.Pedido_cabecera.FECHA_MXE, cabecera.getFecha_mxe());
 			Nreg.put(DBtables.Pedido_cabecera.COND_PAGO, cabecera.getCond_pago());
+			Nreg.put(DBtables.Pedido_cabecera.descFormaPago, cabecera.getDescFormaPago());
 			Nreg.put(DBtables.Pedido_cabecera.COD_CLI, cabecera.getCod_cli());
 			Nreg.put(DBtables.Pedido_cabecera.COD_EMP, cabecera.getCod_emp());
 			Nreg.put(DBtables.Pedido_cabecera.ESTADO, cabecera.getEstado());
@@ -295,6 +296,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put("isAplicaNC", cabecera.getIsAplicaNC());
 			Nreg.put("volumenTotal", cabecera.getVolumenTotal());
 			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
+			Nreg.put("flg_aprobacion", cabecera.getFlg_aprobacion());
 
 			
 			db.insert("pedido_cabecera", null, Nreg);
@@ -366,6 +368,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
 								+VARIABLES.getDoubleFormaterThowDecimal(totalIGV)
 								+percepcion);
+				double dsctoVenta_YdsctoBonif =VARIABLES.getDoubleFormaterThowDecimal(montoTotal+montoDsctBonificacion);
 				PedidoCabeceraRecalcular dataRecalculo=new PedidoCabeceraRecalcular(
 						cabecera.getOc_numero(),
 						peso_total,
@@ -374,9 +377,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 						montoTotal,
 						percepcion,
 						totalSujetoPercepcion,
-						montoTotalDsc,
-						0,
-						montoDsctBonificacion,
+						dsctoVenta_YdsctoBonif,
 						volumentTotal
 				);
 				_dbClases.guardarPedidoTotales(dataRecalculo);

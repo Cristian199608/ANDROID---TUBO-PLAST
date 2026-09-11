@@ -53,5 +53,16 @@ class RequestCliente {
             Log.i("RequestCLiente: ", "PETICION DATA $jsonBody")
             return jsonBody;
         }
+
+        fun enviarDATA(baseUrl:String,
+                       jsonData: String):String{
+            var jsonBody= "{\n" +
+                    "    \"method\":\"POST\",\n" +
+                    "    \"url\":\"$baseUrl\",\n" +
+                    "    \"data\":$jsonData\n" +
+                    "}";
+            Log.i("RequestCLiente: ", "PETICION DATA $jsonBody")
+            return jsonBody;
+        }
     }
 }
