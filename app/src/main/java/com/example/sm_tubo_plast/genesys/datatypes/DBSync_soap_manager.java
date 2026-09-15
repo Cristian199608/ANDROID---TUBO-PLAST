@@ -26,6 +26,7 @@ import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalleProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
@@ -4800,6 +4801,7 @@ public int actualizarObjPedido() throws Exception{
 private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaCabecera){
 	String flag = "";
 	DAO_Pedido_detalle2 dao_pedido_detalle2=new DAO_Pedido_detalle2(context);
+	DAO_PedidoAnticipoDetalle daoPedidoAnticipoDetalle =new DAO_PedidoAnticipoDetalle(dbclass);
 	for(int i=0; i< listaCabecera.size(); i++){
 		//Seteo del detalle del pedido por el oc_numero
 		ArrayList<DBPedido_Detalle> detalles = new ArrayList<DBPedido_Detalle>();
@@ -4848,6 +4850,11 @@ private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaC
 		listaCabecera.get(i).setListaWorkflow_pedido(
 				dbclass.obtenerWorkflowPedido(listaCabecera.get(i).getOc_numero().trim())
 		);
+		//-------------------------------pedido anctipos detalle----------------------------------------------------------------
+		listaCabecera.get(i).setListaPedidoAnticipoDetalle(
+				daoPedidoAnticipoDetalle.getDataBy(listaCabecera.get(i).getOc_numero().trim())
+		);
+		//-------------------------------fin----------------------------------------------------------------
 
 	}
 	return listaCabecera;

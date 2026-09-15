@@ -10,5 +10,6 @@ data class ResultCuentasXcobrar(
     val saldo: String,
     val fecha_emision: String,
     val fecha_vencimiento: String,
-    val observaciones: String
+    val observaciones: String,
+    val Anticipo: Boolean
 )

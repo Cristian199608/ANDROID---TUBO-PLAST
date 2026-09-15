@@ -28,7 +28,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
-
+        <activity
+            android:name=".AnticiposClienteActivity"
+            android:exported="false" />
         <activity
             android:name=".ViewPdfFromHtmlActivity"
             android:exported="false" />
@@ -50,8 +52,6 @@
         <activity
             android:name=".genesys.fuerza_ventas.SeguimientoPedidoActivity"
             android:theme="@style/AppThemeAgendaNoBar" />
-
-
         <activity
             android:name=".genesys.util.SeleccionarRangoFechas_Activity"
             android:theme="@style/AppTheme_MD" />
@@ -267,7 +267,6 @@
             android:name=".genesys.CreatePDF.pdf_html.actvity.ViewPdfFromHtmlActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeAgendaNoBar" />
-
         <activity
             android:name=".genesys.fuerza_ventas.ConsultaComprobantesOnlineActivity"
             android:exported="false"
@@ -277,7 +276,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <receiver android:name=".genesys.service.SampleAlarmReceiver" />
+        <receiver
+            android:name=".genesys.service.SampleAlarmReceiver"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

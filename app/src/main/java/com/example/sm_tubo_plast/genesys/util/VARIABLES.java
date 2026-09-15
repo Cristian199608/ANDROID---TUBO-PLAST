@@ -28,6 +28,7 @@ public class VARIABLES {
     public static final  int ID_ENVIO_FALLIDA=-1;
     public static final  int ID_ENVIO_EXITOSA=-2;
     public static final  String SEPARADOR_OBSERVACION="_#_";
+    public static final  String SEPARADOR_TITLE="_*_";
 
 
     public static final  boolean isProduccion=true;

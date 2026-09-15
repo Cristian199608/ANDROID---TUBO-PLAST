@@ -7,6 +7,7 @@ import java.util.List;
 public class WorkflowAprobaciones {
 
     // Códigos de bloqueo
+    public static final String FLG_BLOQUEO_GENERAL = "flg_bloqueo_general";// consultar a CANTOL
     public static final String FLG_CAMBIO_CATEGORIA = "flg_cambio_categoria";// consultar a CANTOL
     public static final String FLG_CAMBIO_CONDICION_PAGO = "flg_cambio_condicion_pago";//OK::si cliente limite credito = 0 y vende a credito, se activa a workflow
     public static final String FLG_CAMBIO_DIR_ENTREGA = "flg_cambio_dir_entrega";//consultar (no tenemos datos)
@@ -48,6 +49,8 @@ public class WorkflowAprobaciones {
     public static ArrayList<WorkflowAprobaciones> getLista() {
 
         ArrayList<WorkflowAprobaciones> lista = new ArrayList<>();
+
+        lista.add(new WorkflowAprobaciones(FLG_BLOQUEO_GENERAL,"Bloqueo general por área de créditos"));
 
         lista.add(new WorkflowAprobaciones(
                 FLG_CAMBIO_CATEGORIA,

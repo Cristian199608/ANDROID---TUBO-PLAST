@@ -75,8 +75,10 @@ import com.example.sm_tubo_plast.genesys.BEAN.Sucursal;
 import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
 import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
+import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PromocionDetalleProducto;
@@ -87,7 +89,6 @@ import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.GetDataCantol;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.RequestCliente;
-import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util.PedidoAppConvertTo_PedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.adapters.Adapter_Bonificacion_Colores;
 import com.example.sm_tubo_plast.genesys.adapters.Adapter_Detalle_Entrega;
@@ -238,6 +239,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     DAO_Pedido DAOPedidoDetalle;
     DAO_Pedido_detalle2 dao_pedido_detalle2;
     DAO_PromocionDetalle DAOPromocionDetalle;
+    DAO_PedidoAnticipoDetalle dao_pedidoAnticipoDetalle=null;
     int dia, mes, año;
     String cliente;
     String secuenciacli;
@@ -416,6 +418,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         DAOBonificaciones = new DAO_RegistroBonificaciones(getApplicationContext());
         DAOPedidoDetalle = new DAO_Pedido(getApplicationContext());
         dao_pedido_detalle2 = new DAO_Pedido_detalle2(this);
+        dao_pedidoAnticipoDetalle =new DAO_PedidoAnticipoDetalle(dbclass);
         DAOPromocionDetalle = new DAO_PromocionDetalle(getApplicationContext());
         DAO_registrosGeneralesMovil = new DAO_RegistrosGeneralesMovil(getApplicationContext());
         DAO_cliente = new DAO_Cliente(getApplicationContext());
@@ -4585,6 +4588,8 @@ private void EnvalularMoneda(){
                                 dbclass.eliminar_pedido(Oc_numero);
                                 DAOBonificaciones.Eliminar_RegistrosBonificacion(Oc_numero);
                                 dao_pedido_detalle2.LimpiarTabla(Oc_numero);
+                                dao_pedidoAnticipoDetalle.deleteBy(Oc_numero);
+                                dbclass.eliminarPedidoWorkFlowYDetDescuentosBy(Oc_numero);
                                 //dbclass.actualizarEstadoCliente(codcli, "S");
                                 finish();
 
@@ -7715,16 +7720,32 @@ private void EnvalularMoneda(){
 
     }
 
-    private ArrayList<WorkflowAprobaciones>  evaluarWorkFlow(){
-        ArrayList<WorkflowAprobaciones> workflowPedido=new ArrayList<>();
+    private WorkflowPedido getWorFlow(String codigoBloque, String detalleMotivo){
+        return WorkflowPedido.convertFrom(
+                WorkflowAprobaciones.getItemBy(listaWorkFlow,codigoBloque ),
+                Oc_numero, "Necesario ser validado por área de créditos");
+    }
+    private ArrayList<WorkflowPedido>  evaluarWorkFlow(){
+
+        ArrayList<WorkflowPedido> workflowPedido=new ArrayList<>();
+
+        workflowPedido.add(
+                getWorFlow(WorkflowAprobaciones.FLG_BLOQUEO_GENERAL,"Necesario ser validado por área de créditos")
+        );
+
         boolean isCredito= !spnTipoCondicionVenta.getSelectedItem().toString().equalsIgnoreCase("contado");
         //-----------------------------------------------------------------------------------------------
         if(isAplica_dsc_sig_categoria.equals("1")){
-            workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_CAMBIO_LISTA_PRECIO ));
+            workflowPedido.add(
+                    getWorFlow(WorkflowAprobaciones.FLG_CAMBIO_LISTA_PRECIO,
+                            "Categoria cliente: "+listaFormaPago.get(0).getSub_canal()+VARIABLES.SEPARADOR_OBSERVACION +
+                                        "Categoria venta:"+categoriaClienteVenta
+                    ));
         }
         //-----------------------------------------------------------------------------------------------
         if (dbclass.VerificarCtasXCobrar(codcli).size()>0) {
-            workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_DOCUMENTOS_VENCIDOS));
+            workflowPedido.add(
+                    getWorFlow(WorkflowAprobaciones.FLG_DOCUMENTOS_VENCIDOS,""));
         }
         //-----------------------------------------------------------------------------------------------
         Cliente cliente = DAO_cliente.getInformacionCliente(codcli);
@@ -7733,18 +7754,36 @@ private void EnvalularMoneda(){
         double totalPedidoCredito   = dbclass.getTotalPedidoCreditoByCliente(codcli);
         double montoUltCompra       = cliente.getMonto_compra();
         if(isCredito){
-            if(disponibleCredito-totalPedidoCredito<0){
-                workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_EXCESO_LINEA_CREDITO));
+            double diferencia=disponibleCredito-totalPedidoCredito;
+            if(diferencia<0){
+                workflowPedido.add(
+                        getWorFlow(WorkflowAprobaciones.FLG_EXCESO_LINEA_CREDITO,
+                                "Línea:"+VARIABLES.SEPARADOR_TITLE+" S/ "+limiteCredito+VARIABLES.SEPARADOR_OBSERVACION +
+                                "Disponible:"+VARIABLES.SEPARADOR_TITLE+" S/ "+disponibleCredito+VARIABLES.SEPARADOR_OBSERVACION +
+                                        "Exceso:"+VARIABLES.SEPARADOR_TITLE+" S/ "+VARIABLES.formater_thow_decimal.format(diferencia*-1)
+                        ));
             }
             //-----------------------------------------------------------------------------------------------
             if(limiteCredito<=0){
-                workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_SOLICITUD_LINEA_CREDITO));
-                workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_CAMBIO_CONDICION_PAGO));
+                workflowPedido.add(
+                        getWorFlow(WorkflowAprobaciones.FLG_SOLICITUD_LINEA_CREDITO,
+                                "Línea:"+VARIABLES.SEPARADOR_TITLE+" No tiene asignado "+VARIABLES.SEPARADOR_OBSERVACION +
+                                        "Venta: pago a crédito"
+                        ));
+                workflowPedido.add(
+                        getWorFlow(WorkflowAprobaciones.FLG_CAMBIO_CONDICION_PAGO,
+                                "Pactado:"+VARIABLES.SEPARADOR_TITLE+" "+listaFormaPago.get(0).getSub_canal()+VARIABLES.SEPARADOR_OBSERVACION +
+                                        "Venta:"+VARIABLES.SEPARADOR_TITLE+" "+dbclass.getDescrCondicionVentaByCod(codigoCondicionVenta)
+                        ));
 
             }
             //-----------------------------------------------------------------------------------------------
-            if(montoUltCompra<=0.0)
-                workflowPedido.add(WorkflowAprobaciones.getItemBy(listaWorkFlow,WorkflowAprobaciones.FLG_CLIENTE_NUEVO));
+            if(montoUltCompra<=0.0){
+                workflowPedido.add(
+                        getWorFlow(WorkflowAprobaciones.FLG_CLIENTE_NUEVO,
+                                "No tiene historial de ventas"
+                        ));
+            }
         }
         return workflowPedido;
     }
@@ -7755,16 +7794,16 @@ private void EnvalularMoneda(){
             UtilViewMensaje.MENSAJE_simple(this, null, "Fuera de horario de trabajo");
             return;
         }
-        ArrayList<WorkflowAprobaciones> listaWorkflowPedido= evaluarWorkFlow();
+        ArrayList<WorkflowPedido> listaWorkflowPedido= evaluarWorkFlow();
         String mensajeAdd="";
         if(listaWorkflowPedido.size()>0){
             mensajeAdd="Este pedido requiere aprobación antes de ser enviado a SAP.\n" +
                     "El pedido se guardará como Pendiente de aprobación y será enviado a SAP una vez completadas todas las aprobaciones requeridas.\n" +
                     "\nMotivos:";
             int index=0;
-            for (WorkflowAprobaciones workflowAprobaciones : listaWorkflowPedido) {
+            for (WorkflowPedido workflowAprobaciones : listaWorkflowPedido) {
                 index++;
-                mensajeAdd+="\n"+index+") "+workflowAprobaciones.getCriterio();
+                mensajeAdd+="\n"+index+") "+workflowAprobaciones.getCodigoBloqueo();
             }
         }
         int cantidad = dbclass.cantidadProductosSinStock(Oc_numero);
@@ -8342,6 +8381,10 @@ private void EnvalularMoneda(){
         });
     }
 
+    private void start(){
+        // Declarar el launcher con registerForActivityResult
+       
+    }
     private void sincronizarCondicionVentaCliente(){
         ProgressDialog pDialog = new ProgressDialog(this);
         pDialog.setMessage("Consultando condicion venta...");

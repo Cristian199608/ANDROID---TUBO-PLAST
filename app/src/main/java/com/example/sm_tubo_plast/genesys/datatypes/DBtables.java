@@ -143,7 +143,8 @@ public class DBtables {
 		public static final String  CC_FLAG = "cc_flag";
 		public static final String  ESTADO_COBRANZA = "Estado_Cobranza";
 		public static final String  NRO_UNICO_BANCO = "NroUnicoBanco";
-		
+		public static final String flg_anticipo = "flg_anticipo";
+
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_SECUENCIA + " INTEGER PRIMARY KEY," + CODMON
 				+ " CHAR(2)," + CODDOC + " CHAR(2)," + SERIE_DOC + " CHAR(6),"
@@ -636,6 +637,7 @@ public class DBtables {
 		public static final String oc_numero = "oc_numero";
 		public static final String codigo_bloqueo = "codigo_bloqueo";
 		public static final String estado = "estado";
+		public static final String detalle = "detalle";
 //		CREATE TABLE workflow_pedido(
 //				oc_numero text NOT NULL,
 //				codigo_bloqueo text NULL,
@@ -1862,5 +1864,21 @@ public class DBtables {
 
 	}
 
+	public static final class PedidoAnticipoDetalle {
+
+		private PedidoAnticipoDetalle() {
+		}
+		public static final String[] pks = new String[]{
+				PedidoAnticipoDetalle.oc_numero,
+				PedidoAnticipoDetalle.serie_doc,
+				PedidoAnticipoDetalle.numero_doc,
+		} ;
+
+		public static final String TAG = "pedido_anticipo_detalle";
+		public static final String oc_numero = "oc_numero";
+		public static final String serie_doc = "serie_doc";
+		public static final String numero_doc = "numero_doc";
+		public static final String monto = "monto";
+	}
 
 }

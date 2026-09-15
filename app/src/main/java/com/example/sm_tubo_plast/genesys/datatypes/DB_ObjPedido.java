@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.BEAN.ResultPedidoEnvioSAP;
@@ -85,6 +86,7 @@ public class DB_ObjPedido{
 	private ArrayList<San_Visitas> san_visitas;
 	private ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento;
 	private ArrayList<WorkflowPedido> listaWorkflow_pedido;
+	private ArrayList<PedidoAnticipoDetalle> listaPedidoAnticipoDetalle;
 
 	
 	public String getNroletra() {
@@ -632,5 +634,13 @@ public class DB_ObjPedido{
 
 	public void setNumdoc(String numdoc) {
 		this.numdoc = numdoc;
+	}
+
+	public ArrayList<PedidoAnticipoDetalle> getListaPedidoAnticipoDetalle() {
+		return listaPedidoAnticipoDetalle;
+	}
+
+	public void setListaPedidoAnticipoDetalle(ArrayList<PedidoAnticipoDetalle> listaPedidoAnticipoDetalle) {
+		this.listaPedidoAnticipoDetalle = listaPedidoAnticipoDetalle;
 	}
 }

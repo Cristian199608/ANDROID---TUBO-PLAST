@@ -30,6 +30,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
@@ -38,6 +39,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistrosGeneralesMovil;
@@ -5919,12 +5921,14 @@ public class DBclasses extends SQLiteAssetHelper {
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
+		DAO_PedidoAnticipoDetalle dao_pedidoAnticipoDetalle=new DAO_PedidoAnticipoDetalle(this);
 		if (start==0){
 			EliminarRegistro_bonificaciones_enviados(codven);
 			EliminarPedidoWorkFlowYDetDescuentosEnviados(codven);
 			EliminarPedido_detalle_enviados(codven);
 			EliminarPedidoDetalle2Enviados(codven);
 			EliminarSanVisitas(codven);
+			dao_pedidoAnticipoDetalle.deleteAllEnviados(codven);
 			EliminarPedido_cabecera_enviados(codven);
 		}
 
@@ -5958,7 +5962,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					cv.put(DBtables.Pedido_cabecera.OBSERV,	jsonData.getString("observ").trim());
 					cv.put(DBtables.Pedido_cabecera.COD_NOVENTA, jsonData.getString("cod_noventa").trim());
 					cv.put(DBtables.Pedido_cabecera.PESO_TOTAL, jsonData.getString("peso_total").trim());
-					cv.put(DBtables.Pedido_cabecera.FLAG, "E");
+					cv.put(DBtables.Pedido_cabecera.FLAG, jsonData.getString("flag"));
 					cv.put(DBtables.Pedido_cabecera.LATITUD,jsonData.getString("latitud").trim());
 					cv.put(DBtables.Pedido_cabecera.LONGITUD,jsonData.getString("longitud").trim());
 					cv.put(DBtables.Pedido_cabecera.CODIGO_FAMILIAR, jsonData.getString("codigo_familiar").trim());
@@ -6177,6 +6181,7 @@ public class DBclasses extends SQLiteAssetHelper {
 								cv.put(DBtables.Workflow_pedido.oc_numero, obj.getOcNumero());
 								cv.put(DBtables.Workflow_pedido.codigo_bloqueo, obj.getCodigoBloqueo());
 								cv.put(DBtables.Workflow_pedido.estado, obj.getEstado());
+								cv.put(DBtables.Workflow_pedido.detalle, obj.getDetalle());
 								long resultado = db.insertOrThrow(DBtables.Workflow_pedido.TAG,null,cv);
 							}
 						}
@@ -6199,6 +6204,14 @@ public class DBclasses extends SQLiteAssetHelper {
 							cv.put(DBtables.Pedido_detalle_descuento.tipo_desc, obj.getTipo_desc());
 							db.insertOrThrow( DBtables.Pedido_detalle_descuento.TAG, null,cv);
 						}
+						//-------------------------------insetamos pedido anticpos detalle----------------------------------------------------------------
+					Type mallPAD = new TypeToken<ArrayList<PedidoAnticipoDetalle>>() {}.getType();
+					final ArrayList<PedidoAnticipoDetalle> listaPAD =
+							gson.fromJson(jsonData.getString("listaPedido_detalle_descuento"), mallPAD);
+
+//					if (!dao_pedidoAnticipoDetalle.insertAll( db, listaPAD)) {
+//						throw new SQLiteException("No se pudo registrar los anticipos del pedido");
+//					}
 				}
 			}
 			db.setTransactionSuccessful();
@@ -11344,6 +11357,25 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 
+	public void eliminarPedidoWorkFlowYDetDescuentosBy(String oc_numero) {
+
+		String where = " oc_numero = ? ";
+		String[] args = { oc_numero };
+
+		try {
+			SQLiteDatabase db = getWritableDatabase();
+			long pr = db.delete(""+DBtables.Workflow_pedido.TAG, where, args);
+			long prx = db.delete(""+DBtables.Pedido_detalle_descuento.TAG, where, args);
+			db.close();
+			Log.i(TAG,
+					"EliminarPedidoWorkFlowYDetDescuentosEnviados:: eliminados workflow pedido "+pr+"  y pedido_det_descto "+prx);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 	public String[] Obtener_localizacion(String codcli, int item_dir) {
 
 		String rawQuery;
@@ -14733,6 +14765,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("cc_flag", "");
 				values.put("Estado_Cobranza", "Cobrar");
 				values.put("NroUnicoBanco", "");
+				values.put("flg_anticipo", cuenta.getAnticipo()?"1":"0");
 				long a = db.insertWithOnConflict(DBtables.Cta_ingresos.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
 				a=1;
 			}
@@ -14976,7 +15009,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	}
 
-	public void guardarWorkFlowPedido(String ocNumero, ArrayList<WorkflowAprobaciones> workflowPedido) {
+	public void guardarWorkFlowPedido(String ocNumero, ArrayList<WorkflowPedido> workflowPedido) {
 		SQLiteDatabase db= getWritableDatabase();
 		ContentValues cv=null;
 		//-------------------------------update pedido_cabecera----------------------------------------------------------------
@@ -14990,10 +15023,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		argCab= new String[]{ocNumero};
 		db.delete(DBtables.Workflow_pedido.TAG, where, argCab);
 		//-------------------------------insert----------------------------------------------------------------
-		for (WorkflowAprobaciones workflowAprobaciones : workflowPedido) {
+		for (WorkflowPedido workflowAprobaciones : workflowPedido) {
 			cv = new ContentValues();
 			cv.put("oc_numero", ocNumero);
 			cv.put("codigo_bloqueo", workflowAprobaciones.getCodigoBloqueo());
+			cv.put("detalle", workflowAprobaciones.getDetalle());
 			cv.put("estado", "-1");//como null
 			db.insertWithOnConflict(DBtables.Workflow_pedido.TAG, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
 		}
@@ -15017,6 +15051,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				obj.setOcNumero(cursor.getString(cursor.getColumnIndex(DBtables.Workflow_pedido.oc_numero)));
 				obj.setCodigoBloqueo(cursor.getString(cursor.getColumnIndex(DBtables.Workflow_pedido.codigo_bloqueo)));
 				obj.setEstado(cursor.getInt(cursor.getColumnIndex(DBtables.Workflow_pedido.estado)));
+				obj.setDetalle(cursor.getString(cursor.getColumnIndex(DBtables.Workflow_pedido.detalle)));
 				lista.add(obj);
 			}
 		}catch (Exception e){
@@ -15064,9 +15099,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		ArrayList<PedidoDetalleDescuento> lista = new ArrayList<>();
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(
-				"SELECT * FROM " + DBtables.Pedido_detalle_descuento.TAG +
-						" WHERE " + DBtables.Pedido_detalle_descuento.oc_numero + " = ?",
-				new String[]{ocNumero}
+				"SELECT pdd.* FROM " + DBtables.Pedido_detalle_descuento.TAG +" pdd "+
+						" WHERE pdd." + DBtables.Pedido_detalle_descuento.oc_numero + " = ? " +
+						"and pdd.item in (" +
+						"select x.item from pedido_detalle x where x.oc_numero = ?" +
+						")",
+				new String[]{ocNumero, ocNumero}
 		);
 
 		try {
