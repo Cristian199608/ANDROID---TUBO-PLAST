@@ -918,9 +918,29 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public ArrayList<DBCta_Ingresos> VerificarCtasXCobrar(String cl) {
-		String rawQuery;
+	public ArrayList<DBCta_Ingresos> VerificarCtasXCobrarY_anticipos(String cl) {
+		String addwhere= "and  cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
+		return VerificarCtasXCobrarRAIZ(addwhere);
+	}
 
+	public ArrayList<DBCta_Ingresos> VerificarCtasXCobrar(String cl) {
+		String addwhere= "and flg_anticipo=0 and  cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
+		return VerificarCtasXCobrarRAIZ(addwhere);
+	}
+
+	public ArrayList<DBCta_Ingresos> VerificarCtasXCobrarDeudas(String cl) {
+		String addwhere= "and  date('now', 'localtime') > date(cta_ingresos.fecha_vencimiento) \n"
+				+"and saldo>0.0 " +
+				"and flg_anticipo=0 and  cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc ";
+		return VerificarCtasXCobrarRAIZ(addwhere);
+	}
+
+	public ArrayList<DBCta_Ingresos> verificarCtasXCobrarAnticipos(String cl) {
+		String addwhere= "and flg_anticipo=1 and  cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
+		return VerificarCtasXCobrarRAIZ(addwhere);
+	}
+	private ArrayList<DBCta_Ingresos> VerificarCtasXCobrarRAIZ(String addwhere) {
+		String rawQuery;
 		// rawQuery=
 		// "Select * from cta_ingresos where cta_ingresos.codcli='"+cl+"'";
 		//--PERCEPCIONES DE FACTURA PF NO SE DEBEN MOSTRAR--
@@ -934,16 +954,16 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "end as serie_doc, "
 					+ "numero_factura,  total, "
 				    + "acuenta,saldo,feccom,codcli,username,fecha_vencimiento,codven, "
-				    + "round(saldo_virtual,2) saldo_virtual,coddoc,Observaciones,forma, cc_flag, "
+				    + "round(saldo_virtual,2) saldo_virtual,coddoc, observaciones,forma, cc_flag, "
 					+" Estado_Cobranza  as tipo,"
 					+"NroUnicoBanco "
 				    + "from cta_ingresos "
-					+"where  date('now', 'localtime') > date(cta_ingresos.fecha_vencimiento) \n"
-					+"and saldo>0.0 "
-				    + "and  cta_ingresos.codcli='"+ cl + "' and coddoc <> 'PF'  order by cc_flag desc";
+					+"where  0=0 "
+				    +addwhere;
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
+		Log.i(TAG, "VerificarCtasXCobrarRAIZ rawQuery: "+rawQuery);
 		ArrayList<DBCta_Ingresos> dbcta_ingresos = new ArrayList<DBCta_Ingresos>();
 		cur.moveToFirst();
 		
@@ -966,9 +986,9 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbcta.setFecha_vencimiento(cur.getString(11));// fecha de vencimiento
 			dbcta.setCodven(cur.getString(12));
 			dbcta.setSaldo_virtual(cur.getString(13));
-			dbcta.setTipo(cur.getString(14));
+			dbcta.setTipo(cur.getString(cur.getColumnIndex("tipo")));
 			
-			dbcta.setObservaciones((cur.getString(15)));
+			dbcta.setObservaciones((cur.getString(cur.getColumnIndex("observaciones"))));
 			
 			dbcta.setForma((cur.getString(16)));
 			dbcta.setCc_flag((cur.getString(17)));
@@ -1392,12 +1412,16 @@ public class DBclasses extends SQLiteAssetHelper {
 	}
 
 	public ItemProducto[] getProductosXTIME_SYNC(String timeSincronizacion) {
-
-			int sec_politica = getSecPoliticaConfiguracion();
-
+		Log.i("getProductosXTIME_SYNC", timeSincronizacion);
+		String addWhere =" and producto.time_sync = '"+timeSincronizacion+"' ";
+		return getProductosRAIZ(addWhere, "");
+	}
+	public ItemProducto[] getProductosXTIME_SYNC_CODPRO(String codpro) {
+		String addWhere =" and producto.codpro = '"+codpro+"' ";
+		return getProductosRAIZ("", addWhere);
+	}
+	public ItemProducto[] getProductosRAIZ(String addWhereInLeft, String addWhereInWhere) {
 			String rawQuery;
-			Log.i("getProductosXTIME_SYNC", timeSincronizacion);
-
 			rawQuery = "select * from "
 					+ "("
 					+ "select "
@@ -1417,14 +1441,15 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "producto.codunimed_almacen,  "
 					+ "producto.marca,  "
 					+ "ifnull(producto.volumen,0) as volumen, "
-					+ "ifnull(mta_kardex.xtemp,0) as xtemp,"
+					+ "ifnull(mta_kardex.xtemp,0)+ifnull(mta_kardex.xtempOld, 0) as xtemp,"
+					+ "ifnull(mta_kardex.comprometido,0) as comprometido,"
 					+ "ifnull(mta_kardex.transito,0) as transito,"
 					+ "ifnull(mta_kardex.disponible,0) as disponible "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
 					+ "where politica_precio2.secuencia=0 "
-					+ "and producto.time_sync = '"+timeSincronizacion+"' "
+					+ ""+addWhereInLeft+" "+addWhereInWhere+"\n"
 					+
 
 					"union all select "
@@ -1444,13 +1469,14 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "producto.codunimed_almacen,  "
 					+ "producto.marca,  "
 					+ "ifnull(producto.volumen,0) as volumen, "
-					+ "ifnull(mta_kardex.xtemp,0) as xtemp,"
+					+ "ifnull(mta_kardex.xtemp,0)+ifnull(mta_kardex.xtempOld, 0) as xtemp,"
+					+ "ifnull(mta_kardex.comprometido,0) as comprometido,"
 					+ "ifnull(mta_kardex.transito,0) as transito,"
 					+ "ifnull(mta_kardex.disponible,0) as disponible "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
-					+ "where producto.time_sync = '"+timeSincronizacion+"' "
+					+ "where 0=0 "+addWhereInLeft+" "+addWhereInWhere+"\n"
 					+ ") " + "group by codpro order by despro";
 
 			Log.i(TAG, "rawQuery => "+rawQuery);
@@ -1486,6 +1512,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					stockDet.setCodpro(productos[i].getCodprod());
 					stockDet.setStock(cursor.getInt(cursor.getColumnIndex("stock")));
 					stockDet.setXtemp(cursor.getInt(cursor.getColumnIndex("xtemp")));
+					stockDet.setComprometido(cursor.getInt(cursor.getColumnIndex("comprometido")));
 					stockDet.setTransito(cursor.getInt(cursor.getColumnIndex("transito")));
 					stockDet.setDisponible(cursor.getInt(cursor.getColumnIndex("disponible")));
 					productos[i].setStockDetalle(stockDet);
@@ -1992,6 +2019,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 			Gson gson = new Gson();
 			Log.e("(DBclasses)AgregarPedidoDetalle","detallePedido: ITEM AGREGADO\n" + gson.toJson(item));
+			recalcularStock();
 			return a>0;
 
 		} catch (Exception e) {
@@ -5182,7 +5210,7 @@ public class DBclasses extends SQLiteAssetHelper {
 
 				jsonData = jArray.getJSONObject(i);
 				cv.put(DBtables.Promocion_Detalle.SECUENCIA, jsonData.getString("secuencia").trim());
-				cv.put(DBtables.Promocion_Detalle.GENERAL,jsonData.getString("general").trim());
+				cv.put(DBtables.Promocion_Detalle.GENERAL,jsonData.getInt("general"));
 				cv.put(DBtables.Promocion_Detalle.PROMOCION, jsonData.getString("promocion").trim());
 				cv.put(DBtables.Promocion_Detalle.CODALM,jsonData.getString("codalm").trim());
 				cv.put(DBtables.Promocion_Detalle.TIPO,jsonData.getString("tipo").trim());
@@ -5201,8 +5229,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Promocion_Detalle.MAX_PEDIDO, jsonData.getString("max_pedido").trim());
 				cv.put(DBtables.Promocion_Detalle.TOTAL_AGRUPADO, jsonData.getString("total_agrupado").trim());
 				cv.put(DBtables.Promocion_Detalle.TIPO_PROMOCION, jsonData.getString("tipo_promocion").trim());
-				cv.put(DBtables.Promocion_Detalle.VENDEDOR,jsonData.getString("vendedor").trim());
-				cv.put(DBtables.Promocion_Detalle.POLITICA,jsonData.getString("politica").trim());
+				cv.put(DBtables.Promocion_Detalle.VENDEDOR,jsonData.getInt("vendedor"));
+				cv.put(DBtables.Promocion_Detalle.POLITICA,jsonData.getInt("politica"));
 				cv.put(DBtables.Promocion_Detalle.ACUMULADO, jsonData.getString("acumulado").trim());
 				cv.put(DBtables.Promocion_Detalle.GRUPO, jsonData.getString(DBtables.Promocion_Detalle.GRUPO).trim());
 				cv.put(DBtables.Promocion_Detalle.FAMILIA, jsonData.getString(DBtables.Promocion_Detalle.FAMILIA).trim());
@@ -5921,14 +5949,14 @@ public class DBclasses extends SQLiteAssetHelper {
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
-		DAO_PedidoAnticipoDetalle dao_pedidoAnticipoDetalle=new DAO_PedidoAnticipoDetalle(this);
+		DAO_PedidoAnticipoDetalle daoPedAnticipos=new DAO_PedidoAnticipoDetalle(this);
 		if (start==0){
 			EliminarRegistro_bonificaciones_enviados(codven);
 			EliminarPedidoWorkFlowYDetDescuentosEnviados(codven);
 			EliminarPedido_detalle_enviados(codven);
 			EliminarPedidoDetalle2Enviados(codven);
 			EliminarSanVisitas(codven);
-			dao_pedidoAnticipoDetalle.deleteAllEnviados(codven);
+			daoPedAnticipos.deleteAllEnviados(codven);
 			EliminarPedido_cabecera_enviados(codven);
 		}
 
@@ -6207,11 +6235,11 @@ public class DBclasses extends SQLiteAssetHelper {
 						//-------------------------------insetamos pedido anticpos detalle----------------------------------------------------------------
 					Type mallPAD = new TypeToken<ArrayList<PedidoAnticipoDetalle>>() {}.getType();
 					final ArrayList<PedidoAnticipoDetalle> listaPAD =
-							gson.fromJson(jsonData.getString("listaPedido_detalle_descuento"), mallPAD);
+							gson.fromJson(jsonData.getString("listaPedidoAnticipoDetalle"), mallPAD);
 
-//					if (!dao_pedidoAnticipoDetalle.insertAll( db, listaPAD)) {
-//						throw new SQLiteException("No se pudo registrar los anticipos del pedido");
-//					}
+					if (!daoPedAnticipos.insertAll( db, listaPAD)) {
+						throw new SQLiteException("No se pudo registrar los anticipos del pedido");
+					}
 				}
 			}
 			db.setTransactionSuccessful();
@@ -11338,7 +11366,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 	public void EliminarPedidoWorkFlowYDetDescuentosEnviados(String codven) {
 
-		String where = " oc_numero not in (\n" +
+		String where = " oc_numero in (\n" +
 				"select oc_numero from pedido_cabecera where flag not in (?) or cod_emp <> ?"+
 				")";
 		String[] args = { "P",  codven };
@@ -13007,6 +13035,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				+ "ifnull(cl.nomcli,'Sin nombre') as nombre, "
 				+ "ifnull( ( select ci.total from cta_ingresos_resumen ci where ci.codmon =1 and ci.codcli= cl.codcli and Forma like '%Cobrar%' ),0 ) as totalSoles, "
 				+ "ifnull( (select ci.total from cta_ingresos_resumen ci where ci.codmon =2 and ci.codcli= cl.codcli  and Forma like '%Cobrar%' ),0 ) as totalDolares, "
+				+ "ifnull( ( select ci.total from cta_ingresos_resumen ci where ci.codmon =1 and ci.codcli= cl.codcli and Forma like 'Anticipo' ),0 ) as totalSolesAnticipo, "
 				+ "case afecto when 1 then ( select count(ci.secuencia) from cta_ingresos_resumen ci where ci.codcli = cl.codcli ) else 0 end "
 				+ "as cantidad , (select count(ci.secuencia) as cant_entrega from cta_ingresos_resumen ci where ci.forma like '%Entregar%' "
 				+ "and ci.codcli=cl.codcli) as cant_entregar, "
@@ -13014,10 +13043,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				+ "and ci.codcli=cl.codcli) as cant_aceptar,1 as flagCobranza, "
 				+ "ifnull( ( select ci.saldo from cta_ingresos_resumen ci where ci.codmon =1 and ci.codcli= cl.codcli and Forma like '%Cobrar%' ),0 ) as totalSaldoSoles, "
 				+ "ifnull( (select ci.saldo from cta_ingresos_resumen ci where ci.codmon =2 and ci.codcli= cl.codcli  and Forma like '%Cobrar%' ),0 ) as totalSaldoDolares "
-				+ "from cliente cl where ((totalSoles!=0 or totalDolares !=0) or (totalSaldoSoles!=0 or totalSaldoDolares !=0)) "
+				+ "from cliente cl "
+				+"where ((totalSoles!=0 or totalDolares !=0) or (totalSaldoSoles!=0 or totalSaldoDolares !=0) or totalSolesAnticipo!=0) "
 				//"and cl.codcli in (" +
 				//" select znf.codcli from znf_programacion_clientes znf where znf.codven='"+codvendedor+"' ) "
-				+ "order by flagCobranza desc";
+				+ "order by cl.nomcli asc";//" flagCobranza desc";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -13037,6 +13067,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			obj.put("totalSaldoSoles",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(cur.getColumnIndex("totalSaldoSoles"))))); // Deuda saldo en Soles
 			obj.put("total_acuenta",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(3)))); // Deuda en Dolares
 			obj.put("totalSaldoDolares",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(cur.getColumnIndex("totalSaldoDolares"))))); // Deuda saldo en Dolares
+			obj.put("totalSolesAnticipo",""+ GlobalFunctions.redondear(Double.parseDouble(cur.getString(cur.getColumnIndex("totalSolesAnticipo"))))); // los anticipos
 			obj.put("cantidad", cur.getString(4));// Cantidad de cobranzas
 													// obligatorias
 			obj.put("entregar", cur.getString(5));
@@ -14019,7 +14050,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public  ArrayList<ResumenVentaTipoProducto> getPedidoResumenByTipoProducto (String oc_numero, double igv, double tipoCambio) {
 		String rawQuery;
 		rawQuery = "SELECT " +
-				"tipoProducto, sum(peso_bruto) as pesoTotal, sum(precio_neto) as sutTotal, " +
+				"tipoProducto, sum(peso_bruto) as pesoTotal, " +
+				"sum(precio_neto) as sutTotal, " +
 				" (sum(precio_neto)/sum(peso_bruto)) / "+tipoCambio+" as pkDolar,\n" +
 				" sum(precio_neto) * "+igv+" as igvTotal, " +
 				"sum(volumen) as volumenTotal "+
@@ -14030,9 +14062,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				"pd.peso_bruto, pd.precio_neto, \n" +
 				"volumen*pd.cantidad as volumen " +
 				" from (" +
-				"select x.oc_numero, x.cip, x.tipo_producto, x.peso_bruto, x.precio_neto, x.cantidad from pedido_detalle x \n" +
+				"select x.oc_numero, x.cip, x.tipo_producto, x.peso_bruto, " +
+				"case when x.tipo_producto='V' then x.precio_neto else 0 end as precio_neto, " +
+				"x.cantidad from pedido_detalle x \n" +
 				"UNION ALL \n"+
-				"select y.oc_numero, 'B'||y.codpro, 'C' as tipo_producto, y.peso_total, y.precio_neto, y.cantidad from pedido_detalle2 y \n" +
+				"select y.oc_numero, 'B'||y.codpro, 'C' as tipo_producto, y.peso_total, 0 as precio_neto, y.cantidad from pedido_detalle2 y \n" +
 				") pd   \n" +
 				"inner join producto p on (pd.cip = case when pd.tipo_producto='C' then 'B' else '' end ||p.codpro)\n" +
 				"where pd.oc_numero='"+oc_numero+"'\n" +
@@ -14533,11 +14567,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 //				-------------------------------stock precio----------------------------------------------------------------
 				values=new ContentValues();
 				values.put("kardex", "VENTAS");
-				values.put("codalm", "00");
+				values.put("codalm", "ALM01");
 				//values.put("nombre_almacen", "ALMACEN PRINCIPAL DE VENTAS");
 				values.put("codpro", producto.getCodigo_producto());
 				values.put("stock", producto.getStock().getStock());
-				values.put("xtemp", producto.getStock().getComprometido());
+				values.put("xtemp", 0);//cantidad compromometido temporales generado por app saemovil pendiente de envio a SAP (dia actual)
+				values.put("xtempOld", 0);//cantidad compromometido temporales generado por app saemovil pendiente de envio a SAP OLD
+				values.put("comprometido", producto.getStock().getComprometido());
 				values.put("transito", producto.getStock().getTransito());
 				values.put("disponible", producto.getStock().getDisponible());
 				db.insertWithOnConflict(DBtables.MTA_kardex.TAG,null,values, SQLiteDatabase.CONFLICT_REPLACE);
@@ -14763,7 +14799,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("plazo", "0");
 				values.put("forma", "Aceptar");
 				values.put("cc_flag", "");
-				values.put("Estado_Cobranza", "Cobrar");
+				values.put("Estado_Cobranza", cuenta.getAnticipo()?"Anticipo":"Cobrar");
 				values.put("NroUnicoBanco", "");
 				values.put("flg_anticipo", cuenta.getAnticipo()?"1":"0");
 				long a = db.insertWithOnConflict(DBtables.Cta_ingresos.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
@@ -14776,9 +14812,9 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					"'' as serie_doc, '' as numero_factura,\n" +
 					"sum(total) as total, sum(acuenta) as acuenta,\n" +
 					"sum(saldo) as saldo, '' as feccom, codcli, '' as username, '' as fecoperacion, '' as codven," +
-					"sum(saldo_virtual) as saldo_virtual, 'Cobrar' forma\n" +
+					"sum(saldo_virtual) as saldo_virtual, Estado_Cobranza as forma\n" +
 					" from cta_ingresos\n" +
-					" group by codcli\n" +
+					" group by codcli, Estado_Cobranza\n" +
 					" ");
 			db.setTransactionSuccessful();
 			return null;
@@ -15086,7 +15122,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put(DBtables.Pedido_detalle_descuento.pcjt_desc, obj.getPcjt_desc());
 				values.put(DBtables.Pedido_detalle_descuento.monto_desc, obj.getMonto_desc());
 				values.put(DBtables.Pedido_detalle_descuento.tipo_desc, obj.getTipo_desc());
-				db.insertOrThrow(DBtables.Pedido_detalle_descuento.TAG, null, values);
+				long a =db.insertOrThrow(DBtables.Pedido_detalle_descuento.TAG, null, values);
+				Log.i(TAG, "is inserted "+a);
 			}
 			db.setTransactionSuccessful();
 		} finally {
@@ -15095,12 +15132,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		db.close();
 	}
 
-	public ArrayList<PedidoDetalleDescuento> obtenerPedidoDetalleDescuento(String ocNumero) {
+	public ArrayList<PedidoDetalleDescuento> obtenerPedidoDetalleDescuento(String ocNumero, int itemNro) {
 		ArrayList<PedidoDetalleDescuento> lista = new ArrayList<>();
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(
 				"SELECT pdd.* FROM " + DBtables.Pedido_detalle_descuento.TAG +" pdd "+
 						" WHERE pdd." + DBtables.Pedido_detalle_descuento.oc_numero + " = ? " +
+						"and (pdd.item= "+itemNro+" or -1= "+itemNro+" ) "+
 						"and pdd.item in (" +
 						"select x.item from pedido_detalle x where x.oc_numero = ?" +
 						")",
@@ -15197,7 +15235,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				"0 as desde , \n" + //pd.desde
 				"0 as hasta, \n" +//pd.hasta
 				"0 as exclusivo," + //pd.exclusivo
-				"0 as combos_totales, \n" +//pd.combos_totales
+				"-1 as combos_totales, \n" +//pd.combos_totales
 				"0 as avance_combos "+//"pd.avance_combos+avance_combos_temp as avance_combos \n" +
 				"from promocion_detalle pd \n" +
 				"inner join producto p on p.codpro=pd.salida\n" +
@@ -15217,6 +15255,50 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		Cursor cur = db.rawQuery(rawQuery, null);
 
 		return cur;// d
+	}
+
+	public boolean updateMtaKardexStock(String codAlm, String codpro,
+										double cantidadSeparadoOldSAE){
+		String where = DBtables.MTA_kardex.PK_CODALM+" = ? and "
+				+ DBtables.MTA_kardex.PK_CODPRO+" = ? ";
+		String[] args = {codAlm, codpro};
+
+		SQLiteDatabase db =getWritableDatabase();
+
+		ContentValues nr=new ContentValues();
+		nr.put(DBtables.MTA_kardex.xtempOld, cantidadSeparadoOldSAE);
+		long x=db.update(DBtables.MTA_kardex.TAG, nr, where, args);
+
+//		if(x<=0) {
+			//si no hay registro en db intermedia entonces ignorar
+//			Cursor cursor = db.query(DBtables.MTA_kardex.TAG, null, where, args, null, null, null);
+//			if(cursor.getCount()<=0){
+//				cursor.close();
+//				db.close();
+//				return true;
+//			}
+//			else{
+//				db.close();
+//				return false;
+//			}
+//		}
+
+		return x>0;
+	}
+
+	public void recalcularStock(){
+		String codAlmacenSae=getConfiguracionByName("codigoAlmacen", "");
+		String sql1="UPDATE    mta_kardex set  xtemp= ifnull(( " +
+				"select sum(pd.cantidad) as total_unidad\n" +
+				"from pedido_detalle pd " +
+				"inner join pedido_cabecera  pc on pc.oc_numero=pd.oc_numero  " +
+				"and pc.flag!='T' and pc.estado!='A' "+
+				"where pd.cip= case when pd.tipo_producto!='V' then 'B' else '' end ||mta_kardex.codpro " +
+				"and pc.tipoRegistro= '"+PedidosActivity.TIPO_PEDIDO+"' " +
+				"and mta_kardex.codalm='"+codAlmacenSae+"'), 0) ";
+
+		Log.i(TAG, "RecalcularStock:: sql1: "+ sql1);
+		getReadableDatabase().execSQL(sql1);
 	}
 
 }

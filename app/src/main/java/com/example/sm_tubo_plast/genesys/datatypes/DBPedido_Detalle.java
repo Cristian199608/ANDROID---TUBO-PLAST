@@ -503,7 +503,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 
 	//-------------------------------FIN ATRIBUTOS----------------------------------------------------------------
 	public String getCodproOriginal(){
-		String codpro=this.getTipo_producto().equals("V") && this.getCip().startsWith("B")
+		String codpro=!this.getTipo_producto().equals("V") && this.getCip().startsWith("B")
 				?this.getCip().substring(1)
 				:this.getCip();
 		return codpro;

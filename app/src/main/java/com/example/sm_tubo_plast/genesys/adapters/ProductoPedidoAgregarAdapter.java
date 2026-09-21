@@ -24,6 +24,7 @@ import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
 public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoPedidoAgregarAdapter.ViewHolder> {
@@ -37,8 +38,9 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
     private ItemProducto[]  lista;
     private Activity activity;
     private DBclasses obj_dbclasses;
-    String codven, codcli;
+    String codven, codcli, tipo_registro;
 
+    double dsctoPronto=0.0;
     private OnAgregarProductoListener listener;
 
     public ProductoPedidoAgregarAdapter(
@@ -49,6 +51,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             DBclasses obj_dbclasses,
             String codven,
             String codcli,
+            String tipo_registro,
             OnAgregarProductoListener listener
             ) {
         this.activity=activity;
@@ -59,6 +62,8 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         this.obj_dbclasses=obj_dbclasses;
         this.codven=codven;
         this.codcli=codcli;
+        this.tipo_registro=tipo_registro;
+        this.dsctoPronto = Double.parseDouble(obj_dbclasses.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
     }
 
     public void setLista(ItemProducto[] lista) {
@@ -95,15 +100,19 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
         double montoDescuento=VARIABLES.getDoubleFormaterThreeDecimal(producto.getPrecio_base()*(dsctoCategoria/100));
         double precioUnit=VARIABLES.getDoubleFormaterThreeDecimal((producto.getPrecio_base()-montoDescuento));
+        double stockRealFinal = producto.getStockDetalle().getStockReal();
         holder.tvPrecio.setText("S/ "+precioUnit);
+
 
         holder.tvStock.setText((int)(producto.getStockDetalle().getStock())+ " "+ producto.getCodunimed());
         holder.tvStockSeparado.setText((int)(producto.getStockDetalle().getXtemp())+ " "+ producto.getCodunimed());
         holder.tvStockEnTransito.setText((int)(producto.getStockDetalle().getTransito())+ " "+ producto.getCodunimed());
         holder.tvStockDisponible.setText((int)(producto.getStockDetalle().getDisponible())+ " "+ producto.getCodunimed());
+        holder.tvStockDisponibleReal.setText("Dis. Real "+VARIABLES.formater_integer.format((int)(stockRealFinal))+ " "+ producto.getCodunimed());
         //if(producto.getStock()<=0){
         holder.tvStock.setTextColor(holder.itemView.getContext().getResources().getColor(producto.getStockDetalle().getStock()>0?R.color.grey_900:R.color.red_500));
         holder.tvStockDisponible.setTextColor(holder.itemView.getContext().getResources().getColor(producto.getStockDetalle().getDisponible()>0?R.color.green_500:R.color.red_500));
+        holder.tvStockDisponibleReal.setTextColor(holder.itemView.getContext().getResources().getColor(stockRealFinal>0?R.color.green_500:R.color.red_500));
         //}
 
         GestionarPromociones(holder, position);
@@ -135,13 +144,13 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                 return;
             }
 
-            double stock = producto.getStockDetalle().getDisponible();
+            double stock = producto.getStockDetalle().getStockReal();
             double precio_base = producto.getPrecio_base();
             if(precio_base<=0){
                 holder.edtCantidad.setError("No tiene precio");
                 return;
             }
-            if (cantidad > stock) {
+            if (tipo_registro.equals(PedidosActivity.TIPO_PEDIDO) && cantidad > stock) {
                 new AlertDialog.Builder(activity)
                         .setTitle("Stock Insuficiente")
                         .setMessage("¿Desea registrar el almacen como virtual?")
@@ -155,6 +164,13 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                                                 dsctoCategoria,
                                                 0
                                         );
+                                        lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(producto.getCodprod())[0];
+                                        holder.itemView.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                notifyDataSetChanged();
+                                            }
+                                        });
                                     }
                                 })
                                         .setNegativeButton("No", null)
@@ -169,6 +185,14 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                     dsctoCategoria,
                     1
             );
+
+            lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(producto.getCodprod())[0];
+            holder.itemView.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
 
         });
     }
@@ -186,6 +210,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         TextView tvPrecioLista;
         TextView tvPrecio;
         TextView tvStock, tvStockSeparado, tvStockEnTransito, tvStockDisponible;
+        TextView tvStockDisponibleReal;
 
         EditText edtCantidad;
         TextView btnAgregar, tv_verMas;
@@ -200,6 +225,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             tv_verMas =  itemView.findViewById(R.id.tv_verMas);
 
             tvNombreProducto =itemView.findViewById(R.id.tvNombreProducto);
+            tvStockDisponibleReal =itemView.findViewById(R.id.tvStockDisponibleReal);
 
             tvPrecioLista =
                     itemView.findViewById(
@@ -233,7 +259,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
     private double obtenerPorcentajeDsctoByCondicion(String marcaProd){
         double addAdcional=0.0;
         if(swAplicaDsctoProntoPago){
-            addAdcional=2.00;
+            addAdcional=dsctoPronto;
         }
         if (maestroCategoriaDescuento.getAdicional()!=null) {
             Opcion opcion =maestroCategoriaDescuento.getAdicional();
@@ -246,22 +272,22 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             }
             if(!isInNotIcluded){
                 boolean isFindedNotContado=false;
-                boolean isFindedContadoIncluded=false;
-                if(swAplicaDsctoProntoPago && opcion.getCondicion().getForma_pago()!=null){
-                    for (String s : opcion.getCondicion().getForma_pago().getMarca_not()) {
-                        if (s.toLowerCase().contains("contado")) {
-                            isFindedNotContado=true;
-                        }
-                    }
-
-                    for (String s : opcion.getCondicion().getForma_pago().getMarca_inc()) {
-                        if (s.toLowerCase().contains("contado")
-                                || s.equalsIgnoreCase("todos")) {
-                            isFindedContadoIncluded=true;
-                        }
-
-                    }
-                }else isFindedContadoIncluded=true;
+                boolean isFindedContadoIncluded= !swAplicaDsctoProntoPago;
+//                if(swAplicaDsctoProntoPago && opcion.getCondicion().getForma_pago()!=null){
+//                    for (String s : opcion.getCondicion().getForma_pago().getMarca_not()) {
+//                        if (s.toLowerCase().contains("contado")) {
+//                            isFindedNotContado=true;
+//                        }
+//                    }
+//
+//                    for (String s : opcion.getCondicion().getForma_pago().getMarca_inc()) {
+//                        if (s.toLowerCase().contains("contado")
+//                                || s.equalsIgnoreCase("todos")) {
+//                            isFindedContadoIncluded=true;
+//                        }
+//
+//                    }
+//                }//else isFindedContadoIncluded=true;
 
                 if(!isFindedNotContado && isFindedContadoIncluded){
                     for (String s : opcion.getCondicion().getMarca_inc()) {

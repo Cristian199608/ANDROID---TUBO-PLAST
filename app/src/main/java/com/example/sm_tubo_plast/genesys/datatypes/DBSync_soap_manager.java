@@ -3670,13 +3670,18 @@ public String Sync_tabla_PromocionDetalleV2(Activity activity, String codven) th
 	String urlReq= RetrofilClientCantol.UrlPeticiones.getListaPromociones();
 	RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
 	Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(activity)
-			.create(GetDataCantol.class).getCliente(body);
+			.create(GetDataCantol.class).sincronizarPromocionSAP(body);
 
 		Response<Object> response = call.execute();
 		if (response.isSuccessful()) {
-			final Type malla = new TypeToken<ArrayList<ResultPromocionDetalle>>() {}.getType();
-			final ArrayList<ResultPromocionDetalle> lista = gson.fromJson(gson.toJson(response.body()), malla);
-			return dbclass.guardarSyncPromocionDetalle(lista);
+			if (response.body().toString().equalsIgnoreCase("ok")) {
+				return null;
+			}else{
+				return "No se pudo sincronizar promociones de SAP a Servidor SAEMOVIL";
+			}
+//			final Type malla = new TypeToken<ArrayList<ResultPromocionDetalle>>() {}.getType();
+//			final ArrayList<ResultPromocionDetalle> lista = gson.fromJson(gson.toJson(response.body()), malla);
+			//return dbclass.guardarSyncPromocionDetalle(lista);
 		}
 		return "El servidor ha devuelto un mensaje de error";
 	}
@@ -4844,7 +4849,7 @@ private ArrayList<DB_ObjPedido> getDataParaEnviar(ArrayList<DB_ObjPedido> listaC
 		//-------------------------------PEDIDO DET DSCTO------------------------------------------
 
 		listaCabecera.get(i).setListaPedido_detalle_descuento(
-				dbclass.obtenerPedidoDetalleDescuento(listaCabecera.get(i).getOc_numero().trim())
+				dbclass.obtenerPedidoDetalleDescuento(listaCabecera.get(i).getOc_numero().trim(), -1)
 		);
 		//-------------------------------work flow pedido----------------------------------------------------------------
 		listaCabecera.get(i).setListaWorkflow_pedido(
@@ -4910,8 +4915,9 @@ private ResultPedidoEnvioSAP enviarPedidoSAP(String oc_numero, String jsonData, 
 					dbPedido.getCod_emp(),
 					dbPedido.getOc_numero(),
 					dbPedido.getUsername(),
-					dbPedido.getMoneda(),
-					dbPedido.getCodigoAlmacen()
+					dbPedido.getMoneda().equals("1")?"PEN":"USD",
+					dbPedido.getCodigoAlmacen(),
+					Double.parseDouble(detalle.getPrecio_neto())
 			));
 		}
 		if(listaReserva.size()==0) return true;
@@ -4948,6 +4954,7 @@ public ArrayList<String> actualizarObjPedido_directo(String Oc_numero, Activity 
 	flags.add(1, "");//sap
 	ArrayList<DB_ObjPedido>  listaCabecera = dbclass.getObjPedido_jsons(Oc_numero);
 	ArrayList<DB_ObjPedido>  lista_obj_pedido = getDataParaEnviar(listaCabecera);
+	DAO_PedidoAnticipoDetalle dao_pedidoAnticipoDetalle=new DAO_PedidoAnticipoDetalle(dbclass);
 
     Gson gson = new Gson();
 	PedidoAppConvertTo_PedidoSAP converSAP=new PedidoAppConvertTo_PedidoSAP();
@@ -7259,6 +7266,56 @@ public int actualizarRegistroBonificaciones() throws Exception{
 			Log.i("Sync_tbProductoPromocion", "NO SINCRONIZADA");
 			throw new Exception(e);
 		}
+	}
+
+	public String getListaStockLinea(String codven, String codigos, String codigoAlmacen) {
+		String SOAP_ACTION = "http://tempuri.org/getTBStockLoteProducto_v2_json";
+		String METHOD_NAME = "getTBStockLoteProducto_v2_json";
+
+		SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+		Request.addProperty("codigos", codigos);
+		Request.addProperty("codigoAlmacen", codigoAlmacen);
+		//Request.addProperty("bonificacion", 'S');
+		Request.addProperty("url", url);
+		Request.addProperty("catalog", catalog);
+		Request.addProperty("user", user);
+		Request.addProperty("password", contrasena);
+		Request.addProperty("codven", codven);
+		SoapSerializationEnvelope Soapenvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+		Soapenvelope.dotNet = true;
+		Soapenvelope.setOutputSoapObject(Request);
+		Log.i(TAG, "comsuming getStockProductosEnLinea :params:" + "\ncodven: "+codven+"\ncodigoProducto:" + codigos + "\ncodigoAlmacen:" + codigoAlmacen);
+		HttpTransportSE transporte = new HttpTransportSE(URL + GlobalVar.urlService, 360000);
+		try {
+			transporte.call(SOAP_ACTION, Soapenvelope);
+			SoapPrimitive result = (SoapPrimitive) Soapenvelope.getResponse();
+			JSONArray jArray = new JSONArray(result.toString());
+
+			JSONObject jsonData = null;
+			boolean isOk=true;
+			if (dbclass==null)
+				dbclass=new DBclasses(context);
+			for (int i = 0; i < jArray.length(); i++) {
+				jsonData = jArray.getJSONObject(i);
+				String codpro = jsonData.getString("codpro");
+				double cantidadSeparadoOldSAE = jsonData.getDouble("cantidadSeparadoOldSAE");
+				if(codpro.length()>=4 && !dbclass.updateMtaKardexStock(
+						codigoAlmacen,
+						codpro,
+						cantidadSeparadoOldSAE
+				)){
+					isOk=false;
+					break;
+				}
+			}
+			dbclass.close();
+			dbclass=null;
+			//Log.i("DBSync_soapManager:getListaStockLinea", "" + result.toString());
+			return isOk?result.toString():null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

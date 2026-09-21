@@ -1,5 +1,6 @@
 package com.example.sm_tubo_plast.genesys.Retrofit.request.pedido;
 
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestAnticipoPedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestAuditoriaPedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestClientePedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestComercialPedidoSAP;
@@ -33,7 +34,7 @@ public class RequestPedidoSAP {
     private int numero_letras;
 
     private boolean aplica_pedido_anticipo;
-    private List<Object> anticipos_aplicados;
+    private ArrayList<RequestAnticipoPedidoSAP> anticipos_aplicados;
 
     private boolean aplica_descuento;
     private boolean aplica_dsc_pronto_pago;
@@ -71,7 +72,7 @@ public class RequestPedidoSAP {
             String numero_orden_compra,
             int numero_letras,
             boolean aplica_pedido_anticipo,
-            List<Object> anticipos_aplicados,
+            ArrayList<RequestAnticipoPedidoSAP> anticipos_aplicados,
             boolean aplica_descuento,
             boolean aplica_dsc_pronto_pago,
             boolean aplica_dsc_siguiente_categoria,
@@ -240,11 +241,11 @@ public class RequestPedidoSAP {
         this.aplica_pedido_anticipo = aplica_pedido_anticipo;
     }
 
-    public List<Object> getAnticipos_aplicados() {
+    public ArrayList<RequestAnticipoPedidoSAP> getAnticipos_aplicados() {
         return anticipos_aplicados;
     }
 
-    public void setAnticipos_aplicados(List<Object> anticipos_aplicados) {
+    public void setAnticipos_aplicados(ArrayList<RequestAnticipoPedidoSAP> anticipos_aplicados) {
         this.anticipos_aplicados = anticipos_aplicados;
     }
 

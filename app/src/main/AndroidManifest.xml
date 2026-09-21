@@ -272,6 +272,10 @@
             android:exported="false"
             android:theme="@style/AppThemeNewClient" />
 
+    <activity
+            android:name=".genesys.fuerza_ventas.cliente.AnticiposCliente.AnticiposClienteActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />

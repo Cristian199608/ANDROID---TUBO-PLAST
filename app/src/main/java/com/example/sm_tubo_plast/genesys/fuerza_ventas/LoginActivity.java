@@ -294,7 +294,7 @@ public class LoginActivity extends AppCompatActivity {
     private void setDataPrueba(){
         boolean prueba = VARIABLES.isSetDataPruebas;
         if(!prueba) return;
-        dbusuarios.setDataPruebas();
+        //dbusuarios.setDataPruebas();
         testMapa();
         testDoc();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
@@ -694,8 +694,8 @@ public class LoginActivity extends AppCompatActivity {
     private void testMapa(){
         final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
         i.putExtra("origen", "CLIENTES");
-        i.putExtra("nombreCliente", "CUEVA CHUQUIZUTA TEODOCIA");
-        i.putExtra("codcli", "C00006063131");
+        i.putExtra("nombreCliente", "HUAMAN PINEDA SONIA");//""IMPORT Y DISTRIBUIDORA EL PAISA S.A.C.");//"CUEVA CHUQUIZUTA TEODOCIA");
+        i.putExtra("codcli", "C10105217914");//""C20603411987");//"C00006063131");
         i.putExtra("codigoVendedor", "33");
         i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
 //        startActivity(i);
@@ -710,9 +710,9 @@ public class LoginActivity extends AppCompatActivity {
 //        i.putExtra("nomcli", "C00006063131");
 //        startActivity(i);
         try {
-//            String Oc_numero="3326091001";
+            String Oc_numero="3326091705";
 //            DBSync_soap_manager dbsoap=new DBSync_soap_manager(this);
-//            dbsoap.actualizarObjPedido_directo(Oc_numero);
+//            dbsoap.actualizarObjPedido_directo(Oc_numero, this);
         }catch (Exception e){
             e.printStackTrace();
 

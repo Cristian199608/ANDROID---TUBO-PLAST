@@ -460,7 +460,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
 //            }
             /*------------------------------------------------------------------------*/
 
-            lista_cta_ingresos_original = obj_dbclasses.VerificarCtasXCobrar(codcli);
+            lista_cta_ingresos_original = obj_dbclasses.VerificarCtasXCobrarY_anticipos(codcli);
             lista_cta_ingresos_result.addAll(lista_cta_ingresos_original);
 
             try {
@@ -471,7 +471,7 @@ public class CuentasXCobrarActivity2 extends AppCompatActivity {
                 while (it.hasNext()) {
                     Object objeto = it.next();
                     DBCta_Ingresos cta = (DBCta_Ingresos) objeto;
-
+                    if(cta.getTipo().equals("Anticipo")) continue;
                    /* HashMap<String, String> map = new HashMap<String, String>();
                     // map.put(KEY_CODCLI,obtenerPersona[i].getCodcli());
                     map.put(KEY_TIPO_DOCUMENTO, cta.getCoddoc());

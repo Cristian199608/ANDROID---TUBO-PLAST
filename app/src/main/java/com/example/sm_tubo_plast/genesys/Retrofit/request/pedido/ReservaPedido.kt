@@ -8,5 +8,6 @@ data class ReservaPedido(
     val pedido: String,
     val vendedor_nombre: String,
     val moneda: String,
-    val almacen: String
+    val almacen: String,
+    val precio: Double
 )

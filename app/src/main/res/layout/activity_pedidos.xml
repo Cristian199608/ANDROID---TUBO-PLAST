@@ -96,6 +96,7 @@
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
+
                             <!-- N° de Pedido -->
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -1103,15 +1104,33 @@
                                         android:text="No" />
                                 </RadioGroup>
                             </LinearLayout>
+<!--                            Anticipos seleccionados-->
+                            <LinearLayout
+                                android:id="@+id/layoutCaontainerAnticipos"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:visibility="gone"
+                                android:paddingTop="5dp">
 
-                        <LinearLayout
-                            android:id="@+id/layoutCaontainerAnticipos"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingTop="5dp"
-                            android:paddingBottom="5dp">
-                        </LinearLayout>
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Anticipos:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edtAnticiposDocs"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:drawableEnd="@drawable/ic_tres_puntos_grey"
+                                    android:focusable="false"
+                                    android:text="5 docs | S/ 1,500.50" />
+                            </LinearLayout>
 
                             <!-- ==================================================== -->
                             <!-- 5. OBSERVACIONES Y OTROS                             -->
@@ -1476,6 +1495,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_weight="2"
                             android:text="IGV"
+                            android:visibility="gone"
+                            tools:visibility="visible"
                             android:textColor="@color/grey_300"
                             android:textSize="@dimen/text_resumen_pedido" />
                         <TextView
@@ -1486,6 +1507,8 @@
                             android:layout_gravity="center_vertical"
                             android:layout_weight="2"
                             android:text="Total"
+                            android:visibility="gone"
+                            tools:visibility="visible"
                             android:textColor="@color/grey_300"
                             android:textSize="@dimen/text_resumen_pedido" />
                     </LinearLayout>

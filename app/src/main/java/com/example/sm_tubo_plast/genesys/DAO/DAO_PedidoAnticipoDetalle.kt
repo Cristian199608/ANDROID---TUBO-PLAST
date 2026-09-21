@@ -20,7 +20,7 @@ class DAO_PedidoAnticipoDetalle {
 
     fun deleteAllEnviados(codven: String) {
         try {
-            val where = """ oc_numero not in (
+            val where = """ oc_numero in (
             select oc_numero from pedido_cabecera where flag not in (?) or cod_emp <> ?)"""
             val args = arrayOf("P", codven)
 
@@ -46,11 +46,24 @@ class DAO_PedidoAnticipoDetalle {
             e.printStackTrace()
         }
     }
+    fun deleteBy( ocNum: String, serie:String, numero:String) {
+        try {
+            val where = """ oc_numero = ? and  serie_doc = ? and numero_doc=? """
+            val args = arrayOf(ocNum, serie, numero)
+
+            val db = dBclasses.writableDatabase
+            db.delete(""+DBtables.PedidoAnticipoDetalle.TAG,  where, args)
+            db.close()
+            Log.i(TAG, "deleteAll:: Datos Limpiados "+DBtables.PedidoAnticipoDetalle.TAG);
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     fun insertAll(_db: SQLiteDatabase?,lista: ArrayList<PedidoAnticipoDetalle>) : Boolean{
         var STAG="insertAll";
 
-        val db = _db?:dBclasses.writableDatabase
+        val db = if(_db!=null) _db else dBclasses.writableDatabase
         if(_db==null)db.beginTransaction()
         var ok:Boolean=false;
         try {

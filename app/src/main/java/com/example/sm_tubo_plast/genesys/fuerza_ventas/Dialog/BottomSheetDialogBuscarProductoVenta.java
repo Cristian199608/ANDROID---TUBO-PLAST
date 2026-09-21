@@ -34,6 +34,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
 import com.example.sm_tubo_plast.genesys.adapters.ProductoPedidoAgregarAdapter;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.ProductoActivity;
+import com.example.sm_tubo_plast.genesys.service.WS_StockLinea;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.SnackBar.UtilViewSnackBar;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
@@ -56,12 +57,14 @@ public class BottomSheetDialogBuscarProductoVenta
 
     private static final String TAG = "BottomSheetDialogBuscarProductoVenta";
 
-    String codven=null,codcli=null, oc_numero=null;
+    String codven=null, codAlmacen,codcli=null, oc_numero=null, tipo_registro=null;
     MaestroCategoriaDescuento maestroCategoriaDescuento =null;
     boolean swAplicaDsctoProntoPago=false;
     public static BottomSheetDialogBuscarProductoVenta newInstance(String codven,
                                                                    String codcli,
+                                                                   String codAlmacen,
                                                                    String oc_numero,
+                                                                   String tipo_registro,
                                                                    String canalYCategoriaVenta,
                                                                    boolean swAplicaDsctoProntoPago) {
         BottomSheetDialogBuscarProductoVenta fragment = new BottomSheetDialogBuscarProductoVenta();
@@ -69,6 +72,8 @@ public class BottomSheetDialogBuscarProductoVenta
         args.putString("codven", codven);
         args.putString("codcli", codcli);
         args.putString("oc_numero", oc_numero);
+        args.putString("tipo_registro", tipo_registro);
+        args.putString("codAlmacen", codAlmacen);
         args.putString("canalYCategoriaVenta", canalYCategoriaVenta);
         args.putBoolean("swAplicaDsctoProntoPago", swAplicaDsctoProntoPago);
         fragment.setArguments(args);
@@ -113,6 +118,8 @@ public class BottomSheetDialogBuscarProductoVenta
             codcli= getArguments().getString("codcli", null);
             oc_numero = getArguments().getString("oc_numero");
             swAplicaDsctoProntoPago = getArguments().getBoolean("swAplicaDsctoProntoPago");
+            codAlmacen = getArguments().getString("codAlmacen");
+            tipo_registro = getArguments().getString("tipo_registro");
             String canalYCategoriaVenta = getArguments().getString("canalYCategoriaVenta");
             for (MaestroCategoriaDescuento canalCategoriaDescuento : MaestroCategoriaDescuento.getDataListDscto("TODOS")) {
                 if((canalCategoriaDescuento.getKeyUnico())
@@ -156,6 +163,7 @@ public class BottomSheetDialogBuscarProductoVenta
         });
     }
     private void mostrarListaproductosView(long timeSync){
+        dBclasses.recalcularStock();//recalculamos el stock
         ItemProducto[]  lista= dBclasses.getProductosXTIME_SYNC(String.valueOf(timeSync));
         ProductoPedidoAgregarAdapter adapter =
                 new ProductoPedidoAgregarAdapter(
@@ -166,6 +174,7 @@ public class BottomSheetDialogBuscarProductoVenta
                         dBclasses,
                         codven,
                         codcli,
+                        tipo_registro,
                         (producto, cantidad, pctjDscto, flagStockValido) -> {
                             agregarProducto(
                                     producto,
@@ -241,6 +250,8 @@ public class BottomSheetDialogBuscarProductoVenta
 
 
 
+        double dsctoPronto= !swAplicaDsctoProntoPago?0.0:Double.parseDouble(dBclasses.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
+
         int nro_item = dBclasses.getNextNroItemPedido(oc_numero);
         Intent returnIntent = new Intent();
         double montoDescuento=VARIABLES.getDoubleFormaterThreeDecimal(producto.getPrecio_base()*(pctjDscto/100));
@@ -258,6 +269,7 @@ public class BottomSheetDialogBuscarProductoVenta
         returnIntent.putExtra("sec_politica", "0");
         returnIntent.putExtra("descuento",	montoDescuento);
         returnIntent.putExtra("porcentaje_desc",	pctjDscto);
+        returnIntent.putExtra("descuentoProntoPagoContado",	dsctoPronto);
         returnIntent.putExtra("porcentaje_desc_extra",	0.0);
         returnIntent.putExtra("precioPercepcion", 0.0);
         returnIntent.putExtra("agregarComoBonificacion", false);
@@ -313,9 +325,26 @@ public class BottomSheetDialogBuscarProductoVenta
                 //edt_descuento.setText(""+obtenerPorcentajeDsctoByCondicion());
                 //edt_descuento.setEnabled(false);
                 //new ProductoActivity.async_busqueda(time_sincronizacion).execute();
+                startBusquedaStockOld(time_sincronizacion);
+                //mostrarListaproductosView(time_sincronizacion);
+            }
+        });
+    }
+    private void startBusquedaStockOld(long time_sincronizacion){
+        WS_StockLinea ws_stockLinea=new WS_StockLinea(getActivity(), codven, codAlmacen, time_sincronizacion, new WS_StockLinea.Callback() {
+            @Override
+            public void CargadoOK(boolean isok) {
+                if(!isok){
+                    GlobalFunctions.showCustomToast(
+                            getActivity(),
+                            "No se pudo validar los pedidos separados de saemovil remoto",
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
                 mostrarListaproductosView(time_sincronizacion);
             }
         });
+        ws_stockLinea.execute();
     }
 
     private void desahabledBottomSheeetDraggable(View view) {

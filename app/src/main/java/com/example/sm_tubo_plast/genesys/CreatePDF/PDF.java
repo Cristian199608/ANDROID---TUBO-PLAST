@@ -394,7 +394,7 @@ public class PDF {
         }
 
         tableData.addCell(new Cell().add(new Paragraph(""+obsPesoTotalTxt).setTextAlignment(TextAlignment.LEFT).setFontSize(6.2f)));
-        tableData.addCell(new Cell().add(new Paragraph("DESC BONIF.").setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
+        tableData.addCell(new Cell().add(new Paragraph("DESC + BONIF.").setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
         tableData.addCell(new Cell().add(new Paragraph(moneda + totalDsctEnBonif).setTextAlignment(TextAlignment.RIGHT).setFontSize(6.2f)));
 
         tableData.addCell(new Cell());

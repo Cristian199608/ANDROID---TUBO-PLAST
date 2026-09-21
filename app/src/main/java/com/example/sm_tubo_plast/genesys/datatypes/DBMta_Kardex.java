@@ -7,6 +7,7 @@ public class DBMta_Kardex{
 	private String codpro;
 	private double stock;
 	private double xtemp;
+	private double comprometido;
 	private double transito;
 	private double disponible;
 
@@ -42,6 +43,14 @@ public class DBMta_Kardex{
 		this.xtemp = xtemp;
 	}
 
+	public double getComprometido() {
+		return comprometido;
+	}
+
+	public void setComprometido(double comprometido) {
+		this.comprometido = comprometido;
+	}
+
 	public double getTransito() {
 		return transito;
 	}
@@ -56,5 +65,9 @@ public class DBMta_Kardex{
 
 	public void setDisponible(double disponible) {
 		this.disponible = disponible;
+	}
+
+	public double getStockReal() {
+		return disponible - xtemp;
 	}
 }

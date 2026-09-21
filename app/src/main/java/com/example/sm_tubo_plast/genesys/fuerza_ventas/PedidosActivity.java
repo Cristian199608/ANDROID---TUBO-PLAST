@@ -38,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -65,6 +66,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.LugarEntrega;
 import com.example.sm_tubo_plast.genesys.BEAN.Nro_Letras;
 import com.example.sm_tubo_plast.genesys.BEAN.Obra;
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.BEAN.Pedido_detalle2;
@@ -108,6 +110,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.cliente.AnticiposCliente.AnticiposClienteActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.compartidoUtil.UtilCalcularPrecioProducto;
 import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
@@ -287,9 +290,9 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     private EditText edt_nroPedido, edt_nroOrdenCompra, edt_limiteCredito,edt_disponibleCredito, edt_direccionFiscal, edt_fechaPedido,edt_observacion1NombreContacto, edt_observacion1Telefono,
             edt_observacion2NombreTrasporte,edt_observacion2DireccionTransporte, edt_observacion2Proyecto, edt_observacion3, edt_observacion4
             ,edt_docAdicional,edt_observacionDespacho,
-            edt_transportista;
+            edt_transportista, edtAnticiposDocs;
     private LinearLayout linear_obra, layoutServicioInstalacion, layoutTransporte,
-            layoutDespachoCliente, layoutServicioEmbalaje, layoutPuntoEntrega, layoutCondicionVentaOpc;
+            layoutDespachoCliente, layoutServicioEmbalaje, layoutPuntoEntrega, layoutCondicionVentaOpc, layoutCaontainerAnticipos;
     private RadioButton rButton_boleta,rButton_factura, rGroupAplicaServiInstalaSI, rGroupAplicaServiInstalaNO;
     private RadioButton rButtonSoles,rButtonDolares, rGroupAplicaNcSI, rGroupAplicaNcNO;
 
@@ -494,6 +497,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         rGroupAplicaEmbalajeNO =  findViewById(R.id.rGroupAplicaEmbalajeNO);
         rGroupAplicaAnticipoNO =  findViewById(R.id.rGroupAplicaAnticipoNO);
         rGroupAplicaAnticipoSI =  findViewById(R.id.rGroupAplicaAnticipoSI);
+        edtAnticiposDocs =  findViewById(R.id.edtAnticiposDocs);
+        layoutCaontainerAnticipos =  findViewById(R.id.layoutCaontainerAnticipos);
         rGroupAplicaServiInstalaNO 	= (RadioButton)findViewById(R.id.rGroupAplicaServiInstalaNO);
         rGroupAplicaServiInstalaSI 	= (RadioButton)findViewById(R.id.rGroupAplicaServiInstalaSI);
         rGroupAplicaNcSI 	= (RadioButton)findViewById(R.id.rGroupAplicaNcSI);
@@ -691,7 +696,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             public void onItemSelected(AdapterView<?> arg0, View arg1,int arg2, long arg3) {
                 String desc = spn_tipoDespacho.getSelectedItem().toString();
                 String palabra = "obra";
-                llenarSpinnerDespacho((ped_cab!=null?ped_cab.getFlagDespacho():""), (ped_cab!=null?ped_cab.getCodigoTipoDespacho():""));
+                llenarSpinnerDespacho((ped_cab!=null?ped_cab.getFlagDespacho():""), (ped_cab!=null?ped_cab.getCodigoTipoDespacho():desc));
 
                 if (desc.indexOf(palabra) != -1 || desc.indexOf("Obra") != -1 || desc.indexOf("OBRA") != -1) {
                     //la palabra obra esta dentro del desc
@@ -904,7 +909,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             mostrarDatosCliente(codcli);
             autocomplete.setEnabled(false);
 
-            if (dbclass.VerificarCtasXCobrar(codcli).size() > 0) {
+            if (dbclass.VerificarCtasXCobrarDeudas(codcli).size() > 0) {
                 Log.w("CLIENTE CON DEUDA", codcli+ "al venir de ActivityCliente");
                 crearDialogo_cuentaXcobrar();
             }
@@ -937,7 +942,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
             mostrarDatosCliente(codcli);
 
-            if (dbclass.VerificarCtasXCobrar(codcli).size() > 0) {
+            if (dbclass.VerificarCtasXCobrarDeudas(codcli).size() > 0) {
                 crearDialogo_cuentaXcobrar();
             }
             if(DIALOGO.equals(FORMA1))
@@ -1015,7 +1020,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 cliente = autocomplete.getText().toString();
 
                 if (actionId != 5) {
-                    if (dbclass.VerificarCtasXCobrar(codcli).size() > 0) {
+                    if (dbclass.VerificarCtasXCobrarDeudas(codcli).size() > 0) {
                         Log.w("CLIENTE CON DEUDA", codcli + "autocompleteEvent");
                         crearDialogo_cuentaXcobrar();
                     }
@@ -1048,7 +1053,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 String nombre = (String) adap.getItemAtPosition(pos);
                 codcli = obtenerCodigoCliente(nombre);
 
-                if (dbclass.VerificarCtasXCobrar(codcli).size() > 0) {
+                if (dbclass.VerificarCtasXCobrarDeudas(codcli).size() > 0) {
                     Log.w("CLIENTE CON DEUDA", codcli
                             + "autocomplete al hacer click");
                     crearDialogo_cuentaXcobrar();
@@ -1116,9 +1121,26 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         });
         Log.v("Pedidos", "-------------------------");
 
+        refrescarMontoAnticipos();
         mostrarSpinnerTransporte();
         sincronizarCondicionVentaCliente();
+        configEventos();
         //finish metodo oncreate
+    }
+
+    private void configEventos() {
+        edtAnticiposDocs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goSeleccionAnticiposCliente();
+            }
+        });
+        rGroupAplicaAnticipoSI.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                layoutCaontainerAnticipos.setVisibility(isChecked?View.VISIBLE:View.GONE);
+            }
+        });
     }
 
     private boolean validarSelccionCondicionVentaCanal() {
@@ -1136,7 +1158,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
     private  void llenarSpinnerDespacho(String valor, String tipoTransporte){
     ArrayList<CharSequence> lista=new ArrayList<>();
-    if(tipoTransporte.toUpperCase().contains("INTERNO")){
+    if(tipoTransporte.toUpperCase().contains("EXTERNO")){
         lista.add("Cliente Recoge");
     }else{
         lista.add("Almacén Cliente");
@@ -1203,6 +1225,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         edt_observacion2NombreTrasporte.setEnabled(true);
         edt_observacion2DireccionTransporte.setEnabled(true);
         edt_observacion2Proyecto.setEnabled(true);
+        edtAnticiposDocs.setEnabled(true);
         edt_observacion3.setEnabled(true);
         edt_observacion4.setEnabled(true);
     }
@@ -1250,6 +1273,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         edt_observacion2NombreTrasporte.setEnabled(flag);
         edt_observacion2DireccionTransporte.setEnabled(flag);
         edt_observacion2Proyecto.setEnabled(flag);
+        edtAnticiposDocs.setEnabled(flag);
         edt_observacion3.setEnabled(flag);
         spn_tipoDespacho.setEnabled(flag);
         spn_despacho.setEnabled(flag);
@@ -1778,8 +1802,10 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         String flagPedidoAnti = item.getFlagPedido_Anticipo();
         if (flagPedidoAnti.equals("1")) {
             rGroupAplicaAnticipoSI.setChecked(true);
+            layoutCaontainerAnticipos.setVisibility(View.VISIBLE);
         }else{
             rGroupAplicaAnticipoNO.setChecked(true);
+            layoutCaontainerAnticipos.setVisibility(View.GONE);
         }
 
         String codigoAlmacenD = item.getCodigoAlmacen();
@@ -2167,7 +2193,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         dsctoProntoContado=0;
         if(swAplicaDsctoProntoPago.getVisibility()==View.VISIBLE && swAplicaDsctoProntoPago.isChecked())
-            dsctoProntoContado=2.00;
+            dsctoProntoContado=Double.parseDouble(dbclass.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
 
         if (!validarSelccionCondicionVentaCanal()) {
             return false;
@@ -2235,7 +2261,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 //                    startActivityForResult(intent, 1);
                     deshabilitarFormularioPostGuardarPedido();
                     BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
-                            codven, codcli, Oc_numero, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
+                            codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
                     ddx.show(getSupportFragmentManager(), "dddx");
                     ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
                         @Override
@@ -2352,13 +2378,14 @@ private void EnvalularMoneda(){
         observacionDescuento	= "";
         observacionTipoProducto	= "";
 
+        isAplicaInstalacion="0";
         if(rGroupAplicaServiInstalaNO.isChecked()) isAplicaInstalacion="0";
         if(rGroupAplicaServiInstalaSI.isChecked()) isAplicaInstalacion="1";
-        else isAplicaInstalacion="-1";
 
+        isAplicaNC="0";
         if(rGroupAplicaNcNO.isChecked()) isAplicaNC="0";
         if(rGroupAplicaNcSI.isChecked()) isAplicaNC="1";
-        else isAplicaNC="-1";
+
 
         int posCategoria = spn_subCanalCategoria.getSelectedItemPosition();
         categoriaClienteVenta = getListaMaestroCategoriaDsct().get(posCategoria).getCategoria();
@@ -3316,7 +3343,7 @@ private void EnvalularMoneda(){
                 AlertViewSimpleConEdittext alertEditCantidad=new AlertViewSimpleConEdittext(this);
                 alertEditCantidad.titulo="Editar cantidad";
                 alertEditCantidad.mensaje="Editar cantidad para "+prod.getCodprod()+"-"+prod.getDescripcion();
-                alertEditCantidad.hint="Ingrese numero mayor a 0";
+                alertEditCantidad.hint="Ingrese numero mayor a 0 y maximo "+prod.getCantidad();
                 alertEditCantidad.texto_cargado=""+prod.getCantidad();
                 alertEditCantidad.min_caracteres=1;
                 alertEditCantidad.type_number=true;
@@ -3326,7 +3353,16 @@ private void EnvalularMoneda(){
                     public String resultOK(String newCantida) {
                         if (newCantida==null)
                             return null;
-                        boolean isUpdated=dbclass.modificarCantidadItemPedido(Integer.parseInt(newCantida),
+                        int cantidadW=Integer.parseInt(newCantida);
+                        if(cantidadW==0){
+                            UtilViewSnackBar.SnackBarDanger(PedidosActivity.this, lstProductos,"Ingrese cantidad mayor a 0");
+                            return null;
+                        }
+                        if(cantidadW>prod.getCantidad()){
+                            UtilViewSnackBar.SnackBarDanger(PedidosActivity.this, lstProductos,"Ingrese cantidad máximo a "+prod.getCantidad()+prod.getCodunimed());
+                            return null;
+                        }
+                        boolean isUpdated=dbclass.modificarCantidadItemPedido(cantidadW,
                                 prod.getItem(),
                                 prod.getCodprod(),
                                 Oc_numero
@@ -3571,9 +3607,9 @@ private void EnvalularMoneda(){
         double totalDetalle= itemRes.getSutTotal();
         layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900, true));
 
-        double totalSinIgvPagar=GlobalFunctions.redondear_toDouble(totalDetalle-totalDescuentoBonificacion);
+        double totalSinIgvPagar=GlobalFunctions.redondear_toDouble(totalDetalle);
         double totalConIgvPagar=totalSinIgvPagar*(1+valorIgv);
-        tvDescuentoBonificacion.setText("Dscto Bonif: "+VARIABLES.formater_thow_decimal.format(totalDescuentoBonificacion));
+        tvDescuentoBonificacion.setText("Dscto + Bonif: "+VARIABLES.formater_thow_decimal.format(totalDescuentoBonificacion));
         tvTotalPagarSinIgv.setText("Sub Total: "+VARIABLES.formater_thow_decimal.format(totalSinIgvPagar));
         tvTotalPedidoPagarConIgv.setText("Total: "+VARIABLES.formater_thow_decimal.format(totalConIgvPagar));
 
@@ -4101,9 +4137,25 @@ private void EnvalularMoneda(){
         return codcli;
     }
 
+    private void  refrescarMontoAnticipos(){
+        ArrayList<PedidoAnticipoDetalle> list=dao_pedidoAnticipoDetalle.getDataBy(Oc_numero);
+        if(list.size()==0){
+            edtAnticiposDocs.setText("Toque aqui para seleccionar");
+            return;
+        }
+        //-----------------------------------------------------------------------------------------------
+        double montoTotal=0;
+        for (PedidoAnticipoDetalle pedidoAnticipoDetalle : list) {
+            montoTotal+=pedidoAnticipoDetalle.getMonto();
+        }
+        edtAnticiposDocs.setText(list.size()+" doc | S/"+VARIABLES.formater_thow_decimal.format(montoTotal));
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001) {
+            refrescarMontoAnticipos();
+        }
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 tabs.setCurrentTab(1);
@@ -4151,6 +4203,7 @@ private void EnvalularMoneda(){
                     final String sec_politica= data.getStringExtra("sec_politica");
                     final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
                     final double porcentaje_desc_extra= data.getDoubleExtra("porcentaje_desc_extra", 0);
+                    final double descuentoProntoPagoContado= data.getDoubleExtra("descuentoProntoPagoContado", 0);
                     final boolean agregarComoBonificacion= data.getBooleanExtra("agregarComoBonificacion", false);
                     final int flagStockValido= data.getIntExtra("flagStockValido", 0);
 
@@ -4203,15 +4256,33 @@ private void EnvalularMoneda(){
 
                     if (PUEDE_AGREGAR) {
                         //-------------------------------descuento detallado----------------------------------------------------------------
-                        PedidoDetalleDescuento itemDscto=new PedidoDetalleDescuento(
+                        double porcentaje_descW=porcentaje_desc;
+                        double descuentoW=Double.parseDouble(descuento);
+                        ArrayList<PedidoDetalleDescuento> descuentosMotivos=new ArrayList<>();
+                        if(descuentoProntoPagoContado>0.0){
+                            porcentaje_descW=VARIABLES.getDoubleFormaterThowDecimal(porcentaje_desc-descuentoProntoPagoContado);
+                            descuentoW=VARIABLES.getDoubleFormaterThreeDecimal((Double.parseDouble(precioLista)*(porcentaje_descW/100)*cantidad));
+                            double descuentoSolesProntoPago = VARIABLES.getDoubleFormaterThreeDecimal(
+                                    ((Double.parseDouble(precioLista)*(descuentoProntoPagoContado/100))*cantidad)
+                            );
+                            descuentosMotivos.add(new PedidoDetalleDescuento(
+                                    Oc_numero,
+                                    w_codpro_inser,
+                                    nro_item,
+                                    descuentoProntoPagoContado,
+                                    descuentoSolesProntoPago,
+                                    PedidoDetalleDescuento.TIPO_DSCTO_PRONTO_PAGO_CONTADO
+                            ));
+                        }
+                        descuentosMotivos.add(new PedidoDetalleDescuento(
                                 Oc_numero,
                                 w_codpro_inser,
                                 nro_item,
-                                porcentaje_desc,
-                                Double.parseDouble(descuento),
+                                porcentaje_descW,
+                                descuentoW,
                                 PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
-                        );
-                        dbclass.registrarPedidoDetalleDescuento(new ArrayList<>(Collections.singletonList(itemDscto)));
+                        ));
+                        dbclass.registrarPedidoDetalleDescuento(descuentosMotivos);
                         //-------------------------------Eliminamos si ya tiene promocion (solo promocion)---------------------
                         boolean isEliminar=false;
                         ItemProducto itemProducto=new ItemProducto();
@@ -4289,8 +4360,8 @@ private void EnvalularMoneda(){
 
         Log.d("fechaEntregaCompleta", fechaEntregaCompleta);
         itemCabecera.setOc_numero(edt_nroPedido.getText().toString());
-        itemCabecera.setSitio_enfa("0");
-        itemCabecera.setMonto_total("");
+        itemCabecera.setSitio_enfa(listaSucursales.get(spn_sucursal.getSelectedItemPosition()).getItem());
+        itemCabecera.setMonto_total("0");
         itemCabecera.setPercepcion_total("");
         itemCabecera.setValor_igv("0.0");
         itemCabecera.setMoneda(codigoMoneda);
@@ -4360,6 +4431,9 @@ private void EnvalularMoneda(){
         itemCabecera.setDsctProntoPagoContado(dsctoProntoContado);
         itemCabecera.setFlg_aprobacion(1);//requeiere aprobacion por default
 
+        if(!rGroupAplicaAnticipoSI.isChecked()){
+            dao_pedidoAnticipoDetalle.deleteBy(Oc_numero);
+        }
         if (origen.equals("CLIENTESAC")) {
             dbclass.Actualizar_pedido_cabecera(itemCabecera);
         } else if (origen.equals("REPORTES-MODIFICAR")) {
@@ -6385,7 +6459,7 @@ private void EnvalularMoneda(){
         for (Pedido_detalle2 pedido_detalle2 : listaDet2) {
             desctoBonifDet2 += pedido_detalle2.getPrecio_neto();
         }
-        double dsctoBonifi = GlobalFunctions.redondear_toDouble(montoTotalBonif + desctoBonifDet2);
+        //double dsctoBonifi = GlobalFunctions.redondear_toDouble(montoTotalBonif + desctoBonifDet2);
         subtotal		= GlobalFunctions.redondear_toDouble(subtotal);
         double IGV		= GlobalFunctions.redondear_toDouble(subtotal*valorIGV);
         total			= GlobalFunctions.redondear_toDouble(subtotal + IGV);
@@ -6437,7 +6511,7 @@ private void EnvalularMoneda(){
                 volumenTotal
         );
         dbclass.guardarPedidoTotales(dataRecalculo);
-        MostrarResumenByTipoProducto(dsctoBonifi);
+        MostrarResumenByTipoProducto(dsctoVenta_YdsctoBonif);
     }
 
     private void deshabilitarFormularioPostGuardarPedido() {
@@ -7345,12 +7419,39 @@ private void EnvalularMoneda(){
         //*****insertamos descuento detallado-----------------
         ArrayList<PedidoDetalleDescuento> listDsctoMotivo=new ArrayList<>();
         //-------------------------------inset dscto detallado----------------------------------------------------------------
+        ArrayList<PedidoDetalleDescuento> listaDscPadre = dbclass.obtenerPedidoDetalleDescuento(Oc_numero, itemEntrada);
+        double psctDsctoProntoPagoContado=0;
+        for (PedidoDetalleDescuento pedidoDetalleDescuento : listaDscPadre) {
+            if (pedidoDetalleDescuento.getTipo_desc().equals(PedidoDetalleDescuento.TIPO_DSCTO_PRONTO_PAGO_CONTADO)) {
+                psctDsctoProntoPagoContado=pedidoDetalleDescuento.getPcjt_desc();
+                double montoDescuento1 = VARIABLES.getDoubleFormaterThreeDecimal(
+                        (precioLista*(psctDsctoProntoPagoContado/100)) * cantidadProducto
+                                );
+                listDsctoMotivo.add(new PedidoDetalleDescuento(
+                        Oc_numero,
+                        salida,
+                        nroItemDetalle,
+                        psctDsctoProntoPagoContado,
+                        montoDescuento1,
+                        pedidoDetalleDescuento.getTipo_desc()
+                ));
+            }
+        }
+        double montoDescuento2= VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioSutotalSinDscto) - Double.parseDouble(precioSutotal));
+        double porcentajeDesc2=porcentajeDesc;
+        if(psctDsctoProntoPagoContado>0){
+            porcentajeDesc2 = VARIABLES.getDoubleFormaterThowDecimal(porcentajeDesc - psctDsctoProntoPagoContado);
+            montoDescuento2 = VARIABLES.getDoubleFormaterThreeDecimal(
+                    (precioLista*(porcentajeDesc2/100)) * cantidadProducto
+                );
+        }
+
         listDsctoMotivo.add(new PedidoDetalleDescuento(
                 Oc_numero,
                 salida,
                 nroItemDetalle,
-                porcentajeDesc,
-                VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioSutotalSinDscto) - Double.parseDouble(precioSutotal)),
+                porcentajeDesc2,
+                montoDescuento2,
                 PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
         ));
         listDsctoMotivo.add(new PedidoDetalleDescuento(
@@ -7723,7 +7824,7 @@ private void EnvalularMoneda(){
     private WorkflowPedido getWorFlow(String codigoBloque, String detalleMotivo){
         return WorkflowPedido.convertFrom(
                 WorkflowAprobaciones.getItemBy(listaWorkFlow,codigoBloque ),
-                Oc_numero, "Necesario ser validado por área de créditos");
+                Oc_numero, detalleMotivo);
     }
     private ArrayList<WorkflowPedido>  evaluarWorkFlow(){
 
@@ -7743,7 +7844,7 @@ private void EnvalularMoneda(){
                     ));
         }
         //-----------------------------------------------------------------------------------------------
-        if (dbclass.VerificarCtasXCobrar(codcli).size()>0) {
+        if (dbclass.VerificarCtasXCobrarDeudas(codcli).size()>0) {
             workflowPedido.add(
                     getWorFlow(WorkflowAprobaciones.FLG_DOCUMENTOS_VENCIDOS,""));
         }
@@ -7811,6 +7912,10 @@ private void EnvalularMoneda(){
             mensajeAdd+=(mensajeAdd.length()>0?"\n\n":"")+"Este "+TIPO_REGISTRO.toLowerCase()+" tiene "+cantidad+" productos sin stok se guardará como almacen virtual";
         }
         dbclass.guardarWorkFlowPedido(Oc_numero, listaWorkflowPedido);
+
+        if(!rGroupAplicaAnticipoSI.isChecked()){
+            dao_pedidoAnticipoDetalle.deleteBy(Oc_numero);
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Importante");
@@ -8381,9 +8486,8 @@ private void EnvalularMoneda(){
         });
     }
 
-    private void start(){
-        // Declarar el launcher con registerForActivityResult
-       
+    private void goSeleccionAnticiposCliente(){
+        AnticiposClienteActivity.startActivity(this, Oc_numero, codcli);
     }
     private void sincronizarCondicionVentaCliente(){
         ProgressDialog pDialog = new ProgressDialog(this);

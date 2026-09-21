@@ -1741,10 +1741,11 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 //                                    NombreMetodo = "(" + valor + ")Sync_tbProductoPromocion";
 //                                    soap_manager.Sync_tbProductoPromocion(codven, servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("45");
-                                    NombreMetodo=valor+") Sync_tabla_PromocionDetalle";
-//                                    soap_manager.Sync_tabla_PromocionDetalle(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
+                                    NombreMetodo=valor+") Sync_tabla_PromocionDetalleREMOT";
                                     errorMotivo = soap_manager.Sync_tabla_PromocionDetalleV2(SincronizarActivity.this, codven);
                                     if(errorMotivo!=null) throw new Exception(errorMotivo);
+                                    NombreMetodo=valor+") Sync_tabla_PromocionDetalle";
+                                    soap_manager.Sync_tabla_PromocionDetalle(codven,servidorBD, nombreBD, usuarioBD,contrasenaBD);
 
 //                                    publishProgress("50");
 //                                    NombreMetodo=valor+") Sync_tabla_familia";
@@ -1910,7 +1911,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 
             pDialog.dismiss();// ocultamos progess dialog.
             Log.e("onPostExecute=", "" + result);
-
+            _helper.recalcularStock();
             if (result.equals("servicio_fallido")) {
                 ingresar_clave_manual(null);
             }

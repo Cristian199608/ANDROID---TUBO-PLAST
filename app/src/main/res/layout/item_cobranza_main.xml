@@ -51,12 +51,12 @@
 				android:id="@+id/lbl_total_cobrar_dolares"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentLeft="true"
 				android:layout_below="@+id/lbl_total_cobrar_soles"
+				android:layout_alignParentLeft="true"
 				android:layout_marginTop="3dp"
-				android:paddingBottom="2dp"
 				android:paddingLeft="4dp"
-				android:text="Dólares :"
+				android:paddingBottom="2dp"
+				android:text="Anticipos :"
 				android:textColor="#343434"
 				android:textSize="11dp" />
 
@@ -65,9 +65,9 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 
-				android:layout_toRightOf="@+id/txt_view_total_soles"
 				android:layout_below="@+id/item_cobranza_tv_cliente"
 				android:layout_marginLeft="8dp"
+				android:layout_toRightOf="@+id/txt_view_total_soles"
 				android:text="Letras por entregar "
 				android:textColor="#343434"
 				android:textSize="11dp" />

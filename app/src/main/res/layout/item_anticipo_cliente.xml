@@ -60,22 +60,34 @@
 
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilMonto"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
             >
-
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/etMonto"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:gravity="center"
+                android:hint="Monto"
                 android:inputType="numberDecimal"
-                android:text="S/ 120.00"
-                android:hint="Monto a aplicar"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
+                android:maxLines="1"
+                android:textSize="16sp" />
+            <TextView
+                android:id="@+id/tvGuardarAnticipo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutCab"
+                android:background="@drawable/edittext_rounded_corners"
+                android:backgroundTint="@color/blue_500"
+                android:text="OK"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

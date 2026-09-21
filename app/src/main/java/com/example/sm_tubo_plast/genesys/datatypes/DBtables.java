@@ -419,8 +419,10 @@ public class DBtables {
 		public static final String PK_CODPRO = "codpro";
 		public static final String STOCK = "stock";
 		public static final String XTEMP = "xtemp";
+		public static final String comprometido = "comprometido";
 		public static final String transito = "transito";
 		public static final String disponible = "disponible";
+		public static final String xtempOld = "xtempOld";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_KARDEX + " VARCHAR(8)," + PK_CODALM + " CHAR(2),"

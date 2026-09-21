@@ -1599,7 +1599,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
                 if (tipo.equals("PEDIDO")) {
 
-                    if (result.equals("T")) {
+                    if (VARIABLES.isProduccion && result.equals("T")) {
                         // el pedido ya ha sido transferido y no se puede
                         // modificar
                         Builder alerta = new Builder(

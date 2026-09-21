@@ -18,4 +18,8 @@ public interface GetDataCantol {
     @Headers("Content-Type: application/json")
     @POST("ws_cantol/cliente.php")
     Call<Object> getCliente(@Body RequestBody jsonBody) ;
+
+    @Headers("Content-Type: application/json")
+    @POST("ws_cantol/promociones.php")
+    Call<Object> sincronizarPromocionSAP(@Body RequestBody jsonBody) ;
 }

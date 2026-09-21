@@ -1,7 +1,9 @@
 package com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util;
 
+import com.example.sm_tubo_plast.genesys.BEAN.PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoDetalleDescuento;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.RequestPedidoSAP;
+import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestAnticipoPedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestAuditoriaPedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestClientePedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.det.RequestComercialPedidoSAP;
@@ -53,7 +55,7 @@ public class PedidoAppConvertTo_PedidoSAP {
         data.setNumero_orden_compra(ped.getNumeroOrdenCompra());
         data.setNumero_letras(0);
         data.setAplica_pedido_anticipo(ped.getFlagPedido_Anticipo().equals("1"));
-        data.setAnticipos_aplicados(new ArrayList<>());
+        data.setAnticipos_aplicados(getParserDataAnticipos(ped));
         data.setAplica_descuento(ped.getDsctoBonificacion()>0.0 || ped.getDsctProntoPagoContado()>0.0);//TODO MEJORAR
         data.setAplica_dsc_pronto_pago(ped.getDsctProntoPagoContado()>0.0);
         data.setAplica_dsc_siguiente_categoria(ped.getIsAplica_dsc_sig_categoria()==1);
@@ -70,8 +72,8 @@ public class PedidoAppConvertTo_PedidoSAP {
     private RequestClientePedidoSAP getParserDataCliente(DB_ObjPedido ped){
         RequestClientePedidoSAP cli=new RequestClientePedidoSAP();
         cli.setCod_cliente(ped.getCod_cli());
-        cli.setCodigo_sucursal_cliente(ped.getCodigoPuntoEntrega());
-        cli.setCodigo_punto_entrega(ped.getFlagDespacho());
+        cli.setCodigo_sucursal_cliente(ped.getSitio_enfa());
+        cli.setCodigo_punto_entrega(ped.getCodigoPuntoEntrega());
         cli.setCodigo_obra(ped.getCodigoObra());
         cli.setLista_precio(ped.getCategoriaClienteVenta());
         return cli;
@@ -133,6 +135,18 @@ public class PedidoAppConvertTo_PedidoSAP {
         return comer;
     }
 
+    private ArrayList<RequestAnticipoPedidoSAP> getParserDataAnticipos(DB_ObjPedido ped){
+        ArrayList<RequestAnticipoPedidoSAP> list=new ArrayList<>();
+        for (PedidoAnticipoDetalle pedidoAnticipoDetalle : ped.getListaPedidoAnticipoDetalle()) {
+            list.add(new RequestAnticipoPedidoSAP(
+                    pedidoAnticipoDetalle.getSerie_doc()+"-"+pedidoAnticipoDetalle.getNumero_doc(),
+                    pedidoAnticipoDetalle.getMonto()
+                    )
+            );
+        }
+        return list;
+    }
+
     private RequestTotalesPedidoSAP getParserDataTotales(DB_ObjPedido ped){
         RequestTotalesPedidoSAP comer= new RequestTotalesPedidoSAP();
         comer.setSubtotal(Double.parseDouble(ped.getSubtotal()));
@@ -173,7 +187,7 @@ public class PedidoAppConvertTo_PedidoSAP {
             if(det.getFlagStockValido()==0) continue;
             //----------------solo stock valido-------------------------------------------------------------------------------
             aud.setItem(""+det.getItem());
-            aud.setCod_producto(det.getCip());
+            aud.setCod_producto(getCodproOriginal(det.getTipo_producto(),det.getCip()));
             aud.setDescripcion_producto(det.getDespro());
             aud.setCantidad(det.getCantidad());
             aud.setUnidad_medida(det.getUnidad_medida());
@@ -210,5 +224,11 @@ public class PedidoAppConvertTo_PedidoSAP {
         return listaDet;
     }
 
+    public String getCodproOriginal(String tipoProducto, String codpro){
+        String codproOUT=!tipoProducto.equals("V") && codpro.startsWith("B")
+                ?codpro.substring(1)
+                :codpro;
+        return codproOUT;
+    }
 
 }

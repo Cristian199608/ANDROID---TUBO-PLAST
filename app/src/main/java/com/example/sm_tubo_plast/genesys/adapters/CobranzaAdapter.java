@@ -75,6 +75,7 @@ public class CobranzaAdapter extends BaseAdapter {
         totalDolares = "$." + formateador.format( Double.parseDouble(song.get("total_acuenta"))>0? Double.parseDouble(song.get("total_acuenta")):0 );
         String totalSaldoSoles = "S/." + formateador.format(Double.parseDouble(song.get("totalSaldoSoles")));
         String totalSaldoDolares = "$." + formateador.format(Double.parseDouble(song.get("totalSaldoDolares")));
+        String totalSolesAnticipo = "S/." + formateador.format(Double.parseDouble(song.get("totalSolesAnticipo")));
         //asignado=Integer.parseInt(song.get("asignado"));
         asignado=(song.get("asignado"));
         
@@ -91,7 +92,8 @@ public class CobranzaAdapter extends BaseAdapter {
          
         txtCliente.setText( codigoCliente+" - "+nombreCliente );
         txtTotalSoles.setText( totalSaldoSoles+" de "+ totalSoles);
-        txtTotalDolares.setText( totalSaldoDolares+ " de "+ totalDolares);
+        //txtTotalDolares.setText( totalSaldoDolares+ " de "+ totalDolares);
+        txtTotalDolares.setText( totalSolesAnticipo);
         
         if(Integer.parseInt(totalLetraEntregar)>0){
         	txtTituloLetrasEntregar.setText("Letras por entregar. ");

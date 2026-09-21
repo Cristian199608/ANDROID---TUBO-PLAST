@@ -31,7 +31,7 @@ public class VARIABLES {
     public static final  String SEPARADOR_TITLE="_*_";
 
 
-    public static final  boolean isProduccion=true;
+    public static final  boolean isProduccion=false;
     public static final  boolean isProduccion_prueba=false;
     public static final  boolean isSetDataPruebas=true;
 
