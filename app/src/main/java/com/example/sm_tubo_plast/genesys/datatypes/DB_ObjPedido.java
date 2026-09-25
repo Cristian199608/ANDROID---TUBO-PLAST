@@ -76,12 +76,15 @@ public class DB_ObjPedido{
 	private int isAplicaNC;
 	private double volumenTotal;
 	private double dsctProntoPagoContado;
+	private double dsctAdicionalMonto;
 	private String versionApp;
 
 	private String sucursalTransportista;
 	private String direccionTransportista;
 	private String ubigeoTransportista;
 	private int flg_aprobacion;
+	private String codigo_lista_precio;
+	private String categoriaCliente;
 
 	private ArrayList<San_Visitas> san_visitas;
 	private ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento;
@@ -556,6 +559,14 @@ public class DB_ObjPedido{
 		this.dsctProntoPagoContado = dsctProntoPagoContado;
 	}
 
+	public double getDsctAdicionalMonto() {
+		return dsctAdicionalMonto;
+	}
+
+	public void setDsctAdicionalMonto(double dsctAdicionalMonto) {
+		this.dsctAdicionalMonto = dsctAdicionalMonto;
+	}
+
 	public ArrayList<PedidoDetalleDescuento> getListaPedido_detalle_descuento() {
 		return listaPedido_detalle_descuento;
 	}
@@ -642,5 +653,21 @@ public class DB_ObjPedido{
 
 	public void setListaPedidoAnticipoDetalle(ArrayList<PedidoAnticipoDetalle> listaPedidoAnticipoDetalle) {
 		this.listaPedidoAnticipoDetalle = listaPedidoAnticipoDetalle;
+	}
+
+	public String getCodigo_lista_precio() {
+		return codigo_lista_precio;
+	}
+
+	public void setCodigo_lista_precio(String codigo_lista_precio) {
+		this.codigo_lista_precio = codigo_lista_precio;
+	}
+
+	public String getCategoriaCliente() {
+		return categoriaCliente;
+	}
+
+	public void setCategoriaCliente(String categoriaCliente) {
+		this.categoriaCliente = categoriaCliente;
 	}
 }

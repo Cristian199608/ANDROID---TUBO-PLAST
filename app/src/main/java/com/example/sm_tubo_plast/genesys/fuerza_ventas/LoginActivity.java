@@ -31,6 +31,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
+import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultListaVendedores;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultPrecioArticulo;
 import com.example.sm_tubo_plast.genesys.Retrofit.RetrofilClientCantol;
@@ -430,7 +431,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (result.equals("vendedor")) {
-                guardarDatosSession(user, pass, codVendedor, "", "");
+                guardarDatosSession(user, pass, codVendedor, "", "", "", "", "");
             } else if (result.equals("chofer")) {
                 Intent intentChofer = new Intent(getApplicationContext(),
                         MenuLiquidacionActivity.class);
@@ -445,14 +446,19 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void guardarDatosSession(String user, String pass, String codVendedor, String nombreVendedor, String token){
+    private void guardarDatosSession(String user, String pass, String token,
+                                     String codVendedor,
+                                     String nombreVendedor,
+                                     String telefonoVendedor,
+                                     String emailVendedor,
+                                     String codigo_lista_precio){
         session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
         session.createLoginSession(user, pass);
         session.setCodigoVendedor(codVendedor);
         session.setNombreVendedor(nombreVendedor);
         session.setToken(token);
 
-        dbusuarios.registrarDatosUsuarioLogin(codVendedor, nombreVendedor);
+        dbusuarios.registrarDatosUsuarioLogin(codVendedor, nombreVendedor,telefonoVendedor, emailVendedor, codigo_lista_precio);
         SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
 
         Intent intentVendedor = new Intent(getApplicationContext(),
@@ -681,15 +687,71 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 Gson gson=new Gson();
                 ResultLogin resultLogin= gson.fromJson(gson.toJson(data), ResultLogin.class);
-                guardarDatosSession(user, pass,
-                        String.valueOf((int) Double.parseDouble(resultLogin.getVendedor().getCodigo())),
-                        resultLogin.getVendedor().getNombre(),
-                        resultLogin.getToken()
-                        );
+                obtenerDatosAdicionalVendedor(user, pass, resultLogin);
             }
         });
     }
 
+    private void obtenerDatosAdicionalVendedor(String user, String pass, ResultLogin resultLogin){
+
+        String urlReq= RetrofilClientCantol.UrlPeticiones.getListaVendedores();
+        RequestBody body = RetrofilClientCantol.createBodyJson(RequestCliente.Companion.getBaseUrl(urlReq));
+        Call<Object> call = RetrofilClientCantol.getRetrofitInstanceCantolWithToken(resultLogin.getToken())
+                .create(GetDataCantol.class).getCliente(body);
+
+        pDialog = new ProgressDialog(LoginActivity.this);
+        pDialog.setMessage("Obteniendo datos de vendedor...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        WS_RetrofitCustom ws = new WS_RetrofitCustom(this);
+        ws.setIsLogin(true);
+        ws.StartPeticion(call, new WS_RetrofitCustom.MyListener() {
+            @Override
+            public void StartFinish(boolean isFinish) {
+                if (!isFinish) pDialog.show();
+                else pDialog.dismiss();
+            }
+            @Override
+            public void Result(boolean isOk, String mensajeError, Object data) {
+                if(!isOk){
+                    GlobalFunctions.showCustomToast(
+                            LoginActivity.this,
+                            mensajeError,
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                Gson gson=new Gson();
+                int codigoVendedor =(int) Double.parseDouble(resultLogin.getVendedor().getCodigo());
+                ResultListaVendedores vendedorFIND=null;
+                Type malla = new TypeToken<ArrayList<ResultListaVendedores>>() {}.getType();
+			    ArrayList<ResultListaVendedores> lista = gson.fromJson(gson.toJson(data), malla);
+                for (ResultListaVendedores vendedor : lista) {
+                    if(vendedor.getCodigo_vendedor()==codigoVendedor){
+                        vendedorFIND=vendedor;
+                        break;
+                    }
+
+                }
+                if(vendedorFIND==null){
+                    GlobalFunctions.showCustomToast(
+                            LoginActivity.this,
+                            "No se encontró los datos de vendedor autentificado",
+                            GlobalFunctions.TOAST_ERROR);
+                    return;
+                }
+                guardarDatosSession(user, pass,
+                        resultLogin.getToken(),
+                        ""+vendedorFIND.getCodigo_vendedor(),
+                        vendedorFIND.getNombre_vendedor(),
+                        vendedorFIND.getEmail_vendedor(),
+                        vendedorFIND.getMobile_vendedor(),
+                        String.valueOf(vendedorFIND.getLista_precio_vendedor())
+                );
+            }
+        });
+    }
 
     private void testMapa(){
         final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);

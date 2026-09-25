@@ -363,6 +363,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			if(convertirMoneda){
 				subtotal = VARIABLES.getDoubleFormaterThowDecimal(subtotal);
 				double totalIGV = VARIABLES.getDoubleFormaterThowDecimal(subtotal*valorIgv);
+				double montoDsctoProntoPago = -0.01;
 				double volumentTotal = VARIABLES.getDoubleFormaterThowDecimal(valumen);
 				double montoTotal = VARIABLES.getDoubleFormaterThowDecimal(
 						VARIABLES.getDoubleFormaterThowDecimal(subtotal)
@@ -378,7 +379,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 						percepcion,
 						totalSujetoPercepcion,
 						dsctoVenta_YdsctoBonif,
-						volumentTotal
+						volumentTotal,
+						montoDsctoProntoPago
 				);
 				_dbClases.guardarPedidoTotales(dataRecalculo);
 			}

@@ -9,7 +9,8 @@ data class PedidoCabeceraRecalcular(
     var percepcion: Double,
     var totalSujetoPercepcion: Double,
     var montoDsctVentaYBonificacion: Double,
-    var volumenTotal: Double
+    var volumenTotal: Double,
+    var montoDsctoProntoPago: Double
 ) {
 //    constructor(
 //        oc_numero: String,

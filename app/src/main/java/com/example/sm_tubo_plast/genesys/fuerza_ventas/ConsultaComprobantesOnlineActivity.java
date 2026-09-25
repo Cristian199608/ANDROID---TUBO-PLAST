@@ -264,9 +264,11 @@ public class ConsultaComprobantesOnlineActivity extends AppCompatActivity {
                 ResultCoprobanteBytesError resultComprobError=gson.fromJson(gson.toJson(data), ResultCoprobanteBytesError.class);
                 ResultCoprobanteBytes resultComprobantes=gson.fromJson(gson.toJson(data), ResultCoprobanteBytes.class);
                 String errorMSG=null;
-                if(resultComprobError!=null && !resultComprobError.getDetail().getSuccess()
-                        && resultComprobError.getDetail().getCodigo()!=null ){
-                    errorMSG= "Api: "+resultComprobError.getDetail().getMensaje();
+                if(resultComprobError!=null){
+                    if(resultComprobError.getDetail()!=null && !resultComprobError.getDetail().getSuccess()
+                            && resultComprobError.getDetail().getCodigo()!=null ){
+                        errorMSG= "Api: "+resultComprobError.getDetail().getMensaje();
+                    }
                 }
                 else if (!resultComprobantes.isSuccess()) {
                     errorMSG="Api de consultas ha devuelto un error: "+resultComprobantes.getMensaje();

@@ -75,6 +75,9 @@ public class RetrofilClientCantol {
         public static String enviarPedidoComoReserva(){
             return BASE_URL_CANTOL+"ComercialCantol/pedido-sae/reservar";
         }
+        public static String getListaVendedores(){
+            return BASE_URL_CANTOL+"ComercialCantol/vendedor/vendedores";
+        }
     }
 
     public static RequestBody createBodyJson(String jsonRequest){
@@ -104,6 +107,13 @@ public class RetrofilClientCantol {
     }
 
     public static Retrofit getRetrofitInstanceCantolWithToken(final Activity activity) {
+        String token=new SessionManager(activity).getToken();
+        return getRetrofitInstanceCantolWithTokenMAIN(token);
+    }
+    public static Retrofit getRetrofitInstanceCantolWithToken(final String token) {
+        return getRetrofitInstanceCantolWithTokenMAIN(token);
+    }
+    private static Retrofit getRetrofitInstanceCantolWithTokenMAIN(String token) {
 
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -112,7 +122,6 @@ public class RetrofilClientCantol {
                 .addInterceptor(new Interceptor() {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
-                        String token=new SessionManager(activity).getToken();
                         Request newRequest = chain.request().newBuilder()
                                 .addHeader("Authorization", token)
                                 .build();

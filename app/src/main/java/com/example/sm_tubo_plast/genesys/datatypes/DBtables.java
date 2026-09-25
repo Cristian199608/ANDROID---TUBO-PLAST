@@ -523,6 +523,9 @@ public class DBtables {
 		public static final String ubigeoTransportista = "ubigeoTransportista";
 		public static final String flg_aprobacion = "flg_aprobacion";
 		public static final String numdoc = "numdoc";
+		public static final String dsctAdicionalMonto = "dsctAdicionalMonto";
+		public static final String codigo_lista_precio = "codigo_lista_precio";
+		public static final String categoriaCliente = "categoriaCliente";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_OC_NUMERO + " CHAR(21) PRIMARY KEY, " + SITIO_ENFA
@@ -913,6 +916,7 @@ public class DBtables {
 		public static final String EMAIL = "email";
 		public static final String telefono = "telefono";
 		public static final String text_area = "text_area";
+		public static final String codigo_lista_precio = "codigo_lista_precio";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODVEN + " CHAR(6) PRIMARY KEY, " + NOMVEN

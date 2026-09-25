@@ -31,7 +31,7 @@ public class VARIABLES {
     public static final  String SEPARADOR_TITLE="_*_";
 
 
-    public static final  boolean isProduccion=false;
+    public static final  boolean isProduccion=true;
     public static final  boolean isProduccion_prueba=false;
     public static final  boolean isSetDataPruebas=true;
 
@@ -86,7 +86,7 @@ public class VARIABLES {
                 "fuerzaventas_v2.6", //at 2025-11-04
                 "fuerzaventas_v2.7", //at 2026-04-25
         };
-        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.13";// at 2026-08-11
+        private static final String DATABASA_NAME       ="fuerzaventas_cantol_v2.7.14";// at 2026-08-11
         private static final  int DATABASA_VERSION      =1;
         //-----------------------------------------------------------------------------------------------
         private static final String[] DATABASA_NAMEO_OLD_prueba   ={
@@ -95,7 +95,7 @@ public class VARIABLES {
                 "fuerzaventas_prueba_v2.2",//end 2025-01-03
                 "fuerzaventas_prueba_v2.3",//at 2025-01-03
         };
-        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.13";// at 2026-08-11
+        private static final String DATABASA_NAME_prueba        ="fuerzaventas_cantol_v2.7.14";// at 2026-08-11
         private static final  int DATABASA_VERSION_prueba       =1;
 
         public static String[] getDatabaseNameOld() {

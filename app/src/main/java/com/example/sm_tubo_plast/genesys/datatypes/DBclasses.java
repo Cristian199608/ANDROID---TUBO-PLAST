@@ -2396,6 +2396,8 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("volumenTotal", cabecera.getVolumenTotal());
 			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
 			Nreg.put("flg_aprobacion", cabecera.getFlg_aprobacion());
+			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
+			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
 
 			//_okkk if (cabecera.getTipoRegistro().equals(PedidosActivity.TIPO_DEVOLUCION)) {
                 if (cabecera.getTipoRegistro().equals("5")) {
@@ -2427,6 +2429,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Log.e("latitud", cabecera.getLatitud());
 			Log.e("longitud", cabecera.getLongitud());
 			Log.e("codigo_familiar", cabecera.getCodigo_familiar());
+			Log.e("categoriaCliente", cabecera.getCategoriaCliente());
             if (cabecera.getTipoRegistro().equals("5")) {
                 Log.e("tipoRegistro","tipoRegistro:"+cabecera.getTipoRegistro());
                 Log.e("observacion2 ",cabecera.getObservacion2());
@@ -3283,10 +3286,11 @@ public class DBclasses extends SQLiteAssetHelper {
 			valor.put(DBtables.Pedido_cabecera.PESO_TOTAL, dataRecalcular.getPeso_total());
 			valor.put(DBtables.Pedido_cabecera.TOTAL_SUJETO_PERCEPCION,dataRecalcular.getTotalSujetoPercepcion());
 			valor.put(DBtables.Pedido_cabecera.DSCTO_BONIFICACION,dataRecalcular.getMontoDsctVentaYBonificacion());
+			valor.put(DBtables.Pedido_cabecera.dsctAdicionalMonto,dataRecalcular.getMontoDsctoProntoPago());
 			valor.put(Pedido_cabecera.volumenTotal,dataRecalcular.getVolumenTotal());
 
 			db.update("pedido_cabecera", valor, where, args);
-			Log.i(TAG, "guardarPedidoTotales:: ejecutado");
+			Log.i(TAG, "guardarPedidoTotales:: ejecutado total a: "+dataRecalcular.getTotal());
 			db.close();
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -6040,6 +6044,10 @@ public class DBclasses extends SQLiteAssetHelper {
 					cv.put("sucursalTransportista", jsonData.getString("sucursalTransportista").trim());
 					cv.put("direccionTransportista", jsonData.getString("direccionTransportista").trim());
 					cv.put("ubigeoTransportista", jsonData.getString("ubigeoTransportista").trim());
+					cv.put("flg_aprobacion", jsonData.getString("flg_aprobacion").trim());
+					cv.put("numdoc", jsonData.getString("numdoc").trim());
+					cv.put("codigo_lista_precio", jsonData.getString("codigo_lista_precio").trim());
+					cv.put("categoriaCliente", jsonData.getString("categoriaCliente").trim());
 
 					//cv.put(DBtables.Pedido_cabecera.NRO_LETRA, 				jsonData.getString(DBtables.Pedido_cabecera.NRO_LETRA).trim());
 					//cv.put(DBtables.Pedido_cabecera.OBSERVACION4, 			jsonData.getString(DBtables.Pedido_cabecera.OBSERVACION4).trim());
@@ -7094,11 +7102,14 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setIsAplicaNC(cur.getInt(cur.getColumnIndex("isAplicaNC")));
 			dbpedido.setVolumenTotal(cur.getDouble(cur.getColumnIndex("volumenTotal")));
 			dbpedido.setDsctProntoPagoContado(cur.getDouble(cur.getColumnIndex("dsctProntoPagoContado")));
+			dbpedido.setDsctAdicionalMonto(cur.getDouble(cur.getColumnIndex("dsctAdicionalMonto")));
 			dbpedido.setDescFormaPago(cur.getString(cur.getColumnIndex("descFormaPago")));
 			dbpedido.setSucursalTransportista(cur.getString(cur.getColumnIndex("sucursalTransportista")));
 			dbpedido.setDireccionTransportista(cur.getString(cur.getColumnIndex("direccionTransportista")));
 			dbpedido.setUbigeoTransportista(cur.getString(cur.getColumnIndex("ubigeoTransportista")));
 			dbpedido.setFlg_aprobacion(cur.getInt(cur.getColumnIndex("flg_aprobacion")));
+			dbpedido.setCodigo_lista_precio(cur.getString(cur.getColumnIndex("codigo_lista_precio")));
+			dbpedido.setCategoriaCliente(cur.getString(cur.getColumnIndex("categoriaCliente")));
 			dbpedido.setVersionApp(versionApp);
 			dbpedido.setNumdoc("");//vacio, luego se obtendrá de sap al insertar
 
@@ -9122,6 +9133,24 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 		if (descripcion == null || descripcion.length() == 0) {
 			descripcion = "0";
+		}
+		cur.close();
+		db.close();
+		Log.w("FLAG VENDEDOR", "valor" + descripcion);
+		return descripcion;
+	}
+	public String getCodigoListaPrecio(String codven) {
+		String rawQuery = "select codigo_lista_precio " +
+				"from vendedor where codven='"+ codven + "'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		String descripcion = "-1";
+		cur.moveToFirst();
+
+		while (!cur.isAfterLast()) {
+			descripcion = (cur.getString(0));
+			cur.moveToNext();
 		}
 		cur.close();
 		db.close();
@@ -15022,7 +15051,11 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		}
 	}
 
-	public void registrarDatosUsuarioLogin(String codven, String nombreVendedor){
+	public void registrarDatosUsuarioLogin(String codven,
+										   String nombreVendedor,
+										   String telefonoVendedor,
+										   String emailVendedor,
+										   String codigo_lista_precio){
 		SQLiteDatabase db = getWritableDatabase();
 		ContentValues cv =new ContentValues();
 		cv.put(DBtables.Usuarios.PK_USECOD, codven);
@@ -15038,9 +15071,10 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		cv.put(DBtables.Vendedor.NOMVEN, nombreVendedor);
 		cv.put(DBtables.Vendedor.FK_CODUSER,codven);
 		cv.put(DBtables.Vendedor.FLG_MODIFICAPRECIO, "0");
-		cv.put(DBtables.Vendedor.EMAIL, "");
-		cv.put(DBtables.Vendedor.telefono, "");
+		cv.put(DBtables.Vendedor.EMAIL, emailVendedor);
+		cv.put(DBtables.Vendedor.telefono, telefonoVendedor);
 		cv.put(DBtables.Vendedor.text_area, "VENDEDOR");
+		cv.put(DBtables.Vendedor.codigo_lista_precio,codigo_lista_precio);
 		db.insertWithOnConflict(DBtables.Vendedor.TAG, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
 
 	}

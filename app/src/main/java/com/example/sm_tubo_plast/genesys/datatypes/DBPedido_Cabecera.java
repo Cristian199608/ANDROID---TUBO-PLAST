@@ -84,6 +84,8 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String direccionTransportista;
 	private String ubigeoTransportista;
 	private int flg_aprobacion;
+	private String codigo_lista_precio;
+	private String categoriaCliente;
 
 	Cliente cliente;
 			
@@ -938,6 +940,22 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setFlg_aprobacion(int flg_aprobacion) {
 		this.flg_aprobacion = flg_aprobacion;
+	}
+
+	public String getCodigo_lista_precio() {
+		return codigo_lista_precio;
+	}
+
+	public void setCodigo_lista_precio(String codigo_lista_precio) {
+		this.codigo_lista_precio = codigo_lista_precio;
+	}
+
+	public String getCategoriaCliente() {
+		return categoriaCliente;
+	}
+
+	public void setCategoriaCliente(String categoriaCliente) {
+		this.categoriaCliente = categoriaCliente;
 	}
 
 	//-------------------------------fin atributo----------------------------------------------------------------

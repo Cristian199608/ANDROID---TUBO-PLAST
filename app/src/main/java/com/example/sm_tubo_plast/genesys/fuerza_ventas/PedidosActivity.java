@@ -696,7 +696,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             public void onItemSelected(AdapterView<?> arg0, View arg1,int arg2, long arg3) {
                 String desc = spn_tipoDespacho.getSelectedItem().toString();
                 String palabra = "obra";
-                llenarSpinnerDespacho((ped_cab!=null?ped_cab.getFlagDespacho():""), (ped_cab!=null?ped_cab.getCodigoTipoDespacho():desc));
+                llenarSpinnerDespacho(desc, (ped_cab!=null?ped_cab.getFlagDespacho():""));
 
                 if (desc.indexOf(palabra) != -1 || desc.indexOf("Obra") != -1 || desc.indexOf("OBRA") != -1) {
                     //la palabra obra esta dentro del desc
@@ -1143,6 +1143,14 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    private String getIdEquivalenteTipoDespacho(String idFlagDespacho){
+        for (RegistroGeneralMovil tipoDespacho : listaTipoDespacho) {
+            if(tipoDespacho.getCodValor().equals(idFlagDespacho)){
+                return tipoDespacho.getCodDescripcion();
+            }
+        }
+        return "";
+    }
     private boolean validarSelccionCondicionVentaCanal() {
         int positicionSpiner=spn_subCanalCategoria.getSelectedItemPosition()-1;// menos 1, el primero es vacio o emtpy
         if(
@@ -1156,7 +1164,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         return true;
     }
 
-    private  void llenarSpinnerDespacho(String valor, String tipoTransporte){
+    private  void llenarSpinnerDespacho(String tipoTransporte, String tipoDespacho){
     ArrayList<CharSequence> lista=new ArrayList<>();
     if(tipoTransporte.toUpperCase().contains("EXTERNO")){
         lista.add("Cliente Recoge");
@@ -1172,7 +1180,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
     spn_despacho.setAdapter(spinner_adapter);
 
     for (int i=0; i<lista.size();i++){
-        if(lista.get(i).toString().equals(valor)){
+        if(lista.get(i).toString().equals(tipoDespacho)){
             spn_despacho.setSelection(i);
         }
     }
@@ -1217,7 +1225,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         spn_prioridad.setEnabled(true);
         spn_turno.setEnabled(true);
         spn_puntoEntrega.setEnabled(true);
-        spn_tipoDespacho.setEnabled(true);
+        //spn_tipoDespacho.setEnabled(true);
         spn_obra.setEnabled(true);
         edt_transportista.setEnabled(true);
         edt_observacion1NombreContacto.setEnabled(true);
@@ -1382,7 +1390,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
             spn_sucursal.setAdapter(spinner_adapter);
 
-            llenarSpinnerDespacho("", "EXTERNO");
+            llenarSpinnerDespacho("EXTERNO","" );
 
             Log.e(TAG,"listaSucursales size:"+ listaSucursales.size());
             Log.e(TAG, "spn_sucursal size:"+spn_sucursal.getCount());
@@ -1779,7 +1787,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         String flagDespacho = item.getFlagDespacho();
-        llenarSpinnerDespacho(flagDespacho, item.getCodigoTipoDespacho());
+        String nombreTipoDespacho= getIdEquivalenteTipoDespacho(item.getCodigoTipoDespacho());
+        llenarSpinnerDespacho(nombreTipoDespacho, flagDespacho);
 
         String flagEmbal = item.getFlagEmbalaje();
         if (flagEmbal.equals("1")) {
@@ -2261,7 +2270,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 //                    startActivityForResult(intent, 1);
                     deshabilitarFormularioPostGuardarPedido();
                     BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
-                            codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO, clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
+                            codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO, clienteCondicionVenta.getKeyUnico(), false);
                     ddx.show(getSupportFragmentManager(), "dddx");
                     ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
                         @Override
@@ -3579,8 +3588,21 @@ private void EnvalularMoneda(){
         mostrarListaProductos("");//--------------------------------------------------------------------------------------- ANALIZAR
     }
 
+    private void mostrarDescuentoProntoPago(double pctjDsctoProntoPago, double montoDsctoProntoPago){
+        LinearLayout layoutDsctoProntoPago=findViewById(R.id.layoutDsctoProntoPago);
+        TextView tvPctjDsctProntoPago=findViewById(R.id.tvPctjDsctProntoPago);
+        TextView tvMontoDsctProntoPago=findViewById(R.id.tvMontoDsctProntoPago);
+        if(pctjDsctoProntoPago<=0.0){
+            layoutDsctoProntoPago.setVisibility(View.GONE);
+            return;
+        }
+        layoutDsctoProntoPago.setVisibility(View.VISIBLE);
+        tvPctjDsctProntoPago.setText("Descuento pronto pago ("+pctjDsctoProntoPago+"%)");
+        tvMontoDsctProntoPago.setText(""+montoDsctoProntoPago);
 
-    private void MostrarResumenByTipoProducto(double totalDescuentoBonificacion){
+    }
+
+    private void MostrarResumenByTipoProducto(double totalDescuentoBonificacion, double montoDsctoProntoPago){
         LinearLayout layoutResumentByTipoProducto=findViewById(R.id.layoutResumentByTipoProducto);
         layoutResumentByTipoProducto.removeAllViews();
         double valorIgv=new PreferenciaConfiguracion(this).getValorIgv();
@@ -3607,7 +3629,7 @@ private void EnvalularMoneda(){
         double totalDetalle= itemRes.getSutTotal();
         layoutResumentByTipoProducto.addView(GetViewResumenByTipoProducto(itemRes, R.color.grey_900, true));
 
-        double totalSinIgvPagar=GlobalFunctions.redondear_toDouble(totalDetalle);
+        double totalSinIgvPagar=GlobalFunctions.redondear_toDouble(totalDetalle-montoDsctoProntoPago);
         double totalConIgvPagar=totalSinIgvPagar*(1+valorIgv);
         tvDescuentoBonificacion.setText("Dscto + Bonif: "+VARIABLES.formater_thow_decimal.format(totalDescuentoBonificacion));
         tvTotalPagarSinIgv.setText("Sub Total: "+VARIABLES.formater_thow_decimal.format(totalSinIgvPagar));
@@ -4354,6 +4376,7 @@ private void EnvalularMoneda(){
     }
 
     public void guardarCabeceraPedido() {
+        String codigoListaPrecioVendedor = dbclass.getCodigoListaPrecio(codven);
         DBPedido_Cabecera itemCabecera = new DBPedido_Cabecera();
         //new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(new Date(System.currentTimeMillis()));
         Log.i(TAG, "Verificar codigoLetraCondicionVenta:  "+codigoLetraCondicionVenta);
@@ -4365,6 +4388,7 @@ private void EnvalularMoneda(){
         itemCabecera.setPercepcion_total("");
         itemCabecera.setValor_igv("0.0");
         itemCabecera.setMoneda(codigoMoneda);
+        itemCabecera.setCodigo_lista_precio(codigoListaPrecioVendedor);
 
         itemCabecera.setFecha_oc(GlobalFunctions.getFechaActual());
         Log.d("fechaActual", itemCabecera.getFecha_oc());
@@ -4424,6 +4448,7 @@ private void EnvalularMoneda(){
 
         itemCabecera.setIsAplicaInstalacion(Integer.parseInt(isAplicaInstalacion));
         itemCabecera.setObsDespacho(observacionDespacho);
+        itemCabecera.setCategoriaCliente(listaFormaPago.get(0).getSub_canal());
         itemCabecera.setCategoriaClienteVenta(categoriaClienteVenta);
         itemCabecera.setIsAplica_dsc_sig_categoria(Integer.parseInt(isAplica_dsc_sig_categoria));
         itemCabecera.setIsAplicaNC(Integer.parseInt(isAplicaNC));
@@ -6459,10 +6484,18 @@ private void EnvalularMoneda(){
         for (Pedido_detalle2 pedido_detalle2 : listaDet2) {
             desctoBonifDet2 += pedido_detalle2.getPrecio_neto();
         }
+        double pctjDsctoProntoPago = 0.0;
+        double montoDsctoProntoPago=0.0;
+        if(swAplicaDsctoProntoPago.isChecked() || (ped_cab!=null && ped_cab.getDsctProntoPagoContado()>0.0)){
+            pctjDsctoProntoPago=Double.parseDouble(dbclass.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
+            montoDsctoProntoPago = GlobalFunctions.redondear_toDouble(subtotal * (pctjDsctoProntoPago/100.00));
+        }
+        //nuevo subtotal
+        double newSubtotal= GlobalFunctions.redondear_toDouble(subtotal-montoDsctoProntoPago);
         //double dsctoBonifi = GlobalFunctions.redondear_toDouble(montoTotalBonif + desctoBonifDet2);
-        subtotal		= GlobalFunctions.redondear_toDouble(subtotal);
-        double IGV		= GlobalFunctions.redondear_toDouble(subtotal*valorIGV);
-        total			= GlobalFunctions.redondear_toDouble(subtotal + IGV);
+        //subtotal		= GlobalFunctions.redondear_toDouble(subtotal);
+        double IGV		= GlobalFunctions.redondear_toDouble(newSubtotal*valorIGV);
+        total			= GlobalFunctions.redondear_toDouble(newSubtotal + IGV);
         percepcion		= GlobalFunctions.redondear_toDouble(percepcion);
         totalCompleto	= GlobalFunctions.redondear_toDouble(total + percepcion);
         descuento		= GlobalFunctions.redondear_toDouble(descuento);
@@ -6508,10 +6541,12 @@ private void EnvalularMoneda(){
                 percepcion,
                 totalSujetoPercepcion,
                 dsctoVenta_YdsctoBonif,
-                volumenTotal
+                volumenTotal,
+                montoDsctoProntoPago
         );
         dbclass.guardarPedidoTotales(dataRecalculo);
-        MostrarResumenByTipoProducto(dsctoVenta_YdsctoBonif);
+        mostrarDescuentoProntoPago(pctjDsctoProntoPago, montoDsctoProntoPago);
+        MostrarResumenByTipoProducto(dsctoVenta_YdsctoBonif, montoDsctoProntoPago);
     }
 
     private void deshabilitarFormularioPostGuardarPedido() {
@@ -7458,7 +7493,7 @@ private void EnvalularMoneda(){
                 Oc_numero,
                 salida,
                 nroItemDetalle,
-                VARIABLES.getDoubleFormaterThreeDecimal(100-porcentajeDesc),
+                VARIABLES.getDoubleFormaterThreeDecimal(100-porcentajeDesc2),
                 Double.parseDouble(precioSutotal),
                 PedidoDetalleDescuento.TIPO_DSCTO_BONIFICACION
         ));
