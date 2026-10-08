@@ -56,11 +56,11 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/rpt_pedido_tv_cliente"
             android:layout_alignParentLeft="true"
-            tools:text="📱00088988989"
             android:textColor="#6E6E6E"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:visibility="visible" />
+            android:visibility="visible"
+            tools:text="📱00088988989" />
         <TextView
             android:id="@+id/labell"
             android:layout_width="wrap_content"
@@ -146,6 +146,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:id="@+id/layoutObs"
             android:layout_below="@+id/rpt_pedido_tv_oc_numero"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -173,6 +174,24 @@
                 android:textColor="@color/orange_500"
                 android:textSize="14sp"
                 android:textStyle="bold" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layoutObsSAP"
+            android:layout_below="@+id/layoutObs"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvObsLogSap"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                tools:text="Alguna obervación acerca de envío a SAP"
+                android:textColor="@color/red_600"
+                android:textSize="14sp"
+                android:paddingEnd="2dp" />
+
         </LinearLayout>
 
 

@@ -43,6 +43,7 @@ public class DBPedido_Detalle implements KvmSerializable {
 	private String numeroDevolucion;
 	private double porcentaje_desc_extra;
 
+	private int cantidadValido;
 	private int sec_promo_prioridad;
 	private int item_promo_prioridad;
 	private int flagStockValido;
@@ -499,6 +500,14 @@ public class DBPedido_Detalle implements KvmSerializable {
 
 	public void setDespro(String despro) {
 		this.despro = despro;
+	}
+
+	public int getCantidadValido() {
+		return cantidadValido;
+	}
+
+	public void setCantidadValido(int cantidadValido) {
+		this.cantidadValido = cantidadValido;
 	}
 
 	//-------------------------------FIN ATRIBUTOS----------------------------------------------------------------

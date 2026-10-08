@@ -29,6 +29,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
     String latitud;
     String longitud;
     String fecha;
+    LogEnvioPedido logEnvioPedido;
 
     public String getNomcli() {
         return nomcli;
@@ -150,7 +151,15 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         this.fecha = fecha;
     }
 
+    public LogEnvioPedido getLogEnvioPedido() {
+        return logEnvioPedido;
+    }
 
+    public void setLogEnvioPedido(LogEnvioPedido logEnvioPedido) {
+        this.logEnvioPedido = logEnvioPedido;
+    }
+
+    //-------------------------------FIN ATRIBUTO----------------------------------------------------------------
 
     @Override
     public void setViewByHolder(Activity activity,
@@ -244,6 +253,18 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
                 viewHolder.edtObservacion_pedido.setText("Pedido sin posición");
             }
         }
+        viewHolder.tvObsLogSap.setVisibility(View.GONE);
+        if (this.getLogEnvioPedido()!=null && !this.getLogEnvioPedido().isEnvioExitoso()) {
+            viewHolder.tvObsLogSap.setVisibility(View.VISIBLE);
+            viewHolder.tvObsLogSap.setText(this.getLogEnvioPedido().getMensaje());
+        }
+        viewHolder.numoc.setVisibility(View.GONE);
+        if(this.getNumoc()!=null && this.getNumoc().trim().length()!=0){
+            viewHolder.numoc.setVisibility(View.VISIBLE);
+            viewHolder.numoc.setTextColor(activity.getResources().getColor(R.color.purple_800));
+            viewHolder.numoc.setText("Número SAP: "+this.getNumoc());
+        }
+
 
     }
 

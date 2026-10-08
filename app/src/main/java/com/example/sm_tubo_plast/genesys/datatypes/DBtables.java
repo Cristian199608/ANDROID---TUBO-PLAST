@@ -591,6 +591,7 @@ public class DBtables {
 		public static final String volumen_unitario = "volumen_unitario";
 		public static final String volumen_total = "volumen_total";
 		public static final String despro = "despro";
+		public static final String cantidadValido = "cantidadValido";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" 
@@ -1887,4 +1888,20 @@ public class DBtables {
 		public static final String monto = "monto";
 	}
 
+	public static final class LogEnvioPedido {
+
+		private LogEnvioPedido() {
+		}
+
+		public static final String[] pks = new String[]{
+				LogEnvioPedido.oc_numero,
+		} ;
+
+		public static final String TAG = "log_envio_pedido";
+		public static final String estado = "estado";
+		public static final String codigo = "codigo";
+		public static final String mensaje = "mensaje";
+		public static final String oc_numero = "oc_numero";
+		public static final String fecha_procesamiento = "fecha_procesamiento";
+	}
 }

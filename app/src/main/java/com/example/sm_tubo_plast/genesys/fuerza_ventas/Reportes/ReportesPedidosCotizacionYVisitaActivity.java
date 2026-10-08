@@ -958,7 +958,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             reportePedidoCabeceraBEAN.setLatitud(cta.getLatitud());
             map.put(KEY_NOVENTA, ""+cta.getCod_noventa());
             reportePedidoCabeceraBEAN.setMotivo_noventa(cta.getCod_noventa());
-
+            reportePedidoCabeceraBEAN.setNumoc(cta.getNumdoc());
+            reportePedidoCabeceraBEAN.setLogEnvioPedido(cta.getLogEnvioPedido());
 
            // pedidos.add(map);
             Log.w("fecha_oc", cta.getFecha_oc());

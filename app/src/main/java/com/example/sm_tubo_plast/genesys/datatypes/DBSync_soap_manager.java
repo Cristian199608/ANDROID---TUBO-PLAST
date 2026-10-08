@@ -4974,20 +4974,20 @@ public ArrayList<String> actualizarObjPedido_directo(String Oc_numero, Activity 
 			}
 		}
 		if(isStockOK && isWorkFlowOK){
-			RequestPedidoSAP data= converSAP.generarTramaPedidoToSAP(lista_obj_pedido.get(0));
-			String jsonSAP =gson.toJson(data);
-			ResultPedidoEnvioSAP envioPedido = enviarPedidoSAP(data.getOc_numero(), jsonSAP, activity);
-			if(envioPedido.isEnvioAceptado()){
-				dbclass.updateFlagPedidoCabecera(data.getOc_numero(), "T");
-				lista_obj_pedido.get(0).setNumdoc(""+envioPedido.getNumero_pedido_sap());
-				flags.set(1,"T");//sap
-			}
-			lista_obj_pedido.get(0).setResultPedidoSap(envioPedido);
-			Log.i("ENVIO PEDIDO","actualizarObjPedido_directo JSON: "+jsonSAP);
+//			RequestPedidoSAP data= converSAP.generarTramaPedidoToSAP(lista_obj_pedido.get(0));
+//			String jsonSAP =gson.toJson(data);
+//			ResultPedidoEnvioSAP envioPedido = enviarPedidoSAP(data.getOc_numero(), jsonSAP, activity);
+//			if(envioPedido.isEnvioAceptado()){
+//				dbclass.updateFlagPedidoCabecera(data.getOc_numero(), "T");
+//				lista_obj_pedido.get(0).setNumdoc(""+envioPedido.getNumero_pedido_sap());
+//				flags.set(1,"T");//sap
+//			}
+//			lista_obj_pedido.get(0).setResultPedidoSap(envioPedido);
+//			Log.i("ENVIO PEDIDO","actualizarObjPedido_directo JSON: "+jsonSAP);
 		}
-		if(!isStockOK){
-			enviarPedidoComoReserva(lista_obj_pedido.get(0), activity);
-		}
+//		if(!isStockOK){
+//			enviarPedidoComoReserva(lista_obj_pedido.get(0), activity);
+//		}
 	}
     String cadena = gson.toJson(lista_obj_pedido);
     

@@ -7,6 +7,7 @@
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/bg_dialog_button_negative.xml" value="0.1125" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/bg_dialog_button_neutral.xml" value="0.1125" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/bg_gradient_promo.xml" value="0.1315" />
+        <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/bg_gradient_white.xml" value="0.149" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/box_border.xml" value="0.182" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/btn_sicronizar.xml" value="0.159" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/drawable/custom_cursor_color.xml" value="0.201" />
@@ -51,7 +52,7 @@
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_gestion_visita3.xml" value="0.2" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_maps_clientes.xml" value="0.25" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_menu_principal.xml" value="0.22" />
-        <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_pedidos.xml" value="0.33" />
+        <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_pedidos.xml" value="0.22" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_producto.xml" value="0.22" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_productos.xml" value="0.2" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/activity_productos_cursor_adapter.xml" value="0.2" />
@@ -77,7 +78,7 @@
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialog_motivo_noventa.xml" value="0.16927083333333334" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialog_promociones.xml" value="0.1" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialog_seleccionar_backup.xml" value="0.2" />
-        <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialog_sheet_productos_pedido.xml" value="0.33" />
+        <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialog_sheet_productos_pedido.xml" value="0.22" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/dialogo_orden_compra_pedido.xml" value="0.2" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/footer_view_progress.xml" value="0.25" />
         <entry key="..\:/Cristian Japa/Desarrollo Android/SM_TUBO_TUBO_PLAST/app/src/main/res/layout/fragment_actividad_campo.xml" value="0.19114583333333332" />

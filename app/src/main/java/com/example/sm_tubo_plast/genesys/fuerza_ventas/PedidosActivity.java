@@ -1185,7 +1185,6 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
         linear_obra.setVisibility(View.GONE);
-        layoutServicioInstalacion.setVisibility(View.GONE);
 
         spn_despacho.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -1194,10 +1193,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 String desc=spn_despacho.getSelectedItem().toString();
                 if(spn_despacho.getSelectedItem().toString().toLowerCase().contains("obra")){
                     linear_obra.setVisibility(View.VISIBLE);
-                    layoutServicioInstalacion.setVisibility(View.VISIBLE);
                 }else{
                     linear_obra.setVisibility(View.GONE);
-                    layoutServicioInstalacion.setVisibility(View.GONE);
                 }
 
                 if(desc.toLowerCase().contains("agencia de transporte")){
@@ -1531,7 +1528,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
         swAplicaDsctoProntoPago.setVisibility(View.GONE);
         swAplicaDsctoProntoPago.setChecked((ped_cab!=null && ped_cab.getDsctProntoPagoContado()>0.0));
         if(nombre.toLowerCase().contains("contado")
-                && listaFormaPago.size()>0 && listaFormaPago.get(0).getCanal().toUpperCase().contains(MaestroCategoriaDescuento.NOMBRE_CANAL_FERRETERIA)
+                && listaFormaPago.size()>0
+                //&& listaFormaPago.get(0).getCanal().toUpperCase().contains(MaestroCategoriaDescuento.NOMBRE_CANAL_FERRETERIA)
         ){
             swAplicaDsctoProntoPago.setVisibility(View.VISIBLE);
         }
@@ -1642,6 +1640,10 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+        layoutServicioInstalacion.setVisibility(View.GONE);
+        if(listaFormaPago.size()>0 && !listaFormaPago.get(0).getCanal().toUpperCase().contains("FERRETERIA")){
+            layoutServicioInstalacion.setVisibility(View.VISIBLE);
+        }
     }
 
     private void mostrarCondicionYCanalVentaSpinner(){
@@ -2270,7 +2272,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 //                    startActivityForResult(intent, 1);
                     deshabilitarFormularioPostGuardarPedido();
                     BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
-                            codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO, clienteCondicionVenta.getKeyUnico(), false);
+                            codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO,
+                            clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
                     ddx.show(getSupportFragmentManager(), "dddx");
                     ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
                         @Override
@@ -4322,6 +4325,7 @@ private void EnvalularMoneda(){
 
                         itemDetalle.setPrecio_neto(subtotal);
                         itemDetalle.setCantidad(cantidad);
+                        itemDetalle.setCantidadValido(0);
                         itemDetalle.setTipo_producto(tipoProducto);
                         itemDetalle.setUnidad_medida(unidad_medida);
                         itemDetalle.setPeso_bruto(subtotal_peso);
@@ -7520,6 +7524,7 @@ private void EnvalularMoneda(){
         itemDetalle.setPrecio_bruto(String.valueOf(precioVentaSinIgv));
         itemDetalle.setPrecio_neto(precioSutotal);
         itemDetalle.setCantidad(cantidadProducto);
+        itemDetalle.setCantidadValido(0);
         itemDetalle.setTipo_producto("C");
         itemDetalle.setUnidad_medida((dbclass.obtener_codunimedXtipo_unimed_salida(Integer.parseInt(tipo_unimed_salida), salida)));
         itemDetalle.setFlag("N");
@@ -7926,7 +7931,7 @@ private void EnvalularMoneda(){
     private void crear_dialogo_guardar_modificar(String mensaje) {
 
         String horarioPedido = dbclass.getConfiguracionByName("horario_pedido", "01:01-01:01");
-        if(!VARIABLES.estaDentroHorario(horarioPedido)){
+        if(!VARIABLES.isSetDataPruebas && !VARIABLES.estaDentroHorario(horarioPedido)){
             UtilViewMensaje.MENSAJE_simple(this, null, "Fuera de horario de trabajo");
             return;
         }

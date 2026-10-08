@@ -164,7 +164,7 @@ public class BottomSheetDialogBuscarProductoVenta
     }
     private void mostrarListaproductosView(long timeSync){
         dBclasses.recalcularStock();//recalculamos el stock
-        ItemProducto[]  lista= dBclasses.getProductosXTIME_SYNC(String.valueOf(timeSync));
+        ItemProducto[]  lista= dBclasses.getProductosXTIME_SYNC(oc_numero,String.valueOf(timeSync));
         ProductoPedidoAgregarAdapter adapter =
                 new ProductoPedidoAgregarAdapter(
                         getActivity(),
@@ -175,6 +175,7 @@ public class BottomSheetDialogBuscarProductoVenta
                         codven,
                         codcli,
                         tipo_registro,
+                        oc_numero,
                         (producto, cantidad, pctjDscto, flagStockValido) -> {
                             agregarProducto(
                                     producto,

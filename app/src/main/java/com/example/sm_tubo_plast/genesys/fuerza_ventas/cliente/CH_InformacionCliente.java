@@ -183,7 +183,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         EditText tv_contacto_nombre_punto_entrega = findViewById(R.id.tv_contacto_nombre_punto_entrega);
         EditText tv_contacto_cargo_punto_entrega = findViewById(R.id.tv_contacto_cargo_punto_entrega);
 
-        ArrayList<LugarEntrega> puntoEntregas  = daoCliente.getPuntoEntrega(codigoCliente, "0");
+        ArrayList<LugarEntrega> puntoEntregas  = daoCliente.getPuntoEntrega(codigoCliente, "TODOS");
         List<String> direccionesList = new ArrayList<String>();
         for (int i=0;i<puntoEntregas.size();i++) {
             direccionesList.add(puntoEntregas.get(i).getCodigoLugar()+" - "+puntoEntregas.get(i).getDireccion());

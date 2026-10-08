@@ -45,6 +45,7 @@ public class ItemProducto {
 	private double volumen;
 	private int flagStockValido;
 	private DBMta_Kardex stockDetalle;
+	private ItemProductoVenta itemProdVenta;
 
 
 	public String getGrupo() {
@@ -283,6 +284,14 @@ public class ItemProducto {
 
 	public void setFlagStockValido(int flagStockValido) {
 		this.flagStockValido = flagStockValido;
+	}
+
+	public ItemProductoVenta getItemProdVenta() {
+		return itemProdVenta;
+	}
+
+	public void setItemProdVenta(ItemProductoVenta itemProdVenta) {
+		this.itemProdVenta = itemProdVenta;
 	}
 
 	//-------------------------------FIN ATRIBUTO----------------------------------------------------------------

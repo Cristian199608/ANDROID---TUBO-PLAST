@@ -107,7 +107,8 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
         return (position == IdataCabceraLista.size()) ? VIEW_TYPE_FOOTER : VIEW_TYPE_ITEM;
     }
     public static class ViewHolderItem extends RecyclerView.ViewHolder {
-        public TextView nomcliente, tipopago, total, numoc, estado, moneda, tv_pedidoAnterior, labell, edtFechavisita, edtObservacion_pedido;
+        public TextView nomcliente, tipopago, total, numoc, estado, moneda, tv_pedidoAnterior, labell, edtFechavisita,
+                edtObservacion_pedido, tvObsLogSap;
         public ImageView foto;
         public TextView tv_tipoRegistro, imgCampanaYellow;
 
@@ -127,6 +128,7 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
             imgCampanaYellow = (TextView) convertView.findViewById(R.id.imgCampanaYellow);
             edtObservacion_pedido = (TextView) convertView.findViewById(R.id.edtObservacion_pedido);
             edtFechavisita = (TextView) convertView.findViewById(R.id.edtFechavisita);
+            tvObsLogSap = (TextView) convertView.findViewById(R.id.tvObsLogSap);
         }
     }
 

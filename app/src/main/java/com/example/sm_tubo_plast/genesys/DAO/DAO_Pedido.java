@@ -224,6 +224,12 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			item.setPorcentaje_desc_extra(cur.getDouble(cur.getColumnIndex("porcentaje_desc_extra")));
 			item.setSec_promo_prioridad(cur.getInt(cur.getColumnIndex("sec_promo_prioridad")));
 			item.setItem_promo_prioridad(cur.getInt(cur.getColumnIndex("item_promo_prioridad")));
+			item.setFlagStockValido(cur.getInt(cur.getColumnIndex("flagStockValido")));
+			item.setPeso_unitario(cur.getDouble(cur.getColumnIndex("peso_unitario")));
+			item.setVolumen_unitario(cur.getDouble(cur.getColumnIndex("volumen_unitario")));
+			item.setVolumen_total(cur.getDouble(cur.getColumnIndex("volumen_total")));
+			item.setDespro(cur.getString(cur.getColumnIndex("despro")));
+			item.setCantidadValido(cur.getInt(cur.getColumnIndex("cantidadValido")));
 			lista.add(item);
 			Log.d(TAG,"getPedidoDetalle: "+oc_numero+" cip "+item.getCip());			
 			cur.moveToNext();			
@@ -275,6 +281,10 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_cabecera.FLAG_EMBALAJE, cabecera.getFlagEmbalaje());
 			Nreg.put(DBtables.Pedido_cabecera.FLAG_PEDIDOANTICIPO, cabecera.getFlagPedido_Anticipo());
 			Nreg.put(DBtables.Pedido_cabecera.CODIGO_TRANSPORTISTA, cabecera.getCodigoTransportista());
+			Nreg.put(DBtables.Pedido_cabecera.sucursalTransportista, cabecera.getSucursalTransportista());
+			Nreg.put(DBtables.Pedido_cabecera.direccionTransportista, cabecera.getDireccionTransportista());
+			Nreg.put(DBtables.Pedido_cabecera.ubigeoTransportista, cabecera.getUbigeoTransportista());
+
 			Nreg.put(DBtables.Pedido_cabecera.CODIGO_ALMACEN, cabecera.getCodigoAlmacen());
 			Nreg.put(DBtables.Pedido_cabecera.OBSERVACION2, cabecera.getObservacion2());
 			Nreg.put(DBtables.Pedido_cabecera.OBSERVACION3, cabecera.getObservacion3());
@@ -297,6 +307,8 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put("volumenTotal", cabecera.getVolumenTotal());
 			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
 			Nreg.put("flg_aprobacion", cabecera.getFlg_aprobacion());
+			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
+			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
 
 			
 			db.insert("pedido_cabecera", null, Nreg);
@@ -418,7 +430,13 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put(DBtables.Pedido_detalle.sec_promo_prioridad, item.getSec_promo_prioridad());
 			Nreg.put(DBtables.Pedido_detalle.item_promo_prioridad, item.getItem_promo_prioridad());
 			Nreg.put(DBtables.Pedido_detalle.LOTE, item.getLote());
-			
+			Nreg.put(DBtables.Pedido_detalle.flagStockValido, item.getFlagStockValido());
+			Nreg.put(DBtables.Pedido_detalle.peso_unitario, item.getPeso_unitario());
+			Nreg.put(DBtables.Pedido_detalle.volumen_unitario, item.getVolumen_unitario());
+			Nreg.put(DBtables.Pedido_detalle.volumen_total, item.getVolumen_total());
+			Nreg.put(DBtables.Pedido_detalle.despro, item.getDespro());
+			Nreg.put(DBtables.Pedido_detalle.cantidadValido, item.getCantidadValido());
+
 			db.insert(DBtables.Pedido_detalle.TAG, null, Nreg);
 			db.close();
 			Log.i(TAG, "ClonarPedidoDetalle: detalle clonado");			

@@ -51,7 +51,7 @@ public class WS_StockLinea extends AsyncTask<Void, Void, String> {
 
         try {
 
-            ItemProducto[] prods = dBclasses.getProductosXTIME_SYNC(""+timeSincronizacion);
+            ItemProducto[] prods = dBclasses.getProductosXTIME_SYNC("not_info",""+timeSincronizacion);
             StringBuilder cadenas=new StringBuilder("0");
             for (ItemProducto prod : prods) {
                 cadenas.append(",").append(prod.getCodprod());

@@ -104,7 +104,7 @@ public class WS_Cotizaciones {
                     mensaje = "No pudo establecer la conexión al servidor. Vuelva a intentarlo.";
                 }else{
                     titulo = "Error";
-                    mensaje = "No se ha podido obtener la información, vuelva a intenrarlo. ";
+                    mensaje = "No se ha podido obtener la información, vuelva a intentarlo. ";
                 }
                 if (!result.equalsIgnoreCase("OK")){
                     UtilView.MENSAJE_simple_finish_return_intent(activity,
@@ -176,7 +176,7 @@ public class WS_Cotizaciones {
                     mensaje = "No pudo establecer la conexión al servidor. Vuelva a intentarlo.";
                 }else{
                     titulo = "Error";
-                    mensaje = "No se ha podido obtener la información, vuelva a intenrarlo. ";
+                    mensaje = "No se ha podido obtener la información, vuelva a intentarlo. ";
                 }
                 if (!result.equalsIgnoreCase("OK")){
                     UtilView.MENSAJE_simple_finish_return_intent(activity,

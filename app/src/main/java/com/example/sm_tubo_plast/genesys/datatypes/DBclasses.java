@@ -29,6 +29,8 @@ import com.example.sm_tubo_plast.constans.pedidos.workflow.WorkflowAprobaciones;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.Expectativa;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
+import com.example.sm_tubo_plast.genesys.BEAN.ItemProductoVenta;
+import com.example.sm_tubo_plast.genesys.BEAN.LogEnvioPedido;
 import com.example.sm_tubo_plast.genesys.BEAN.Motivo;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.BEAN.PedidoCabeceraRecalcular;
@@ -39,6 +41,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.San_Opciones;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
 import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.CTA_INGRESOSPDF;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_LogEnvioPedidoSAP;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PedidoAnticipoDetalle;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
@@ -1411,18 +1414,28 @@ public class DBclasses extends SQLiteAssetHelper {
 
 	}
 
-	public ItemProducto[] getProductosXTIME_SYNC(String timeSincronizacion) {
+	public ItemProducto[] getProductosXTIME_SYNC(String oc_numero, String timeSincronizacion) {
 		Log.i("getProductosXTIME_SYNC", timeSincronizacion);
 		String addWhere =" and producto.time_sync = '"+timeSincronizacion+"' ";
-		return getProductosRAIZ(addWhere, "");
+		return getProductosRAIZ(oc_numero, addWhere, "");
 	}
-	public ItemProducto[] getProductosXTIME_SYNC_CODPRO(String codpro) {
+	public ItemProducto[] getProductosXTIME_SYNC_CODPRO(String oc_numero, String codpro) {
 		String addWhere =" and producto.codpro = '"+codpro+"' ";
-		return getProductosRAIZ("", addWhere);
+		return getProductosRAIZ(oc_numero, "", addWhere);
 	}
-	public ItemProducto[] getProductosRAIZ(String addWhereInLeft, String addWhereInWhere) {
+	public ItemProducto[] getProductosRAIZ(String oc_numero, String addWhereInLeft, String addWhereInWhere) {
 			String rawQuery;
-			rawQuery = "select * from "
+			rawQuery ="WITH ventax as (select  \n" +
+				"       venta.cip " +
+				"       ,sum( venta.cantidad) AS cantidadMin\n" +
+				"       ,sum(venta.precio_neto) as precio_neto " +
+				"       ,sum(venta.descuento) as descuento " +
+				"       from pedido_detalle venta " +
+				"       where venta.tipo_producto='V' " +
+				"       and venta.oc_numero='"+oc_numero+"' group by venta.cip " +
+				")";
+
+			rawQuery += "select * from "
 					+ "("
 					+ "select "
 					+ "politica_precio2.secuencia,"
@@ -1444,10 +1457,15 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "ifnull(mta_kardex.xtemp,0)+ifnull(mta_kardex.xtempOld, 0) as xtemp,"
 					+ "ifnull(mta_kardex.comprometido,0) as comprometido,"
 					+ "ifnull(mta_kardex.transito,0) as transito,"
-					+ "ifnull(mta_kardex.disponible,0) as disponible "
+					+ "ifnull(mta_kardex.disponible,0) as disponible, "
+					+" ifnull(ventax.cantidadMin, 0) as cantidadVendido, "
+					+" ifnull(producto.codunimed_almacen, 'UND?') as desunimedVendido, "
+					+" ifnull(ventax.precio_neto, 0) as precio_netoVendido, "
+					+" ifnull(ventax.descuento, 0) as descuentoVendido "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+					+ "left join ventax  on ventax.cip = producto.codpro "
 					+ "where politica_precio2.secuencia=0 "
 					+ ""+addWhereInLeft+" "+addWhereInWhere+"\n"
 					+
@@ -1472,10 +1490,15 @@ public class DBclasses extends SQLiteAssetHelper {
 					+ "ifnull(mta_kardex.xtemp,0)+ifnull(mta_kardex.xtempOld, 0) as xtemp,"
 					+ "ifnull(mta_kardex.comprometido,0) as comprometido,"
 					+ "ifnull(mta_kardex.transito,0) as transito,"
-					+ "ifnull(mta_kardex.disponible,0) as disponible "
+					+ "ifnull(mta_kardex.disponible,0) as disponible, "
+					+" ifnull(ventax.cantidadMin, 0) as cantidadVendido, "
+					+" ifnull(producto.codunimed_almacen, 'UND?') as desunimedVendido, "
+					+" ifnull(ventax.precio_neto, 0) as precio_netoVendido, "
+					+" ifnull(ventax.descuento, 0) as descuentoVendido "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
+					+ "left join ventax  on ventax.cip = producto.codpro "
 					+ "where 0=0 "+addWhereInLeft+" "+addWhereInWhere+"\n"
 					+ ") " + "group by codpro order by despro";
 
@@ -1516,6 +1539,17 @@ public class DBclasses extends SQLiteAssetHelper {
 					stockDet.setTransito(cursor.getInt(cursor.getColumnIndex("transito")));
 					stockDet.setDisponible(cursor.getInt(cursor.getColumnIndex("disponible")));
 					productos[i].setStockDetalle(stockDet);
+					if(cursor.getDouble(cursor.getColumnIndex("cantidadVendido"))>0){
+						ItemProductoVenta item2=new ItemProductoVenta();
+						item2.setCip(productos[i].getCodprod());
+						item2.setCantidad(cursor.getDouble(cursor.getColumnIndex("cantidadVendido")));
+						item2.setDesUnimed(cursor.getString(cursor.getColumnIndex("desunimedVendido")));
+						item2.setPrecioNeto(cursor.getDouble(cursor.getColumnIndex("precio_netoVendido")));
+						item2.setPrecioDescuento(cursor.getDouble(cursor.getColumnIndex("descuentoVendido")));
+						productos[i].setItemProdVenta(item2);
+
+					}
+
 					i++;
 
 					Log.i("DBclasses ::getProductosXProveedor::",
@@ -2013,6 +2047,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("peso_unitario", item.getPeso_unitario());
 			Nreg.put("volumen_unitario", item.getVolumen_unitario());
 			Nreg.put("volumen_total", item.getVolumen_total());
+			Nreg.put("cantidadValido", item.getCantidadValido());
 
 			long a=db.insertOrThrow("pedido_detalle", null, Nreg);
 			db.close();
@@ -3876,9 +3911,14 @@ public class DBclasses extends SQLiteAssetHelper {
 					"pc.tipoRegistro, ifnull(pc.pedidoAnterior,''), " +
 					"pc.latitud," +
 					"ifnull(c.nomcli, '') AS nomcli, " +
-					"subTotal as sub_total "+
+					"subTotal as sub_total, "+
+					"ifnull(pc.numdoc, '') as numdoc, "+
+					"ifnull(log.estado, '') as logEstado, "+
+					"ifnull(log.mensaje, '') as logMensaje, "+
+					"ifnull(log.fecha_procesamiento, '') as logFechaProceso "+
 					"from pedido_cabecera pc left join "+
 					"cliente c on c.codcli= pc.cod_cli "+
+					"left join log_envio_pedido log on log.oc_numero= pc.oc_numero "+
 					"where pc.oc_numero <> 0 " +
 					"and pc.cod_cli in (" +
 					"select x.codcli from znf_programacion_clientes x " +
@@ -3913,12 +3953,20 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbpedido.setTipoRegistro(cur.getString(12));
 			dbpedido.setPedidoAnterior(cur.getString(13));
 			dbpedido.setSubTotal(cur.getString(cur.getColumnIndex("sub_total")));
+			dbpedido.setNumdoc(cur.getString(cur.getColumnIndex("numdoc")));
 			dbpedido.setLatitud(cur.getString(cur.getColumnIndex("latitud")));
 				Cliente cliente =new Cliente();
 				cliente.setCodigoCliente(dbpedido.getCod_cli());
 				cliente.setNombre(cur.getString(cur.getColumnIndex("nomcli")));
 			dbpedido.setCliente(cliente);
 
+			if(cur.getString(cur.getColumnIndex("logEstado")).trim().length()>0){
+				LogEnvioPedido log=new LogEnvioPedido();
+				log.setEstado(cur.getString(cur.getColumnIndex("logEstado")));
+				log.setMensaje(cur.getString(cur.getColumnIndex("logMensaje")));
+				log.setFecha_procesamiento(cur.getString(cur.getColumnIndex("logFechaProceso")));
+				dbpedido.setLogEnvioPedido(log);
+			}
 			lista_pedidos.add(dbpedido);
 			cur.moveToNext();
 		}
@@ -5954,6 +6002,7 @@ public class DBclasses extends SQLiteAssetHelper {
 		ContentValues cv = new ContentValues();
 
 		DAO_PedidoAnticipoDetalle daoPedAnticipos=new DAO_PedidoAnticipoDetalle(this);
+		DAO_LogEnvioPedidoSAP daoLogEnvioPedidoSAP=new DAO_LogEnvioPedidoSAP(this);
 		if (start==0){
 			EliminarRegistro_bonificaciones_enviados(codven);
 			EliminarPedidoWorkFlowYDetDescuentosEnviados(codven);
@@ -5961,6 +6010,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			EliminarPedidoDetalle2Enviados(codven);
 			EliminarSanVisitas(codven);
 			daoPedAnticipos.deleteAllEnviados(codven);
+			daoLogEnvioPedidoSAP.deleteAllEnviados(codven);
 			EliminarPedido_cabecera_enviados(codven);
 		}
 
@@ -5969,7 +6019,6 @@ public class DBclasses extends SQLiteAssetHelper {
 		db.beginTransaction();
 
 		DAO_Pedido_detalle2 daoPedidoDet2=new DAO_Pedido_detalle2(_context);
-		Gson gsonParser=new Gson();
 		try {
 			for (int i = 0; i < jArray.length(); i++) {
 				jsonData = jArray.getJSONObject(i);
@@ -6107,6 +6156,7 @@ public class DBclasses extends SQLiteAssetHelper {
 							cv2.put(Pedido_detalle.volumen_unitario, jsonData_det.getDouble(Pedido_detalle.volumen_unitario));
 							cv2.put(Pedido_detalle.volumen_total, jsonData_det.getDouble(Pedido_detalle.volumen_total));
 							cv2.put(Pedido_detalle.despro, jsonData_det.getString(Pedido_detalle.despro).trim());
+							cv2.put(Pedido_detalle.cantidadValido, jsonData_det.getString(Pedido_detalle.cantidadValido).trim());
 
 							db.insert(DBtables.Pedido_detalle.TAG, null, cv2);
 //							if(ax<=0) throw new SQLiteException("Error no se pudo registrar");
@@ -6248,6 +6298,19 @@ public class DBclasses extends SQLiteAssetHelper {
 					if (!daoPedAnticipos.insertAll( db, listaPAD)) {
 						throw new SQLiteException("No se pudo registrar los anticipos del pedido");
 					}
+					//-------------------------------log envio pedido----------------------------------------------------------------
+					if(jsonData.has("resultPedidoSap")){
+						String logEnvio=jsonData.getString("resultPedidoSap").trim();
+						if (logEnvio.length()<10) {
+							continue;
+						}
+						//-----------------------------------------------------------------------------------------------
+						LogEnvioPedido logEnvioPedido= gson.fromJson(logEnvio, LogEnvioPedido.class);
+						if (!daoLogEnvioPedidoSAP.insertItem(db,logEnvioPedido)) {
+							throw new SQLiteException("No se pudo registrar el log de envio SAP");
+						}
+					}
+
 				}
 			}
 			db.setTransactionSuccessful();
@@ -12885,9 +12948,13 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				pc.setVolumenTotal(cursor.getDouble(cursor.getColumnIndex("volumenTotal")));
 				pc.setDsctProntoPagoContado(cursor.getDouble(cursor.getColumnIndex("dsctProntoPagoContado")));
 				pc.setDescFormaPago(cursor.getString(cursor.getColumnIndex("descFormaPago")));
-				pc.setSucursalTransportista(cursor.getString(cursor.getColumnIndex("sucursalTransportista")));
+				pc.setSucursalTransportista(cursor.getString(cursor.getColumnIndex("sucursalTransportista")));//sucursalTransportista
 				pc.setDireccionTransportista(cursor.getString(cursor.getColumnIndex("direccionTransportista")));
 				pc.setUbigeoTransportista(cursor.getString(cursor.getColumnIndex("ubigeoTransportista")));
+				pc.setFlg_aprobacion(cursor.getInt(cursor.getColumnIndex("flg_aprobacion")));
+				pc.setDsctAdicionalMonto(cursor.getDouble(cursor.getColumnIndex("dsctAdicionalMonto")));
+				pc.setCodigo_lista_precio(cursor.getString(cursor.getColumnIndex("codigo_lista_precio")));
+				pc.setCategoriaCliente(cursor.getString(cursor.getColumnIndex("categoriaCliente")));
 
 			} while (cursor.moveToNext());
 
@@ -14837,7 +14904,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			db.execSQL("INSERT INTO cta_ingresos_resumen (secuencia,codmon,\n" +
 					"coddoc,serie_doc,numero_factura,total,acuenta,saldo,feccom,codcli,username,fecoperacion,codven,saldo_virtual,forma )\n" +
 					"\n" +
-					"SELECT codcli as secuencia, "+PedidosActivity.MONEDA_SOLES_IN+" as codmon, '' as coddoc, \n" +
+					"SELECT codcli||'-'||Estado_Cobranza as secuencia, "+PedidosActivity.MONEDA_SOLES_IN+" as codmon, '' as coddoc, \n" +
 					"'' as serie_doc, '' as numero_factura,\n" +
 					"sum(total) as total, sum(acuenta) as acuenta,\n" +
 					"sum(saldo) as saldo, '' as feccom, codcli, '' as username, '' as fecoperacion, '' as codven," +
@@ -15323,7 +15390,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	public void recalcularStock(){
 		String codAlmacenSae=getConfiguracionByName("codigoAlmacen", "");
 		String sql1="UPDATE    mta_kardex set  xtemp= ifnull(( " +
-				"select sum(pd.cantidad) as total_unidad\n" +
+				"select sum(pd.cantidad-pd.cantidadValido) as total_unidad\n" +
 				"from pedido_detalle pd " +
 				"inner join pedido_cabecera  pc on pc.oc_numero=pd.oc_numero  " +
 				"and pc.flag!='T' and pc.estado!='A' "+

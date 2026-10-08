@@ -128,7 +128,10 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:buttonTint="@color/white"
-                android:text="En linea" />
+                android:text="En linea"
+                android:visibility="gone"
+                tools:visibility="visible"
+                />
 
             <EditText
                 android:id="@+id/edtBuscarPedidos"

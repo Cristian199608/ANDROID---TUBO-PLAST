@@ -1,6 +1,7 @@
 package com.example.sm_tubo_plast.genesys.datatypes;
 
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
+import com.example.sm_tubo_plast.genesys.BEAN.LogEnvioPedido;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
@@ -86,8 +87,11 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private int flg_aprobacion;
 	private String codigo_lista_precio;
 	private String categoriaCliente;
+	private double dsctAdicionalMonto;
+	private String numdoc;
 
 	Cliente cliente;
+	LogEnvioPedido logEnvioPedido;
 			
 	
 
@@ -956,6 +960,30 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setCategoriaCliente(String categoriaCliente) {
 		this.categoriaCliente = categoriaCliente;
+	}
+
+	public double getDsctAdicionalMonto() {
+		return dsctAdicionalMonto;
+	}
+
+	public void setDsctAdicionalMonto(double dsctAdicionalMonto) {
+		this.dsctAdicionalMonto = dsctAdicionalMonto;
+	}
+
+	public LogEnvioPedido getLogEnvioPedido() {
+		return logEnvioPedido;
+	}
+
+	public void setLogEnvioPedido(LogEnvioPedido logEnvioPedido) {
+		this.logEnvioPedido = logEnvioPedido;
+	}
+
+	public String getNumdoc() {
+		return numdoc;
+	}
+
+	public void setNumdoc(String numdoc) {
+		this.numdoc = numdoc;
 	}
 
 	//-------------------------------fin atributo----------------------------------------------------------------

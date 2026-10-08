@@ -168,7 +168,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
     public ArrayList<LugarEntrega> getPuntoEntrega(String codigoCliente, String itemSucursal) {
 		String rawQuery = "SELECT * FROM lugarEntrega " +
 				"WHERE codigoCliente = '"+codigoCliente+"' " +
-				"and itemSucursal = '"+itemSucursal+"' " +
+				"and (itemSucursal = '"+itemSucursal+"' or 'TODOS' = '"+itemSucursal+"' )" +
 				"order by direccionEntrega";
 		Log.i(TAG, rawQuery);
 

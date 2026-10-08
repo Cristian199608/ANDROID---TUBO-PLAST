@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Build;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sm_tubo_plast.R;
@@ -22,13 +24,16 @@ import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroC
 import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.Opcion;
 import com.example.sm_tubo_plast.genesys.AccesosPerfil.AccesosOpciones;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
+import com.example.sm_tubo_plast.genesys.BEAN.ItemProductoVenta;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 
+@SuppressLint("LongLogTag")
 public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoPedidoAgregarAdapter.ViewHolder> {
-
+    private static final String TAG = "ProductoPedidoAgregarAdapter";
     public interface OnAgregarProductoListener {
         void onAgregarProducto(ItemProducto producto, int cantidad, double pctjDscto, int flagStockValido);
     }
@@ -39,6 +44,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
     private Activity activity;
     private DBclasses obj_dbclasses;
     String codven, codcli, tipo_registro;
+    String oc_numero;
 
     double dsctoPronto=0.0;
     private OnAgregarProductoListener listener;
@@ -52,6 +58,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             String codven,
             String codcli,
             String tipo_registro,
+            String oc_numero,
             OnAgregarProductoListener listener
             ) {
         this.activity=activity;
@@ -63,6 +70,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         this.codven=codven;
         this.codcli=codcli;
         this.tipo_registro=tipo_registro;
+        this.oc_numero=oc_numero;
         this.dsctoPronto = Double.parseDouble(obj_dbclasses.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
     }
 
@@ -89,6 +97,11 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             int position) {
 
         holder.edtCantidad.setText("");
+        holder.edtCantidad.setEnabled(true);
+        holder.tvProductoAgregadoInfo.setVisibility(View.GONE);
+        holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.white));
+        holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.white));
+        //-----------------------------------------------------------------------------------------------
         ItemProducto producto = lista[position];
         holder.tvNombreProducto.setText(producto.getCodprod()+" - "+producto.getDescripcion());
 
@@ -115,6 +128,15 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         holder.tvStockDisponibleReal.setTextColor(holder.itemView.getContext().getResources().getColor(stockRealFinal>0?R.color.green_500:R.color.red_500));
         //}
 
+        ItemProductoVenta productoVendido=producto.getItemProdVenta();
+        if (productoVendido!=null && productoVendido.getCantidad()>0.0){
+            holder.edtCantidad.setEnabled(false);
+            holder.tvProductoAgregadoInfo.setVisibility(View.VISIBLE);
+            holder.tvProductoAgregadoInfo.setText("Producto agregado "+VARIABLES.getIntOrDecimalByNumber(productoVendido.getCantidad())+" "+
+                    productoVendido.getDesUnimed()+" S/. "+(VARIABLES.getStringFormaterTwoDecimal( productoVendido.getPrecioNeto()-productoVendido.getPrecioDescuento()))
+            );
+            holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.green_100));
+        }
         GestionarPromociones(holder, position);
         holder.btnAgregar.setOnClickListener(v -> {
 
@@ -150,6 +172,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                 holder.edtCantidad.setError("No tiene precio");
                 return;
             }
+            UtilView.ocultarTeclado(holder.edtCantidad);
             if (tipo_registro.equals(PedidosActivity.TIPO_PEDIDO) && cantidad > stock) {
                 new AlertDialog.Builder(activity)
                         .setTitle("Stock Insuficiente")
@@ -164,7 +187,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                                                 dsctoCategoria,
                                                 0
                                         );
-                                        lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(producto.getCodprod())[0];
+                                        lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(oc_numero,producto.getCodprod())[0];
                                         holder.itemView.post(new Runnable() {
                                             @Override
                                             public void run() {
@@ -186,7 +209,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
                     1
             );
 
-            lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(producto.getCodprod())[0];
+            lista[position]=obj_dbclasses.getProductosXTIME_SYNC_CODPRO(oc_numero, producto.getCodprod())[0];
             holder.itemView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -205,6 +228,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
     public static class ViewHolder
             extends RecyclerView.ViewHolder {
 
+        CardView cardView;
         TextView tvNombreProducto;
         TextView tvDsctoCategoria;
         TextView tvPrecioLista;
@@ -215,6 +239,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         EditText edtCantidad;
         TextView btnAgregar, tv_verMas;
         LinearLayout layoutItemPromos, layoutPromo;
+        TextView tvProductoAgregadoInfo;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -227,37 +252,27 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             tvNombreProducto =itemView.findViewById(R.id.tvNombreProducto);
             tvStockDisponibleReal =itemView.findViewById(R.id.tvStockDisponibleReal);
 
-            tvPrecioLista =
-                    itemView.findViewById(
-                            R.id.tvPrecioLista
-                    );
-
-            tvPrecio =
-                    itemView.findViewById(
-                            R.id.tvPrecio
-                    );
+            tvPrecioLista =itemView.findViewById(R.id.tvPrecioLista);
+            tvPrecio =itemView.findViewById(R.id.tvPrecio);
 
             tvStock =itemView.findViewById(R.id.tvStock);
             tvStockSeparado =itemView.findViewById(R.id.tvStockSeparado);
             tvStockEnTransito =itemView.findViewById(R.id.tvStockEnTransito);
             tvStockDisponible =itemView.findViewById(R.id.tvStockDisponible);
 
-            edtCantidad =
-                    itemView.findViewById(
-                            R.id.edtCantidad
-                    );
+            edtCantidad =itemView.findViewById(R.id.edtCantidad);
 
-            btnAgregar =
-                    itemView.findViewById(
-                            R.id.tvAddProducto
-                    );
+            btnAgregar =itemView.findViewById(R.id.tvAddProducto );
             tvDsctoCategoria=itemView.findViewById(R.id.tvDsctoCategoria);
+            tvProductoAgregadoInfo=itemView.findViewById(R.id.tvProductoAgregadoInfo);
+            cardView=itemView.findViewById(R.id.cardView);
         }
     }
 
 
     private double obtenerPorcentajeDsctoByCondicion(String marcaProd){
         double addAdcional=0.0;
+        Log.i(TAG, "obtenerPorcentajeDsctoByCondicion:: isSwProntoPAgo "+swAplicaDsctoProntoPago+" : pctj= "+dsctoPronto);
         if(swAplicaDsctoProntoPago){
             addAdcional=dsctoPronto;
         }
@@ -320,7 +335,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
             }
 
         }
-        return 0.0;
+        return addAdcional;
     }
 
     @SuppressLint("Range")

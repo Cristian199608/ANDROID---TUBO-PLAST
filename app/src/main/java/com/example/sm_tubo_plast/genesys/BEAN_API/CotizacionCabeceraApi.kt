@@ -70,6 +70,7 @@ class CotizacionCabeceraApi: IReportePedidoCabecera
         position: Int
     ) {
 
+        viewHolder!!.tvObsLogSap.visibility=View.GONE;
         viewHolder!!.foto.setBackgroundColor(Color.rgb(46, 178, 0))
 
 
