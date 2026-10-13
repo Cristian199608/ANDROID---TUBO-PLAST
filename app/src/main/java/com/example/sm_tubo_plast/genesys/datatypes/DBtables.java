@@ -669,6 +669,7 @@ public class DBtables {
 		public static final String _PRECIO_BASE = "_precio_base";
 		public static final String desc_comercial = "desc_comercial";
 		public static final String flg_bonificacion = "flg_bonificacion";
+		public static final String familiaDesc = "familiaDesc";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + CODPRO + " CHAR(4) PRIMARY KEY, " + DESPRO
@@ -1769,7 +1770,23 @@ public class DBtables {
 		public static final String precio_neto = "precio_neto";
 		public static final String descuento = "descuento";
 		public static final String peso_total = "peso_total";
+	}
 
+	public static final class DescuentoPreciosProducto {
+
+		private DescuentoPreciosProducto() {
+		}
+		public static final String[] pks = new String[]{
+				DescuentoPreciosProducto.secuencia,
+				DescuentoPreciosProducto.familia,
+				DescuentoPreciosProducto.grupo,
+		} ;
+
+		public static final String TAG = "descuento_precios_producto";
+		public static final String secuencia = "secuencia";
+		public static final String familia = "familia";
+		public static final String grupo = "grupo";
+		public static final String porcentaje = "porcentaje";
 	}
 
 

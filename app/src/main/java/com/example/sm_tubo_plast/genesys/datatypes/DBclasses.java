@@ -3120,6 +3120,23 @@ public class DBclasses extends SQLiteAssetHelper {
 		return secitem;
 	}
 
+	public String getProductoFamiliaDescuento(String codpro) {
+		String rawQuery;
+		rawQuery = "select familiaDesc from producto " +
+				"where codpro='"+ codpro + "'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		String telefono = "";
+		cur.moveToFirst();
+		while (!cur.isAfterLast()) {
+			telefono = (cur.getString(0));
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		return telefono;// d
+	}
 	// prueba codunimed
 	public String obtener_codXdesunimed(String codigoProducto, String descripcionUnidadMedida) {
 
@@ -4732,6 +4749,7 @@ public class DBclasses extends SQLiteAssetHelper {
 				cv.put(DBtables.Producto._PRECIO_BASE,jsonData.getDouble(DBtables.Producto._PRECIO_BASE));
 				cv.put(DBtables.Producto.desc_comercial,jsonData.getString(Producto.desc_comercial).trim());
 				cv.put(DBtables.Producto.flg_bonificacion,jsonData.getInt(Producto.flg_bonificacion));
+				cv.put(DBtables.Producto.familiaDesc,jsonData.getString(Producto.familiaDesc));
 
 
 				db.insert(DBtables.Producto.TAG, null, cv);
@@ -8244,6 +8262,23 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 
 			telefono = (cur.getString(0));
 
+			cur.moveToNext();
+		}
+		cur.close();
+		db.close();
+		return telefono;// d
+	}
+	public String getGrupoSectorCliente(String codcli) {
+		String rawQuery;
+		rawQuery = "select DescSector from cliente " +
+				"where codcli='"+ codcli + "'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+		String telefono = "";
+		cur.moveToFirst();
+		while (!cur.isAfterLast()) {
+			telefono = (cur.getString(0));
 			cur.moveToNext();
 		}
 		cur.close();

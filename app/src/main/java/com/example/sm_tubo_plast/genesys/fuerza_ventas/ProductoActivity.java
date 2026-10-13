@@ -47,13 +47,14 @@ import android.widget.ToggleButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.DescuentoPreciosProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.ItemProducto;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_DescuentoPreciosProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Producto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.adapters.CH_Adapter_bonificacionesPendientes;
 import com.example.sm_tubo_plast.genesys.adapters.ModelBonificacionPendiente;
 import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Detalle;
-import com.example.sm_tubo_plast.genesys.datatypes.DBPolitica_Precio2;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.compartidoUtil.UtilCalcularPrecioProducto;
@@ -69,8 +70,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -102,7 +101,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     private double clienteValorPercepcion;
 
     boolean PROMOCION = true;
-    DBclasses obj_dbclasses;
+    DBclasses obj_dbclasses; DAO_DescuentoPreciosProducto daoDscProducto;
     TextView tv_nombre_producto;
     ListView lstProductos;
     EditText txtProducto, edtBusqueda, edtPrecioUnt, edtCantidad, edt_descuento, edtDescuentoExtra;
@@ -116,6 +115,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     TextView tv_monedaPrecio;
 
     String codcli = "", codven = "", codprod = "", origen = "", oc_numero = "";
+    String grupoSectorCliente=null;
     String codigoMoneda,codigoCondicionVenta,codigoLetraCondicionVenta,fechaEntrega,descuento,codigoSucursal,codigoLugarEntrega,codigoTipoDespacho,flagDescuento,codigoAlmacenDespacho,estado;
     ItemProducto[] productos;
 
@@ -154,7 +154,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
     private double totalStockDisponible = 0.0d;
     private String flagMsPack;
     int tamanioItem;
-    boolean isBonificacion = false;
+    boolean isBonificacion = false; boolean isDescuentoPrecioProductoCerrado=true;
     int saldo = 0;
     String codigoRegistro = "";
     String codigoSalida = "";
@@ -215,6 +215,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         preferencias_configuracion = getSharedPreferences("preferencias_configuracion", Context.MODE_PRIVATE);
         obj_dbclasses = new DBclasses(getApplicationContext());
+        daoDscProducto=new DAO_DescuentoPreciosProducto(obj_dbclasses);
         valorIGV = preferencias_configuracion.getFloat("valorIGV", 0.0f);
         descuentoMax = preferencias_configuracion.getFloat("limiteDescuento", 2.0f);
 
@@ -228,7 +229,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         } else {
             clienteValorPercepcion = 0.0;
         }
-
+        grupoSectorCliente= obj_dbclasses.getGrupoSectorCliente(codcli);
         Log.d("ProductoActivity ::datos de percepcion cliente::","clienteTienePercepcion "+clienteTienePercepcion);
         Log.d("ProductoActivity ::datos de percepcion cliente::","clienteTienePercepcionEspecial "+clienteTienePercepcionEspecial);
         Log.d("ProductoActivity ::datos de percepcion cliente::","clienteValorPercepcion "+clienteValorPercepcion);
@@ -339,12 +340,12 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
 
         new ACG_EditText(this, edt_descuento).OnListen(texto ->{
             edt_descuento.setError(null);
-            edtDescuentoExtra.setEnabled(false);
+            //edtDescuentoExtra.setEnabled(false);
             if (edt_descuento.getText().toString().trim().length()>0) {
                 try {
                     double porcentaje=Double.parseDouble(edt_descuento.getText().toString());
                     if (porcentaje>=0 && porcentaje<=100){
-                        edtDescuentoExtra.setEnabled(true);
+                        //edtDescuentoExtra.setEnabled(true);
                         ConsultarProductoPrecios();
                     }else{
                         edt_descuento.setText("");
@@ -655,6 +656,13 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         AtomicReference<AlertViewSimpleConEdittext> dialg=new AtomicReference<>();
 
         tvGetPctDescuentoPorPrecio.setOnClickListener(v -> {
+            if(isDescuentoPrecioProductoCerrado){
+                GlobalFunctions.showCustomToast(ProductoActivity.this,
+                        "Opción no permitido para este producto",
+                        GlobalFunctions.TOAST_ERROR,
+                        GlobalFunctions.POSICION_TOP);
+                return;
+            }
             double precioSinIgv=Double.parseDouble(tv_precioSinIGV.getText().toString().replace(",", ""));
             dialg.set(new AlertViewSimpleConEdittext(this));
             dialg.get().cancelable = false;
@@ -1097,6 +1105,20 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
                 });
         builder.create().show();
     }
+    private void gestionarProductoDescuento(){
+        String familiaDescProducto=obj_dbclasses.getProductoFamiliaDescuento(codprod);
+        DescuentoPreciosProducto descuentoPreciosProducto = daoDscProducto.getData(familiaDescProducto, grupoSectorCliente);
+        edt_descuento.setEnabled(true);
+        edtDescuentoExtra.setEnabled(true);
+        isDescuentoPrecioProductoCerrado=false;
+        if(descuentoPreciosProducto!=null){
+            isDescuentoPrecioProductoCerrado=true;
+            edt_descuento.setEnabled(false);
+            edtDescuentoExtra.setEnabled(false);
+            edt_descuento.setText(""+(descuentoPreciosProducto.getPorcentaje()));
+            edtDescuentoExtra.setText("0.0");
+        }
+    }
 
     private void onItemClickListaProducto(int position) {
         afecto_igv = productos[position].getAfecto();
@@ -1118,6 +1140,7 @@ public class ProductoActivity extends AppCompatActivity implements OnClickListen
         sec_politica= productos[position].getSec_politica();
         estado 		= productos[position].getEstado();//Discontinuo
 
+        gestionarProductoDescuento();
 
         if (estado.equals(DISCONTINUO)) {
             GlobalFunctions.showCustomToast(ProductoActivity.this, "Producto discontinuo", GlobalFunctions.TOAST_WARNING,GlobalFunctions.POSICION_MIDDLE);

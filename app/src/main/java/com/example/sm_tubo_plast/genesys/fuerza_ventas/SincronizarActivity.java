@@ -1685,6 +1685,11 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     NombreMetodo=valor+") Sync_tabla_productoNoDescuento";
                                     soap_manager.Sync_tabla_productoNoDescuento(servidorBD, nombreBD, usuarioBD,contrasenaBD);
                                     publishProgress("75");
+
+                                    NombreMetodo=valor+") SyncTBDescuentoPreciosProducto";
+                                    soap_manager.SyncTBDescuentoPreciosProducto(codven );
+                                    publishProgress("75");
+
                                     //SERVER .212
 
                                     boolean existeDatos=true;

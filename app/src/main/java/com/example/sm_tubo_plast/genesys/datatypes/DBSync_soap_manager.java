@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
+import com.example.sm_tubo_plast.genesys.BEAN.DescuentoPreciosProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.BEAN.PromocionDetalleProducto;
 import com.example.sm_tubo_plast.genesys.BEAN.Roles_accesos_app;
@@ -22,6 +23,7 @@ import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoCabeceraRespose;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_DescuentoPreciosProducto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido_detalle2;
@@ -6994,6 +6996,35 @@ public int actualizarRegistroBonificaciones() throws Exception{
 		}catch(Exception e){
 			e.printStackTrace();
 			Log.i("Sync_tbProductoPromocion", "NO SINCRONIZADA");
+			throw new Exception(e);
+		}
+	}
+
+	public void SyncTBDescuentoPreciosProducto(String codven) throws Exception{
+		String S_TAG="SyncTBDescuentoPreciosProducto";
+		try{
+
+			ArrayList<String> listRequest=new ArrayList<>();
+			listRequest.add("codven"+__PARTIR___+codven);
+
+			String _METHOD_NAME="getTBDescuentoPreciosProducto_json";
+			String jsonstring = AddRequestHeader(listRequest, _METHOD_NAME);
+
+			if(jsonstring.startsWith("Error")){
+				throw new Exception(""+jsonstring);
+			}
+			//-----------------------------------------------------------------------------------------------
+			final Type malla = new TypeToken<ArrayList<DescuentoPreciosProducto>>() {}.getType();
+			final ArrayList<DescuentoPreciosProducto> lista = gson.fromJson(jsonstring, malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			DAO_DescuentoPreciosProducto daodescuentoPreciosProducto=new DAO_DescuentoPreciosProducto(dbclass);
+			daodescuentoPreciosProducto.deleteAll();
+			if(!daodescuentoPreciosProducto.insertAll(lista)){
+				throw new Exception("Error al intentar guardar en db sqlite");
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
 			throw new Exception(e);
 		}
 	}
