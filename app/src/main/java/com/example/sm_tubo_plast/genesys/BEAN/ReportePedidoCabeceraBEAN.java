@@ -29,6 +29,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
     String latitud;
     String longitud;
     String fecha;
+    String numdoc;
     LogEnvioPedido logEnvioPedido;
 
     public String getNomcli() {
@@ -159,7 +160,14 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         this.logEnvioPedido = logEnvioPedido;
     }
 
-    //-------------------------------FIN ATRIBUTO----------------------------------------------------------------
+    public String getNumdoc() {
+        return numdoc;
+    }
+
+    public void setNumdoc(String numdoc) {
+        this.numdoc = numdoc;
+    }
+//-------------------------------FIN ATRIBUTO----------------------------------------------------------------
 
     @Override
     public void setViewByHolder(Activity activity,
@@ -215,6 +223,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
         viewHolder.nomcliente.setText(this.getNomcli());
         viewHolder.tipopago.setText(this.getTipopago());
         viewHolder.total.setText(this.getTotal());
+        viewHolder.numoc.setTextColor(activity.getResources().getColor(R.color.grey_800));
         viewHolder.numoc.setText(this.getNumoc());
         viewHolder.estado.setText(this.getMensaje());
 
@@ -258,11 +267,10 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
             viewHolder.tvObsLogSap.setVisibility(View.VISIBLE);
             viewHolder.tvObsLogSap.setText(this.getLogEnvioPedido().getMensaje());
         }
-        viewHolder.numoc.setVisibility(View.GONE);
-        if(this.getNumoc()!=null && this.getNumoc().trim().length()!=0){
+        if(this.getNumdoc()!=null && this.getNumdoc().trim().length()!=0){
             viewHolder.numoc.setVisibility(View.VISIBLE);
             viewHolder.numoc.setTextColor(activity.getResources().getColor(R.color.purple_800));
-            viewHolder.numoc.setText("Número SAP: "+this.getNumoc());
+            viewHolder.numoc.setText(viewHolder.numoc.getText().toString().trim()+" => SAP: "+this.getNumdoc());
         }
 
 

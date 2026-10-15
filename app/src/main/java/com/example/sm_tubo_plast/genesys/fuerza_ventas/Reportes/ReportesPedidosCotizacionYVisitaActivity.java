@@ -958,7 +958,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             reportePedidoCabeceraBEAN.setLatitud(cta.getLatitud());
             map.put(KEY_NOVENTA, ""+cta.getCod_noventa());
             reportePedidoCabeceraBEAN.setMotivo_noventa(cta.getCod_noventa());
-            reportePedidoCabeceraBEAN.setNumoc(cta.getNumdoc());
+            reportePedidoCabeceraBEAN.setNumdoc(cta.getNumdoc());
             reportePedidoCabeceraBEAN.setLogEnvioPedido(cta.getLogEnvioPedido());
 
            // pedidos.add(map);
@@ -1597,6 +1597,17 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                 alerta.show();
 
             } else {
+                if (!result.equals("0")){
+                    Builder alerta = new Builder(
+                            ReportesPedidosCotizacionYVisitaActivity.this);
+                    alerta.setTitle("¿MODIFICAR?");
+                    alerta.setMessage("No se puede hacer cambios una vez enviado al sistema SAEMOVIL.\nComuniquese con el administrador");
+                    alerta.setCancelable(false);
+                    alerta.setPositiveButton("OK", null);
+                    alerta.show();
+                    return;
+                }
+
 
                 if (tipo.equals("PEDIDO")) {
 

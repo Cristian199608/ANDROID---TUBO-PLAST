@@ -8827,8 +8827,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		// TODO Auto-generated method stub
 		String rawQuery;
 
-		rawQuery = "select cod_noventa from pedido_cabecera where oc_numero='"
-				+ oc_numero + "'";
+		rawQuery = "select cod_noventa from pedido_cabecera where oc_numero='"+ oc_numero + "'";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);

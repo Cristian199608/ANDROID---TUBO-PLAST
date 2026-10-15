@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/rpt_pedido_tv_cliente"
             android:layout_alignParentLeft="true"
-            android:textColor="#6E6E6E"
+            android:textColor="@color/grey_800"
             android:textSize="12sp"
             android:textStyle="bold"
             android:visibility="visible"
