@@ -118,7 +118,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
 
         holder.tvStock.setText((int)(producto.getStockDetalle().getStock())+ " "+ producto.getCodunimed());
-        holder.tvStockSeparado.setText((int)(producto.getStockDetalle().getXtemp())+ " "+ producto.getCodunimed());
+        holder.tvStockSeparado.setText((int)(producto.getStockDetalle().getComprometido())+ " "+ producto.getCodunimed());
         holder.tvStockEnTransito.setText((int)(producto.getStockDetalle().getTransito())+ " "+ producto.getCodunimed());
         holder.tvStockDisponible.setText((int)(producto.getStockDetalle().getDisponible())+ " "+ producto.getCodunimed());
         holder.tvStockDisponibleReal.setText("Dis. Real "+VARIABLES.formater_integer.format((int)(stockRealFinal))+ " "+ producto.getCodunimed());

@@ -137,7 +137,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.stream.Stream;
@@ -581,36 +580,19 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth) {
-                                Calendar fecha = Calendar.getInstance();
-                                fecha.set(year, (monthOfYear), dayOfMonth);
-                                if (fecha.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
-                                        && spn_turno.getSelectedItem().toString().equalsIgnoreCase("tarde")) {
-                                    fechaEntrega="";
-                                    edt_fechaPedido.setText("");
-                                    GlobalFunctions.showCustomToast(PedidosActivity.this,
-                                            "No se permiten para los sabados en la tarde", GlobalFunctions.TOAST_ERROR);
-                                    return;
-                                }
-
-                                if (fecha.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                                    fechaEntrega="";
-                                    edt_fechaPedido.setText("");
-                                    GlobalFunctions.showCustomToast(PedidosActivity.this,
-                                            "No se permiten domingos", GlobalFunctions.TOAST_ERROR);
-                                    return;
-                                }
-
                                 int monthOfYear_true = monthOfYear +1 ;
                                 String pickerMonth=String.valueOf(monthOfYear_true),pickerDay=String.valueOf(dayOfMonth);
-                                if (dayOfMonth<10) {
-                                    pickerDay = "0"+dayOfMonth;
+                                if (dayOfMonth<10)pickerDay = "0"+dayOfMonth;
+                                if (monthOfYear_true<10) pickerMonth = "0"+(monthOfYear_true);
+
+                                String fechaEntregaFormat = pickerDay+"/"+pickerMonth+"/"+year;
+                                if (!isValidDiaSabadoYDomingo(fechaEntregaFormat)) {
+                                    return;
                                 }
-                                if (monthOfYear_true<10) {
-                                    pickerMonth = "0"+(monthOfYear_true);
-                                }
+
                                 edt_fechaPedido.setError(null);
-                                edt_fechaPedido.setText(pickerDay+"/"+pickerMonth+"/"+year);
-                                fechaEntrega = pickerDay+"/"+pickerMonth+"/"+year;
+                                edt_fechaPedido.setText(fechaEntregaFormat);
+                                fechaEntrega = fechaEntregaFormat;
                             }
                         }, year, month, day);
 
@@ -1141,8 +1123,42 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 layoutCaontainerAnticipos.setVisibility(isChecked?View.VISIBLE:View.GONE);
             }
         });
+
+        spn_turno.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                isValidDiaSabadoYDomingo(edt_fechaPedido.getText().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
+    private boolean isValidDiaSabadoYDomingo(String ddmmyyyFecha){
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTimeInMillis(VARIABLES.convertirFecha_to_long(ddmmyyyFecha));
+        if (fecha.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
+                && spn_turno.getSelectedItem().toString().equalsIgnoreCase("tarde")) {
+            fechaEntrega="";
+            edt_fechaPedido.setText("");
+            GlobalFunctions.showCustomToast(PedidosActivity.this,
+                    "No se permiten para los sabados en la tarde", GlobalFunctions.TOAST_ERROR);
+            return false;
+        }
+
+        if (fecha.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            fechaEntrega="";
+            edt_fechaPedido.setText("");
+            GlobalFunctions.showCustomToast(PedidosActivity.this,
+                    "No se permiten domingos", GlobalFunctions.TOAST_ERROR);
+            return false;
+        }
+
+        return  true;
+    }
     private String getIdEquivalenteTipoDespacho(String idFlagDespacho){
         for (RegistroGeneralMovil tipoDespacho : listaTipoDespacho) {
             if(tipoDespacho.getCodValor().equals(idFlagDespacho)){
@@ -2271,9 +2287,10 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                     Log.w("INTENT","cond venta "+codigoCondicionVenta+" flag dscto "+flagDescuento+" cod suc "+codigoSucursal+" codlugar "+codigoLugarEntrega+ " codAlm "+codigoAlmacenDespacho);
 //                    startActivityForResult(intent, 1);
                     deshabilitarFormularioPostGuardarPedido();
+                    boolean dsctoProntoPago =false; //es calculado en base a monto total, no por detalle=> swAplicaDsctoProntoPago.isChecked();
                     BottomSheetDialogBuscarProductoVenta ddx=BottomSheetDialogBuscarProductoVenta.newInstance(
                             codven, codcli, codigoAlmacenDespacho, Oc_numero, TIPO_REGISTRO,
-                            clienteCondicionVenta.getKeyUnico(), swAplicaDsctoProntoPago.isChecked());
+                            clienteCondicionVenta.getKeyUnico(), dsctoProntoPago);
                     ddx.show(getSupportFragmentManager(), "dddx");
                     ddx.setOnCallback(new BottomSheetDialogBuscarProductoVenta.MyCallback() {
                         @Override
@@ -4694,7 +4711,11 @@ private void EnvalularMoneda(){
                                 dao_pedidoAnticipoDetalle.deleteBy(Oc_numero);
                                 dbclass.eliminarPedidoWorkFlowYDetDescuentosBy(Oc_numero);
                                 //dbclass.actualizarEstadoCliente(codcli, "S");
+                                dbclass.recalcularStock();
                                 finish();
+                                final Intent icliente = new Intent(PedidosActivity.this,ClientesActivity.class);
+                                icliente.putExtra("codven",codven);
+                                startActivity(icliente);
 
                             }
 

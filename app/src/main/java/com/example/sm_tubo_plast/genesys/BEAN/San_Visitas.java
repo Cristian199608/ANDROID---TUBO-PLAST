@@ -3,6 +3,7 @@ package com.example.sm_tubo_plast.genesys.BEAN;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -552,7 +553,15 @@ public class San_Visitas {
         linearLayout.addView(SetTitulo_valor(activity, paramT, ""+sa.getTipo_visita()+" - "+sa.getActividad()));
 
         linearLayout.addView(SetTitulo(activity, paramT, "Fecha"));
-        linearLayout.addView(SetTitulo_valor(activity, paramT, "Programada: "+VARIABLES.convertirFecha_from_String(sa.getFecha_planificada())));
+        String fechaProgramada=VARIABLES.convertirFecha_from_String(sa.getFecha_planificada());
+        Log.i("San_Visitas", "programada::"+fechaProgramada);
+        if(fechaProgramada.toLowerCase().contains("12:00 am")
+                || fechaProgramada.toLowerCase().contains("12:00 a.m.")
+                || fechaProgramada.toLowerCase().contains("12:00 a.")
+        ){
+            fechaProgramada = fechaProgramada.substring(0,10);
+        }
+        linearLayout.addView(SetTitulo_valor(activity, paramT, "Programada: "+fechaProgramada));
 
 
         if (!isPlanificada){

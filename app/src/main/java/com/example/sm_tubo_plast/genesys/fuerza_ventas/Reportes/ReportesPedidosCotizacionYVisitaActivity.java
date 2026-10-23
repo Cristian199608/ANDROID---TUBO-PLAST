@@ -256,7 +256,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
         ActionItem modificarItem = new ActionItem(ID_MODIFICAR, "Modificar",R.drawable.icon_edit_file_24dp);
-        ActionItem cambiarMoneda = new ActionItem(ID_CAMBIAR_MONEDA, "Cambiar Moneda",R.drawable.icon_edit_file_24dp);
+        //ActionItem cambiarMoneda = new ActionItem(ID_CAMBIAR_MONEDA, "Cambiar Moneda",R.drawable.icon_edit_file_24dp);
         ActionItem acceptItem = new ActionItem(ID_DETALLE, "Ver Detalle",R.drawable.icon_show_file_24dp);
         ActionItem deleteItem = new ActionItem(ID_DELETE, "Eliminar",R.drawable.icon_delete_file_24dp);
         ActionItem anularItem = new ActionItem(ID_ANULAR, "Anular",R.drawable.icon_cancel_file_24dp);
@@ -271,7 +271,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
 
 
         mQuickAction.addActionItem(modificarItem);
-        mQuickAction.addActionItem(cambiarMoneda);
+//        mQuickAction.addActionItem(cambiarMoneda);
         mQuickAction.addActionItem(acceptItem);
         mQuickAction.addActionItem(anularItem);
         //mQuickAction.addActionItem(forzarEnvio);
@@ -280,7 +280,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
         }
 
         mQuickActionCotizacion.addActionItem(modificarItem);
-        mQuickActionCotizacion.addActionItem(cambiarMoneda);
+//        mQuickActionCotizacion.addActionItem(cambiarMoneda);
         mQuickActionCotizacion.addActionItem(acceptItem);
         mQuickActionCotizacion.addActionItem(anularItem);
         //mQuickActionCotizacion.addActionItem(forzarEnvio);
@@ -832,7 +832,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             tv_precioKiloDolar.setText(""+VARIABLES.getDoubleFormaterThowDecimal(totalPrecioKiloDolar) );
             btn_peso.setVisibility(View.VISIBLE);
             tv_montoTotal_soles.setVisibility(View.VISIBLE);
-            tv_montoTotal_dolares.setVisibility(View.VISIBLE);
+            //tv_montoTotal_dolares.setVisibility(View.VISIBLE);
             tv_totalPedidos.setVisibility(View.VISIBLE);
         }
 

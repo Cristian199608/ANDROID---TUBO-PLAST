@@ -24,7 +24,8 @@ public class RequestPermisoUbicacion  {
         int permissionCheckCoarseLocation= ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_COARSE_LOCATION);
         int packag= PackageManager.PERMISSION_GRANTED;
         if (permissionCheckFineLocation !=  packag       ||         permissionCheckCoarseLocation!=packag) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            boolean isRequest2daVez=ActivityCompat.shouldShowRequestPermissionRationale(activity, android.Manifest.permission.ACCESS_FINE_LOCATION);
+            if (isRequest2daVez) {
                 myListener.Result(Permiso_Adroid.IS_PERMISO_POR_CONCENDER);
                 showExplanation("Importante", "Se requiere acceder a la ubicación", android.Manifest.permission.ACCESS_FINE_LOCATION, REQUEST_CODE);
             } else {

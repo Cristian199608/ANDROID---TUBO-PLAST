@@ -1,7 +1,10 @@
 package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
@@ -108,6 +111,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     LocationApiGoogle locationApiGoogle;
     TaskCheckUbicacion taskCheckUbicacion;
+    boolean isForzarPermisoUbicacion=true;
 
     Location LOCATION;
     int DISTACIA_to_Colegio=-1;
@@ -187,6 +191,15 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         }
 
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(taskCheckUbicacion==null){
+            StartUbicacionApiGoogle();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -208,6 +221,12 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
                 if (Permiso_Adroid.IS_PERMISO_DENEGADO==isConcedido){
                     UtilViewMensaje.MENSAJE_simple(GestionVisita3Activity.this, "Permiso denegado", "No podras acceder a la ubicación");
                 }
+                else if (Permiso_Adroid.IS_PERMISO_POR_CONCENDER==isConcedido){
+                    String txtMensaje="Permiso acceso a ubicación falta conceder o bien esta rechazado";
+                    txt_ubicacion.setText(txtMensaje);
+                    txt_ubicacion.setTextColor(getResources().getColor(R.color.red_400));
+                    GlobalFunctions.showCustomToast(GestionVisita3Activity.this, txtMensaje, GlobalFunctions.TOAST_ERROR);
+                }
                 else if (Permiso_Adroid.IS_PERMISO_CONCEDIDO==isConcedido){
                     StartUbicacionApiGoogle();
                 }
@@ -228,6 +247,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
                         }else{
                             locationApiGoogle.checkGPSActivate();
+                            taskCheckUbicacion=null;
                         }
                     }
                 });
@@ -247,11 +267,9 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
             @Override
             public void LastLocation(Location location) {
                 LOCATION=location;
-                if (location!=null){
-                    Log.i(TAG, "StartUbicacionApiGoogle:: LastLocation:: Latitude : " + location.getLatitude() + "Longitude : " + location.getLongitude());
-                }else{
-                    Toast.makeText(GestionVisita3Activity.this, "Error, no se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
-                }
+                if(location==null) return;
+                Log.i(TAG, "StartUbicacionApiGoogle:: LastLocation:: Latitude : " + location.getLatitude() + "Longitude : " + location.getLongitude());
+
                 String direccion_name=VARIABLES.OBTENER_DESCRIPCION_DIRECCIION_from_CORDENADA(GestionVisita3Activity.this, LOCATION.getLatitude(), LOCATION.getLongitude());
                 Location_cambiado_2(LOCATION, direccion_name, true);
             }
@@ -322,7 +340,6 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
         txt_ubicacion.setText("Obteniendo ubicación...");
         dBclasses = new DBclasses(this);
-
         HabilitarCambioCantacto(false);
         if (ORIGEN.equalsIgnoreCase(ActividadCampoAgendadoActivity.TAG) || ORIGEN.equalsIgnoreCase(ReportesPedidosCotizacionYVisitaActivity.TAG)){
 
@@ -500,7 +517,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         //GestionSpinner(SpinnerTipoVisita);
         GestionSpinner(SpinnerTipoActividad);
         GestionSpinner(SpinnerProximaActividad);
-        FAB_enviar_visita.setOnClickListener(V->GuardarGestionVisita());
+        FAB_enviar_visita.setOnClickListener(V->GuardarGestionVisita(false));
     }
     private void Motivo_reprogramacion(){
         UtilView.AlertViewSimpleConEdittext dd=new UtilView.AlertViewSimpleConEdittext(this);
@@ -958,9 +975,30 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     }
 
-    public  void GuardarGestionVisita(){
+    private boolean validarGeolocalizacion(){
+        if((LOCATION==null || LOCATION.getLatitude()==0) && (TIPO_GESTION.equals(VISITA_PLANIFICADA) || TIPO_GESTION.equals(GESTIONAR_VISITA))){
+            new AlertDialog.Builder(this)
+                    .setTitle("Sin geolocalización")
+                    .setIcon(R.drawable.alert)
+                    .setMessage("No se pudo acceder a la ubicación del dispositivo. Verifica " +
+                            "que el permiso de ubicación esté concedido y que la ubicación del celular esté activada." +
+                            "\n\n¿Deseas continuar sin geolocalización?")
+                    .setPositiveButton("Si", (dialog, which) -> GuardarGestionVisita(true))
+                    .setNegativeButton("No", null)
+                    .create().show();
+            return false;
+        }
+        return true;
+    }
+    public  void GuardarGestionVisita(boolean ignorarGeoloca){
 
         int index=0;
+
+        if(!ignorarGeoloca){
+            if(!validarGeolocalizacion()){
+                return;
+            }
+        }
 
         if (TIPO_GESTION.equals(PROGRAMACION_VISITA) || TIPO_GESTION.equals(RE_PROGRAMACION_VISITA)){
             if (TextUtils.isEmpty(et_fecha_visita_manual.getText().toString())){
@@ -1325,6 +1363,8 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         itemCabecera.setIsAplicaInstalacion(0);
         itemCabecera.setObsDespacho("");
         itemCabecera.setCategoriaClienteVenta("");
+        itemCabecera.setCategoriaCliente("");
+        itemCabecera.setCodigo_lista_precio("");
         itemCabecera.setIsAplica_dsc_sig_categoria(0);
         itemCabecera.setIsAplicaNC(0);
         itemCabecera.setVolumenTotal(0);
@@ -1416,5 +1456,26 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
     private void EnviarSanVisitas(final String oc_numero){
         WS_San_Visitas ws_san_visitas=new WS_San_Visitas(GestionVisita3Activity.this, dBclasses);
         ws_san_visitas.EnviarVisitasByOc_numero(oc_numero);
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, String permissions[], int[] grantResults) {
+        if (grantResults.length > 0) {
+            boolean permitido = true;
+            for (int a = 0; a < grantResults.length; a++) {
+                if (grantResults[a] != PackageManager.PERMISSION_GRANTED) {
+                    permitido = false;
+                    break;
+                }
+            }
+            if(requestCode==Permiso_Adroid.PERMISO_PARA_ACCEDER_A_LOCALIZACION){
+               if(permitido) StartUbicacionApiGoogle();
+               else if(isForzarPermisoUbicacion) {
+                   isForzarPermisoUbicacion=false;
+                   Star_Check_Permiso_Ubicacion();
+               }
+            }
+
+        }
     }
 }

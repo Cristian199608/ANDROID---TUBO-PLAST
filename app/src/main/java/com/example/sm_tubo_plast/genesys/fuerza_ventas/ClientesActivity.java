@@ -348,7 +348,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem itemPedido = new ActionItem(ID_PEDIDO, "Orden Venta",R.drawable.pedidopn);
         ActionItem itemCobranza = new ActionItem(ID_COBRANZA, "Estado de Cuenta", R.drawable.icon_coins_24dp);
         ActionItem uploadItem = new ActionItem(ID_NO_VENTA, "Motivo no venta", R.drawable.icon_stop_24dp);
-        ActionItem gestionVisita = new ActionItem(ID_VISITA_CLIENTE, "Gestión visita", R.drawable.icon_man_24dp);
+        ActionItem gestionVisita = new ActionItem(ID_VISITA_CLIENTE, "Gestión Visita", R.drawable.icon_man_24dp);
         ActionItem programar_visita = new ActionItem(ID_PROGRAMACION_VISITA_CLIENTE, "Programar Visita", R.drawable.icon_man_24dp);
         ActionItem observacion = new ActionItem(ID_OBSERVACION, "Observacion", R.drawable.alert);
         //ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);

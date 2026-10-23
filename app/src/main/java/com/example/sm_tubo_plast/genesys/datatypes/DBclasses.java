@@ -7014,19 +7014,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 	// metodo para el envio de pendientes con el metodo json
 	// Obtiene todos los pedidos con FLAG = P
 	public ArrayList<DB_ObjPedido> getTodosObjPedido_json_flagp() {
-		String addWhere = " AND flag IN ('P','I') " +
-				" AND (flg_aprobacion = 0 " +
-				" or NOT EXISTS (" +// o si es que no hay pendientes por aprobacion o que no hay desaprobados
-				"     SELECT 1 FROM workflow_pedido wp " +
-				"     WHERE wp.estado IN (0, -1) " +
-				"		and wp.oc_numero = pedido_cabecera.oc_numero " +
-				" )" +
-				") " +
-				"and NOT EXISTS(" +
-				"		select 1 from pedido_detalle pd " +
-				"		where pd.flagStockValido=0 " +
-				"		and pd.oc_numero = pedido_cabecera.oc_numero " +
-				")";
+		String addWhere = " AND flag IN ('P','I') ";
 		return  getObjPedidoParaEnviar_by(addWhere);
 	}
 
@@ -13780,7 +13768,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			Nreg.put("isAplicaNC", cabecera.getIsAplicaNC());
 			Nreg.put("volumenTotal", cabecera.getVolumenTotal());
 			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
-
+			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
+			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
 
 
 

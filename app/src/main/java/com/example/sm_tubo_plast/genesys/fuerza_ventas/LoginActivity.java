@@ -50,6 +50,8 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetMapDialog;
+import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
+import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.SampleAlarmReceiver;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
@@ -308,7 +310,6 @@ public class LoginActivity extends AppCompatActivity {
 //        txtPassword.setText("5QUOLZU");
 //        sincronizarProductoPrecio();
         //testMapa();
-
     }
     public void GoSincronizarInicial(View view){
         Intent iconfig = new Intent(getApplicationContext(),SincronizarActivity.class);

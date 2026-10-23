@@ -48,6 +48,8 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
     Location location;
     Listener mylistener;
 
+    boolean isMostrarActivarGPS=true;
+
     public LocationApiGoogle(Activity activity, Listener listener) {
         this.activity = activity;
         this.mylistener = listener;
@@ -121,6 +123,7 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
     }
 
     public void checkGPSActivate() {
+        if(!isMostrarActivarGPS) return;
 
         AlertDialog.Builder   dialog=new AlertDialog.Builder(activity);
         dialog.setIcon(activity.getResources().getDrawable(R.mipmap.ic_launcher_round));
@@ -134,9 +137,8 @@ public class LocationApiGoogle implements GoogleApiClient.ConnectionCallbacks, G
             }
         });
         dialog.setNegativeButton("Omitir", null);
-
-
         dialog.show();
+        isMostrarActivarGPS=false;
 
     }
 
