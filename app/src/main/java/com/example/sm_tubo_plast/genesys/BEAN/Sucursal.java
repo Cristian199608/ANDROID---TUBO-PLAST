@@ -6,7 +6,8 @@ public class Sucursal {
 	private String direccion;
 	private String descripcionCorta;
 	private String docAdicional;
-	
+	private String txtUbigeo;
+
 	public String getCodigoCliente() {
 		return codigoCliente;
 	}
@@ -37,7 +38,12 @@ public class Sucursal {
 	public void setDocAdicional(String docAdicional) {
 		this.docAdicional = docAdicional;
 	}
-	
-	
 
+	public String getTxtUbigeo() {
+		return txtUbigeo;
+	}
+
+	public void setTxtUbigeo(String txtUbigeo) {
+		this.txtUbigeo = txtUbigeo;
+	}
 }

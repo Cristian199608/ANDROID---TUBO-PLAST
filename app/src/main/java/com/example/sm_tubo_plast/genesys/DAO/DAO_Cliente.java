@@ -140,7 +140,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
     
 
     public ArrayList<Sucursal> getSucursales(String codigoCliente) {
-		String rawQuery = "select des_corta,item,docAdicional from direccion_cliente inner join cliente "
+		String rawQuery = "select des_corta,item,docAdicional, ubigeo, codprv, coddep from direccion_cliente inner join cliente "
 				+ "on direccion_cliente.codcli=cliente.codcli where cliente.codcli='"+ codigoCliente + "'";
 		Log.i(TAG+":getSucursales", rawQuery);
 
@@ -155,6 +155,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				item.setDescripcionCorta(cursor.getString(0));
 				item.setItem(cursor.getString(1));
 				item.setDocAdicional(cursor.getString(2));
+				item.setTxtUbigeo(cursor.getString(3)+" - "+cursor.getString(4)+" - "+cursor.getString(5));
 				Log.d(TAG, "Descripcion Corta: "+cursor.getString(0)+"  "+cursor.getString(1));
 				lista.add(item);
 			} while (cursor.moveToNext());
@@ -414,8 +415,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 						"longitud, " +
 						"d.estado "+
 						"FROM cliente c "+
-						"inner JOIN "+ DBtables.Direccion_cliente.TAG +" d ON c.codcli = d.codcli "+
-						"WHERE d.latitud!=0 and (c.nomcli like '"+texto_buscar+"' "+
+						"inner JOIN "+ DBtables.LugarEntrega.TAG +" d ON c.codcli = d.codigoCliente "+
+						"WHERE cast(d.latitud as numeric)!=0 and (c.nomcli like '"+texto_buscar+"' "+
 						"or d.telefono like '"+texto_buscar+"' "+
 						"or d.direccion like '"+texto_buscar+"')" +
 						"and c.stdcli='1' ";
@@ -430,9 +431,9 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 	public  int getClienteDirrectionAll(){
 		String rawQuery = "select  distinct(ruccli), count(*)  "+
 				" from "
-				+ "znf_programacion_clientes inner join cliente on znf_programacion_clientes.codcli=cliente.codcli "
-				+"inner join "+ DBtables.Direccion_cliente.TAG+" dc on   dc.codcli=cliente.codcli and dc.item=item_dircli "
-				+"where cliente.stdcli='1'    ";
+				+ " cliente c "
+				+"inner join "+ DBtables.LugarEntrega.TAG+" dc on   c.codcli=dc.codigoCliente  "
+				+"where c.stdcli='1'    ";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery(rawQuery, null);

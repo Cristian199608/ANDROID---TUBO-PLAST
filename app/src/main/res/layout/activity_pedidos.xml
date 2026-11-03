@@ -887,7 +887,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:gravity="end"
-                                android:text="Aplica descuento pronto pago 2%"
+                                android:text="Aplica descuento pronto pago 0%"
                                 android:textSize="14sp"
                                 android:paddingBottom="5dp"
                                 />

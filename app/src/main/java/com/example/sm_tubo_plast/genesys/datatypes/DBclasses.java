@@ -10367,8 +10367,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		// TODO Auto-generated method stub
 		String rawQuery;
 
-		rawQuery = "select * from Servidor where IN_SERV_codigo_ID='" + codigo
-				+ "'";
+		rawQuery = "select * from Servidor " +
+				"where (IN_SERV_codigo_ID='" + codigo+ "' or 'TODOS'='"+codigo+"')";
 
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cur = db.rawQuery(rawQuery, null);
@@ -12673,12 +12673,16 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			String[] argx=null;
 			for (int i = 0; i < jArray.length(); i++) {
 				jsonData = jArray.getJSONObject(i);
-				argx=new String[]{jsonData.getString(DBtables.LugarEntrega.CODIGO_CLIENTE).trim(),
+				if(jsonData.getDouble(DBtables.LugarEntrega.latitud)==0.0) continue;
+				//-----------------------------------------------------------------------------------------------
+					argx=new String[]{jsonData.getString(DBtables.LugarEntrega.CODIGO_CLIENTE).trim(),
 						jsonData.getString(DBtables.LugarEntrega.ITEM_SUCURSAL).trim(),
 						jsonData.getString(DBtables.LugarEntrega.CODIGO_LUGAR).trim()};
 
 				cv.put(DBtables.LugarEntrega.latitud,jsonData.getDouble(DBtables.LugarEntrega.latitud));
 				cv.put(DBtables.LugarEntrega.longitud,jsonData.getDouble(DBtables.LugarEntrega.longitud));
+				cv.put(DBtables.LugarEntrega.estado,"L");//geolocalizado
+
 				db.update(DBtables.LugarEntrega.TAG, cv, where,argx);
 				Log.i(TAG+":sincronizar_lugarEntrega:", i+" "+jsonData.getString(DBtables.LugarEntrega.CODIGO_LUGAR).trim()+"  "+jsonData.getString(DBtables.LugarEntrega.DIRECCION_ENTREGA).trim());
 			}
@@ -14197,6 +14201,25 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 		return valor;
 	}
 
+	public  int getUsecodUserandPass(String user, String pass) {
+		String rawQuery = "SELECT usecod  FROM "+DBtables.Usuarios.TAG+" " +
+				"WHERE useusr = '"+user+"' and usepas ='"+pass+"'";
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor cur = db.rawQuery(rawQuery, null);
+
+		Log.w(TAG+"raw query:",rawQuery);
+		int valor=0;
+		while (cur.moveToNext()) {
+			valor = cur.getInt(0);
+		}
+		Log.w(TAG,"Luego del query");
+		Log.w(TAG+":getCodigoNivelByUserandPass:",""+valor);
+		cur.close();
+		db.close();
+		return valor;
+	}
+
 	public ArrayList<CTA_INGRESOSPDF> getCTA_INGRESOSPDF(String codcli) {
 		String rawQuery = "select " +
 				"ci.serie_doc, " +
@@ -14745,6 +14768,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("direccionFiscal", txtUbigeo);
 				values.put("monedaDocumento", PedidosActivity.MONEDA_NACIONAL);
 				values.put("monedaLimCred", PedidosActivity.MONEDA_NACIONAL);
+				values.put("stdcli", "1");
 
 				long a = db.insertWithOnConflict(DBtables.Cliente.TAG, null,values, SQLiteDatabase.CONFLICT_IGNORE);
 				//-------------------------------zonificacion----------------------------------------------------------------
@@ -14797,10 +14821,12 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					values.put(DBtables.Direccion_cliente.UBIGEO,cliente.getDistrito());
 					values.put(DBtables.Direccion_cliente.DES_CORTA, cliente.getDireccion());
 
-					values.put(Direccion_cliente.LATITUD, cliente.getLatitud().trim().isEmpty()?"0.0":cliente.getLatitud());
-					values.put(Direccion_cliente.LONGITUD, cliente.getLongitud().trim().isEmpty()?"0.0":cliente.getLongitud());
+					values.put(Direccion_cliente.LATITUD, Double.parseDouble(cliente.getLatitud().trim().isEmpty()?"0.0":cliente.getLatitud()));
+					values.put(Direccion_cliente.LONGITUD, Double.parseDouble(cliente.getLongitud().trim().isEmpty()?"0.0":cliente.getLongitud()));
 					values.put(DBtables.Direccion_cliente.DOC_ADICIONAL,"");
-					values.put(DBtables.Direccion_cliente.ESTADO,"P");
+					if (Double.parseDouble(cliente.getLatitud().trim().isEmpty() ? "0.0" : cliente.getLatitud())!=0.0) {
+						values.put(DBtables.Direccion_cliente.ESTADO,"L");
+					}else values.put(DBtables.Direccion_cliente.ESTADO,"O");
 					values.put(Direccion_cliente.altitud,"0");
 					long az = db.insertWithOnConflict(DBtables.Direccion_cliente.TAG, null, values,SQLiteDatabase.CONFLICT_IGNORE);
 				}
@@ -14818,12 +14844,14 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 					values.put("codigoDistrito", cliente.getDistrito());
 					values.put("codigo_provincia", cliente.getProvincia());
 					values.put("codigo_departamento", cliente.getDepartamento());
-					values.put("latitud", cliente.getLatitud().trim().isEmpty() ? "0.0" : cliente.getLatitud());
-					values.put("longitud", cliente.getLongitud().trim().isEmpty() ? "0.0" : cliente.getLongitud());
+					values.put("latitud", Double.parseDouble(cliente.getLatitud().trim().isEmpty() ? "0.0" : cliente.getLatitud()));
+					values.put("longitud", Double.parseDouble(cliente.getLongitud().trim().isEmpty() ? "0.0" : cliente.getLongitud()));
 					values.put("telefono", cliente.getTelefono());
 					values.put("contacto", cliente.getContacto());
 					values.put("cargo_contacto", cliente.getCargo_contacto());
-					values.put("estado", cliente.getLatitud().trim().isEmpty() ? "O" : "E");
+					if (Double.parseDouble(cliente.getLatitud().trim().isEmpty() ? "0.0" : cliente.getLatitud())!=0.0) {
+						values.put("estado", "E");
+					}else values.put("estado", "O");
 
 					long a = db.insertWithOnConflict(DBtables.LugarEntrega.TAG, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 					a = 1;

@@ -4,6 +4,7 @@ public class PedidoDetalleDescuento {
     public static final String TIPO_DSCTO_CATEGORIA_PRECIO = "categoria_precio";
     public static final String TIPO_DSCTO_PRONTO_PAGO_CONTADO = "pronto_pago_contado";
     public static final String TIPO_DSCTO_BONIFICACION = "bonificacion";
+    public static final String TIPO_DSCTO_MANUAL_USUARIO = "dscto_manual_usuario";
 
     private String oc_numero;
     private String codpro;

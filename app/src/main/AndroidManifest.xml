@@ -29,6 +29,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity">
         <activity
+            android:name=".AprobacionesPedidoWebViewActivity"
+            android:exported="false" />
+        <activity
             android:name=".AnticiposClienteActivity"
             android:exported="false" />
         <activity
@@ -248,6 +251,12 @@
             android:name=".genesys.fuerza_ventas.AsignacionClienteXVendedorWebActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeNewClient" />
+
+        <activity
+            android:name=".genesys.fuerza_ventas.web.AprobacionesPedidoWebViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeNewClient" />
+
         <activity
             android:name=".genesys.fuerza_ventas.LoginActivity"
             android:exported="true"
@@ -271,8 +280,7 @@
             android:name=".genesys.fuerza_ventas.ConsultaComprobantesOnlineActivity"
             android:exported="false"
             android:theme="@style/AppThemeNewClient" />
-
-    <activity
+        <activity
             android:name=".genesys.fuerza_ventas.cliente.AnticiposCliente.AnticiposClienteActivity"
             android:exported="false" />
 

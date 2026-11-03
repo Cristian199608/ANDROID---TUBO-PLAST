@@ -28,8 +28,11 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.CalendarioNoLaborable;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultListaVendedores;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
@@ -46,10 +49,12 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_ObjPedido;
+import com.example.sm_tubo_plast.genesys.datatypes.DB_Servidor;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetMapDialog;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DatePickerMaterial.MaterialDatePickerCustom;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
@@ -227,7 +232,7 @@ public class LoginActivity extends AppCompatActivity {
                     GlobalFunctions.showCustomToast(LoginActivity.this, "Ingrese usuario y/o contraseña", GlobalFunctions.TOAST_DONE);
                     return;
                 }
-                loginContol(Usuario, Contrasena);
+                new AsynSyncronizarUserSAEMOVIL().execute();
                 if(true)return;
                 String ruc = "";
                 // verificamos si estan en blanco
@@ -288,8 +293,6 @@ public class LoginActivity extends AppCompatActivity {
 //                ""+carpeta_contenedor,
 //                ""+nombreArchivo
 //        );
-
-
     }
     private void cambiarRutaHttp(){
         dbusuarios.cambiarRutaHttpServicioWeb();
@@ -310,6 +313,7 @@ public class LoginActivity extends AppCompatActivity {
 //        txtPassword.setText("5QUOLZU");
 //        sincronizarProductoPrecio();
         //testMapa();
+
     }
     public void GoSincronizarInicial(View view){
         Intent iconfig = new Intent(getApplicationContext(),SincronizarActivity.class);
@@ -432,7 +436,10 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (result.equals("vendedor")) {
-                guardarDatosSession(user, pass, codVendedor, "", "", "", "", "");
+                guardarDatosSession(user, pass, codVendedor,
+                        "",
+                        "",
+                        "", "", "", false);
             } else if (result.equals("chofer")) {
                 Intent intentChofer = new Intent(getApplicationContext(),
                         MenuLiquidacionActivity.class);
@@ -446,24 +453,106 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     }
+    class AsynSyncronizarUserSAEMOVIL extends AsyncTask<String, String, String>  {
 
-    private void guardarDatosSession(String user, String pass, String token,
+        String error=null;
+
+        protected void onPreExecute() {
+            // para el progress dialog
+            pDialog = new ProgressDialog(LoginActivity.this);
+            pDialog.setMessage("Autenticando....");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        protected String doInBackground(String... params) {
+            DBSync_soap_manager _soap = new DBSync_soap_manager(LoginActivity.this);
+            DB_Servidor server= dbusuarios.getEntityServidorxCodigo("TODOS");
+            try {
+                _soap.Sync_tabla_configuracion(
+                        server.getTX_SERV_servidorBD(),
+                        server.getTX_SERV_nombreBD(),
+                        server.getTX_SERV_usuario(),
+                        server.getTX_SERV_contrasena(),
+                        server.getTX_SERV_servicioWeb()
+                );
+                _soap.Sync_tabla_usuarios(
+                        server.getTX_SERV_servidorBD(),
+                        server.getTX_SERV_nombreBD(),
+                        server.getTX_SERV_usuario(),
+                        server.getTX_SERV_contrasena(),
+                        server.getTX_SERV_servicioWeb()
+                );
+                _soap.Sync_tabla_vendedores(
+                        server.getTX_SERV_servidorBD(),
+                        server.getTX_SERV_nombreBD(),
+                        server.getTX_SERV_usuario(),
+                        server.getTX_SERV_contrasena(),
+                        server.getTX_SERV_servicioWeb()
+                );
+
+                error=null;
+            } catch (Exception e) {
+                e.printStackTrace();
+                error="Error, no se puedo sincronizar datos de usuarios de SAEMOVIL";
+            }
+            return error;
+        }
+
+        /*
+         * Una vez terminado doInBackground segun lo que halla ocurrido pasamos
+         * a la sig. activity o mostramos error
+         */
+        protected void onPostExecute(String result) {
+
+            pDialog.dismiss();// ocultamos progess dialog.
+            if(error!=null){
+                GlobalFunctions.showCustomToast(LoginActivity.this, error, GlobalFunctions.TOAST_ERROR);
+                return;
+            }
+            codVendedor = dbusuarios.getCodVendedor(Usuario, Contrasena);
+
+            if(codVendedor!=null && codVendedor.trim().length()>0){
+                guardarDatosSession(Usuario,
+                        Contrasena,
+                        "admin",
+                        ""+codVendedor,
+                        ""+dbusuarios.getNombreVendedor(codVendedor),
+                        "",
+                        "",
+                        "0",
+                        false
+                        );
+                return;
+            }
+            loginContol(Usuario, Contrasena);
+
+        }
+    }
+
+    private void guardarDatosSession(String user,
+                                     String pass,
+                                     String token,
                                      String codVendedor,
                                      String nombreVendedor,
                                      String telefonoVendedor,
                                      String emailVendedor,
-                                     String codigo_lista_precio){
+                                     String codigo_lista_precio,
+                                     boolean registrar){
         session.setRecordarInicioSession(ckRecordarInicioSession.isChecked());
         session.createLoginSession(user, pass);
         session.setCodigoVendedor(codVendedor);
         session.setNombreVendedor(nombreVendedor);
         session.setToken(token);
 
-        dbusuarios.registrarDatosUsuarioLogin(codVendedor, nombreVendedor,telefonoVendedor, emailVendedor, codigo_lista_precio);
+        if(registrar)dbusuarios.registrarDatosUsuarioLogin(codVendedor, nombreVendedor,telefonoVendedor, emailVendedor, codigo_lista_precio);
         SincronizarActivity.AsignarPreferenciaCodigoNivel(dbusuarios, LoginActivity.this);
+        goMenuPrincipal(codVendedor);
 
-        Intent intentVendedor = new Intent(getApplicationContext(),
-                MenuPrincipalActivity.class);
+    }
+    private void goMenuPrincipal(String codVendedor){
+        Intent intentVendedor = new Intent(getApplicationContext(),MenuPrincipalActivity.class);
         intentVendedor.putExtra("codven", codVendedor);
 
         startActivity(intentVendedor);
@@ -489,7 +578,6 @@ public class LoginActivity extends AppCompatActivity {
 
         String ruc;
         int valor = 0;
-
         protected void onPreExecute() {
             // para el progress dialog
             pDialog = new ProgressDialog(LoginActivity.this);
@@ -502,15 +590,12 @@ public class LoginActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             // obtnemos usr y pass
             ruc = params[0];
-            DBSync_soap_manager _soap = new DBSync_soap_manager(
-                    LoginActivity.this);
+            DBSync_soap_manager _soap = new DBSync_soap_manager(LoginActivity.this);
 
-            ConnectionDetector connection = new ConnectionDetector(
-                    getApplicationContext());
+            ConnectionDetector connection = new ConnectionDetector(getApplicationContext());
             valor = 0;
             DB_Empresa entityEmpresa = new DB_Empresa();
-            if (connection
-                    .hasActiveInternetConnection2() == true) {
+            if (connection.hasActiveInternetConnection2() == true) {
                 if (login == 0) {
                     valor = _soap.getEmpresa(ruc);
                     if (valor == 1) {
@@ -521,14 +606,14 @@ public class LoginActivity extends AppCompatActivity {
                                 entityEmpresa.getBd(), Usuario,
                                 Contrasena);
                         if (valor == 2) {
-                            _soap.Sync_tabla_vendedoresOnline("localhost",
-                                    entityEmpresa.getBd(),
-                                    entityEmpresa.getUsuario(),
-                                    entityEmpresa.getClave());
-                            _soap.Sync_tabla_usuarios_Online("localhost",
-                                    entityEmpresa.getBd(),
-                                    entityEmpresa.getUsuario(),
-                                    entityEmpresa.getClave());
+//                            _soap.Sync_tabla_vendedoresOnline("localhost",
+//                                    entityEmpresa.getBd(),
+//                                    entityEmpresa.getUsuario(),
+//                                    entityEmpresa.getClave());
+//                            _soap.Sync_tabla_usuarios_Online("localhost",
+//                                    entityEmpresa.getBd(),
+//                                    entityEmpresa.getUsuario(),
+//                                    entityEmpresa.getClave());
                             codVendedor = dbusuarios.getCodVendedor(Usuario,
                                     Contrasena);
                         }
@@ -748,7 +833,8 @@ public class LoginActivity extends AppCompatActivity {
                         vendedorFIND.getNombre_vendedor(),
                         vendedorFIND.getEmail_vendedor(),
                         vendedorFIND.getMobile_vendedor(),
-                        String.valueOf(vendedorFIND.getLista_precio_vendedor())
+                        String.valueOf(vendedorFIND.getLista_precio_vendedor()),
+                        true
                 );
             }
         });

@@ -294,5 +294,33 @@
     </style>
 
 
+
+
+        <!-- Tema exclusivo para MaterialDatePicker -->
+        <style name="ThemeOverlay.MiDatePicker"
+            parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+
+            <item name="colorPrimary">#1976D2</item>
+            <item name="colorOnPrimary">#FFFFFF</item>
+            <item name="colorSurface">#FFFFFF</item>
+            <item name="colorOnSurface">#212121</item>
+
+            <item name="materialCalendarStyle">
+                @style/Widget.MiCalendario
+            </item>
+
+        </style>
+
+        <!-- Estilo del calendario -->
+        <style name="Widget.MiCalendario"
+            parent="Widget.MaterialComponents.MaterialCalendar">
+
+            <item name="colorSurface">#FFFFFF</item>
+            <item name="colorOnSurface">#212121</item>
+
+        </style>
+
+
+
     <!-- Start with the Holographic Light theme -->
 </resources>

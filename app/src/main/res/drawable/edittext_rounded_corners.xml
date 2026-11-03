@@ -49,10 +49,10 @@
 <item android:state_enabled="true">
     <shape>
         <solid android:color="#C9DDF9"/>
-        <padding 
-                android:left="15dp"
+        <padding
+                android:left="10dp"
                 android:top="4dp"
-                android:right="15dp"
+                android:right="10dp"
                 android:bottom="4dp"
             />
     </shape>

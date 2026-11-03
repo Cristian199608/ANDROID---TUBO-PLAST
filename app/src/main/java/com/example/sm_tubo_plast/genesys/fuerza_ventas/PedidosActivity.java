@@ -3,7 +3,6 @@ package com.example.sm_tubo_plast.genesys.fuerza_ventas;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -53,12 +52,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.MaestroCategoriaDescuento;
 import com.example.sm_tubo_plast.constans.pedidos.maestroCategoriaDscto.Opcion;
 import com.example.sm_tubo_plast.constans.pedidos.workflow.WorkflowAprobaciones;
 import com.example.sm_tubo_plast.genesys.BEAN.Almacen;
+import com.example.sm_tubo_plast.genesys.BEAN.CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente;
 import com.example.sm_tubo_plast.genesys.BEAN.ClienteCondicionVenta;
 import com.example.sm_tubo_plast.genesys.BEAN.FormaPago;
@@ -78,6 +79,7 @@ import com.example.sm_tubo_plast.genesys.BEAN.Transporte;
 import com.example.sm_tubo_plast.genesys.BEAN.Turno;
 import com.example.sm_tubo_plast.genesys.BEAN.Model_bonificacion;
 import com.example.sm_tubo_plast.genesys.BEAN.WorkflowPedido;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Pedido;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_PedidoAnticipoDetalle;
@@ -108,6 +110,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DB_PromocionDetalle;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_RegistroBonificaciones;
 import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogBuscarProductoVenta;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DatePickerMaterial.MaterialDatePickerCustom;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_bonificaciones;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.cliente.AnticiposCliente.AnticiposClienteActivity;
@@ -139,6 +142,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 
 import me.piruin.quickaction.ActionItem;
@@ -564,41 +568,38 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        btn_fechaPedido.setOnClickListener(new View.OnClickListener() {
+        DAO_CalendarioNoLaborable dao_calendarioNoLaborable=new DAO_CalendarioNoLaborable(dbclass);
+        ArrayList<CalendarioNoLaborable> lista = dao_calendarioNoLaborable.getData();
+        ArrayList<String> lisNolaborable=new ArrayList<>();
+        for (CalendarioNoLaborable calendarioNoLaborable : lista) {
+            lisNolaborable.add(calendarioNoLaborable.getFecha());
+        }
 
+        btn_fechaPedido.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Process to get Current Date
-                final Calendar c = Calendar.getInstance();
-                c.add(Calendar.DAY_OF_MONTH, 1);
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
+                final Calendar fechaMin = Calendar.getInstance(TimeZone.getTimeZone("UTC"));///required UTC
+                int addDias= fechaMin.get(Calendar.HOUR_OF_DAY) < 12?1:2;
+                fechaMin.set(Calendar.HOUR_OF_DAY, 0);
+                fechaMin.set(Calendar.MINUTE, 0);
+                fechaMin.set(Calendar.SECOND, 0);
+                fechaMin.set(Calendar.MILLISECOND, 0);
+                fechaMin.add(Calendar.DAY_OF_MONTH, addDias);
 
-                // Launch Date Picker Dialog
-                DatePickerDialog dpd = new DatePickerDialog(PedidosActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth) {
-                                int monthOfYear_true = monthOfYear +1 ;
-                                String pickerMonth=String.valueOf(monthOfYear_true),pickerDay=String.valueOf(dayOfMonth);
-                                if (dayOfMonth<10)pickerDay = "0"+dayOfMonth;
-                                if (monthOfYear_true<10) pickerMonth = "0"+(monthOfYear_true);
+                boolean sabadoNoPermitido = spn_turno.getSelectedItem().toString().equalsIgnoreCase("tarde");
 
-                                String fechaEntregaFormat = pickerDay+"/"+pickerMonth+"/"+year;
-                                if (!isValidDiaSabadoYDomingo(fechaEntregaFormat)) {
-                                    return;
-                                }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                MaterialDatePickerCustom dd=new MaterialDatePickerCustom(fragmentManager);
+                dd.show(lisNolaborable,fechaMin, sabadoNoPermitido,new MaterialDatePickerCustom.MyCallback() {
+                    @Override
+                    public void result(String fechaddMMyyyy) {
+                        edt_fechaPedido.setError(null);
+                        edt_fechaPedido.setText(fechaddMMyyyy);
+                        fechaEntrega = fechaddMMyyyy;
+                    }
+                });
 
-                                edt_fechaPedido.setError(null);
-                                edt_fechaPedido.setText(fechaEntregaFormat);
-                                fechaEntrega = fechaEntregaFormat;
-                            }
-                        }, year, month, day);
-
-
-                dpd.getDatePicker().setMinDate(c.getTimeInMillis());
-                dpd.show();
             }
         });
 
@@ -1331,12 +1332,17 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
         listaTipoDespacho = DAO_registrosGeneralesMovil.getTipoDespacho();
         ArrayList<CharSequence> tiposDespacho = new ArrayList<CharSequence>();
+        int indexDefault=0;
         for (int i = 0; i < listaTipoDespacho.size(); i++) {
             tiposDespacho.add(listaTipoDespacho.get(i).getValor());
+            if(listaTipoDespacho.get(i).getValor().toLowerCase().contains("interno")){
+                indexDefault=i;
+            }
         }
         spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,tiposDespacho);
         spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spn_tipoDespacho.setAdapter(spinner_adapter);
+        spn_tipoDespacho.setSelection(indexDefault);
 
         //LISTA TURNOO
         listaTurnos = DAO_registrosGeneralesMovil.getTurnos();
@@ -1397,7 +1403,7 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
             listaSucursales = DAO_cliente.getSucursales(codigoCliente);
             ArrayList<CharSequence> sucursales = new ArrayList<>();
             for (int i = 0; i < listaSucursales.size(); i++) {
-                sucursales.add(listaSucursales.get(i).getItem() + " - " + listaSucursales.get(i).getDescripcionCorta());
+                sucursales.add(listaSucursales.get(i).getItem() + " - " + listaSucursales.get(i).getDescripcionCorta()+" | "+listaSucursales.get(i).getTxtUbigeo());
             }
             ArrayAdapter<CharSequence> spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,sucursales);
             spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -1412,7 +1418,12 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
                 listaLugarEntrega = DAO_cliente.getPuntoEntrega(codigoCliente, listaSucursales.get(spn_sucursal.getSelectedItemPosition()).getItem());
                 ArrayList<CharSequence> lugaresEntrega = new ArrayList<>();
                 for (int i = 0; i < listaLugarEntrega.size(); i++) {
-                    lugaresEntrega.add(listaLugarEntrega.get(i).getDireccionEntrega());
+                    lugaresEntrega.add(
+                            listaLugarEntrega.get(i).getDireccionEntrega()
+                            +" | "+listaLugarEntrega.get(i).getCodigoDistrito()
+                            +" - "+listaLugarEntrega.get(i).getCodigo_provincia()
+                            +" - "+listaLugarEntrega.get(i).getCodigo_departamento()
+                    );
                 }
                 spinner_adapter = new ArrayAdapter<CharSequence>(getApplicationContext(), R.layout.spinner_item,lugaresEntrega);
                 spinner_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -1542,6 +1553,8 @@ public class PedidosActivity extends AppCompatActivity implements View.OnClickLi
 
     private void mostrarU_ocultarDsctoProntoPago(String nombre) {
         swAplicaDsctoProntoPago.setVisibility(View.GONE);
+        double dsctX=Double.parseDouble(dbclass.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
+        swAplicaDsctoProntoPago.setText("Aplica descuento pronto pago "+dsctX+"%");
         swAplicaDsctoProntoPago.setChecked((ped_cab!=null && ped_cab.getDsctProntoPagoContado()>0.0));
         if(nombre.toLowerCase().contains("contado")
                 && listaFormaPago.size()>0
@@ -4240,23 +4253,24 @@ private void EnvalularMoneda(){
                     final double percepcion = data.getDoubleExtra("percepcion", 0.0);
                     double precioPercepcion = data.getDoubleExtra("precioPercepcion", 0.0);
                     int fact_conv 			= data.getIntExtra("fact_conv", 0);
-                    final double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
-                    final String precioLista= data.getStringExtra("precioLista");
+                    double precio 	= data.getDoubleExtra("precioUnidad", 0.0);
+                    final double precioLista= data.getDoubleExtra("precioLista", 0.0);
                     final String sec_politica= data.getStringExtra("sec_politica");
-                    final double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
+                    double porcentaje_desc= data.getDoubleExtra("porcentaje_desc", 0);
                     final double porcentaje_desc_extra= data.getDoubleExtra("porcentaje_desc_extra", 0);
                     final double descuentoProntoPagoContado= data.getDoubleExtra("descuentoProntoPagoContado", 0);
+                    final double dsctoAdicionalVend= data.getDoubleExtra("dsctoAdicionalVend", 0);
                     final boolean agregarComoBonificacion= data.getBooleanExtra("agregarComoBonificacion", false);
                     final int flagStockValido= data.getIntExtra("flagStockValido", 0);
 
 
-                    double precioNetoLista= VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioLista) * cantidad);
+                    double precioNetoLista= VARIABLES.getDoubleFormaterThreeDecimal(precioLista * cantidad);
                     String subtotal 		= ""+VARIABLES.getDoubleFormaterThreeDecimal(precio*cantidad);
                     String subtotal_peso 	= ""+VARIABLES.getDoubleFormaterThreeDecimal(peso*cantidad);
                     String percepcionxCantidad = ""+VARIABLES.getDoubleFormaterThreeDecimal(precioPercepcion * cantidad);
                     double volumenTotal 	= VARIABLES.getDoubleFormaterFiveDecimal(volumen*cantidad);
 
-                    String descuento = ""+VARIABLES.getDoubleFormaterThreeDecimal(precioNetoLista - Double.parseDouble(subtotal));
+                    double descuento = VARIABLES.getDoubleFormaterThreeDecimal(precioNetoLista - Double.parseDouble(subtotal));
 
                     Log.d("onActivityResult", "org: "+requestAccionProducto);
                     Log.d("onActivityResult", "descripcion: "+descripcion);
@@ -4271,6 +4285,7 @@ private void EnvalularMoneda(){
                     Log.d("onActivityResult", "precio: "+precio);
                     Log.d("onActivityResult", "precioLista: "+precioLista);
                     Log.d("onActivityResult", "descuento: "+descuento);
+                    Log.d("onActivityResult", "dsctoAdicionalVend: "+dsctoAdicionalVend);
                     Log.d("onActivityResult", "subtotal: "+subtotal);
                     Log.d("onActivityResult", "subtotal_peso: "+subtotal_peso);
                     Log.d("onActivityResult", "percepcionxCantidad: "+percepcionxCantidad);
@@ -4298,32 +4313,45 @@ private void EnvalularMoneda(){
 
                     if (PUEDE_AGREGAR) {
                         //-------------------------------descuento detallado----------------------------------------------------------------
-                        double porcentaje_descW=porcentaje_desc;
-                        double descuentoW=Double.parseDouble(descuento);
+                        double pcjDsctoTotal=0;
+                        descuento=0;
+                        precio=precioLista;
                         ArrayList<PedidoDetalleDescuento> descuentosMotivos=new ArrayList<>();
-                        if(descuentoProntoPagoContado>0.0){
-                            porcentaje_descW=VARIABLES.getDoubleFormaterThowDecimal(porcentaje_desc-descuentoProntoPagoContado);
-                            descuentoW=VARIABLES.getDoubleFormaterThreeDecimal((Double.parseDouble(precioLista)*(porcentaje_descW/100)*cantidad));
-                            double descuentoSolesProntoPago = VARIABLES.getDoubleFormaterThreeDecimal(
-                                    ((Double.parseDouble(precioLista)*(descuentoProntoPagoContado/100))*cantidad)
-                            );
+                        if(porcentaje_desc>0.0){
+                            pcjDsctoTotal+=porcentaje_desc;
+                            double porcentaje_descW=porcentaje_desc;
+                            double dsctoMontoUnit1= VARIABLES.getDoubleFormaterThreeDecimal(precioLista * (porcentaje_descW/100));
+                            precio = precio-dsctoMontoUnit1;
+                            double descuentoW= VARIABLES.getDoubleFormaterThreeDecimal(dsctoMontoUnit1*cantidad);
+                            descuento=VARIABLES.getDoubleFormaterThreeDecimal(descuento+descuentoW);
+
                             descuentosMotivos.add(new PedidoDetalleDescuento(
                                     Oc_numero,
                                     w_codpro_inser,
                                     nro_item,
-                                    descuentoProntoPagoContado,
-                                    descuentoSolesProntoPago,
-                                    PedidoDetalleDescuento.TIPO_DSCTO_PRONTO_PAGO_CONTADO
+                                    porcentaje_descW,
+                                    descuentoW,
+                                    PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
                             ));
                         }
-                        descuentosMotivos.add(new PedidoDetalleDescuento(
-                                Oc_numero,
-                                w_codpro_inser,
-                                nro_item,
-                                porcentaje_descW,
-                                descuentoW,
-                                PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
-                        ));
+
+                        if(dsctoAdicionalVend>0.0){
+                            pcjDsctoTotal+=dsctoAdicionalVend;
+                            double dsctoMontoUnit1= VARIABLES.getDoubleFormaterThreeDecimal(precioLista * (dsctoAdicionalVend/100));
+                            precio = precio-dsctoMontoUnit1;
+                            double dsctoTotal= VARIABLES.getDoubleFormaterThreeDecimal(dsctoMontoUnit1*cantidad);
+                            descuento=VARIABLES.getDoubleFormaterThreeDecimal(descuento+dsctoTotal);
+
+                            descuentosMotivos.add(new PedidoDetalleDescuento(
+                                    Oc_numero,
+                                    w_codpro_inser,
+                                    nro_item,
+                                    dsctoAdicionalVend,
+                                    dsctoTotal,
+                                    PedidoDetalleDescuento.TIPO_DSCTO_MANUAL_USUARIO
+                            ));
+                        }
+
                         dbclass.registrarPedidoDetalleDescuento(descuentosMotivos);
                         //-------------------------------Eliminamos si ya tiene promocion (solo promocion)---------------------
                         boolean isEliminar=false;
@@ -4340,7 +4368,7 @@ private void EnvalularMoneda(){
                         itemDetalle.setPrecio_bruto(precio + "");
                         itemDetalle.setPercepcion(percepcionxCantidad);
 
-                        itemDetalle.setPrecio_neto(subtotal);
+                        itemDetalle.setPrecio_neto(""+VARIABLES.getDoubleFormaterThreeDecimal(cantidad*precio));
                         itemDetalle.setCantidad(cantidad);
                         itemDetalle.setCantidadValido(0);
                         itemDetalle.setTipo_producto(tipoProducto);
@@ -4350,7 +4378,7 @@ private void EnvalularMoneda(){
                         itemDetalle.setFlag("N");
                         itemDetalle.setPrecioLista(""+precioLista);
                         itemDetalle.setDescuento(""+descuento);
-                        itemDetalle.setPorcentaje_desc(porcentaje_desc);
+                        itemDetalle.setPorcentaje_desc(pcjDsctoTotal);
                         itemDetalle.setPorcentaje_desc_extra(porcentaje_desc_extra);
                         itemDetalle.setCod_politica(sec_politica);
                         //Campos usados para devoluciones
@@ -7890,10 +7918,22 @@ private void EnvalularMoneda(){
     private ArrayList<WorkflowPedido>  evaluarWorkFlow(){
 
         ArrayList<WorkflowPedido> workflowPedido=new ArrayList<>();
-
+        if(TIPO_REGISTRO.equals(TIPO_COTIZACION)) return workflowPedido;
+        //-----------------------------------------------------------------------------------------------
         workflowPedido.add(
                 getWorFlow(WorkflowAprobaciones.FLG_BLOQUEO_GENERAL,"Necesario ser validado por área de créditos")
         );
+        //-------------------------------descto adicional----------------------------------------------------------------
+
+        for (PedidoDetalleDescuento pddscto : dbclass.obtenerPedidoDetalleDescuento(Oc_numero, -1)) {
+            if(pddscto.getTipo_desc().equalsIgnoreCase(PedidoDetalleDescuento.TIPO_DSCTO_MANUAL_USUARIO)){
+                workflowPedido.add(
+                        getWorFlow(WorkflowAprobaciones.FLG_DESCUENTO_MANUAL,"Necesario ser validado por área de general")
+                );
+                break;
+            }
+        }
+
 
         boolean isCredito= !spnTipoCondicionVenta.getSelectedItem().toString().equalsIgnoreCase("contado");
         //-----------------------------------------------------------------------------------------------

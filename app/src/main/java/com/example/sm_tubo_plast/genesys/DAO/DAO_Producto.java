@@ -30,7 +30,7 @@ public class DAO_Producto extends SQLiteAssetHelper {
 				"p._precio_base as precio_base, " +
 				"p.codunimed_almacen, "
 				+ "ifnull(mta.stock,0) as stock,"
-				+ "ifnull(mta.xtemp,0) as xtemp,"
+				+ "ifnull(mta.comprometido,0) as xtemp,"
 				+ "ifnull(mta.transito,0) as transito,"
 				+ "ifnull(mta.disponible,0) as disponible "+
 				"FROM producto p " +

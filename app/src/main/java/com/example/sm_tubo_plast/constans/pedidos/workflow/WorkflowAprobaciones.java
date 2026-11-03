@@ -20,6 +20,7 @@ public class WorkflowAprobaciones {
     public static final String FLG_PROD_RESTRINGIDO = "flg_prod_restringido";//consultar cantol (no tenemos)
     public static final String FLG_SOLICITUD_LINEA_CREDITO = "flg_solicitud_linea_credito";// OK ::cuando no tiene asignado limite credito(0)
     public static final String FLG_VENTA_MARGEN_BAJO = "flg_venta_margen_bajo";//OK --monto minimo de venta
+    public static final String FLG_DESCUENTO_MANUAL = "flg_descuento_manual";//OK -- cuando el usuario agrega el descuento manual
 
 
     private String codigoBloqueo;
@@ -108,10 +109,12 @@ public class WorkflowAprobaciones {
                 "Venta al crédito."
         ));
 
-        lista.add(new WorkflowAprobaciones(
-                FLG_VENTA_MARGEN_BAJO,
-                "Venta con margen bajo."
-        ));
+        lista.add(
+                new WorkflowAprobaciones(
+                FLG_VENTA_MARGEN_BAJO,"Venta con margen bajo.")
+        );
+
+        lista.add(new WorkflowAprobaciones(FLG_DESCUENTO_MANUAL,"Venta con margen bajo."));
 
         return lista;
     }

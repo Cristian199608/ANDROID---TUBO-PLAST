@@ -1904,4 +1904,17 @@ public class DBtables {
 		public static final String oc_numero = "oc_numero";
 		public static final String fecha_procesamiento = "fecha_procesamiento";
 	}
+
+	public static final class CalendarioNoLaborable {
+
+		private CalendarioNoLaborable() {
+		}
+
+		public static final String[] pks = new String[]{
+				CalendarioNoLaborable.id,
+		} ;
+		public static final String TAG = "calendario_no_laborable";
+		public static final String id = "id";
+		public static final String fecha = "fecha";
+	}
 }

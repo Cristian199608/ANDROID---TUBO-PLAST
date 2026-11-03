@@ -176,11 +176,12 @@ public class BottomSheetDialogBuscarProductoVenta
                         codcli,
                         tipo_registro,
                         oc_numero,
-                        (producto, cantidad, pctjDscto, flagStockValido) -> {
+                        (producto, cantidad, pctjDscto, dsctoAdicionalVend, flagStockValido) -> {
                             agregarProducto(
                                     producto,
                                     cantidad,
                                     pctjDscto,
+                                    dsctoAdicionalVend,
                                     flagStockValido
                             );
                         }
@@ -239,6 +240,7 @@ public class BottomSheetDialogBuscarProductoVenta
             ItemProducto producto,
             int cantidad,
             double pctjDscto,
+            double dsctoAdicionalVend,
             int flagStockValido) {
 
         if(dBclasses.isRegistradoProducto(oc_numero, producto.getCodprod())  ){
@@ -266,11 +268,12 @@ public class BottomSheetDialogBuscarProductoVenta
         returnIntent.putExtra("volumen", producto.getVolumen());
         returnIntent.putExtra("fact_conv", producto.getFact_conv());
         returnIntent.putExtra("precioUnidad",precioUnit);
-        returnIntent.putExtra("precioLista",""+producto.getPrecioLista());
+        returnIntent.putExtra("precioLista",producto.getPrecioLista());
         returnIntent.putExtra("sec_politica", "0");
         returnIntent.putExtra("descuento",	montoDescuento);
         returnIntent.putExtra("porcentaje_desc",	pctjDscto);
         returnIntent.putExtra("descuentoProntoPagoContado",	dsctoPronto);
+        returnIntent.putExtra("dsctoAdicionalVend",	dsctoAdicionalVend);
         returnIntent.putExtra("porcentaje_desc_extra",	0.0);
         returnIntent.putExtra("precioPercepcion", 0.0);
         returnIntent.putExtra("agregarComoBonificacion", false);

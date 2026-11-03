@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.sm_tubo_plast.genesys.BEAN.BEAN_ControlAccesso;
+import com.example.sm_tubo_plast.genesys.BEAN.CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_estado;
 import com.example.sm_tubo_plast.genesys.BEAN.Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.BEAN.PromocionDetalleProducto;
@@ -23,6 +24,7 @@ import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoCabeceraRespose;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.PedidoDetalleRespose;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_ClienteEstado;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Menu_opciones_app;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_MtaKardex;
@@ -156,10 +158,10 @@ public class DBSync_soap_manager {
 		this.METHOD_NAME="obtenerProductos";
 	}*/
 	
- public void Sync_tabla_usuarios(String url, String catalog, String user, String contrasena) throws Exception{	 
+ public void Sync_tabla_usuarios(String url, String catalog, String user, String contrasena, String urlService) throws Exception{
 		String SOAP_ACTION= "http://tempuri.org/obtenerUsuarios_json";
 		String METHOD_NAME="obtenerUsuarios_json";
-		
+	 	String urlx= URL+(urlService!=null?urlService:GlobalVar.urlService);
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 		 
 		Request.addProperty("url", url); 
@@ -171,14 +173,14 @@ public class DBSync_soap_manager {
 		Log.d("DBSync","catalog "+catalog);
 		Log.d("DBSync","user "+user);
 		Log.d("DBSync","contrasena "+contrasena);
-		Log.d("DBSync","HttpTransportSE "+URL+GlobalVar.urlService);
+		Log.d("DBSync","HttpTransportSE "+urlx);
 		 
 	    SoapSerializationEnvelope Soapenvelope=new SoapSerializationEnvelope(SoapEnvelope.VER11);
 	    Soapenvelope.dotNet=true;
 	    Soapenvelope.setOutputSoapObject(Request);
 	   
 	    
-	    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+	    HttpTransportSE transporte=new HttpTransportSE(urlx);
 	    long beforecall = System.currentTimeMillis();
 	    
 	    
@@ -207,10 +209,11 @@ public class DBSync_soap_manager {
 	  }
 	  
 
- public void Sync_tabla_vendedores(String url, String catalog, String user, String contrasena) throws Exception{
+ public void Sync_tabla_vendedores(String url, String catalog, String user, String contrasena, String urlService) throws Exception{
 		
 		String SOAP_ACTION= "http://tempuri.org/obtenerVendedores_json";
 		String METHOD_NAME="obtenerVendedores_json";
+	 	String urlx= URL+(urlService!=null?urlService:GlobalVar.urlService);
 
 		SoapObject Request=new SoapObject(NAMESPACE, METHOD_NAME);
 		Request.addProperty("url", url); 
@@ -221,7 +224,7 @@ public class DBSync_soap_manager {
 	    Soapenvelope.dotNet=true;
 	    Soapenvelope.setOutputSoapObject(Request);
 	    
-	    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+	    HttpTransportSE transporte=new HttpTransportSE(urlx);
 	    //HttpTransportSE transporte=new HttpTransportSE("http://190.40.100.50/SAEMV-WEB/service.asmx");
 		
 	    long beforecall = System.currentTimeMillis();  
@@ -3111,11 +3114,12 @@ public String peticion_modificar(String oc_numero) throws Exception{
     return flag;
 }
 
-public void Sync_tabla_configuracion(String url, String catalog, String user, String contrasena) throws Exception{
+public void Sync_tabla_configuracion(String url, String catalog, String user, String contrasena, String urlService) throws Exception{
 	
 	ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<HeaderProperty>();
     headerPropertyArrayList.add(new HeaderProperty("Connection", "open"));
-	
+
+	String urlx= URL+(urlService!=null?urlService:GlobalVar.urlService);
 	String SOAP_ACTION= "http://tempuri.org/obtenerConfiguracion_json";
 	String METHOD_NAME="obtenerConfiguracion_json";
 	
@@ -3128,7 +3132,7 @@ public void Sync_tabla_configuracion(String url, String catalog, String user, St
     Soapenvelope.dotNet=true;
     Soapenvelope.setOutputSoapObject(Request);
     
-    HttpTransportSE transporte=new HttpTransportSE(URL+GlobalVar.urlService);
+    HttpTransportSE transporte=new HttpTransportSE(urlx);
     
     long beforecall = System.currentTimeMillis();
     
@@ -7316,6 +7320,33 @@ public int actualizarRegistroBonificaciones() throws Exception{
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public void SyncTBCalendarioNoLaborable(String codven) throws Exception{
+		String S_TAG="SyncTBCalendarioNoLaborable";
+		try{
+
+			ArrayList<String> listRequest=new ArrayList<>();
+			listRequest.add("codven"+__PARTIR___+codven);
+
+			String _METHOD_NAME="getTBCalendarioNoLaborable_json";
+			String jsonstring = AddRequestHeader(listRequest, _METHOD_NAME);
+
+			if(jsonstring.contains("Error::")){
+				throw new Exception(jsonstring);
+			}
+			//-----------------------------------------------------------------------------------------------
+			final Type malla = new TypeToken<ArrayList<CalendarioNoLaborable>>() {}.getType();
+			final ArrayList<CalendarioNoLaborable> lista = gson.fromJson(jsonstring, malla);
+			Log.i(TAG+"",S_TAG+":: Registros: "+lista.size());
+			DAO_CalendarioNoLaborable daocalendarioNoLaborable=new DAO_CalendarioNoLaborable(dbclass);
+			daocalendarioNoLaborable.deleteAll();
+			daocalendarioNoLaborable.insertAll(lista);
+		}catch(Exception e){
+			e.printStackTrace();
+			Log.i(TAG,S_TAG+"NO SINCRONIZADA");
+			throw new Exception(e);
+		}
 	}
 
 }

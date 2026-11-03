@@ -52,7 +52,7 @@ public class AdapterCLientesMap extends RecyclerView.Adapter<AdapterCLientesMap.
         holder.iten_direccion.setText(item.getDb_direccionClientes().getDireccion());
 
         String estado=item.getDb_direccionClientes().getEstado();
-        if (estado.equals("L")) {//Localizado
+        if (estado.equals("L") || estado.equals("O")) {//Localizado
             holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.yellow_600));
         } else if (estado.equals("V")) {//Localizado y Validado
             holder.txt_flag_pedido.setBackgroundColor(activity.getResources().getColor(R.color.green_500));

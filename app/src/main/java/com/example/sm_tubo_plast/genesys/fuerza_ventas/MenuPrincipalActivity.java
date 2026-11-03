@@ -26,6 +26,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesWebVentasVendedorActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.web.AprobacionesPedidoWebViewActivity;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 public class MenuPrincipalActivity extends AppCompatActivity {
 
+    SessionManager sessionManager;
     String codven, url,catalog, userid, contrasenaid,servicio,servicio_local;
     boolean check_web,check_local;
     String nomcli="";
@@ -94,9 +96,9 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         editor_preferencias = preferencias_configuracion.edit();
         editor_preferencias.putFloat("valorIGV", (float) valorIGV);
         editor_preferencias.putFloat("limiteDescuento", (float) limiteDescuento);
-        editor_preferencias.commit();
+        editor_preferencias.apply();
 
-        SessionManager sessionManager=new SessionManager(this);
+        sessionManager=new SessionManager(this);
         codven = sessionManager.getCodigoVendedor();
 
         SharedPreferences prefs =  getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
@@ -150,7 +152,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         }
 
 
-        if (url.equals("0") || servicio.equals( "0")) {
+        if (isRequiredSincronizarGeneral() && (url.equals("0") || servicio.equals( "0"))) {
 
             // Al logearse directamente, sin sincronizar (uso de datos locales)
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
@@ -264,8 +266,18 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                final Intent icliente = new Intent(activity, ReportesPedidosCotizacionYVisitaActivity.class);
-                icliente.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
+                Intent icliente=null;
+                if(sessionManager.getToken().equals("admin")){
+                    String urlx= database.getConfiguracionByName("url_aprobaciones_pedido", "http://192.168.0.71:4391/aprobaciones_movil/index.php");
+                    int usecodSaemovil = database.getUsecodUserandPass(sessionManager.getUsuario(), sessionManager.getPassword());
+                    icliente = new Intent(activity, AprobacionesPedidoWebViewActivity.class);
+                    icliente.putExtra("usecod", usecodSaemovil);
+                    icliente.putExtra("url", urlx);
+                }
+                else{
+                    icliente = new Intent(activity, ReportesPedidosCotizacionYVisitaActivity.class);
+                    icliente.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
+                }
                 // ipedido.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }
@@ -431,10 +443,19 @@ public class MenuPrincipalActivity extends AppCompatActivity {
     private void verificarFechaSincronizacion(){
         String fecCelular= VARIABLES.GetFechaActual();
         String fecConfiguracion= database.getFecha2();
-        if (!fecCelular.equals(fecConfiguracion)){
+        if (isRequiredSincronizarGeneral() && !fecCelular.equals(fecConfiguracion)){
             goMenuSincronizar(true);
         }
+    }
 
+    private boolean isRequiredSincronizarGeneral(){
+        boolean isReq=!sessionManager.getToken().equals("admin");
+        if(!isReq){
+            editor_preferencias = preferencias_configuracion.edit();
+            editor_preferencias.putBoolean("preferencias_sincronizacionCorrecta", true);
+            editor_preferencias.apply();
+        }
+        return isReq;
     }
 
     private void DisableOrEnableOpcion(LinearLayout linearLayout, boolean enabled){

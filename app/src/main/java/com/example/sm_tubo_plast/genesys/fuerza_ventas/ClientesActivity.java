@@ -352,8 +352,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
         ActionItem programar_visita = new ActionItem(ID_PROGRAMACION_VISITA_CLIENTE, "Programar Visita", R.drawable.icon_man_24dp);
         ActionItem observacion = new ActionItem(ID_OBSERVACION, "Observacion", R.drawable.alert);
         //ActionItem devolucionItem = new ActionItem(ID_DEVOLUCION, "Devolución", R.drawable.icon_check_24dp);
-        ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotizacion", R.drawable.icon_survey_24dp);
-        ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización", R.drawable.ic_ubicacion_grey);
+        ActionItem cotizacionItem = new ActionItem(ID_COTIZACION, "Cotización", R.drawable.icon_survey_24dp);
+        ActionItem geolocalizacion = new ActionItem(ID_LOCALIZACION, "Geolocalización / Ver", R.drawable.ic_ubicacion_grey);
         ActionItem motivoBajaOrAlta = new ActionItem(ID_BAJA_OR_ALTA_ClIENTE, "Baja/Alta de Cliente", R.drawable.icon_man_24dp);
         ActionItem itemComprobantes = new ActionItem(ID_CONSULTA_COMPROBANTES, "Consulta Comprobantes", R.drawable.ic_search_grey);
 
@@ -455,7 +455,6 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 codSucursal = ""+searchResults.get(position).get("item_direccion");//obj_dbclasses.obtenerCodigoSucursalCliente(codcli, codven);
 
                 //estadoLocalizacion=searchResults.get(position).get("estado_localizacion").toString();
-                //if(estadoLocalizacion.trim().length()==0)
                 estadoLocalizacion=obj_dbclasses.obtenerEstadoGelocalizacioCliente(codcli);
 
                 if (REQUEST_TYPPE.equals(REQUEST_SELECCION_CLIENTE)) {
@@ -757,7 +756,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 try {
 
                     String estado = searchResults.get(position).get("estado_localizacion").toString();
-                    //String estado = obj_dbclasses.getEstadoDireccionCliente(searchResults.get(position).get("codigo").toString(), searchResults.get(position).get("item_direccion").toString());
+                    if(estado.trim().isEmpty()|| estado.trim().equals("O"))
+                        estado=obj_dbclasses.obtenerEstadoGelocalizacioCliente(searchResults.get(position).get("codigo").toString());
 
                     //String estado = searchResults.get(position).get("estado").toString();
                     if (estado.equals("L")) {//Localizado

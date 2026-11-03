@@ -31,14 +31,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.sm_tubo_plast.R;
+import com.example.sm_tubo_plast.genesys.BEAN.CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.BEAN.Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.BEAN.San_Visitas;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_CalendarioNoLaborable;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_Cliente_Contacto;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_opciones;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DatePickerMaterial.MaterialDatePickerCustom;
 import com.example.sm_tubo_plast.genesys.hardware.LocationApiGoogle;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
@@ -68,6 +72,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class GestionVisita3Activity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private static final String TAG="GestionVisita3Activity";
@@ -815,6 +820,33 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
 
     private void CustomDateTimePicker(TextView vista_setear,final boolean habilitar_hora){
 
+        DAO_CalendarioNoLaborable dao_calendarioNoLaborable=new DAO_CalendarioNoLaborable(dBclasses);
+        ArrayList<CalendarioNoLaborable> lista = dao_calendarioNoLaborable.getData();
+        ArrayList<String> lisNolaborable=new ArrayList<>();
+        for (CalendarioNoLaborable calendarioNoLaborable : lista) {
+            lisNolaborable.add(calendarioNoLaborable.getFecha());
+        }
+
+
+        // Process to get Current Date
+        final Calendar fechaMin = Calendar.getInstance(TimeZone.getTimeZone("UTC"));///required UTC
+        fechaMin.set(Calendar.HOUR_OF_DAY, 0);
+        fechaMin.set(Calendar.MINUTE, 0);
+        fechaMin.set(Calendar.SECOND, 0);
+        fechaMin.set(Calendar.MILLISECOND, 0);
+
+        boolean sabadoNoPermitido = false;//spn_turno.getSelectedItem().toString().equalsIgnoreCase("tarde");
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        MaterialDatePickerCustom dd=new MaterialDatePickerCustom(fragmentManager);
+        dd.show(lisNolaborable,fechaMin, sabadoNoPermitido,new MaterialDatePickerCustom.MyCallback() {
+            @Override
+            public void result(String fechaddMMyyyy) {
+                String fecha= VARIABLES.InvertirFechaCustom(fechaddMMyyyy, "/","-");
+                vista_setear.setText(fecha);
+            }
+        });
+        if(5==5)return;
         final String CERO = "0";
         final Calendar c = Calendar.getInstance();
         final int hora = c.get(Calendar.HOUR_OF_DAY);

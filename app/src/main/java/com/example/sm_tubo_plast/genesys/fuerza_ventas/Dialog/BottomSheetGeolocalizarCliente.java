@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.ClientesActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Google.service.GetDireccionByCoordenada;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Google.util.UtilMarker;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
+import com.example.sm_tubo_plast.genesys.util.IntentTerceros;
 import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -89,7 +91,7 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
     Button btnCancel, btnConfirm;
 
     GoogleMap mMap;
-    Marker markerPost;
+    Marker markerPost=null;
 
     LatLng coordenadaUbicacionCel=null;
     ArrayList<LugarEntrega> puntoEntregas=new ArrayList<>();
@@ -135,6 +137,8 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
         chckEditar = viewx.findViewById(R.id.chckEditar);
         btnCancel = (Button) viewx.findViewById(R.id.btnCancel);
         btnConfirm = (Button) viewx.findViewById(R.id.btnConfirm);
+        btnConfirm.setEnabled(false);
+        tv_localizacionNuevo.setText("");
         desahabledBottomSheeetDraggable(viewx);
         initMap();
 
@@ -187,7 +191,7 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
         DAO_Cliente daoCliente=new DAO_Cliente(getActivity());
         tv_cliente.setText(nomcli);
         coordenadaUbicacionCel = myListener.getLastUbicacion();
-        setDireccionNombre(tv_localizacionNuevo, coordenadaUbicacionCel);
+        //setDireccionNombre(coordenadaUbicacionCel);
         moveCameraEnfoqueMapa(coordenadaUbicacionCel);
 
         puntoEntregas  = daoCliente.getPuntoEntrega(codcli, ""+item_dircli);
@@ -247,8 +251,7 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
         btnVerMapsSinGeo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                IntentTerceros intentTerceros =new IntentTerceros(getActivity());
-//                intentTerceros.IntentGoogleMaps(coordenadaUbicacionCel, true);
+                if(markerPost!=null)UtilView.OperServicioMapas(getActivity(),view, markerPost.getPosition(), LinearLayout.VERTICAL);
 
             }
         });
@@ -263,9 +266,8 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
                     public void onLocationSelected(LatLng latLng) {
                         moveCameraEnfoqueMapa(latLng);
                         markerPost = getMarkerCustom(markerPost, mMap, latLng);
-                        setDireccionNombre(tv_localizacionNuevo, latLng);
-                        setDireccionNombre(tvActualGeolocalizacion, latLng);
-
+                        setDireccionNombre(latLng);
+                        btnConfirm.setEnabled(true);
                     }
 
                     @Override
@@ -307,8 +309,8 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
                     else{
                         LatLng posi=new LatLng(Double.parseDouble(puntoEntregas.get(i).getLatitud()),Double.parseDouble(puntoEntregas.get(i).getLongitud()));
                         markerPost = getMarkerCustom(markerPost, mMap, posi);
-                        setDireccionNombre(tvActualGeolocalizacion, posi);
-                        tv_localizacionNuevo.setText(tvActualGeolocalizacion.getText().toString());
+                        setDireccionNombre(posi);
+                        //tv_localizacionNuevo.setText(tvActualGeolocalizacion.getText().toString());
                         moveCameraEnfoqueMapa(posi);
                     }
 
@@ -355,11 +357,12 @@ public class BottomSheetGeolocalizarCliente extends BottomSheetDialogFragment {
         return map.addMarker(markerOptions);
     }
 
-    private void setDireccionNombre(TextView textView, LatLng locationx){
+    private void setDireccionNombre(LatLng locationx){
         utilDireccionFromCoord=new GetDireccionByCoordenada(getActivity(), locationx, new GetDireccionByCoordenada.MyCallback() {
             @Override
             public void result(String direccionName) {
-                textView.setText(direccionName);
+                tv_localizacionNuevo.setText(direccionName);
+                tvActualGeolocalizacion.setText(direccionName);
             }
         });
         utilDireccionFromCoord.setShowLoading(false);
