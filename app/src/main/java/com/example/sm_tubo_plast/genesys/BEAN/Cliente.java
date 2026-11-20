@@ -22,6 +22,7 @@ public class Cliente {
 	private String rubro_cliente;
 	private String codven_asginados;
 	private double monto_compra;
+	private String categoriaCliente;
 
 	public String getCodigoCliente() {
 		return codigoCliente;
@@ -150,5 +151,13 @@ public class Cliente {
 
 	public void setMonto_compra(double monto_compra) {
 		this.monto_compra = monto_compra;
+	}
+
+	public String getCategoriaCliente() {
+		return categoriaCliente;
+	}
+
+	public void setCategoriaCliente(String categoriaCliente) {
+		this.categoriaCliente = categoriaCliente;
 	}
 }

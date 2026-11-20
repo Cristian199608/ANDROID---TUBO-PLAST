@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/menu_visitar"
-        android:title="visitar"/>
+        android:title="Visitar"/>
     <item
         android:id="@+id/menu_editar_visita"
         android:title="Editar"/>

@@ -651,7 +651,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
 
             View txt_flag_pedido;
             TextView name, ruc, item_sistema_registrado, list_item_ultima_compra, observacion,itemMotivoBajaCliente,   direccion,item_fecha_visitado, item_fecha_programada;
-            TextView list_item_linea_credito,list_item_disponible_credito, list_item_estado_credito,list_item_deuda_x_vencer, list_item_deuda_meno30dias, list_item_deuda_mayorIgual30dias;
+            TextView list_item_linea_credito,list_item_disponible_credito, list_item_estado_credito,list_item_deuda_x_vencer, list_item_deuda_meno30dias,
+                    list_item_deuda_mayorIgual30dias, itemCategoriVenta;
             LinearLayout layout_container_ultima_compra;
             ImageView foto;
 
@@ -690,6 +691,7 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 viewHolder.list_item_deuda_meno30dias =(TextView) convertView.findViewById(R.id.list_item_deuda_meno30dias);
                 viewHolder.list_item_deuda_mayorIgual30dias=(TextView) convertView.findViewById(R.id.list_item_deuda_mayorIgual30dias);
                 viewHolder.list_item_deuda_x_vencer=(TextView) convertView.findViewById(R.id.list_item_deuda_x_vencer);
+                viewHolder.itemCategoriVenta=(TextView) convertView.findViewById(R.id.itemCategoriVenta);
                 // link the cached views to the convertview
                 convertView.setTag(viewHolder);
 
@@ -799,7 +801,8 @@ public class ClientesActivity extends AppCompatActivity implements SearchView.On
                 viewHolder.list_item_deuda_meno30dias .setText("S/ "+searchResults.get(position).get("deuda_menor_30_dias").toString());
                 viewHolder.list_item_deuda_mayorIgual30dias.setText("S/ "+searchResults.get(position).get("deuda_mayor_igual_30_dias").toString());
                 viewHolder.list_item_deuda_x_vencer.setText("S/ "+VARIABLES.getStringFormaterTwoDecimal(deudaXvender));
-
+                String catCliente=searchResults.get(position).get("categoria_cliente").toString();
+                UtilView.mostrarEstadoCategoriaCliente(viewHolder.itemCategoriVenta, catCliente);
                 viewHolder.list_item_disponible_credito.setTextColor(
                         getResources().getColor(creditoDis>0?R.color.green_500:R.color.red_500)
                 );

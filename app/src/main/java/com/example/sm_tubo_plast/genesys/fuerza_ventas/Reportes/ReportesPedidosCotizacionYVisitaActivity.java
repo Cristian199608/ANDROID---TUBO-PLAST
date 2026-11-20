@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
 import com.example.sm_tubo_plast.genesys.BEAN.ReportePedidoCabeceraBEAN;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDFCantol;
 import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionCabeceraApi;
 import com.example.sm_tubo_plast.genesys.BEAN_API.CotizacionDetalleApi;
@@ -69,6 +70,7 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DialogFragment_env
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.GestionVisita3Activity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivity;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.PedidosActivityVentana2;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.web.AprobacionesPedidoWebViewActivity;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
 import com.example.sm_tubo_plast.genesys.service.WS_Cotizaciones;
 import com.example.sm_tubo_plast.genesys.session.SessionManager;
@@ -742,7 +744,9 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             @Override
             protected String doInBackground(Void... voids) {
                 try {
-                    PDF.createPdf(getApplicationContext(),
+                    String notasOption = obj_dbclasses.getConfiguracionByName("maestro_notal_despacho", "");
+                    String[] listaCondDespacho = notasOption.split(VARIABLES.SEPARADOR_OBSERVACION);
+                    PDFCantol.createPdf(getApplicationContext(),
                             nombreArchivo,
                             /*dataCabecera.getOc_numero(),
                             dataCabecera.getTipoRegistro(),
@@ -764,7 +768,8 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                             dataCabecera,
                             listaDetalle,
                             tasaCambioSolesToDolar,
-                            tipoEnvio);
+                            tipoEnvio,
+                            listaCondDespacho);
                     return "Generado";
                 } catch (FileNotFoundException e) {
                     //aqui quiero enviar un error
@@ -960,6 +965,7 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
             reportePedidoCabeceraBEAN.setMotivo_noventa(cta.getCod_noventa());
             reportePedidoCabeceraBEAN.setNumdoc(cta.getNumdoc());
             reportePedidoCabeceraBEAN.setLogEnvioPedido(cta.getLogEnvioPedido());
+            reportePedidoCabeceraBEAN.setListWorkFlow(cta.getListWorkFlow());
 
            // pedidos.add(map);
             Log.w("fecha_oc", cta.getFecha_oc());
@@ -2003,6 +2009,14 @@ public class ReportesPedidosCotizacionYVisitaActivity extends FragmentActivity {
                         return true;
                     case R.id.menu_reportespedidos_verificar:
                         new asyncVerificarPedidos().execute("");
+                        return true;
+                    case R.id.menu_pedidos_en_linea:
+
+                        String urlx= obj_dbclasses.getConfiguracionByName("url_aprobaciones_pedido", "http://192.168.0.71:4391/aprobaciones_movil/index.php");
+                        Intent icliente = new Intent(ReportesPedidosCotizacionYVisitaActivity.this, AprobacionesPedidoWebViewActivity.class);
+                        icliente.putExtra("codven", codven);
+                        icliente.putExtra("url", urlx);
+                        startActivity(icliente);
                         return true;
                     default:
                         return false;

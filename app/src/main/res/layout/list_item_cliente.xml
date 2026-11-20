@@ -130,7 +130,14 @@
                     android:textColor="#475569"
                     android:textSize="11sp"
                     tools:text="CALLAO - PROV. CONST. DEL CALLAO - BELLAVISTA" />
-
+                <!-- categoria venta venta cliente -->
+                <TextView
+                    android:id="@+id/itemCategoriVenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blue_800"
+                    android:textSize="11sp"
+                    tools:text="Categoria: FERRETERIA C" />
                 <!-- Línea divisora -->
                 <View
                     android:id="@+id/divider"
@@ -328,6 +335,7 @@
                             tools:text="S/ 0.0" />
                     </LinearLayout>
                 </LinearLayout>
+
 
                 <!-- Motivo de baja / Alerta -->
                 <TextView

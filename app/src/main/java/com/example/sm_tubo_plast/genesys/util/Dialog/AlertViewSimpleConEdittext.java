@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -50,33 +51,44 @@ public  class AlertViewSimpleConEdittext{
 
 
         aler.setView(editText);
-        aler.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (editText.getText().toString().length()>=min_caracteres){
-                    if (type_number) {
-                        if (VARIABLES.IsDouble(editText.getText().toString())) {
-                            listener.resultOK(editText.getText().toString());
-                        }else{
-                            Toast.makeText(activity, "Ingrese valor vàlido", Toast.LENGTH_SHORT).show();
-                            listener.resultBucle(null);
-                        }
-                    }else listener.resultOK(editText.getText().toString());
+        aler.setPositiveButton("Aceptar", null);
+        aler.setNegativeButton("Cancelar", null);
+        AlertDialog dialog= aler.create();
+        dialog.show();
 
-
-                }else{
-                    Toast.makeText(activity, "Ingrese al menos "+min_caracteres+" caracteres", Toast.LENGTH_SHORT).show();
-                    listener.resultBucle(null);
+        Button btnPositivo = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button btnNegative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        btnNegative.setOnClickListener(v->{
+            listener.resultOK(null);
+            dialog.dismiss();
+        });
+        btnPositivo.setOnClickListener(v -> {
+            if (editText.getText().toString().length()>=min_caracteres){
+                if (type_number) {
+                    if (VARIABLES.IsDouble(editText.getText().toString())) {
+                        String error = listener.resultOK(editText.getText().toString());
+                        if(error!=null) editText.setError(error);
+                        else dialog.dismiss();
+                    }else{
+                        Toast.makeText(activity, "Ingrese valor vàlido", Toast.LENGTH_SHORT).show();
+                        listener.resultBucle(null);
+                        dialog.dismiss();
+                    }
+                }else {
+                    String error = listener.resultOK(editText.getText().toString());
+                    if(error!=null) editText.setError(error);
+                    else dialog.dismiss();
                 }
+
+
+            }else{
+                Toast.makeText(activity, "Ingrese al menos "+min_caracteres+" caracteres", Toast.LENGTH_SHORT).show();
+                listener.resultBucle(null);
+                dialog.dismiss();
             }
         });
-        aler.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                listener.resultOK(null);
-            }
-        });
-        aler.create().show();
+
+
     }
     public void FinalizarActivity(){
         activity.finish();

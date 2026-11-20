@@ -28,6 +28,8 @@ public class DataCabeceraPDF {
     String tipoRegistro;
     int diasVigencia;
     double dsctoBonificacion;
+    String direccionFiscalCliente;
+    String condicionComercial;
 
 
     public String getOc_numero() {
@@ -228,5 +230,21 @@ public class DataCabeceraPDF {
 
     public void setDsctoBonificacion(double dsctoBonificacion) {
         this.dsctoBonificacion = dsctoBonificacion;
+    }
+
+    public String getDireccionFiscalCliente() {
+        return direccionFiscalCliente;
+    }
+
+    public void setDireccionFiscalCliente(String direccionFiscalCliente) {
+        this.direccionFiscalCliente = direccionFiscalCliente;
+    }
+
+    public String getCondicionComercial() {
+        return condicionComercial;
+    }
+
+    public void setCondicionComercial(String condicionComercial) {
+        this.condicionComercial = condicionComercial;
     }
 }

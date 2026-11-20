@@ -162,6 +162,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			reg.put(DBtables.Pedido_cabecera.CODIGO_TRANSPORTISTA, cabecera.getCodigoTransportista());
 			reg.put(DBtables.Pedido_cabecera.CODIGO_TURNO, cabecera.getCodTurno());
 			reg.put(DBtables.Pedido_cabecera.NRO_LETRA, cabecera.getNroletra());
+			reg.put("notas", cabecera.getNotas());
 			Log.w("xxxxxxxxxxxxxxxxxxxxxxxxxxx", "CODTURNO: "+cabecera.getCodTurno());
 
 			////_okkk
@@ -309,6 +310,7 @@ public class DAO_Pedido extends SQLiteAssetHelper{
 			Nreg.put("flg_aprobacion", cabecera.getFlg_aprobacion());
 			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
 			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
+			Nreg.put("notas", cabecera.getNotas());
 
 			
 			db.insert("pedido_cabecera", null, Nreg);

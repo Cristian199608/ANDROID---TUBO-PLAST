@@ -12,8 +12,14 @@
         android:title="Verificar con Servidor">
     </item>
     <item
+        android:id="@+id/menu_pedidos_en_linea"
+        android:icon="@drawable/ic_send"
+        android:title="Pedidos en línea">
+    </item>
+    <item
         android:id="@+id/menu_reportespedidos_buscar"
         android:icon="@drawable/ic_search"
+        android:visible="false"
         android:title="Buscar">
     </item>
 

@@ -40,12 +40,24 @@
             android:typeface="sans" />
     </LinearLayout>
 
+    <!-- categoria venta venta cliente -->
+    <TextView
+        android:id="@+id/itemCategoriVenta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pedidolyt_head"
+        android:paddingLeft="5dp"
+        android:textColor="@color/blue_800"
+        android:textSize="14sp"
+        tools:text="Categoria: FERRETERIA C" />
+
     <TabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/pedidolyt_head" >
+        android:layout_below="@+id/itemCategoriVenta"
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -335,7 +347,6 @@
                                     android:inputType="text"
                                     android:text="" />
                             </LinearLayout>
-
 
                             <!-- ==================================================== -->
                             <!-- 3. DATOS DE ENTREGA Y DESPACHO                      -->
@@ -733,7 +744,7 @@
 
                                 <TextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="34dp"
                                     android:layout_gravity="center_vertical"
                                     android:layout_weight="2.5"
                                     android:text="Observacion Despacho:"
@@ -747,6 +758,38 @@
                                     android:layout_weight="1.5"
                                     android:text="" />
                             </LinearLayout>
+
+                            <!--notas de condicion de despacho-->
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingTop="5dp"
+                                android:paddingBottom="5dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:text="Condiciones de Despacho:"
+                                    android:textSize="15sp" />
+
+                                <TextView
+                                    android:id="@+id/tvCondicionesDespacho"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="5dp"
+                                    android:text="Ver"
+                                    android:textColor="@color/white"
+                                    android:gravity="center"
+                                    android:background="@drawable/edittext_rounded_corners_cero"
+                                    android:backgroundTint="@color/blue_500"
+                                    android:drawableEnd="@drawable/ic_eye_grey"
+                                    android:drawableTint="@color/white"
+                                    />
+                            </LinearLayout>
+
 
                             <!-- ==================================================== -->
                             <!-- 4. CONDICIONES COMERCIALES Y FINANCIERAS            -->
@@ -1106,6 +1149,41 @@
                                         android:text="No" />
                                 </RadioGroup>
                             </LinearLayout>
+                            <!--notas de condicion comercial-->
+                            <LinearLayout
+                                android:background="@color/grey_200"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingTop="5dp"
+                                android:paddingBottom="5dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Condiciones Comerciales:"
+                                    android:textSize="15sp" />
+
+                                <TextView
+                                    android:id="@+id/tvCondicionesComercial"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/primary_text"
+                                    android:background="@drawable/edittext_rounded_corners"
+                                    android:backgroundTint="@color/white"
+                                    android:layout_gravity="center"
+                                    android:layout_margin="2dp"
+                                    android:gravity="center|left"
+                                    android:textSize="14dp"
+                                    android:padding="10dp"
+                                    android:drawableEnd="@drawable/ic_edit_24_grey"
+                                    android:hint=""
+                                    android:textColorHint="@color/grey_500"
+                                    android:text=""/>
+                            </LinearLayout>
+
                             <!--                            Anticipos seleccionados-->
                             <LinearLayout
                                 android:id="@+id/layoutCaontainerAnticipos"
@@ -1151,6 +1229,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
+                                android:background="@color/grey_200"
                                 android:paddingTop="5dp"
                                 android:paddingBottom="5dp">
 
@@ -1170,7 +1249,30 @@
                                     android:layout_weight="1.5"
                                     android:text="" />
                             </LinearLayout>
+                            <!-- Proyecto direccion -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingTop="5dp"
+                                android:paddingBottom="5dp">
 
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="2.5"
+                                    android:text="Dirección Proyecto:"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/edt_observacion2ProyectoDir"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_weight="1.5"
+                                    android:text="" />
+                            </LinearLayout>
                             <!-- Observación Pedido -->
                             <LinearLayout
                                 android:layout_width="match_parent"

@@ -526,6 +526,7 @@ public class DBtables {
 		public static final String dsctAdicionalMonto = "dsctAdicionalMonto";
 		public static final String codigo_lista_precio = "codigo_lista_precio";
 		public static final String categoriaCliente = "categoriaCliente";
+		public static final String notas = "notas";
 
 		public static final String CREATE_STATEMENT = "CREATE TABLE " + TAG
 				+ " (" + PK_OC_NUMERO + " CHAR(21) PRIMARY KEY, " + SITIO_ENFA

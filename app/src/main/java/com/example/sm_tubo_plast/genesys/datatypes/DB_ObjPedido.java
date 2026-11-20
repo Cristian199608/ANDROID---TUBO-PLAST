@@ -85,6 +85,7 @@ public class DB_ObjPedido{
 	private int flg_aprobacion;
 	private String codigo_lista_precio;
 	private String categoriaCliente;
+	private String condicionComercial;
 
 	private ArrayList<San_Visitas> san_visitas;
 	private ArrayList<PedidoDetalleDescuento> listaPedido_detalle_descuento;
@@ -669,5 +670,13 @@ public class DB_ObjPedido{
 
 	public void setCategoriaCliente(String categoriaCliente) {
 		this.categoriaCliente = categoriaCliente;
+	}
+
+	public String getCondicionComercial() {
+		return condicionComercial;
+	}
+
+	public void setCondicionComercial(String condicionComercial) {
+		this.condicionComercial = condicionComercial;
 	}
 }

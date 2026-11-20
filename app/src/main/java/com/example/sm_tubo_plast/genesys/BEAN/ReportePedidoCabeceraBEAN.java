@@ -1,8 +1,16 @@
 package com.example.sm_tubo_plast.genesys.BEAN;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_San_Visitas;
@@ -31,6 +39,7 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
     String fecha;
     String numdoc;
     LogEnvioPedido logEnvioPedido;
+    String[] listWorkFlow;
 
     public String getNomcli() {
         return nomcli;
@@ -167,7 +176,16 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
     public void setNumdoc(String numdoc) {
         this.numdoc = numdoc;
     }
-//-------------------------------FIN ATRIBUTO----------------------------------------------------------------
+
+    public String[] getListWorkFlow() {
+        return listWorkFlow;
+    }
+
+    public void setListWorkFlow(String[] listWorkFlow) {
+        this.listWorkFlow = listWorkFlow;
+    }
+
+    //-------------------------------FIN ATRIBUTO----------------------------------------------------------------
 
     @Override
     public void setViewByHolder(Activity activity,
@@ -272,11 +290,60 @@ public class ReportePedidoCabeceraBEAN implements IReportePedidoCabecera {
             viewHolder.numoc.setTextColor(activity.getResources().getColor(R.color.purple_800));
             viewHolder.numoc.setText(viewHolder.numoc.getText().toString().trim()+" => SAP: "+this.getNumdoc());
         }
-
+        gestionarViewWorkFlow(viewHolder);
 
     }
 
 
+    public void gestionarViewWorkFlow(ReportesPedidosCabeceraRecyclerView.ViewHolderItem viewHolder){
+        Context context = viewHolder.itemView.getContext();
+        viewHolder.layoutContainerWorkFlow.setVisibility(View.VISIBLE);
+        viewHolder.layoutContainerWorkFlow.removeAllViews();
+        if(this.listWorkFlow == null || this.listWorkFlow.length==0) return;
+        for (int i = 0; i < this.listWorkFlow.length; i++) {
+            String workFlow=(i+1)+") "+this.listWorkFlow[i];
+            if(workFlow.toLowerCase().contains("aprobado"))
+                viewHolder.layoutContainerWorkFlow.addView(getTextViewWorkFlow(context, workFlow, R.color.blue_100, R.color.blue_700));
+            else if(workFlow.toLowerCase().contains("rechazado"))
+                viewHolder.layoutContainerWorkFlow.addView(getTextViewWorkFlow(context, workFlow, R.color.red_100, R.color.red_800));
+            else
+                viewHolder.layoutContainerWorkFlow.addView(getTextViewWorkFlow(context, workFlow, R.color.grey_300, R.color.grey_800));
+        }
+
+
+    }
+    public TextView getTextViewWorkFlow(Context context, String texto, int colorBg, int colorTxt){
+        TextView textView = new TextView(context);
+
+        textView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+
+        textView.setGravity(Gravity.START);
+        textView.setText(texto);
+        textView.setTextColor(ContextCompat.getColor(context, colorTxt));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        textView.setPadding(0, 0, 2, 0);
+
+        textView.setBackgroundResource(R.drawable.edittext_rounded_corners_cero);
+        textView.setBackgroundTintList(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(context, colorBg)
+                )
+        );
+
+        ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
+        int margin = (int) (2 * context.getResources().getDisplayMetrics().density);
+        params.setMargins(margin, margin, margin, margin);
+        textView.setLayoutParams(params);
+
+        return textView;
+    }
 
 }
 

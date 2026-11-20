@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,6 +43,8 @@ public class CH_InformacionCliente extends AppCompatActivity {
             tv_email, tv_canal,tv_moneda,tv_montoCredito, tv_disponibleCredito, tv_disponibleCreditoSae,tv_unidadNegocio,tv_monedaFacturacion;
     EditText tv_direccion_sucursal, tv_telefono_sucursal, tvVendedoresAsignados,
             tvFechaNacimiento, tvDNI, tv_cargo_contacto, tv_email_contacto, tv_celular, tv_telefono_contacto;
+
+    TextView itemCategoriVenta;
     Spinner spn_direccion, spn_puntoEntrega, SpinnerContacto;
     ImageView imvNuevoContacto, imvEditarContacto;
 
@@ -87,6 +90,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
         SpinnerContacto = findViewById(R.id.SpinnerContacto);
         imvEditarContacto = findViewById(R.id.imvEditarContacto);
         imvNuevoContacto = findViewById(R.id.imvNuevoContacto);
+        itemCategoriVenta = findViewById(R.id.itemCategoriVenta);
         //------------------------------------------
 
         Bundle bundle = getIntent().getExtras();
@@ -127,6 +131,7 @@ public class CH_InformacionCliente extends AppCompatActivity {
                 vendedores.append(i + 1).append(") ").append(dBclasses.getVendedorByCodven(spliCodvens[i]));
             }
             tvVendedoresAsignados.setText(vendedores.toString());
+            UtilView.mostrarEstadoCategoriaCliente(itemCategoriVenta, cliente.getCategoriaCliente());
 
             GestionarSucursales();
             GestionarLugarPuntoEntrega();

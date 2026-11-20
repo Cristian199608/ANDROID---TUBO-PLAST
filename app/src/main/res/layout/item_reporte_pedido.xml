@@ -178,13 +178,57 @@
         <LinearLayout
             android:id="@+id/layoutObsSAP"
             android:layout_below="@+id/layoutObs"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/layoutContainerWorkFlow"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_rounded_corners_cero"
+                android:backgroundTint="@color/grey_100"
+                android:padding="3dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    tools:text="Bloqueo General: Aprobado"
+                    android:textColor="@color/blue_800"
+                    android:textSize="14sp"
+                    android:paddingEnd="2dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/edittext_rounded_corners_cero"
+                    android:backgroundTint="@color/blue_100"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    tools:text="Bloqueo Cambio precio: Pendiente"
+                    android:textColor="@color/red_800"
+                    android:textSize="14sp"
+                    android:paddingEnd="2dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/edittext_rounded_corners_cero"
+                    android:backgroundTint="@color/red_100"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    tools:text="Bloqueo Cambio precio: Pendiente"
+                    android:textColor="@color/grey_800"
+                    android:textSize="14sp"
+                    android:paddingEnd="2dp"
+                    android:layout_margin="2dp"
+                    android:background="@drawable/edittext_rounded_corners_cero"
+                    android:backgroundTint="@color/grey_300"/>
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tvObsLogSap"
-                android:layout_width="0dp"
-                android:layout_weight="2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 tools:text="Alguna obervación acerca de envío a SAP"

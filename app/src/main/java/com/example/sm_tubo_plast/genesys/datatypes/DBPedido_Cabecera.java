@@ -8,6 +8,7 @@ import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class DBPedido_Cabecera implements KvmSerializable {
@@ -89,10 +90,12 @@ public class DBPedido_Cabecera implements KvmSerializable {
 	private String categoriaCliente;
 	private double dsctAdicionalMonto;
 	private String numdoc;
+	private String notas;
 
 	Cliente cliente;
 	LogEnvioPedido logEnvioPedido;
-			
+	String[] listWorkFlow;
+
 	
 
 	public String getNroletra() {
@@ -984,6 +987,22 @@ public class DBPedido_Cabecera implements KvmSerializable {
 
 	public void setNumdoc(String numdoc) {
 		this.numdoc = numdoc;
+	}
+
+	public String getNotas() {
+		return notas;
+	}
+
+	public void setNotas(String notas) {
+		this.notas = notas;
+	}
+
+	public String[] getListWorkFlow() {
+		return listWorkFlow;
+	}
+
+	public void setListWorkFlow(String[] listWorkFlow) {
+		this.listWorkFlow = listWorkFlow;
 	}
 
 	//-------------------------------fin atributo----------------------------------------------------------------

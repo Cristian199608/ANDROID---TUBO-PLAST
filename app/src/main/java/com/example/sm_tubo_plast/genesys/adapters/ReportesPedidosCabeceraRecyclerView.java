@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.example.sm_tubo_plast.genesys.datatypes.DBclasses;
 import com.example.sm_tubo_plast.genesys.domain.IReportePedidoCabecera;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -78,6 +80,8 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holderType, int position) {
         if(holderType instanceof ViewHolderItem){
             ViewHolderItem holder = (ViewHolderItem) holderType;
+            holder.layoutContainerWorkFlow.setVisibility(View.GONE);
+            holder.layoutContainerWorkFlow.removeAllViews();
             IReportePedidoCabecera IitemReporte=   IdataCabceraLista.get(position);
             IitemReporte.setViewByHolder(activity, dBclasses, holder, position);
             OnClickCustom(holder.imgCampanaYellow);
@@ -111,6 +115,7 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
                 edtObservacion_pedido, tvObsLogSap;
         public ImageView foto;
         public TextView tv_tipoRegistro, imgCampanaYellow;
+        public LinearLayout layoutContainerWorkFlow;
 
         public ViewHolderItem(@NonNull View convertView) {
             super(convertView);
@@ -129,6 +134,7 @@ public class ReportesPedidosCabeceraRecyclerView extends RecyclerView.Adapter<Re
             edtObservacion_pedido = (TextView) convertView.findViewById(R.id.edtObservacion_pedido);
             edtFechavisita = (TextView) convertView.findViewById(R.id.edtFechavisita);
             tvObsLogSap = (TextView) convertView.findViewById(R.id.tvObsLogSap);
+            layoutContainerWorkFlow = (LinearLayout) convertView.findViewById(R.id.layoutContainerWorkFlow);
         }
     }
 

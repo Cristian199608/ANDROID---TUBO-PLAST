@@ -642,7 +642,8 @@ public class DBclasses extends SQLiteAssetHelper {
 				"ifnull((SELECT 'L' FROM lugarEntrega le " +
 				"where le.codigoCliente= cliente.codcli " +
 				"and cast(ifnull(le.latitud, '0') as numeric)!=0.0 limit 1 ), \n" +
-				"'') as estado_localizacion  " +
+				"'') as estado_localizacion," +
+				"cliente.sub_canal  " +
 				" from cliente " +
 				"inner join (" +
 				"select dcx.codcli, dcx.item from direccion_cliente dcx " +
@@ -699,6 +700,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			dbc.put("deuda_mayor_igual_30_dias", cur.getDouble(cur.getColumnIndex("deuda_mayor_igual_30_dias")));
 			dbc.put("estadoDeuda", cur.getString(cur.getColumnIndex("estadoDeuda")));
 			dbc.put("deuda_x_vencer", cur.getDouble(cur.getColumnIndex("deuda_x_vencer")));
+			dbc.put("categoria_cliente", cur.getString(cur.getColumnIndex("sub_canal")));
 			dbcliente.add(dbc);
 		}
 		cur.close();
@@ -2433,6 +2435,7 @@ public class DBclasses extends SQLiteAssetHelper {
 			Nreg.put("flg_aprobacion", cabecera.getFlg_aprobacion());
 			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
 			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
+			Nreg.put("notas", cabecera.getNotas());
 
 			//_okkk if (cabecera.getTipoRegistro().equals(PedidosActivity.TIPO_DEVOLUCION)) {
                 if (cabecera.getTipoRegistro().equals("5")) {
@@ -3915,10 +3918,25 @@ public class DBclasses extends SQLiteAssetHelper {
 					"ifnull(pc.numdoc, '') as numdoc, "+
 					"ifnull(log.estado, '') as logEstado, "+
 					"ifnull(log.mensaje, '') as logMensaje, "+
-					"ifnull(log.fecha_procesamiento, '') as logFechaProceso "+
+					"ifnull(log.fecha_procesamiento, '') as logFechaProceso," +
+					"ifnull(wpx.estados, '') as estadosWP "+
 					"from pedido_cabecera pc left join "+
 					"cliente c on c.codcli= pc.cod_cli "+
 					"left join log_envio_pedido log on log.oc_numero= pc.oc_numero "+
+					"left join (" +
+					"SELECT wp.oc_numero, GROUP_CONCAT(\n" +
+					"    wp.codigo_bloqueo || ': ' ||\n" +
+					"    CASE\n" +
+					"        WHEN wp.estado = 1 THEN 'Aprobado'\n" +
+					"        WHEN wp.estado = 0 THEN 'Rechazado'\n" +
+					"        WHEN wp.estado < 0 THEN 'Pendiente'\n" +
+					"        ELSE '???'\n" +
+					"    END,\n" +
+					"    '"+VARIABLES.SEPARADOR_OBSERVACION+"'\n" +
+					") AS estados\n" +
+					"FROM workflow_pedido wp\n" +
+					"GROUP by wp.oc_numero " +
+					") wpx on wpx.oc_numero = pc.oc_numero "+
 					"where pc.oc_numero <> 0 " +
 					"and pc.cod_cli in (" +
 					"select x.codcli from znf_programacion_clientes x " +
@@ -3967,6 +3985,10 @@ public class DBclasses extends SQLiteAssetHelper {
 				log.setFecha_procesamiento(cur.getString(cur.getColumnIndex("logFechaProceso")));
 				dbpedido.setLogEnvioPedido(log);
 			}
+			String estadosWP = cur.getString(cur.getColumnIndex("estadosWP")).trim();
+			if(estadosWP.length()>0)
+				dbpedido.setListWorkFlow(estadosWP.split(VARIABLES.SEPARADOR_OBSERVACION));
+
 			lista_pedidos.add(dbpedido);
 			cur.moveToNext();
 		}
@@ -4644,13 +4666,14 @@ public class DBclasses extends SQLiteAssetHelper {
 		}
 	}
 
-	public void syncConfiguracion(JSONArray jArray) throws JSONException {
+	public void syncConfiguracion(JSONArray jArray, boolean ignoreFecha) throws JSONException {
 
 		JSONObject jsonData = null;
 		ContentValues cv = new ContentValues();
 
 		String where = "nombre not in('mensaje_licencia_uso', 'clave_forzar')";
 
+		String fechaValorOld=this.getFecha2();
 		getReadableDatabase().delete(DBtables.Configuracion.TAG, where, null);
 		SQLiteDatabase db = getWritableDatabase();
 
@@ -4659,14 +4682,14 @@ public class DBclasses extends SQLiteAssetHelper {
 		try {
 
 			for (int i = 0; i < jArray.length(); i++) {
-
-
-
 				jsonData = jArray.getJSONObject(i);
-				cv.put(DBtables.Configuracion.NOMBRE,
-						jsonData.getString("nombre").trim());
-				cv.put(DBtables.Configuracion.VALOR, jsonData
-						.getString("valor").trim());
+				String nombre = jsonData.getString("nombre").trim();
+				String valor = jsonData.getString("valor").trim();
+				if(ignoreFecha && nombre.equalsIgnoreCase("fecha")){
+					valor = fechaValorOld;
+				}
+				cv.put(DBtables.Configuracion.NOMBRE,nombre);
+				cv.put(DBtables.Configuracion.VALOR, valor);
 
 				db.insert(DBtables.Configuracion.TAG, null, cv);
 				Log.i("CONFIGURACION", "i= " + i + " NOMBRE: "
@@ -6081,6 +6104,7 @@ public class DBclasses extends SQLiteAssetHelper {
 					cv.put(Pedido_cabecera.DSCTO_BONIFICACION, 			jsonData.getString(Pedido_cabecera.DSCTO_BONIFICACION).trim());
 					cv.put(Pedido_cabecera.flg_aprobacion, 			jsonData.getString(Pedido_cabecera.flg_aprobacion).trim());
 					cv.put(Pedido_cabecera.numdoc, 			jsonData.getString(Pedido_cabecera.numdoc).trim());
+					cv.put(Pedido_cabecera.notas, 			jsonData.getString("condicionComercial").trim());
 
 					cv.put("isAplicaInstalacion", jsonData.getInt("isAplicaInstalacion"));
 					cv.put("obsDespacho", jsonData.getString("obsDespacho").trim());
@@ -7161,6 +7185,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			dbpedido.setFlg_aprobacion(cur.getInt(cur.getColumnIndex("flg_aprobacion")));
 			dbpedido.setCodigo_lista_precio(cur.getString(cur.getColumnIndex("codigo_lista_precio")));
 			dbpedido.setCategoriaCliente(cur.getString(cur.getColumnIndex("categoriaCliente")));
+			dbpedido.setCondicionComercial(cur.getString(cur.getColumnIndex("notas")));
 			dbpedido.setVersionApp(versionApp);
 			dbpedido.setNumdoc("");//vacio, luego se obtendrá de sap al insertar
 
@@ -12946,6 +12971,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				pc.setDsctAdicionalMonto(cursor.getDouble(cursor.getColumnIndex("dsctAdicionalMonto")));
 				pc.setCodigo_lista_precio(cursor.getString(cursor.getColumnIndex("codigo_lista_precio")));
 				pc.setCategoriaCliente(cursor.getString(cursor.getColumnIndex("categoriaCliente")));
+				pc.setNotas(cursor.getString(cursor.getColumnIndex("notas")));
 
 			} while (cursor.moveToNext());
 
@@ -13774,6 +13800,7 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 			Nreg.put("dsctProntoPagoContado", cabecera.getDsctProntoPagoContado());
 			Nreg.put("codigo_lista_precio", cabecera.getCodigo_lista_precio());
 			Nreg.put("categoriaCliente", cabecera.getCategoriaCliente());
+			Nreg.put("notas", cabecera.getCondicionComercial());
 
 
 
@@ -14768,6 +14795,8 @@ Log.e("getPedidosDetalleEntity","Oc_numero: "+cur.getString(0));
 				values.put("direccionFiscal", txtUbigeo);
 				values.put("monedaDocumento", PedidosActivity.MONEDA_NACIONAL);
 				values.put("monedaLimCred", PedidosActivity.MONEDA_NACIONAL);
+				values.put("canal", cliente.getSegmentoCliente());
+				values.put("sub_canal", cliente.getCategoriaCliente());
 				values.put("stdcli", "1");
 
 				long a = db.insertWithOnConflict(DBtables.Cliente.TAG, null,values, SQLiteDatabase.CONFLICT_IGNORE);

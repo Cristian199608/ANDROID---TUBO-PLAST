@@ -266,18 +266,8 @@ public class MenuPrincipalActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View arg0) {
-                Intent icliente=null;
-                if(sessionManager.getToken().equals("admin")){
-                    String urlx= database.getConfiguracionByName("url_aprobaciones_pedido", "http://192.168.0.71:4391/aprobaciones_movil/index.php");
-                    int usecodSaemovil = database.getUsecodUserandPass(sessionManager.getUsuario(), sessionManager.getPassword());
-                    icliente = new Intent(activity, AprobacionesPedidoWebViewActivity.class);
-                    icliente.putExtra("usecod", usecodSaemovil);
-                    icliente.putExtra("url", urlx);
-                }
-                else{
-                    icliente = new Intent(activity, ReportesPedidosCotizacionYVisitaActivity.class);
-                    icliente.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
-                }
+                Intent icliente = new Intent(activity, ReportesPedidosCotizacionYVisitaActivity.class);
+                icliente.putExtra("TIPO_VISTA", ReportesPedidosCotizacionYVisitaActivity.DATOS_PREVENTA);
                 // ipedido.putExtra("codven",codven);
                 activity.startActivityForResult(icliente, 0);
             }

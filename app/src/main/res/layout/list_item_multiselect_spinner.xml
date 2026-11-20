@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    >
+    <LinearLayout
+        android:id="@+id/container"
+        android:paddingStart="5dp"
+        android:gravity="center"
+        android:elevation="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="0"
+            android:textColor="@color/grey_900"
+            android:textSize="12sp"
+            android:gravity="center_vertical"
+            android:id="@+id/tvOrden"
+            android:textStyle="bold"
+            android:layout_marginEnd="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:text="Nombre Opcion"
+                android:textColor="@color/grey_900"
+                android:textSize="14sp"
+                android:gravity="center_vertical"
+                android:id="@+id/tvTitulo"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:text="Nombre Opcion"
+                android:textColor="@color/grey_900"
+                android:textSize="12sp"
+                android:gravity="center_vertical"
+                android:id="@+id/tvOpcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    <View
+        android:layout_below="@+id/container"
+        android:background="@color/grey_200"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"/>
+</RelativeLayout>

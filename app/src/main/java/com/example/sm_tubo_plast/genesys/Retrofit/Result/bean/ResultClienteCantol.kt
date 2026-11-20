@@ -32,6 +32,8 @@ data class ResultClienteCantol(
 
     @SerializedName("segmento_cliente")
     val segmentoCliente: String,
+    @SerializedName("categoria_cliente")
+    val categoriaCliente: String,
 
     @SerializedName("valido")
     val valido: String,

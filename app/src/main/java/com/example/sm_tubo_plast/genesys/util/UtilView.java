@@ -262,4 +262,16 @@ public class UtilView {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    public static void mostrarEstadoCategoriaCliente(TextView textView, String catCliente){
+        if(catCliente.trim().length()==0){
+            textView.setText("Categoria: Cliente sin categoria");
+            textView.setTextColor(textView.getResources().getColor(R.color.grey_800));
+        }
+        else{
+            textView.setText("Categoria: "+catCliente);
+            textView.setTextColor(textView.getResources().getColor(R.color.blue_500));
+        }
+
+    }
+
 }

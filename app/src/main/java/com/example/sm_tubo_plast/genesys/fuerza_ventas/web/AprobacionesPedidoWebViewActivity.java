@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,7 +20,7 @@ public class AprobacionesPedidoWebViewActivity extends AppCompatActivity {
     private static final String TAG = "AprobacionesPedidoWebViewActivity";
 
     private ActivityAprobacionesPedidoWebViewBinding binding;
-    private int usecod=0;
+    private int codven =0;
     private String url="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +29,7 @@ public class AprobacionesPedidoWebViewActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         Bundle bundle = getIntent().getExtras();
-        usecod = bundle.getInt("usecod");
+        codven = bundle.getInt("codven");
         url = bundle.getString("url");
         eventos();
         startView();
@@ -57,7 +56,7 @@ public class AprobacionesPedidoWebViewActivity extends AppCompatActivity {
     }
     private byte[] getParametros() throws Exception{
         String parametros =
-                "usecod=" + java.net.URLEncoder.encode(String.valueOf(usecod), "UTF-8") +
+                "codven=" + java.net.URLEncoder.encode(String.valueOf(codven), "UTF-8") +
                         "&usepas=" + java.net.URLEncoder.encode("", "UTF-8");
         return parametros.getBytes(java.nio.charset.StandardCharsets.UTF_8);
     }

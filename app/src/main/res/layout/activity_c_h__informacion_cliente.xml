@@ -16,10 +16,23 @@
         android:orientation="vertical" >
 
 
+        <!-- categoria venta venta cliente -->
+        <TextView
+            android:id="@+id/itemCategoriVenta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/blue_800"
+            android:textSize="14sp"
+            android:background="@drawable/edittext_rounded_corners_cero"
+            android:backgroundTint="@color/blue_100"
+            tools:text="Categoria: FERRETERIA C" />
+
        <LinearLayout
            android:orientation="horizontal"
            android:layout_width="match_parent"
-           android:layout_height="wrap_content">
+           android:layout_height="wrap_content"
+           android:layout_marginTop="5dp"
+           >
            <LinearLayout
                android:orientation="vertical"
                android:layout_width="0dp"

@@ -32,7 +32,12 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.sm_tubo_plast.R;
 import com.example.sm_tubo_plast.genesys.BEAN.CalendarioNoLaborable;
+import com.example.sm_tubo_plast.genesys.BEAN.DataCabeceraPDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDF;
+import com.example.sm_tubo_plast.genesys.CreatePDF.PDFCantol;
+import com.example.sm_tubo_plast.genesys.CreatePDF.model.ReportePedidoDetallePDF;
 import com.example.sm_tubo_plast.genesys.DAO.DAO_CalendarioNoLaborable;
+import com.example.sm_tubo_plast.genesys.DAO.DAO_ReportePedido;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultClienteObras;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultListaVendedores;
 import com.example.sm_tubo_plast.genesys.Retrofit.Result.bean.ResultLogin;
@@ -45,6 +50,7 @@ import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.RequestPedidoSA
 import com.example.sm_tubo_plast.genesys.Retrofit.request.pedido.util.PedidoAppConvertTo_PedidoSAP;
 import com.example.sm_tubo_plast.genesys.Retrofit.request.producto.RequestProducto;
 import com.example.sm_tubo_plast.genesys.Retrofit.util.WS_RetrofitCustom;
+import com.example.sm_tubo_plast.genesys.datatypes.DBPedido_Cabecera;
 import com.example.sm_tubo_plast.genesys.datatypes.DBSync_soap_manager;
 import com.example.sm_tubo_plast.genesys.datatypes.DBUsuarios;
 import com.example.sm_tubo_plast.genesys.datatypes.DB_Empresa;
@@ -55,6 +61,8 @@ import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetDialogB
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetGeolocalizarCliente;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.BottomSheetMapDialog;
 import com.example.sm_tubo_plast.genesys.fuerza_ventas.Dialog.DatePickerMaterial.MaterialDatePickerCustom;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ReportesPedidosCotizacionYVisitaActivity;
+import com.example.sm_tubo_plast.genesys.fuerza_ventas.Reportes.ViewPdfActivity;
 import com.example.sm_tubo_plast.genesys.hardware.Permiso_Adroid;
 import com.example.sm_tubo_plast.genesys.hardware.RequestPermisoUbicacion;
 import com.example.sm_tubo_plast.genesys.service.ConnectionDetector;
@@ -63,6 +71,7 @@ import com.example.sm_tubo_plast.genesys.session.SessionManager;
 import com.example.sm_tubo_plast.genesys.util.FontManager;
 import com.example.sm_tubo_plast.genesys.util.GlobalFunctions;
 import com.example.sm_tubo_plast.genesys.util.GlobalVar;
+import com.example.sm_tubo_plast.genesys.util.UtilView;
 import com.example.sm_tubo_plast.genesys.util.UtilViewMensaje;
 import com.example.sm_tubo_plast.genesys.util.VARIABLES;
 import com.google.android.gms.maps.model.LatLng;
@@ -70,6 +79,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -301,7 +311,9 @@ public class LoginActivity extends AppCompatActivity {
         boolean prueba = VARIABLES.isSetDataPruebas;
         if(!prueba) return;
         //dbusuarios.setDataPruebas();
-        testMapa();
+//        GenerarPdfDocument_test("3326110504");
+//        goMenuPrincipal("33");
+//        testMapa();
         testDoc();
 //        DAO_RegistroBonificaciones daoReg=new DAO_RegistroBonificaciones(getApplicationContext());
 //        ArrayList<DB_RegistroBonificaciones>  lis=daoReg.getRegistroBonificacionesClonarBy("V3225082903");
@@ -475,7 +487,8 @@ public class LoginActivity extends AppCompatActivity {
                         server.getTX_SERV_nombreBD(),
                         server.getTX_SERV_usuario(),
                         server.getTX_SERV_contrasena(),
-                        server.getTX_SERV_servicioWeb()
+                        server.getTX_SERV_servicioWeb(),
+                        true
                 );
                 _soap.Sync_tabla_usuarios(
                         server.getTX_SERV_servidorBD(),
@@ -831,8 +844,8 @@ public class LoginActivity extends AppCompatActivity {
                         resultLogin.getToken(),
                         ""+vendedorFIND.getCodigo_vendedor(),
                         vendedorFIND.getNombre_vendedor(),
-                        vendedorFIND.getEmail_vendedor(),
                         vendedorFIND.getMobile_vendedor(),
+                        vendedorFIND.getEmail_vendedor(),
                         String.valueOf(vendedorFIND.getLista_precio_vendedor()),
                         true
                 );
@@ -841,16 +854,124 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void testMapa(){
-        final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
-        i.putExtra("origen", "CLIENTES");
-        i.putExtra("nombreCliente", "HUAMAN PINEDA SONIA");//""IMPORT Y DISTRIBUIDORA EL PAISA S.A.C.");//"CUEVA CHUQUIZUTA TEODOCIA");
-        i.putExtra("codcli", "C10105217914");//""C20603411987");//"C00006063131");
-        i.putExtra("codigoVendedor", "33");
-        i.putExtra("tipoRegistro", PedidosActivity.TIPO_PEDIDO);
+//        final Intent i = new Intent(getApplicationContext(),PedidosActivity.class);
+//        i.putExtra("origen", "CLIENTES");
+//        i.putExtra("nombreCliente", "ALIAGA VILLEGAS FREDDY");//""IMPORT Y DISTRIBUIDORA EL PAISA S.A.C.");//"CUEVA CHUQUIZUTA TEODOCIA");
+//        i.putExtra("codcli", "C00040256845");//""C20603411987");//"C00006063131");
+//        i.putExtra("codigoVendedor", "33");
+//        i.putExtra("tipoRegistro", PedidosActivity.TIPO_COTIZACION);
 //        startActivity(i);
+
+        final Intent ipedido = new Intent(getApplicationContext(),PedidosActivity.class);
+        ipedido.putExtra("codigoVendedor", "33");
+        ipedido.putExtra("nombreCliente", "ALIAGA VILLEGAS FREDDY");
+        ipedido.putExtra("codcli", "C00040256845");
+        ipedido.putExtra("origen", "REPORTES-MODIFICAR");
+        ipedido.putExtra("OC_NUMERO", "3326110401");
+        ipedido.putExtra("tipoRegistro", PedidosActivity.TIPO_COTIZACION);
+
+        startActivity(ipedido);
+
 //        BottomSheetDialogBuscarProductoVenta dd=BottomSheetDialogBuscarProductoVenta.newInstance(
 //                "33", "oc_numero", "FERRETERIA A");
 //        dd.show(getSupportFragmentManager(), "ddd");
+    }
+
+    private void GenerarPdfDocument_test(String oc_numero) {
+        DBPedido_Cabecera dbPedido_cabecera= dbusuarios.getPedido_cabecera(oc_numero);
+        if (!ClientesActivity.validarClienteCarteraSIDIGE(this, dbusuarios, dbPedido_cabecera.getCod_cli())) {
+            return;
+        }
+        //-----------------------------------------------------------------------------------------------
+        DAO_ReportePedido dao_reportePedido=new DAO_ReportePedido(getApplicationContext());
+
+        ArrayList<DataCabeceraPDF> lista=dao_reportePedido.getCabecera(""+oc_numero);
+        if (lista.size()==0){
+            GlobalFunctions.showCustomToast(
+                    this,
+                    "No se encontró dato principal de cliente",
+                    GlobalFunctions.TOAST_ERROR);
+            return;
+        }
+
+
+        ArrayList<Integer> listaIndex = dbusuarios.getOrdenItemPedido(oc_numero);
+        ArrayList<ReportePedidoDetallePDF> listaDetalle= dao_reportePedido.getAllDataByCodigo( oc_numero, listaIndex);
+        Generate_pdf_by_ocumero( 1, lista.get(0), listaDetalle);//1 Cliente
+    }
+
+    private void Generate_pdf_by_ocumero( int tipoEnvio, DataCabeceraPDF dataCabecera, ArrayList<ReportePedidoDetallePDF> listaDetalle) {
+
+
+        pDialog = new ProgressDialog(this);
+        pDialog.setMessage("Generando PDF...");
+        pDialog.setIndeterminate(true);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        String tipo_de_cambio  = dbusuarios.getCambio("Tipo_cambio");
+        double tasaCambioSolesToDolar  = Double.parseDouble(tipo_de_cambio);
+        String nombreArchivo=dataCabecera.getTipoRegistro()+"-"+dataCabecera.getOc_numero()+".pdf";
+//        String nombreArchivo=dataCabecera.getOc_numero()+".pdf";
+        new AsyncTask<Void, String, String>(){
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    String notasOption = dbusuarios.getConfiguracionByName("maestro_notal_despacho", "");
+                    String[] listaCondDespacho = notasOption.split(VARIABLES.SEPARADOR_OBSERVACION);
+
+                    PDFCantol.createPdf(getApplicationContext(),
+                            nombreArchivo,
+                            /*dataCabecera.getOc_numero(),
+                            dataCabecera.getTipoRegistro(),
+                            dataCabecera.getRuccli(),
+                            dataCabecera.getCodven(),
+                            dataCabecera.getNomcli(),
+                            dataCabecera.getTelefono(),
+                            dataCabecera.getNomven(),
+                            dataCabecera.getDireccion(),
+                            dataCabecera.getEmail_cliente(),
+                            dataCabecera.getEmail_vendedor(),
+                            dataCabecera.getDesforpag(),
+                            dataCabecera.getMonto_total(),
+                            dataCabecera.getValor_igv(),
+                            dataCabecera.getSubtotal(),
+                            dataCabecera.getPeso_total(),
+                            dataCabecera.getFecha_oc(),
+                            dataCabecera.getFecha_mxe(),*/
+                            dataCabecera,
+                            listaDetalle,
+                            tasaCambioSolesToDolar,
+                            tipoEnvio,
+                            listaCondDespacho);
+                    return "Generado";
+                } catch (FileNotFoundException e) {
+                    //aqui quiero enviar un error
+                    e.printStackTrace();
+                    return null;
+                }
+
+
+            }
+
+            @Override
+            protected void onPostExecute(String unused) {
+                super.onPostExecute(unused);
+                pDialog.dismiss();
+                pDialog=null;
+                if(unused==null){
+                    UtilView.MENSAJE_simple(getApplicationContext(), "Error", "No se ha podido generar el pdf. Vuelva a intentarlo");
+                    return;
+                }
+                Intent intent = new Intent(getApplicationContext(), ViewPdfActivity.class);
+                intent.putExtra("oc_numero", dataCabecera.getOc_numero());
+                intent.putExtra("nombreArchivo", nombreArchivo);
+                startActivity(intent);
+
+            }
+        }.execute();
+
+
     }
 
     private void testDoc(){

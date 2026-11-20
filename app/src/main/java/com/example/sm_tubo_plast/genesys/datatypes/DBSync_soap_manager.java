@@ -3114,7 +3114,7 @@ public String peticion_modificar(String oc_numero) throws Exception{
     return flag;
 }
 
-public void Sync_tabla_configuracion(String url, String catalog, String user, String contrasena, String urlService) throws Exception{
+public void Sync_tabla_configuracion(String url, String catalog, String user, String contrasena, String urlService, boolean ignoreFecha) throws Exception{
 	
 	ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<HeaderProperty>();
     headerPropertyArrayList.add(new HeaderProperty("Connection", "open"));
@@ -3144,7 +3144,7 @@ public void Sync_tabla_configuracion(String url, String catalog, String user, St
     	
     	JSONArray jsonstring = new JSONArray(result.toString());
     	Log.i("CONFIGURACION", "Registros: "+jsonstring.length());
-    	dbclass.syncConfiguracion(jsonstring);
+    	dbclass.syncConfiguracion(jsonstring, ignoreFecha);
     	Log.i("CONFIGURACION", "SINCRONIZADA");
     	
     }catch(Exception e){

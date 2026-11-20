@@ -48,6 +48,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
     AlertViewSimpleConEdittext editDesctoAddicional;
     double dsctoPronto=0.0;
+    double dsctoManualMaximo=0.0;
     private OnAgregarProductoListener listener;
 
     public ProductoPedidoAgregarAdapter(
@@ -73,6 +74,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         this.tipo_registro=tipo_registro;
         this.oc_numero=oc_numero;
         this.dsctoPronto = Double.parseDouble(obj_dbclasses.getConfiguracionByName("dscto_pronto_pago_contado", "2.0"));
+        this.dsctoManualMaximo= Double.parseDouble(obj_dbclasses.getConfiguracionByName("dscto_manual_usuario_max", "0.0"));
     }
 
     public void setLista(ItemProducto[] lista) {
@@ -120,10 +122,10 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         holder.tvPrecio.setText("S/ "+precioUnit);
 
 
-        holder.tvStock.setText((int)(producto.getStockDetalle().getStock()));
-        holder.tvStockSeparado.setText((int)(producto.getStockDetalle().getComprometido()));
-        holder.tvStockEnTransito.setText((int)(producto.getStockDetalle().getTransito()));
-        holder.tvStockDisponible.setText((int)(producto.getStockDetalle().getDisponible()));
+        holder.tvStock.setText(""+(int)(producto.getStockDetalle().getStock()));
+        holder.tvStockSeparado.setText(""+(int)(producto.getStockDetalle().getComprometido()));
+        holder.tvStockEnTransito.setText(""+(int)(producto.getStockDetalle().getTransito()));
+        holder.tvStockDisponible.setText(""+(int)(producto.getStockDetalle().getDisponible()));
         holder.tvStockDisponibleReal.setText("Dis. Real "+VARIABLES.formater_integer.format((int)(stockRealFinal))+ " "+ producto.getCodunimed());
         //if(producto.getStock()<=0){
         holder.tvStock.setTextColor(holder.itemView.getContext().getResources().getColor(producto.getStockDetalle().getStock()>0?R.color.grey_900:R.color.red_500));
@@ -224,7 +226,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
         });
         holder.tvDsctoAdicional.setOnClickListener(v->{
-            gestionarDescuentoAdicional(holder, position);
+            gestionarDescuentoAdicional(holder, position, null);
         });
     }
 
@@ -505,18 +507,24 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
     }
 
-    private void gestionarDescuentoAdicional(ViewHolder holder, int postionEdit){
-        double dscto= holder.tvDsctoAdicional.getHint().toString().length()>0? Double.parseDouble(holder.tvDsctoAdicional.getHint().toString()):0.30;
+    private void gestionarDescuentoAdicional(ViewHolder holder, int postionEdit, String errortxt){
+        double dscto= lista[postionEdit].getPorcentaje_desc_extra();
         editDesctoAddicional =new AlertViewSimpleConEdittext(activity);
         editDesctoAddicional.cancelable = false;
         editDesctoAddicional.type_numberDecimal = true;
         editDesctoAddicional.titulo="Ingrese el descuento %";
         editDesctoAddicional.texto_cargado = dscto>0.0?(""+dscto):"";
         editDesctoAddicional.hint="0.0";
+        editDesctoAddicional.mensjae_error=null;
         editDesctoAddicional.start(new AlertViewSimpleConEdittext.Listener() {
             @Override
             public String resultOK(String s) {
                 if(s!=null){
+                    double dscto = VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(s));
+                    if( dscto>dsctoManualMaximo ){
+                        //gestionarDescuentoAdicional(holder, postionEdit, "Ingrese máximo "+dsctoManualMaximo+"%");
+                        return "Ingrese máximo "+dsctoManualMaximo+"%";
+                    }
                     Log.i(TAG, "gestionarDescuentoAdicional:: nuevo dscto "+s);
                     lista[postionEdit].setPorcentaje_desc_extra(VARIABLES.getDoubleFormaterThowDecimal(Double.parseDouble(s)));
                     notifyItemChanged(postionEdit);
@@ -526,7 +534,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
             @Override
             public String resultBucle(String s) {
-                gestionarDescuentoAdicional(holder, postionEdit);
+                gestionarDescuentoAdicional(holder, postionEdit, null);
                 return null;
             }
         });

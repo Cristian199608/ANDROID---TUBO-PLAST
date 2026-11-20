@@ -1217,7 +1217,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
 //                                    publishProgress("555");
 //                                    soap_manager.SyncMenuOpcionesYRolesAcceso(servidorBD,nombreBD, usuarioBD, contrasenaBD);
                                     publishProgress("70");
-                                    soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD, null);
+                                    soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD, null, false);
                                     publishProgress("90");
 
                                     try {
@@ -1291,7 +1291,7 @@ public class SincronizarActivity extends AppCompatActivity implements DialogFrag
                                     }
                                 });
                                 publishProgress("10");
-                                soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD, null);
+                                soap_manager.Sync_tabla_configuracion(servidorBD,	nombreBD, usuarioBD, contrasenaBD, null, false);
                                 publishProgress("20");
 //                                soap_manager.Sync_tabla_vendedores(servidorBD,	nombreBD, usuarioBD, contrasenaBD);
 //                                publishProgress("30");

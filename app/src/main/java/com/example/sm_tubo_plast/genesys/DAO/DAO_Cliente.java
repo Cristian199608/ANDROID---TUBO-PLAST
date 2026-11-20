@@ -338,7 +338,8 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				"disponible_credito," +
 				"tipo_cliente," +
 						"codven_asginados, " +
-						"monto_compra "+
+						"monto_compra," +
+						"sub_canal "+
     			"FROM cliente "+
     			"WHERE codcli like '"+codigoCliente+"'";
 		Log.i(TAG, rawQuery);
@@ -367,6 +368,7 @@ public class DAO_Cliente extends SQLiteAssetHelper {
 				cliente.setRubro_cliente(cursor.getString(cursor.getColumnIndex("rubro_cliente")));
 				cliente.setCodven_asginados(cursor.getString(cursor.getColumnIndex("codven_asginados")));
 				cliente.setMonto_compra(cursor.getDouble(cursor.getColumnIndex("monto_compra")));
+				cliente.setCategoriaCliente(cursor.getString(cursor.getColumnIndex("sub_canal")));
 			} while (cursor.moveToNext());
 
 		}		

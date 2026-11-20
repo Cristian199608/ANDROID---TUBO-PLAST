@@ -46,11 +46,11 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                                 "P.despro, " +
                                 "PD.cantidad, " +
                                 "PD.unidad_medida, " +
-                                "PD.precio_bruto, " +
+                                "case when PD.tipo_producto='C' then 0 else PD.precio_bruto end as precio_bruto," +
                                 "ifnull(PD.porcentaje_desc, 0) as porcentaje_desc," +
                                 "PD.peso_bruto," +
                                 "ifnull(PD.porcentaje_desc_extra, 0) as porcentaje_desc_extra, " +
-                                "PD.precio_neto," +
+                                "case when PD.tipo_producto='C' then 0 else PD.precio_neto end as precio_neto," +
                                 "PD.descuento, " +
                                 "PD.sec_promo, " +
                                 "PD.item_promo, " +
@@ -207,7 +207,9 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     "PC.observacion3," +
                     "PC.tipoRegistro," +
                     "PC.diasVigencia, " +
-                    "PC.dsctoBonificacion as totalDsctEnBonif " +
+                    "PC.dsctoBonificacion as totalDsctEnBonif," +
+                    "C.direccionFiscal as direccionFiscal, " +
+                    "PC.notas as notas " +
                     "FROM " +
                     "pedido_cabecera PC " +
                     "CROSS JOIN " +
@@ -273,6 +275,8 @@ public class DAO_ReportePedido extends SQLiteAssetHelper {
                     cabecera.setTipoRegistro(objCursor.getString(objCursor.getColumnIndex("tipoRegistro")));
                     cabecera.setDiasVigencia(objCursor.getInt(objCursor.getColumnIndex("diasVigencia")));
                     cabecera.setDsctoBonificacion(objCursor.getDouble(objCursor.getColumnIndex("totalDsctEnBonif")));
+                    cabecera.setDireccionFiscalCliente(objCursor.getString(objCursor.getColumnIndex("direccionFiscal")));
+                    cabecera.setCondicionComercial(objCursor.getString(objCursor.getColumnIndex("notas")));
                     objDbPedidoCabeceraArrayList.add(cabecera);
 
                 }

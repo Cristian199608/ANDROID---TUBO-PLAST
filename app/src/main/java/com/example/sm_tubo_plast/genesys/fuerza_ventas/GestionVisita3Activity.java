@@ -1401,6 +1401,7 @@ public class GestionVisita3Activity extends AppCompatActivity implements DatePic
         itemCabecera.setIsAplicaNC(0);
         itemCabecera.setVolumenTotal(0);
         itemCabecera.setDsctProntoPagoContado(0);
+        itemCabecera.setCondicionComercial("");
 
         itemCabecera.setSan_visitas(list_visitas);
 
