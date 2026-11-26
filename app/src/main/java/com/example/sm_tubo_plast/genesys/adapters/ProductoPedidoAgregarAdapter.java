@@ -101,6 +101,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
         holder.edtCantidad.setText("");
         holder.edtCantidad.setEnabled(true);
+        holder.tvDsctoAdicional.setEnabled(true);
         holder.tvProductoAgregadoInfo.setVisibility(View.GONE);
         holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.white));
         holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.white));
@@ -109,7 +110,7 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         holder.tvNombreProducto.setText(producto.getCodprod()+" - "+producto.getDescripcion());
 
         double dsctoCategoria=obtenerPorcentajeDsctoByCondicion(producto.getMarca());
-        double dsctoAdicionalVend=producto.getPorcentaje_desc_extra();
+        double dsctoAdicionalVend=_getDescuentoManual(producto);
         holder.tvDsctoCategoria.setText(dsctoCategoria>0.0?(dsctoCategoria+"%"):"--");
         holder.tvDsctoAdicional.setText("+ "+(dsctoAdicionalVend>0.0?(dsctoAdicionalVend+"%"):"0.0"));
         holder.tvPrecioLista.setText(
@@ -136,9 +137,11 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
         ItemProductoVenta productoVendido=producto.getItemProdVenta();
         if (productoVendido!=null && productoVendido.getCantidad()>0.0){
             holder.edtCantidad.setEnabled(false);
+            holder.tvDsctoAdicional.setEnabled(false);
+            holder.edtCantidad.setText(VARIABLES.getIntOrDecimalByNumber(productoVendido.getCantidad()));
             holder.tvProductoAgregadoInfo.setVisibility(View.VISIBLE);
             holder.tvProductoAgregadoInfo.setText("Producto agregado "+VARIABLES.getIntOrDecimalByNumber(productoVendido.getCantidad())+" "+
-                    productoVendido.getDesUnimed()+" S/. "+(VARIABLES.getStringFormaterTwoDecimal( productoVendido.getPrecioNeto()-productoVendido.getPrecioDescuento()))
+                    productoVendido.getDesUnimed()+" S/. "+(VARIABLES.getStringFormaterTwoDecimal( productoVendido.getPrecioNeto()))
             );
             holder.cardView.setCardBackgroundColor(activity.getResources().getColor(R.color.green_100));
         }
@@ -507,8 +510,13 @@ public class ProductoPedidoAgregarAdapter extends RecyclerView.Adapter<ProductoP
 
     }
 
+    private double _getDescuentoManual(ItemProducto itemProducto){
+        return itemProducto.getItemProdVenta()!=null?
+                itemProducto.getItemProdVenta().getPctjDsctomManual()
+                :itemProducto.getPorcentaje_desc_extra();
+    }
     private void gestionarDescuentoAdicional(ViewHolder holder, int postionEdit, String errortxt){
-        double dscto= lista[postionEdit].getPorcentaje_desc_extra();
+        double dscto= _getDescuentoManual(lista[postionEdit]);
         editDesctoAddicional =new AlertViewSimpleConEdittext(activity);
         editDesctoAddicional.cancelable = false;
         editDesctoAddicional.type_numberDecimal = true;

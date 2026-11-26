@@ -18,7 +18,7 @@ public class WorkflowAprobaciones {
     public static final String FLG_EXCESO_LINEA_CREDITO = "flg_exceso_linea_credito";//mapeado
     public static final String FLG_PEDIDO_FUERA_HORARIO = "flg_pedido_fuera_horario";// ok::no permitir enviar al servidor, ni guardar local
     public static final String FLG_PROD_RESTRINGIDO = "flg_prod_restringido";//consultar cantol (no tenemos)
-    public static final String FLG_SOLICITUD_LINEA_CREDITO = "flg_solicitud_linea_credito";// OK ::cuando no tiene asignado limite credito(0)
+    public static final String FLG_SOLICITUD_LINEA_CREDITO = "flg_solicitud_linea_credito";// OK ::cuando se hace venta al crédito
     public static final String FLG_VENTA_MARGEN_BAJO = "flg_venta_margen_bajo";//OK --monto minimo de venta
     public static final String FLG_DESCUENTO_MANUAL = "flg_descuento_manual";//OK -- cuando el usuario agrega el descuento manual
 

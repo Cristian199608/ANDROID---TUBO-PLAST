@@ -7578,13 +7578,13 @@ private void EnvalularMoneda(){
         DBProductos listProduc = dbclass.getProductosxCodpro(cipSalida);
         DBProductos producto = dbclass.getProductosxCodpro(cipSalida);
         String despro=producto.getDespro();
-        double porcentajeDesc= detalleOrigen.getPorcentaje_desc();
-        double porcentajeDescExtra= detalleOrigen.getPorcentaje_desc_extra();
+        double porcentajeDesc= 0.0;
+        double porcentajeDescExtra= 0.0;
         if(listProduc==null){
             GlobalFunctions.showCustomToast(this,  "Producto promoción codigo: "+cipSalida+" no se agregó, pues no está en el catalogo de artículos.", GlobalFunctions.TOAST_ERROR);
             return;
         }
-        if(listProduc.isFlg_bonificacion()){
+        if(listProduc.isFlg_bonificacion()){// para producto marcado como dscto 0.0
             porcentajeDesc= 0;
             porcentajeDescExtra= 0;
         }
@@ -7604,53 +7604,18 @@ private void EnvalularMoneda(){
         //-----------------------------------------------------------------------------------------------
         double precioLista= Double.parseDouble(resulPrecio.precioLista.replace(",", ""));
         double precioVentaSinIgv= Double.parseDouble(resulPrecio.precioVentaPreSinIGV.replace(",", ""));
-        String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioVentaSinIgv).replace(",","");
-        String precioSutotalSinDscto= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioLista).replace(",","");
+        //String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioVentaSinIgv).replace(",","");
+        String precioSutotal= VARIABLES.getStringFormaterThreeDecimal(cantidadProducto*precioLista).replace(",","");
         double pesoProducto = dbclass.getPesoProducto(codproEntrada);
 
         //*****insertamos descuento detallado-----------------
         ArrayList<PedidoDetalleDescuento> listDsctoMotivo=new ArrayList<>();
         //-------------------------------inset dscto detallado----------------------------------------------------------------
-        ArrayList<PedidoDetalleDescuento> listaDscPadre = dbclass.obtenerPedidoDetalleDescuento(Oc_numero, itemEntrada);
-        double psctDsctoProntoPagoContado=0;
-        for (PedidoDetalleDescuento pedidoDetalleDescuento : listaDscPadre) {
-            if (pedidoDetalleDescuento.getTipo_desc().equals(PedidoDetalleDescuento.TIPO_DSCTO_PRONTO_PAGO_CONTADO)) {
-                psctDsctoProntoPagoContado=pedidoDetalleDescuento.getPcjt_desc();
-                double montoDescuento1 = VARIABLES.getDoubleFormaterThreeDecimal(
-                        (precioLista*(psctDsctoProntoPagoContado/100)) * cantidadProducto
-                                );
-                listDsctoMotivo.add(new PedidoDetalleDescuento(
-                        Oc_numero,
-                        salida,
-                        nroItemDetalle,
-                        psctDsctoProntoPagoContado,
-                        montoDescuento1,
-                        pedidoDetalleDescuento.getTipo_desc()
-                ));
-            }
-        }
-        double montoDescuento2= VARIABLES.getDoubleFormaterThreeDecimal(Double.parseDouble(precioSutotalSinDscto) - Double.parseDouble(precioSutotal));
-        double porcentajeDesc2=porcentajeDesc;
-        if(psctDsctoProntoPagoContado>0){
-            porcentajeDesc2 = VARIABLES.getDoubleFormaterThowDecimal(porcentajeDesc - psctDsctoProntoPagoContado);
-            montoDescuento2 = VARIABLES.getDoubleFormaterThreeDecimal(
-                    (precioLista*(porcentajeDesc2/100)) * cantidadProducto
-                );
-        }
-
         listDsctoMotivo.add(new PedidoDetalleDescuento(
                 Oc_numero,
                 salida,
                 nroItemDetalle,
-                porcentajeDesc2,
-                montoDescuento2,
-                PedidoDetalleDescuento.TIPO_DSCTO_CATEGORIA_PRECIO
-        ));
-        listDsctoMotivo.add(new PedidoDetalleDescuento(
-                Oc_numero,
-                salida,
-                nroItemDetalle,
-                VARIABLES.getDoubleFormaterThreeDecimal(100-porcentajeDesc2),
+                VARIABLES.getDoubleFormaterThreeDecimal(100),
                 Double.parseDouble(precioSutotal),
                 PedidoDetalleDescuento.TIPO_DSCTO_BONIFICACION
         ));
@@ -7691,7 +7656,7 @@ private void EnvalularMoneda(){
         }
         itemDetalle.setItem(nroItemDetalle);
         itemDetalle.setFlagStockValido(1);//flagStockValido para promociones
-        itemDetalle.setDespro("BONIF:: "+despro);//flagStockValido para promociones
+        itemDetalle.setDespro(despro);//flagStockValido para promociones
         boolean isOK= dbclass.AgregarPedidoDetallePromocion(itemDetalle);
         if(isOK){
             GlobalFunctions.showCustomToast(
@@ -8069,12 +8034,11 @@ private void EnvalularMoneda(){
                         ));
             }
             //-----------------------------------------------------------------------------------------------
+            workflowPedido.add(
+                    getWorFlow(WorkflowAprobaciones.FLG_SOLICITUD_LINEA_CREDITO,
+                            "Venta:"+VARIABLES.SEPARADOR_TITLE+" pago a crédito"
+                    ));
             if(limiteCredito<=0){
-                workflowPedido.add(
-                        getWorFlow(WorkflowAprobaciones.FLG_SOLICITUD_LINEA_CREDITO,
-                                "Línea:"+VARIABLES.SEPARADOR_TITLE+" No tiene asignado "+VARIABLES.SEPARADOR_OBSERVACION +
-                                        "Venta: pago a crédito"
-                        ));
                 workflowPedido.add(
                         getWorFlow(WorkflowAprobaciones.FLG_CAMBIO_CONDICION_PAGO,
                                 "Pactado:"+VARIABLES.SEPARADOR_TITLE+" "+listaFormaPago.get(0).getSub_canal()+VARIABLES.SEPARADOR_OBSERVACION +

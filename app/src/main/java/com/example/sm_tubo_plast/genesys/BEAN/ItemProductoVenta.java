@@ -5,6 +5,7 @@ public class ItemProductoVenta {
     double precioNeto;
     double precioBruto;
     double precioDescuento;
+    double pctjDsctomManual;
     double cantidad;
     String codUnimed;
     String desUnimed;
@@ -63,5 +64,13 @@ public class ItemProductoVenta {
 
     public void setDesUnimed(String desUnimed) {
         this.desUnimed = desUnimed;
+    }
+
+    public double getPctjDsctomManual() {
+        return pctjDsctomManual;
+    }
+
+    public void setPctjDsctomManual(double pctjDsctomManual) {
+        this.pctjDsctomManual = pctjDsctomManual;
     }
 }

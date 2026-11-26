@@ -1432,7 +1432,17 @@ public class DBclasses extends SQLiteAssetHelper {
 				"       ,sum( venta.cantidad) AS cantidadMin\n" +
 				"       ,sum(venta.precio_neto) as precio_neto " +
 				"       ,sum(venta.descuento) as descuento " +
+				"       ,IFNULL(ds.descuentoManual, 0.0) AS descuentoManual " +
 				"       from pedido_detalle venta " +
+					"   LEFT JOIN ( " +
+					"       SELECT " +
+					"           x.oc_numero, " +
+					"           x.codpro, " +
+					"           MAX(x.pcjt_desc) AS descuentoManual " +
+					"       FROM pedido_detalle_descuento x " +
+					"       WHERE x.tipo_desc = '" + PedidoDetalleDescuento.TIPO_DSCTO_MANUAL_USUARIO + "' " +
+					"       GROUP BY x.oc_numero, x.codpro " +
+					"   ) ds ON ds.oc_numero = venta.oc_numero and ds.codpro = venta.cip" +
 				"       where venta.tipo_producto='V' " +
 				"       and venta.oc_numero='"+oc_numero+"' group by venta.cip " +
 				")";
@@ -1463,7 +1473,8 @@ public class DBclasses extends SQLiteAssetHelper {
 					+" ifnull(ventax.cantidadMin, 0) as cantidadVendido, "
 					+" ifnull(producto.codunimed_almacen, 'UND?') as desunimedVendido, "
 					+" ifnull(ventax.precio_neto, 0) as precio_netoVendido, "
-					+" ifnull(ventax.descuento, 0) as descuentoVendido "
+					+" ifnull(ventax.descuento, 0) as descuentoVendido, "
+					+" ifnull(ventax.descuentoManual, 0) as descuentoManual "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1496,7 +1507,8 @@ public class DBclasses extends SQLiteAssetHelper {
 					+" ifnull(ventax.cantidadMin, 0) as cantidadVendido, "
 					+" ifnull(producto.codunimed_almacen, 'UND?') as desunimedVendido, "
 					+" ifnull(ventax.precio_neto, 0) as precio_netoVendido, "
-					+" ifnull(ventax.descuento, 0) as descuentoVendido "
+					+" ifnull(ventax.descuento, 0) as descuentoVendido, "
+					+" ifnull(ventax.descuentoManual, 0) as descuentoManual "
 					+ "from producto "
 					+ "inner join politica_precio2 on producto.codpro = politica_precio2.codpro "
 					+ "left join mta_kardex on mta_kardex.codpro = producto.codpro "
@@ -1548,6 +1560,7 @@ public class DBclasses extends SQLiteAssetHelper {
 						item2.setDesUnimed(cursor.getString(cursor.getColumnIndex("desunimedVendido")));
 						item2.setPrecioNeto(cursor.getDouble(cursor.getColumnIndex("precio_netoVendido")));
 						item2.setPrecioDescuento(cursor.getDouble(cursor.getColumnIndex("descuentoVendido")));
+						item2.setPctjDsctomManual(cursor.getDouble(cursor.getColumnIndex("descuentoManual")));
 						productos[i].setItemProdVenta(item2);
 
 					}
